@@ -113,6 +113,21 @@
         
         /* Table Transitions */
         tr { transition: background-color 0.2s ease, transform 0.1s ease; }
+
+        /* Expandable Row Animation */
+        .details-row {
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            display: none; 
+        }
+        .details-row.open {
+            opacity: 1;
+            visibility: visible;
+            max-height: 500px; /* Arbitrary large height for animation */
+            display: table-row;
+        }
     </style>
 </head>
 <body class="text-slate-200 font-sans antialiased min-h-screen flex flex-col">
@@ -152,107 +167,98 @@
                 
                 <!-- Controls Panel -->
                 <div class="glass-panel rounded-2xl p-5 h-fit space-y-6">
-                    <!-- Cerca Arbitro -->
-                    <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
-                            <input type="text" id="searchInput" onkeyup="aggregateData()" placeholder="Nome arbitro..." 
-                                class="bg-slate-900/50 border border-white/10 text-white text-sm rounded-xl focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 transition-all placeholder-slate-600 hover:bg-slate-900/80">
-                        </div>
-                    </div>
-
-                    <!-- Stagioni -->
-                    <div>
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
-                        <div class="flex flex-col gap-2" id="season-buttons">
-                            <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                                2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                            </button>
-                            <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                                2024/2025 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                            </button>
-                            <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                                2023/2024 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                            </button>
-                            <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                                2022/2023 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Slider Presenze -->
-                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5">
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid fa-filter text-yellow-500"></i>
-                                <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Min. Presenze</span>
+                    
+                    <!-- Special Navigation Button -->
+                    <button onclick="switchView('playingTime')" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform hover:scale-[1.02] flex items-center justify-between group">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-xl"></i>
+                            <span class="text-left">
+                                <span class="block text-xs text-indigo-200 uppercase tracking-wide">Novità</span>
+                                Tempo di Gioco 25/26
+                            </span>
+                        </span>
+                        <i class="fa-solid fa-chevron-right opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                    </button>
+                    
+                    <div id="standard-controls" class="space-y-6">
+                        <!-- Cerca Arbitro -->
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Nome arbitro..." 
+                                    class="bg-slate-900/50 border border-white/10 text-white text-sm rounded-xl focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 transition-all placeholder-slate-600 hover:bg-slate-900/80">
                             </div>
-                            <span id="minMatchesValue" class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-mono font-bold px-2 py-0.5 rounded text-sm">0</span>
                         </div>
-                        <div class="relative w-full h-6 flex items-center px-1">
-                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" class="w-full z-20 relative" oninput="updateMinMatches(this.value)">
+
+                        <!-- Stagioni -->
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
+                            <div class="flex flex-col gap-2" id="season-buttons">
+                                <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                    2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                                <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                    2024/2025 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                    2023/2024 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                    2022/2023 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                    2021/2022 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                            <span>0</span>
-                            <span id="maxMatchesLabel">MAX</span>
+
+                        <!-- Slider Presenze -->
+                        <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-filter text-yellow-500"></i>
+                                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Min. Presenze</span>
+                                </div>
+                                <span id="minMatchesValue" class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-mono font-bold px-2 py-0.5 rounded text-sm">0</span>
+                            </div>
+                            <div class="relative w-full h-6 flex items-center px-1">
+                                <input type="range" id="minMatches" min="0" max="10" value="0" step="1" class="w-full z-20 relative" oninput="updateMinMatches(this.value)">
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                                <span>0</span>
+                                <span id="maxMatchesLabel">MAX</span>
+                            </div>
                         </div>
                     </div>
+                    
+                    <button id="back-to-stats-btn" onclick="switchView('stats')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl transition-all hidden">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Torna alle Statistiche
+                    </button>
                 </div>
                 
-                <!-- Top Insights Cards (Moved Here) -->
+                <!-- Top Insights Cards -->
                 <div id="insights-container" class="flex flex-col gap-4">
                     <!-- Populated by JS -->
                 </div>
 
             </div>
 
-            <!-- Right Column: Table -->
+            <!-- Right Column: Content Area -->
             <div class="lg:col-span-3 flex flex-col gap-6">
 
-                <!-- Data Table -->
-                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-slate-700">
+                <!-- Data Table Container -->
+                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-slate-700 relative min-h-[400px]">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-slate-300">
-                            <thead class="text-xs text-slate-400 uppercase bg-slate-950/50 border-b border-white/10 sticky top-0 z-10 backdrop-blur-md">
-                                <tr>
-                                    <th scope="col" class="px-6 py-4 font-bold cursor-pointer hover:text-white transition group" onclick="sortData('name')">
-                                        Arbitro <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('matches')">
-                                        Pres <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('fouls_avg')">
-                                        Falli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    
-                                    <!-- Reordered Columns as requested -->
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows')">
-                                        Tot <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows_ap')">
-                                        Gialli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds')">
-                                        Tot <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds_ap')">
-                                        Rossi/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-
-                                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('penalties_ap')">
-                                        Rigori/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
-                                    </th>
-                                </tr>
+                        <table class="w-full text-sm text-left text-slate-300" id="mainTable">
+                            <thead class="text-xs text-slate-400 uppercase bg-slate-950/50 border-b border-white/10 sticky top-0 z-10 backdrop-blur-md" id="tableHeader">
+                                <!-- Headers populated by JS based on view -->
                             </thead>
-                            <tbody id="refereeTableBody" class="divide-y divide-slate-700">
+                            <tbody id="tableBody" class="divide-y divide-slate-700">
                                 <!-- Rows populated by JS -->
                             </tbody>
-                            <tfoot class="bg-slate-950/80 border-t border-slate-700 font-bold text-white">
-                                 <tr id="footerRow">
-                                    <!-- Footer populated by JS -->
-                                 </tr>
+                            <tfoot class="bg-slate-950/80 border-t border-slate-700 font-bold text-white" id="tableFooter">
+                                 <!-- Footer populated by JS -->
                             </tfoot>
                         </table>
                     </div>
@@ -261,13 +267,133 @@
             </div>
         </div>
         
-        <div class="mt-6 text-center">
-            <p class="text-xs text-slate-500">© 2025 RefereeLab. Dati statistici aggiornati.</p>
+        <!-- Update Info Banner (Moved to Bottom) -->
+        <div class="mt-6 flex justify-center text-center">
+            <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-full text-xs font-mono flex items-center gap-2">
+                <i class="fa-solid fa-circle-info"></i> Dati stagione 2025/2026 aggiornati all'11ª giornata
+            </span>
+        </div>
+        
+        <div class="mt-2 text-center">
+            <p class="text-xs text-slate-500">© 2025 RefereeLab. Tutti i diritti riservati.</p>
         </div>
 
     </main>
 
     <script>
+        // --- RAW DATA: TEMPO DI GIOCO ---
+        const RAW_PLAYING_TIME = `
+Massa	95,47
+Ayroldi	97,20
+Collu	97,21
+Zufferli	96,35
+Sozza	100,54
+Manganiello	95,46
+Arena	96,06
+Marcenaro	96,26
+Tremolada	94,24
+La Penna	91,24
+Guida	98,13
+Marinelli	100,08
+Doveri	96,20
+Mariani	97,06
+Bonacina	97,56
+Collu	96,46
+Chiffi	98,26
+Abisso	94,09
+Marchetti	98,12
+Crezzini	93,02
+Fourneau	101,55
+Colombo	97,19
+Zufferli	99,24
+Ayroldi	102,10
+Manganiello	94,30
+Massa	96,31
+Tremolada	101,17
+Marcenaro	98,03
+Arena	97,02
+Piccinini	99,29
+Zufferli	96,37
+Collu	108,02
+Rapuano	99,52
+Doveri	95,27
+Sozza	100,08
+La Penna	100,26
+Colombo	95,17
+Bonacina	106,39
+Marinelli	98,24
+Crezzini	101,11
+Di Bello	97,54
+Sozza	98,52
+Piccinini	96,35
+Perenzoni	98,39
+Manganiello	98,27
+Feliciani	100,00
+Fourneau	97,51
+Chiffi	99,10
+Collu	98,49
+Ayroldi	96,06
+Fourneau	99,27
+Piccinini	103,57
+Doveri	101,04
+Feliciani	95,20
+Zufferli	95,25
+Arena	97,10
+Abisso	91,03
+Colombo	98,08
+La Penna	96,31
+Guida	94,13
+Crezzini	97,33
+Guida	98,41
+Marcenaro	99,17
+Massa	96,40
+Ayroldi	98,59
+Marchetti	96,32
+Sozza	99,37
+Collu	95,15
+Marinelli	98,13
+Fabbri	94,10
+Zufferli	100,06
+Chiffi	98,03
+Feliciani	96,22
+Mariani	102,58
+Arena	96,00
+Bonacina	97,28
+Manganiello	98,24
+Dionisi	100,04
+La Penna	101,03
+Colombo	96,12
+Collu	99,07
+Doveri	97,51
+Marcenaro	99,03
+Di Bello	102,54
+Crezzini	97,04
+Ayroldi	96,01
+Abisso	100,41
+Sozza	95,10
+Pairetto	100,29
+Massa	95,16
+Fabbri	95,30
+Zufferli	98,23
+Chiffi	99,18
+Doveri	99,00
+Rapuano	97,15
+Arena	97,32
+Bonacina	101,04
+Guida	97,10
+Feliciani	99,04
+Sacchi	95,01
+Marcenaro	96,03
+Pezzuto	99,11
+Abisso	97,28
+Zufferli	99,50
+Di Bello	95,00
+Crezzini	99,06
+Chiffi	99,24
+Guida	97,03
+Collu	98,21
+Manganiello	97,11`;
+
         // --- DATABASE STORICO ---
         const db = {
             "2025-26": [
@@ -431,6 +557,53 @@
                 { name: "Daniele Minelli", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Paterna", matches: 1, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 2.00, reds: 2 },
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }
+            ],
+            "2021-22": [
+                { name: "Daniele Doveri", matches: 17, fouls_avg: 26.82, penalties_ap: 0.35, yellows_ap: 3.47, yellows: 59, reds_ap: 0.18, reds: 3 },
+                { name: "Marco Di Bello", matches: 17, fouls_avg: 27.18, penalties_ap: 0.47, yellows_ap: 4.29, yellows: 73, reds_ap: 0.24, reds: 4 },
+                { name: "Fabio Maresca", matches: 16, fouls_avg: 24.75, penalties_ap: 0.38, yellows_ap: 4.50, yellows: 72, reds_ap: 0.31, reds: 5 },
+                { name: "Daniele Chiffi", matches: 16, fouls_avg: 24.88, penalties_ap: 0.31, yellows_ap: 3.63, yellows: 58, reds_ap: 0.19, reds: 3 },
+                { name: "Daniele Orsato", matches: 15, fouls_avg: 28.00, penalties_ap: 0.27, yellows_ap: 5.87, yellows: 88, reds_ap: 0.13, reds: 2 },
+                { name: "Maurizio Mariani", matches: 14, fouls_avg: 28.79, penalties_ap: 0.21, yellows_ap: 4.86, yellows: 68, reds_ap: 0.36, reds: 5 },
+                { name: "Marco Guida", matches: 14, fouls_avg: 27.14, penalties_ap: 0.29, yellows_ap: 4.79, yellows: 67, reds_ap: 0.21, reds: 3 },
+                { name: "Davide Massa", matches: 14, fouls_avg: 26.29, penalties_ap: 0.14, yellows_ap: 4.21, yellows: 59, reds_ap: 0.36, reds: 5 },
+                { name: "Livio Marinelli", matches: 14, fouls_avg: 21.86, penalties_ap: 0.29, yellows_ap: 3.93, yellows: 55, reds_ap: 0.00, reds: 0 },
+                { name: "Simone Sozza", matches: 14, fouls_avg: 26.43, penalties_ap: 0.29, yellows_ap: 4.36, yellows: 61, reds_ap: 0.21, reds: 3 },
+                { name: "Rosario Abisso", matches: 13, fouls_avg: 25.92, penalties_ap: 0.46, yellows_ap: 4.69, yellows: 61, reds_ap: 0.31, reds: 4 },
+                { name: "Paolo Valeri", matches: 12, fouls_avg: 30.25, penalties_ap: 0.42, yellows_ap: 5.00, yellows: 60, reds_ap: 0.17, reds: 2 },
+                { name: "Michael Fabbri", matches: 12, fouls_avg: 23.67, penalties_ap: 0.17, yellows_ap: 3.67, yellows: 44, reds_ap: 0.50, reds: 6 },
+                { name: "Luca Pairetto", matches: 12, fouls_avg: 26.58, penalties_ap: 0.92, yellows_ap: 4.33, yellows: 52, reds_ap: 0.25, reds: 3 },
+                { name: "Gianluca Manganiello", matches: 12, fouls_avg: 24.08, penalties_ap: 0.17, yellows_ap: 3.50, yellows: 42, reds_ap: 0.17, reds: 2 },
+                { name: "Massimiliano Irrati", matches: 11, fouls_avg: 27.00, penalties_ap: 0.64, yellows_ap: 5.64, yellows: 62, reds_ap: 0.27, reds: 3 },
+                { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 25.55, penalties_ap: 0.09, yellows_ap: 3.45, yellows: 38, reds_ap: 0.27, reds: 3 },
+                { name: "Francesco Fourneau", matches: 11, fouls_avg: 27.45, penalties_ap: 0.36, yellows_ap: 4.73, yellows: 52, reds_ap: 0.27, reds: 3 },
+                { name: "Luca Massimi", matches: 11, fouls_avg: 29.27, penalties_ap: 0.18, yellows_ap: 4.27, yellows: 47, reds_ap: 0.27, reds: 3 },
+                { name: "Giovanni Ayroldi", matches: 11, fouls_avg: 29.82, penalties_ap: 0.18, yellows_ap: 5.36, yellows: 59, reds_ap: 0.18, reds: 2 },
+                { name: "Alessandro Prontera", matches: 10, fouls_avg: 26.70, penalties_ap: 0.50, yellows_ap: 4.70, yellows: 47, reds_ap: 0.40, reds: 4 },
+                { name: "Antonio Rapuano", matches: 9, fouls_avg: 26.22, penalties_ap: 0.44, yellows_ap: 4.11, yellows: 37, reds_ap: 0.56, reds: 5 },
+                { name: "Davide Ghersini", matches: 8, fouls_avg: 21.38, penalties_ap: 0.63, yellows_ap: 3.25, yellows: 26, reds_ap: 0.13, reds: 1 },
+                { name: "Gianluca Aureliano", matches: 8, fouls_avg: 29.63, penalties_ap: 0.75, yellows_ap: 5.13, yellows: 41, reds_ap: 0.25, reds: 2 },
+                { name: "Marco Piccinini", matches: 8, fouls_avg: 26.00, penalties_ap: 0.38, yellows_ap: 4.25, yellows: 34, reds_ap: 0.50, reds: 4 },
+                { name: "Matteo Marchetti", matches: 8, fouls_avg: 26.13, penalties_ap: 0.50, yellows_ap: 4.50, yellows: 36, reds_ap: 0.00, reds: 0 },
+                { name: "Ivano Pezzuto", matches: 7, fouls_avg: 31.14, penalties_ap: 0.14, yellows_ap: 4.86, yellows: 34, reds_ap: 0.00, reds: 0 },
+                { name: "Federico Dionisi", matches: 7, fouls_avg: 26.86, penalties_ap: 0.43, yellows_ap: 3.57, yellows: 25, reds_ap: 0.43, reds: 3 },
+                { name: "Antonio Giua", matches: 6, fouls_avg: 25.67, penalties_ap: 0.50, yellows_ap: 5.33, yellows: 32, reds_ap: 0.17, reds: 1 },
+                { name: "Manuel Volpi", matches: 6, fouls_avg: 31.17, penalties_ap: 0.50, yellows_ap: 6.17, yellows: 37, reds_ap: 0.33, reds: 2 },
+                { name: "Piero Giacomelli", matches: 5, fouls_avg: 29.60, penalties_ap: 0.40, yellows_ap: 4.60, yellows: 23, reds_ap: 0.00, reds: 0 },
+                { name: "Marco Serra", matches: 5, fouls_avg: 24.80, penalties_ap: 1.00, yellows_ap: 5.20, yellows: 26, reds_ap: 0.20, reds: 1 },
+                { name: "Lorenzo Maggioni", matches: 4, fouls_avg: 29.00, penalties_ap: 0.50, yellows_ap: 5.00, yellows: 20, reds_ap: 0.25, reds: 1 },
+                { name: "Giacomo Camplone", matches: 3, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 3.67, yellows: 11, reds_ap: 0.67, reds: 2 },
+                { name: "Andrea Colombo", matches: 3, fouls_avg: 25.33, penalties_ap: 0.00, yellows_ap: 5.33, yellows: 16, reds_ap: 0.33, reds: 1 },
+                { name: "Matteo Marcenaro", matches: 3, fouls_avg: 28.33, penalties_ap: 0.33, yellows_ap: 4.67, yellows: 14, reds_ap: 0.00, reds: 0 },
+                { name: "Valerio Marini", matches: 2, fouls_avg: 28.50, penalties_ap: 1.50, yellows_ap: 5.50, yellows: 11, reds_ap: 0.00, reds: 0 },
+                { name: "Alberto Santoro", matches: 2, fouls_avg: 25.50, penalties_ap: 0.00, yellows_ap: 2.50, yellows: 5, reds_ap: 0.00, reds: 0 },
+                { name: "Matteo Gariglio", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.00, reds: 0 },
+                { name: "Francesco Cosso", matches: 2, fouls_avg: 25.00, penalties_ap: 1.00, yellows_ap: 5.00, yellows: 10, reds_ap: 1.00, reds: 2 },
+                { name: "Antonio Di Martino", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
+                { name: "Niccolò Baroni", matches: 1, fouls_avg: 23.00, penalties_ap: 2.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
+                { name: "Daniele Paterna", matches: 1, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
+                { name: "Francesco Meraviglia", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
+                { name: "Gianpiero Miele", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 }
             ]
         };
 
@@ -439,15 +612,16 @@
         let currentSort = { key: 'matches', order: 'desc' };
         let aggregatedData = [];
         let minMatchesFilter = 0;
+        let currentView = 'stats'; // 'stats' or 'playingTime'
 
         // --- UTILS ---
-        function formatName(fullName) {
+        function formatName(fullName, isInactive) {
             const parts = fullName.trim().split(' ');
             if (parts.length < 2) return fullName;
             const firstName = parts.shift();
             const surname = parts.join(' ');
-            // Changed surname to uppercase
-            return `<span class="font-bold text-white text-base uppercase">${surname}</span> <span class="text-slate-400 font-normal text-sm">${firstName}</span>`;
+            const asterisk = isInactive ? '<span class="text-red-500 ml-1 text-lg leading-none">*</span>' : '';
+            return `<div class="flex items-center"><span class="font-bold text-white text-base uppercase">${surname}</span> <span class="text-slate-400 font-normal text-sm ml-1">${firstName}</span>${asterisk}</div>`;
         }
         
         function getSurname(fullName) {
@@ -458,9 +632,141 @@
         }
 
         // --- LOGIC ---
+        function switchView(view) {
+            currentView = view;
+            const backBtn = document.getElementById('back-to-stats-btn');
+            const standardControls = document.getElementById('standard-controls');
+            const insightsContainer = document.getElementById('insights-container');
+            
+            if (view === 'playingTime') {
+                backBtn.classList.remove('hidden');
+                standardControls.classList.add('hidden');
+                insightsContainer.classList.add('hidden');
+                processPlayingTimeData();
+            } else {
+                backBtn.classList.add('hidden');
+                standardControls.classList.remove('hidden');
+                insightsContainer.classList.remove('hidden');
+                aggregateData();
+            }
+        }
+
+        function processPlayingTimeData() {
+            // Process RAW data
+            const lines = RAW_PLAYING_TIME.trim().split('\n');
+            const stats = {};
+
+            lines.forEach(line => {
+                // Split by tab or spaces, handle comma decimal
+                const parts = line.trim().split(/\s+/);
+                if (parts.length < 2) return;
+                
+                // Extract name (first part) and time (last part)
+                // Handling simple names like "Massa" vs potential "Di Bello"
+                // The provided raw data seems to use Surnames mostly.
+                // Let's assume Last token is time, rest is name
+                const timeStr = parts.pop().replace(',', '.');
+                const name = parts.join(' ');
+                const time = parseFloat(timeStr);
+
+                if (!stats[name]) {
+                    stats[name] = {
+                        name: name,
+                        totalTime: 0,
+                        count: 0,
+                        matches: [] // Store individual times
+                    };
+                }
+                stats[name].totalTime += time;
+                stats[name].count += 1;
+                stats[name].matches.push(time);
+            });
+
+            // Convert to array
+            const data = Object.values(stats).map(s => ({
+                name: s.name,
+                avgTime: s.totalTime / s.count,
+                matches: s.matches,
+                matchCount: s.count
+            }));
+
+            renderPlayingTimeTable(data);
+        }
+
+        function renderPlayingTimeTable(data) {
+            const thead = document.getElementById('tableHeader');
+            const tbody = document.getElementById('tableBody');
+            const tfoot = document.getElementById('tableFooter');
+
+            // Update Headers
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-6 py-4 font-bold text-white">Arbitro</th>
+                    <th class="px-4 py-4 font-bold text-center text-white">Media Minuti</th>
+                    <th class="px-4 py-4 font-bold text-center text-white">Partite</th>
+                </tr>
+            `;
+
+            // Sort by Average Time Descending
+            data.sort((a, b) => b.avgTime - a.avgTime);
+
+            tbody.innerHTML = '';
+            data.forEach((ref, index) => {
+                const rowId = `details-${index}`;
+                const mainRow = `
+                    <tr class="hover:bg-white/5 transition-colors cursor-pointer border-b border-slate-800" onclick="toggleDetails('${rowId}')">
+                        <td class="px-6 py-4 font-bold text-white uppercase flex items-center gap-2">
+                            ${ref.name}
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform" id="icon-${rowId}"></i>
+                        </td>
+                        <td class="px-4 py-4 text-center text-lg font-mono text-green-400 font-bold">${ref.avgTime.toFixed(2)}'</td>
+                        <td class="px-4 py-4 text-center text-slate-400">${ref.matchCount}</td>
+                    </tr>
+                `;
+
+                // Details Row (Hidden by default)
+                const matchList = ref.matches.map((m, i) => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700">${m.toFixed(2)}'</span>`).join('');
+                
+                const detailsRow = `
+                    <tr id="${rowId}" class="details-row bg-slate-900/50">
+                        <td colspan="3" class="px-6 py-4">
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <span class="text-xs text-slate-500 uppercase font-bold mr-2">Singole Partite:</span>
+                                ${matchList}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                tbody.innerHTML += mainRow + detailsRow;
+            });
+
+            tfoot.innerHTML = ''; // Clear footer for this view
+        }
+        
+        // Helper for toggle
+        window.toggleDetails = function(id) {
+            const row = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (row.classList.contains('open')) {
+                row.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                row.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        };
+
+
         function aggregateData() {
+            if (currentView === 'playingTime') return; // Don't run stats logic if in playing time mode
+
             let map = {};
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Create set of active referees from 2025-26 data
+            const activeRefereesSet = new Set(db['2025-26'].map(r => r.name));
 
             activeSeasons.forEach(season => {
                 const seasonData = db[season];
@@ -476,7 +782,8 @@
                             w_fouls: 0,
                             w_penalties: 0,
                             w_yellows_ap: 0,
-                            w_reds_ap: 0
+                            w_reds_ap: 0,
+                            isInactive: !activeRefereesSet.has(ref.name) // Check if active
                         };
                     }
                     
@@ -501,7 +808,8 @@
                     fouls_avg: m > 0 ? entry.w_fouls / m : 0,
                     penalties_ap: m > 0 ? entry.w_penalties / m : 0,
                     yellows_ap: m > 0 ? entry.w_yellows_ap / m : 0,
-                    reds_ap: m > 0 ? entry.w_reds_ap / m : 0
+                    reds_ap: m > 0 ? entry.w_reds_ap / m : 0,
+                    isInactive: entry.isInactive
                 };
             });
             
@@ -542,8 +850,6 @@
 
         function toggleSeason(season) {
             const btn = document.getElementById(`btn-${season}`);
-            // Check icon management
-            const allBtns = document.querySelectorAll('.season-btn');
             
             if (activeSeasons.includes(season)) {
                 if (activeSeasons.length > 1) {
@@ -586,7 +892,7 @@
             const createCard = (title, icon, colorClass, referees, statLabel) => {
                 const statValue = referees.length > 0 ? (statLabel.includes('Presenze') ? referees[0].matches : (statLabel.includes('Falli') ? referees[0].fouls_avg.toFixed(2) : referees[0].yellows_ap.toFixed(2))) : '-';
                 
-                const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name)}</div>`).join('');
+                const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name, r.isInactive)}</div>`).join('');
 
                 return `
                 <div class="glass-panel p-4 rounded-xl border-l-4 ${colorClass} flex items-center justify-between group hover:bg-white/5 transition-colors">
@@ -613,7 +919,40 @@
 
         // --- RENDER TABLE ---
         function updateRefereesTable() {
-            const tbody = document.getElementById('refereeTableBody');
+            // Restore standard headers
+            document.getElementById('tableHeader').innerHTML = `
+                <tr>
+                    <th scope="col" class="px-6 py-4 font-bold cursor-pointer hover:text-white transition group" onclick="sortData('name')">
+                        Arbitro <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('matches')">
+                        PRESENZE <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('fouls_avg')">
+                        Falli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    
+                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows')">
+                        GIALLI TOT <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows_ap')">
+                        Gialli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    
+                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds')">
+                        ROSSI TOT <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds_ap')">
+                        Rossi/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+
+                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('penalties_ap')">
+                        Rigori/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                    </th>
+                </tr>
+            `;
+
+            const tbody = document.getElementById('tableBody');
             const sortKey = currentSort.key;
             const sortOrder = currentSort.order;
             
@@ -636,7 +975,10 @@
 
             const maxMatches = Math.max(...sorted.map(r => r.matches)) || 1;
             const maxFouls = Math.max(...sorted.map(r => r.fouls_avg)) || 1;
-            const minFouls = Math.min(...sorted.map(r => r.fouls_avg)) || 0; // Min for scaling
+            
+            // Min value for fouls bar is min of penalties/p across dataset as requested
+            const minFoulsBarBase = Math.min(...sorted.map(r => r.penalties_ap)) || 0;
+            
             const maxYellowsAp = Math.max(...sorted.map(r => r.yellows_ap)) || 1;
             const maxRedsAp = Math.max(...sorted.map(r => r.reds_ap)) || 1;
             const maxPensAp = Math.max(...sorted.map(r => r.penalties_ap)) || 1;
@@ -657,14 +999,14 @@
                 weightedPens += (ref.penalties_ap * ref.matches);
 
                 const matchPercent = (ref.matches / maxMatches) * 100;
-                // Fouls scaling: (val - min) / (max - min)
+                
+                // Scale fouls bar from minFoulsBarBase to maxFouls
                 let foulsPercent = 0;
-                if (maxFouls > minFouls) {
-                     foulsPercent = ((ref.fouls_avg - minFouls) / (maxFouls - minFouls)) * 100;
+                if (maxFouls > minFoulsBarBase) {
+                     foulsPercent = ((ref.fouls_avg - minFoulsBarBase) / (maxFouls - minFoulsBarBase)) * 100;
                 } else {
-                     foulsPercent = 100; // If all same or only 1, full bar
+                     foulsPercent = 100;
                 }
-                // Ensure a minimum visual width for the bar if it's not 0 value
                 if (ref.fouls_avg > 0 && foulsPercent < 5) foulsPercent = 5;
                 
                 const yellowsPercent = (ref.yellows_ap / maxYellowsAp) * 100;
@@ -674,12 +1016,7 @@
                 const row = `
                     <tr class="hover:bg-white/5 group transition-colors">
                         <td class="px-6 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center mr-3 border border-slate-700 group-hover:border-yellow-500/50 transition-colors">
-                                    <span class="text-xs font-bold text-slate-400 group-hover:text-yellow-500">${getSurname(ref.name).substring(0,2).toUpperCase()}</span>
-                                </div>
-                                <div>${formatName(ref.name)}</div>
-                            </div>
+                             ${formatName(ref.name, ref.isInactive)}
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex flex-col justify-center items-center">
@@ -759,6 +1096,25 @@
             }
             updateRefereesTable();
         }
+        
+        // Ensure toggle details is globally available
+        window.toggleDetails = function(id) {
+            const row = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (row.classList.contains('open')) {
+                row.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                row.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        };
+        window.switchView = switchView;
+        window.toggleSeason = toggleSeason;
+        window.updateMinMatches = updateMinMatches;
+        window.aggregateData = aggregateData;
+        window.sortData = sortData;
 
         window.onload = aggregateData;
 
