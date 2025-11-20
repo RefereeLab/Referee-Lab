@@ -147,68 +147,71 @@
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
             
-            <!-- Left Column: Controls (Stagioni, Filtri, Cerca) -->
-            <div class="lg:col-span-1 glass-panel rounded-2xl p-5 h-fit space-y-6">
+            <!-- Left Column: Controls & Insights -->
+            <div class="lg:col-span-1 space-y-6">
                 
-                <!-- Cerca Arbitro -->
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
-                        <input type="text" id="searchInput" onkeyup="aggregateData()" placeholder="Nome arbitro..." 
-                            class="bg-slate-900/50 border border-white/10 text-white text-sm rounded-xl focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 transition-all placeholder-slate-600 hover:bg-slate-900/80">
-                    </div>
-                </div>
-
-                <!-- Stagioni -->
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
-                    <div class="flex flex-col gap-2" id="season-buttons">
-                        <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                            2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                        </button>
-                        <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                            2024/2025 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                        </button>
-                        <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                            2023/2024 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                        </button>
-                        <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
-                            2022/2023 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Slider Presenze -->
-                <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-filter text-yellow-500"></i>
-                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Min. Presenze</span>
+                <!-- Controls Panel -->
+                <div class="glass-panel rounded-2xl p-5 h-fit space-y-6">
+                    <!-- Cerca Arbitro -->
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                            <input type="text" id="searchInput" onkeyup="aggregateData()" placeholder="Nome arbitro..." 
+                                class="bg-slate-900/50 border border-white/10 text-white text-sm rounded-xl focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 transition-all placeholder-slate-600 hover:bg-slate-900/80">
                         </div>
-                        <span id="minMatchesValue" class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-mono font-bold px-2 py-0.5 rounded text-sm">0</span>
                     </div>
-                    <div class="relative w-full h-6 flex items-center px-1">
-                        <input type="range" id="minMatches" min="0" max="10" value="0" step="1" class="w-full z-20 relative" oninput="updateMinMatches(this.value)">
+
+                    <!-- Stagioni -->
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
+                        <div class="flex flex-col gap-2" id="season-buttons">
+                            <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                            </button>
+                            <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                2024/2025 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                            </button>
+                            <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                2023/2024 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                            </button>
+                            <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                2022/2023 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                        <span>0</span>
-                        <span id="maxMatchesLabel">MAX</span>
+
+                    <!-- Slider Presenze -->
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-white/5">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-filter text-yellow-500"></i>
+                                <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Min. Presenze</span>
+                            </div>
+                            <span id="minMatchesValue" class="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-mono font-bold px-2 py-0.5 rounded text-sm">0</span>
+                        </div>
+                        <div class="relative w-full h-6 flex items-center px-1">
+                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" class="w-full z-20 relative" oninput="updateMinMatches(this.value)">
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>0</span>
+                            <span id="maxMatchesLabel">MAX</span>
+                        </div>
                     </div>
+                </div>
+                
+                <!-- Top Insights Cards (Moved Here) -->
+                <div id="insights-container" class="flex flex-col gap-4">
+                    <!-- Populated by JS -->
                 </div>
 
             </div>
 
-            <!-- Right Column: Cards & Table -->
+            <!-- Right Column: Table -->
             <div class="lg:col-span-3 flex flex-col gap-6">
-                
-                <!-- Top Insights Cards -->
-                <div id="insights-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Populated by JS -->
-                </div>
 
                 <!-- Data Table -->
-                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
+                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-slate-700">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-slate-300">
                             <thead class="text-xs text-slate-400 uppercase bg-slate-950/50 border-b border-white/10 sticky top-0 z-10 backdrop-blur-md">
@@ -222,27 +225,31 @@
                                     <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('fouls_avg')">
                                         Falli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('penalties_ap')">
-                                        Rigori/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                                    
+                                    <!-- Reordered Columns as requested -->
+                                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows')">
+                                        Tot <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
                                     <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows_ap')">
                                         Gialli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows')">
+                                    
+                                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds')">
                                         Tot <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
                                     <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds_ap')">
                                         Rossi/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
-                                    <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds')">
-                                        Tot <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+
+                                    <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('penalties_ap')">
+                                        Rigori/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody id="refereeTableBody" class="divide-y divide-white/5">
+                            <tbody id="refereeTableBody" class="divide-y divide-slate-700">
                                 <!-- Rows populated by JS -->
                             </tbody>
-                            <tfoot class="bg-slate-950/80 border-t border-white/10 font-bold text-white">
+                            <tfoot class="bg-slate-950/80 border-t border-slate-700 font-bold text-white">
                                  <tr id="footerRow">
                                     <!-- Footer populated by JS -->
                                  </tr>
@@ -561,32 +568,46 @@
                 return;
             }
 
+            const getTop = (data, key, isDesc) => {
+                const sorted = [...data].sort((a,b) => isDesc ? b[key] - a[key] : a[key] - b[key]);
+                const topVal = sorted[0][key];
+                return sorted.filter(r => r[key] === topVal);
+            };
+
             // 1. Most Strict (Max YELLOWS/Game)
-            const strictest = [...data].sort((a,b) => b.yellows_ap - a.yellows_ap)[0];
+            const strictest = getTop(data, 'yellows_ap', true);
             
             // 2. Most Lenient (Min Fouls/Game)
-            const lenient = [...data].sort((a,b) => a.fouls_avg - b.fouls_avg)[0];
+            const lenient = getTop(data, 'fouls_avg', false);
+            
             // 3. Workhorse (Max Matches)
-            const workhorse = [...data].sort((a,b) => b.matches - a.matches)[0];
+            const workhorse = getTop(data, 'matches', true);
 
-            const createCard = (title, icon, colorClass, referee, statLabel, statValue) => `
+            const createCard = (title, icon, colorClass, referees, statLabel) => {
+                const statValue = referees.length > 0 ? (statLabel.includes('Presenze') ? referees[0].matches : (statLabel.includes('Falli') ? referees[0].fouls_avg.toFixed(2) : referees[0].yellows_ap.toFixed(2))) : '-';
+                
+                const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name)}</div>`).join('');
+
+                return `
                 <div class="glass-panel p-4 rounded-xl border-l-4 ${colorClass} flex items-center justify-between group hover:bg-white/5 transition-colors">
-                    <div>
+                    <div class="overflow-hidden">
                         <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">${title}</p>
-                        <div class="text-lg font-bold text-white leading-tight">${referee ? formatName(referee.name) : '-'}</div>
+                        <div class="flex flex-col gap-1 max-h-24 overflow-y-auto custom-scrollbar">
+                            ${namesHtml}
+                        </div>
                         <p class="text-xs text-slate-500 mt-1">${statLabel}: <span class="text-white font-mono">${statValue}</span></p>
                     </div>
-                    <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0 ml-2">
                         <i class="${icon} text-lg ${colorClass.replace('border-', 'text-')}"></i>
                     </div>
                 </div>
-            `;
+            `};
 
             // Updated first card to yellow theme and Yellows/Game stat
             document.getElementById('insights-container').innerHTML = `
-                ${createCard('IL Più Severo', 'fa-solid fa-square-full', 'border-yellow-500', strictest, 'Gialli/Partita', strictest?.yellows_ap.toFixed(2))}
-                ${createCard('IL Meno Falloso', 'fa-regular fa-flag', 'border-green-500', lenient, 'Falli/Partita', lenient?.fouls_avg.toFixed(2))}
-                ${createCard('IL Più Presente', 'fa-solid fa-stopwatch', 'border-blue-500', workhorse, 'Presenze', workhorse?.matches)}
+                ${createCard('IL Più Severo', 'fa-solid fa-square-full', 'border-yellow-500', strictest, 'Gialli/Partita')}
+                ${createCard('IL Meno Falloso', 'fa-regular fa-flag', 'border-green-500', lenient, 'Falli/Partita')}
+                ${createCard('IL Più Presente', 'fa-solid fa-stopwatch', 'border-blue-500', workhorse, 'Presenze')}
             `;
         }
 
@@ -615,6 +636,7 @@
 
             const maxMatches = Math.max(...sorted.map(r => r.matches)) || 1;
             const maxFouls = Math.max(...sorted.map(r => r.fouls_avg)) || 1;
+            const minFouls = Math.min(...sorted.map(r => r.fouls_avg)) || 0; // Min for scaling
             const maxYellowsAp = Math.max(...sorted.map(r => r.yellows_ap)) || 1;
             const maxRedsAp = Math.max(...sorted.map(r => r.reds_ap)) || 1;
             const maxPensAp = Math.max(...sorted.map(r => r.penalties_ap)) || 1;
@@ -635,7 +657,16 @@
                 weightedPens += (ref.penalties_ap * ref.matches);
 
                 const matchPercent = (ref.matches / maxMatches) * 100;
-                const foulsPercent = (ref.fouls_avg / maxFouls) * 100;
+                // Fouls scaling: (val - min) / (max - min)
+                let foulsPercent = 0;
+                if (maxFouls > minFouls) {
+                     foulsPercent = ((ref.fouls_avg - minFouls) / (maxFouls - minFouls)) * 100;
+                } else {
+                     foulsPercent = 100; // If all same or only 1, full bar
+                }
+                // Ensure a minimum visual width for the bar if it's not 0 value
+                if (ref.fouls_avg > 0 && foulsPercent < 5) foulsPercent = 5;
+                
                 const yellowsPercent = (ref.yellows_ap / maxYellowsAp) * 100;
                 const redsPercent = maxRedsAp > 0 ? (ref.reds_ap / maxRedsAp) * 100 : 0;
                 const pensPercent = maxPensAp > 0 ? (ref.penalties_ap / maxPensAp) * 100 : 0;
@@ -666,14 +697,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-center">
-                             <div class="flex flex-col justify-center items-center">
-                                <span class="text-blue-400 font-mono text-sm mb-1">${ref.penalties_ap.toFixed(2)}</span>
-                                <div class="w-full max-w-[50px] bg-slate-800 rounded-full h-1">
-                                    <div class="h-1 rounded-full" style="width: ${pensPercent}%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
-                                </div>
-                            </div>
-                        </td>
+                        
+                        <td class="px-4 py-3 text-center font-bold text-yellow-500 text-base">${ref.yellows}</td>
+
                         <td class="px-4 py-3 text-center">
                             <div class="flex flex-col justify-center items-center">
                                 <span class="font-bold text-yellow-500 font-mono text-sm mb-1">${ref.yellows_ap.toFixed(2)}</span>
@@ -682,7 +708,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-center font-bold text-yellow-500 text-base">${ref.yellows}</td>
+
+                        <td class="px-4 py-3 text-center font-bold text-red-500 text-base">${ref.reds}</td>
+
                         <td class="px-4 py-3 text-center">
                             <div class="flex flex-col justify-center items-center">
                                 <span class="font-bold text-red-500 font-mono text-sm mb-1">${ref.reds_ap.toFixed(2)}</span>
@@ -691,7 +719,15 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-center font-bold text-red-500 text-base">${ref.reds}</td>
+                        
+                        <td class="px-4 py-3 text-center">
+                             <div class="flex flex-col justify-center items-center">
+                                <span class="text-blue-400 font-mono text-sm mb-1">${ref.penalties_ap.toFixed(2)}</span>
+                                <div class="w-full max-w-[50px] bg-slate-800 rounded-full h-1">
+                                    <div class="h-1 rounded-full" style="width: ${pensPercent}%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 `;
                 tbody.innerHTML += row;
@@ -706,11 +742,11 @@
                 <td class="px-6 py-4 text-right uppercase tracking-wider text-slate-500 text-xs">Totale Filtrato</td>
                 <td class="px-4 py-4 text-center text-xl text-white">${totalMatches}</td>
                 <td class="px-4 py-4 text-center text-slate-400 text-sm">${avgFouls}</td>
-                <td class="px-4 py-4 text-center text-blue-400 text-sm">${avgPens}</td>
-                <td class="px-4 py-4 text-center text-yellow-500 text-sm">${avgYellowsAp}</td>
                 <td class="px-4 py-4 text-center text-yellow-500 text-lg">${totalYellows}</td>
-                <td class="px-4 py-4 text-center text-red-500 text-sm">${avgRedsAp}</td>
+                <td class="px-4 py-4 text-center text-yellow-500 text-sm">${avgYellowsAp}</td>
                 <td class="px-4 py-4 text-center text-red-500 text-lg">${totalReds}</td>
+                <td class="px-4 py-4 text-center text-red-500 text-sm">${avgRedsAp}</td>
+                <td class="px-4 py-4 text-center text-blue-400 text-sm">${avgPens}</td>
             `;
         }
 
