@@ -385,7 +385,6 @@
             </div>
         </div>
         
-       
         <div class="mt-2 text-center">
             <p class="text-xs text-slate-500">© 2025 RefereeLab. Tutti i diritti riservati.</p>
         </div>
@@ -2699,6 +2698,15 @@ Manganiello	97,11`;
             }
 
             aggregatedData = result;
+
+            // AGGIUNTA QUI SOTTO: Gestione Disclaimer per Statistiche
+            const updateDisclaimer = document.getElementById('disclaimer-update');
+            if (activeSeasons.includes('2025-26')) {
+                updateDisclaimer.classList.remove('hidden');
+            } else {
+                updateDisclaimer.classList.add('hidden');
+            }
+
             updateDynamicControls();
             updateRefereesTable();
             updateInsights();
