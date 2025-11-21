@@ -378,7 +378,7 @@
 
             </div>
         </div>
-        
+               
         <div class="mt-2 text-center">
             <p class="text-xs text-slate-500">© 2025 RefereeLab. Tutti i diritti riservati.</p>
         </div>
@@ -1879,32 +1879,18 @@ Manganiello	97,11`;
                          const timeStr = parts[1].trim();
                          const seconds = parseTime(timeStr);
                          
-                         // Find key in stats (fuzzy match or exact)
-                         let foundKey = Object.keys(stats).find(k => k === refName);
-                         // If exact match fails, try checking inclusion (e.g. "Massa" in "Davide Massa") is risky without full names
-                         // But here keys in stats come from PLAYING_TIME_DB which uses Short Names or Full Names?
-                         // PLAYING_TIME_DB uses "Massa", "Ayroldi".
-                         // TOTAL_TIME_DB uses "Massa", "Ayroldi".
-                         // So direct match should work if keys exist.
-                         
-                         if (foundKey && seconds > 0) {
-                             stats[foundKey].totalGameSecondsAccumulated += seconds;
-                             stats[foundKey].totalGameCount += 1;
-                             stats[foundKey].totalGameMatches.push({
-                                 timeFormatted: formatTime(seconds),
-                                 matchName: "" 
-                             });
+                         if (foundKey = Object.keys(stats).find(k => k === refName)) {
+                             if (seconds > 0) {
+                                 stats[foundKey].totalGameSecondsAccumulated += seconds;
+                                 stats[foundKey].totalGameCount += 1;
+                                 stats[foundKey].totalGameMatches.push({
+                                     timeFormatted: formatTime(seconds),
+                                     matchName: "" 
+                                 });
+                             }
                          }
                     });
                 }
-                
-                // Total Game Time (Specific logic for 24/25 - derived from matchesRaw directly?)
-                // In 24/25 logic, MATCHES_DB_2425 has total time, but it doesn't link to referee.
-                // PLAYING_TIME_DB for 24/25 is Referee\tEffTime.
-                // So for 24/25 we only have EffTime linked to Ref. We can't easily link TotalTime to Ref unless we assume same match link.
-                // We can use the match we found earlier (matchName) to find Total Time in original DB if needed, 
-                // but the previous code structure suggests 24/25 didn't strictly require Total Time per ref or handled it differently.
-                // We will leave 24/25 Total Time blank/ND as per safe default unless raw data allows.
             });
 
             // Convert stats object to array
@@ -2360,6 +2346,19 @@ Manganiello	97,11`;
                 const mult = matchesSort.order === 'asc' ? 1 : -1;
                 
                 data.sort((a, b) => {
+                    // Custom logic for numeric columns to keep ND (0) at bottom
+                    if (key !== 'match') {
+                        const valA = a[key];
+                        const valB = b[key];
+                        
+                        if (valA === 0 && valB !== 0) return 1; // A (ND) goes bottom
+                        if (valA !== 0 && valB === 0) return -1; // B (ND) goes bottom
+                        if (valA === 0 && valB === 0) return 0;
+
+                        return (valA - valB) * mult;
+                    }
+
+                    // String sort for Match Name
                     if (typeof a[key] === 'string') {
                         return a[key].localeCompare(b[key]) * mult;
                     } else {
@@ -2413,10 +2412,10 @@ Manganiello	97,11`;
                 
                 const tr = `
                     <tr class="hover:bg-white/5 transition-colors border-b border-slate-800">
-                        <td class="px-2 py-3 sm:px-6 sm:py-4 font-bold text-white uppercase sticky-col-body text-xs sm:text-sm relative group">
+                        <td class="px-2 py-2 sm:px-6 sm:py-2 font-bold text-white uppercase sticky-col-body text-xs sm:text-sm relative group">
                             <span>${row.match}</span>
                         </td>
-                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center">
+                        <td class="px-1 py-2 sm:px-4 sm:py-2 text-center">
                             <div class="flex flex-col justify-center items-center">
                                 <span class="font-mono text-blue-300 text-sm sm:text-base mb-1">${row.totalTimeDisplay}</span>
                                 ${row.totalTimeDisplay !== 'ND' ? `
@@ -2425,7 +2424,7 @@ Manganiello	97,11`;
                                 </div>` : ''}
                             </div>
                         </td>
-                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center">
+                        <td class="px-1 py-2 sm:px-4 sm:py-2 text-center">
                             <div class="flex flex-col justify-center items-center">
                                 <span class="font-mono text-green-300 font-bold text-sm sm:text-base mb-1">${row.effTimeDisplay}</span>
                                 ${row.effTimeDisplay !== 'ND' ? `
@@ -2434,7 +2433,7 @@ Manganiello	97,11`;
                                 </div>` : ''}
                             </div>
                         </td>
-                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center">
+                        <td class="px-1 py-2 sm:px-4 sm:py-2 text-center">
                             <div class="flex flex-col justify-center items-center">
                                 <span class="font-bold text-yellow-500 text-sm sm:text-base mb-1">${row.percRaw}</span>
                                 ${row.percRaw !== 'ND' ? `
