@@ -84,6 +84,26 @@
             border-color: rgba(255,255,255,0.3);
         }
 
+        /* Select All Button */
+        .select-all-btn {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+        .select-all-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .select-all-btn.active {
+            background: #EAB308;
+            color: black;
+            border-color: #EAB308;
+            font-weight: bold;
+        }
+
         /* Slider Styling */
         input[type=range] {
             -webkit-appearance: none; 
@@ -156,6 +176,17 @@
         }
         .nav-switcher-btn:not(.active):hover {
             color: white;
+        }
+
+        /* Navigation Tiles */
+        .nav-tile {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+        .nav-tile:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
         }
 
         /* STICKY COLUMN CSS - Optimized for Mobile */
@@ -256,7 +287,10 @@
 
                         <!-- Stagioni -->
                         <div>
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Stagione</label>
+                                <button id="btn-select-all" onclick="toggleAllSeasons()" class="select-all-btn">Tutte</button>
+                            </div>
                             <div class="flex flex-col gap-2" id="season-buttons">
                                 <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2025-26">
                                     2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
@@ -312,7 +346,17 @@
                     
                     <!-- Playing Time / Matches Controls -->
                     <div id="extra-controls" class="hidden space-y-6">
-                        <!-- Placeholders if needed -->
+                        <!-- Navigazione Veloce tra Pagine (Richiesta Utente) -->
+                         <div class="flex gap-2 w-full border-t border-white/10 pt-4 mt-2">
+                            <button onclick="switchView('stats')" class="nav-tile flex-1 py-3 rounded-lg flex flex-col items-center justify-center gap-1 group">
+                                <i class="fa-solid fa-chart-simple text-slate-400 group-hover:text-white"></i>
+                                <span class="text-[10px] uppercase font-bold text-slate-500 group-hover:text-white">Stats</span>
+                            </button>
+                            <button onclick="switchView('matches')" class="nav-tile flex-1 py-3 rounded-lg flex flex-col items-center justify-center gap-1 group">
+                                <i class="fa-solid fa-arrow-right text-blue-400 group-hover:text-blue-300"></i>
+                                <span class="text-[10px] uppercase font-bold text-slate-500 group-hover:text-white">Partite</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -378,7 +422,7 @@
 
             </div>
         </div>
-               
+        
         <div class="mt-2 text-center">
             <p class="text-xs text-slate-500">© 2025 RefereeLab. Tutti i diritti riservati.</p>
         </div>
@@ -2156,11 +2200,11 @@ Manganiello	97,11`;
             let headerHTML = `
                 <tr>
                     <th class="px-2 py-3 sm:px-6 sm:py-4 font-bold text-white cursor-pointer sticky-col-head" onclick="sortPlayingTime(0)">Arbitro</th>
-                    <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(1, true)"><span class="sm:hidden">T. Eff</span><span class="hidden sm:inline">Tempo Effettivo Medio</span></th>
+                    <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-green-400 cursor-pointer" onclick="sortPlayingTime(1, true)"><span class="sm:hidden">T. Eff</span><span class="hidden sm:inline">Tempo Effettivo Medio</span></th>
             `;
             
             if (showTotalTime) {
-                headerHTML += `<th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(2, true)"><span class="sm:hidden">T. Tot</span><span class="hidden sm:inline">Tempo Totale Medio</span></th>`;
+                headerHTML += `<th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-blue-400 cursor-pointer" onclick="sortPlayingTime(2, true)"><span class="sm:hidden">T. Tot</span><span class="hidden sm:inline">Tempo Totale Medio</span></th>`;
                 headerHTML += `<th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(3, true)"><span class="sm:hidden">Part</span><span class="hidden sm:inline">Partite</span></th></tr>`;
             } else {
                 headerHTML += `<th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(2, true)"><span class="sm:hidden">Part</span><span class="hidden sm:inline">Partite</span></th></tr>`;
@@ -2485,6 +2529,7 @@ Manganiello	97,11`;
             const seasonBtns = commonControls.querySelectorAll('.season-btn');
             const searchLabel = document.getElementById('searchLabel');
             const searchInput = document.getElementById('searchInput');
+            const selectAllBtn = document.getElementById('btn-select-all');
             
             // Nav Switcher Buttons
             const btnStats = document.getElementById('nav-stats');
@@ -2496,7 +2541,7 @@ Manganiello	97,11`;
             btnTime.classList.remove('active');
             btnMatches.classList.remove('active');
             
-            // Reset Season Buttons Display
+            // Reset Season Buttons Display & Selection Mode
             seasonBtns.forEach(btn => btn.style.display = 'flex');
 
             // Hide Disclaimers
@@ -2513,12 +2558,14 @@ Manganiello	97,11`;
                 btnTime.classList.add('active');
                 searchLabel.innerText = "Cerca Arbitro";
                 searchInput.placeholder = "Nome arbitro...";
+                selectAllBtn.style.display = 'none'; // Hide Select All in Playing Time (only single season logical usually, but user kept logic same)
                 
                 // Season Logic: 24/25 & 25/26 only, Single Select
                 seasonBtns.forEach(btn => {
                     const season = btn.dataset.season;
                     if (season !== '2025-26' && season !== '2024-25') btn.style.display = 'none';
                 });
+                // Force selection to single valid season if multiple selected or invalid
                 if (activeSeasons.length !== 1 || !['2025-26', '2024-25'].includes(activeSeasons[0])) {
                      activeSeasons = ['2025-26'];
                      updateSeasonButtonsUI();
@@ -2535,6 +2582,7 @@ Manganiello	97,11`;
                 btnMatches.classList.add('active');
                 searchLabel.innerText = "Cerca Partita";
                 searchInput.placeholder = "Es. Inter-Juve...";
+                selectAllBtn.style.display = 'none'; 
 
                 // Season Logic: 24/25 & 25/26 only, Single Select
                 seasonBtns.forEach(btn => {
@@ -2554,6 +2602,7 @@ Manganiello	97,11`;
                 insightsContainer.classList.remove('hidden');
                 playingTimeTitle.classList.add('hidden');
                 matchesTitle.classList.add('hidden');
+                selectAllBtn.style.display = 'block';
                 
                 btnStats.classList.add('active');
                 searchLabel.innerText = "Cerca Arbitro";
@@ -2565,6 +2614,9 @@ Manganiello	97,11`;
         
         function updateSeasonButtonsUI() {
             const buttons = document.querySelectorAll('.season-btn');
+            const allAvailableSeasons = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
+            let allSelected = true;
+
             buttons.forEach(btn => {
                 const season = btn.dataset.season;
                 if (activeSeasons.includes(season)) {
@@ -2573,8 +2625,19 @@ Manganiello	97,11`;
                 } else {
                     btn.classList.remove('active');
                     btn.querySelector('.check-icon').classList.add('opacity-0');
+                    allSelected = false;
                 }
             });
+
+            // Update Select All Button State
+            const selectAllBtn = document.getElementById('btn-select-all');
+            if (allSelected && activeSeasons.length === allAvailableSeasons.length) {
+                selectAllBtn.classList.add('active');
+                selectAllBtn.innerText = "Deseleziona";
+            } else {
+                selectAllBtn.classList.remove('active');
+                selectAllBtn.innerText = "Tutte";
+            }
         }
 
         function toggleSeason(season) {
@@ -2586,7 +2649,6 @@ Manganiello	97,11`;
                 if(currentView === 'matches') processMatchesData();
             } else {
                 // Multi selection for Stats
-                const btn = document.getElementById(`btn-${season}`);
                 if (activeSeasons.includes(season)) {
                     if (activeSeasons.length > 1) {
                         activeSeasons = activeSeasons.filter(s => s !== season);
@@ -2597,6 +2659,21 @@ Manganiello	97,11`;
                 updateSeasonButtonsUI();
                 aggregateData();
             }
+        }
+
+        function toggleAllSeasons() {
+            const allAvailableSeasons = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
+            const selectAllBtn = document.getElementById('btn-select-all');
+            
+            if (selectAllBtn.classList.contains('active')) {
+                // Deselect all (reset to default latest)
+                activeSeasons = ['2025-26'];
+            } else {
+                // Select All
+                activeSeasons = [...allAvailableSeasons];
+            }
+            updateSeasonButtonsUI();
+            aggregateData();
         }
 
         // --- UTILS ---
@@ -2733,7 +2810,7 @@ Manganiello	97,11`;
 
             aggregatedData = result;
 
-            // AGGIUNTA QUI SOTTO: Gestione Disclaimer per Statistiche
+            // Gestione Disclaimer per Statistiche
             const updateDisclaimer = document.getElementById('disclaimer-update');
             if (activeSeasons.includes('2025-26')) {
                 updateDisclaimer.classList.remove('hidden');
@@ -2753,6 +2830,7 @@ Manganiello	97,11`;
         };
         window.switchView = switchView;
         window.toggleSeason = toggleSeason;
+        window.toggleAllSeasons = toggleAllSeasons; // Export new function
         window.updateMinMatches = updateMinMatches;
         window.aggregateData = aggregateData;
         window.sortData = sortData;
