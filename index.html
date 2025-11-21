@@ -110,6 +110,15 @@
             background: #374151;
             border-radius: 2px;
         }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #ef4444; /* Red for hiding */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #ef4444;
+        }
         
         /* Table Transitions */
         tr { transition: background-color 0.2s ease, transform 0.1s ease; }
@@ -128,6 +137,42 @@
             max-height: 500px; /* Arbitrary large height for animation */
             display: table-row;
         }
+        
+        .view-title {
+            text-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
+        }
+
+        /* Nav Switcher */
+        .nav-switcher-btn {
+            transition: all 0.3s ease;
+        }
+        .nav-switcher-btn.active {
+            background-color: #EAB308;
+            color: black;
+            font-weight: 700;
+        }
+        .nav-switcher-btn:not(.active) {
+            color: #94a3b8;
+        }
+        .nav-switcher-btn:not(.active):hover {
+            color: white;
+        }
+
+        /* STICKY COLUMN CSS */
+        .sticky-col-head {
+            position: sticky;
+            left: 0;
+            z-index: 30 !important; /* Higher than normal headers */
+            background-color: #0f172a; /* Matches slate-900 approx */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+        }
+        .sticky-col-body {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background-color: #0f172a; /* Matches slate-900 approx */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body class="text-slate-200 font-sans antialiased min-h-screen flex flex-col">
@@ -136,20 +181,33 @@
     <nav class="glass-header sticky top-0 z-50 border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer flex-shrink-0" onclick="window.location.reload()">
                     <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 p-2 rounded-lg shadow-lg shadow-yellow-500/20">
                         <i class="fa-solid fa-whistle text-xl text-black"></i>
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col md:block hidden">
                         <span class="font-bold text-2xl tracking-tight text-white leading-none">Referee<span class="text-yellow-500">Lab</span></span>
-                        <span class="text-[10px] text-slate-400 uppercase tracking-[0.2em] leading-none mt-1">Performance Analytics</span>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-6">
-                    <a href="https://instagram.com/reflab25" target="_blank" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all duration-300 group border border-white/10">
+                <!-- Center Navigation Switcher (NEW LOCATION) -->
+                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 mx-2">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple"></i> <span class="hidden sm:inline">Statistiche</span>
+                    </button>
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch"></i> <span class="hidden sm:inline">Tempo Effettivo</span>
+                        <span class="sm:hidden">T. Eff.</span>
+                    </button>
+                </div>
+
+                <!-- Social -->
+                <div class="flex items-center gap-6 flex-shrink-0">
+                    <a href="https://instagram.com/reflab25" target="_blank" class="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-white/5 hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 hover:text-white transition-all duration-300 group border border-white/10">
                         <i class="fa-brands fa-instagram text-xl group-hover:scale-110 transition-transform"></i>
-                        <span class="text-sm font-medium">@reflab25</span>
+                        <span class="text-sm font-medium hidden md:inline">@reflab25</span>
                     </a>
                 </div>
             </div>
@@ -168,25 +226,14 @@
                 <!-- Controls Panel -->
                 <div class="glass-panel rounded-2xl p-5 h-fit space-y-6">
                     
-                    <!-- Special Navigation Button -->
-                    <button onclick="switchView('playingTime')" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform hover:scale-[1.02] flex items-center justify-between group">
-                        <span class="flex items-center gap-2">
-                            <i class="fa-solid fa-stopwatch text-xl"></i>
-                            <span class="text-left">
-                                <span class="block text-xs text-indigo-200 uppercase tracking-wide">Novità</span>
-                                Tempo di Gioco 25/26
-                            </span>
-                        </span>
-                        <i class="fa-solid fa-chevron-right opacity-50 group-hover:opacity-100 transition-opacity"></i>
-                    </button>
-                    
-                    <div id="standard-controls" class="space-y-6">
+                    <!-- Common Controls (Always Visible) -->
+                    <div id="common-controls" class="space-y-6">
                         <!-- Cerca Arbitro -->
                         <div>
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
                             <div class="relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
-                                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Nome arbitro..." 
+                                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Nome arbitro..." 
                                     class="bg-slate-900/50 border border-white/10 text-white text-sm rounded-xl focus:ring-yellow-500 focus:border-yellow-500 block w-full pl-10 p-3 transition-all placeholder-slate-600 hover:bg-slate-900/80">
                             </div>
                         </div>
@@ -195,21 +242,36 @@
                         <div>
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Stagione</label>
                             <div class="flex flex-col gap-2" id="season-buttons">
-                                <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2025-26">
                                     2025/2026 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
-                                <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2024-25">
                                     2024/2025 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
-                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2023-24">
                                     2023/2024 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
-                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2022-23">
                                     2022/2023 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
-                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center">
+                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2021-22">
                                     2021/2022 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
+                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2020-21">
+                                    2020/2021 <i class="fa-solid fa-check opacity-0 check-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Only Controls -->
+                    <div id="stats-controls" class="space-y-6">
+                        <!-- Filtro Inattivi (MODIFICATO: Nascondi Inattivi) -->
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nascondi Inattivi (*)</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggleInactive" onclick="toggleInactiveRefs()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 left-0 border-slate-600"/>
+                                <label for="toggleInactive" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer"></label>
                             </div>
                         </div>
 
@@ -232,12 +294,14 @@
                         </div>
                     </div>
                     
-                    <button id="back-to-stats-btn" onclick="switchView('stats')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl transition-all hidden">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Torna alle Statistiche
-                    </button>
+                    <!-- Playing Time Only Controls (Empty now as nav button moved) -->
+                    <div id="playing-time-controls" class="hidden space-y-6">
+                        <!-- Placeholder for potential future controls specific to Time View -->
+                        <div class="text-xs text-slate-500 text-center">Visualizzazione Tempo Effettivo</div>
+                    </div>
                 </div>
                 
-                <!-- Top Insights Cards -->
+                <!-- Top Insights Cards (Only for Stats view) -->
                 <div id="insights-container" class="flex flex-col gap-4">
                     <!-- Populated by JS -->
                 </div>
@@ -248,10 +312,19 @@
             <div class="lg:col-span-3 flex flex-col gap-6">
 
                 <!-- Data Table Container -->
-                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-slate-700 relative min-h-[400px]">
-                    <div class="overflow-x-auto">
+                <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-slate-700 relative min-h-[400px] flex flex-col">
+                    
+                    <!-- Playing Time Title (Hidden by default) -->
+                    <div id="playing-time-title" class="hidden w-full text-center py-6 border-b border-white/10 bg-slate-900/50">
+                        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight view-title">
+                            TEMPO <span class="text-green-400">EFFETTIVO</span>
+                        </h2>
+                        <p class="text-slate-400 text-xs uppercase tracking-widest mt-2 font-semibold">Media minuti giocati per partita</p>
+                    </div>
+
+                    <div class="overflow-x-auto flex-grow">
                         <table class="w-full text-sm text-left text-slate-300" id="mainTable">
-                            <thead class="text-xs text-slate-400 uppercase bg-slate-950/50 border-b border-white/10 sticky top-0 z-10 backdrop-blur-md" id="tableHeader">
+                            <thead class="text-xs text-slate-400 uppercase bg-slate-950/50 border-b border-white/10 sticky top-0 z-40 backdrop-blur-md" id="tableHeader">
                                 <!-- Headers populated by JS based on view -->
                             </thead>
                             <tbody id="tableBody" class="divide-y divide-slate-700">
@@ -262,15 +335,23 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    <!-- Disclaimer per 2025/26 (spostato sotto la tabella) -->
+                    <div id="disclaimer-2526" class="hidden w-full border-t border-white/10 bg-slate-900/30 p-4">
+                        <p class="bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 text-xs p-3 rounded-lg flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-triangle-exclamation text-yellow-500 flex-shrink-0"></i>
+                            <span>Attenzione: i dati sul tempo effettivo della stagione 2025/26 non sono completi in quanto non comunicati regolarmente dalla Lega Serie A.</span>
+                        </p>
+                    </div>
                 </div>
 
             </div>
         </div>
         
-        <!-- Update Info Banner (Moved to Bottom) -->
+        <!-- Info Banner -->
         <div class="mt-6 flex justify-center text-center">
             <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-full text-xs font-mono flex items-center gap-2">
-                <i class="fa-solid fa-circle-info"></i> Dati stagione 2025/2026 aggiornati all'11ª giornata
+                <i class="fa-solid fa-circle-info"></i> <span id="bannerText">Dati aggiornati stagione corrente</span>
             </span>
         </div>
         
@@ -281,8 +362,491 @@
     </main>
 
     <script>
-        // --- RAW DATA: TEMPO DI GIOCO ---
-        const RAW_PLAYING_TIME = `
+        // --- RAW DATA (Stesso contenuto di prima, abbreviato qui per focus sul codice modificato) ---
+        const PLAYING_TIME_DB = {
+            "2025-26": `
+Massa	46,53
+Ayroldi	60,05
+Collu	65,26
+Zufferli	59,56
+Sozza	49,03
+Manganiello	54,15
+Arena	57,39
+Marcenaro	55,01
+Tremolada	54,35
+La Penna	52,19
+Guida	59,20
+Marinelli	58,39
+Doveri	55,35
+Mariani	59,53
+Bonacina	64,09
+Collu	59,27
+Chiffi	54,37
+Abisso	51,30
+Marchetti	57,38
+Crezzini	59,58
+Fourneau	54,11
+Colombo	54,23
+Zufferli	54,04
+Ayroldi	56,51
+Manganiello	58,12
+Massa	58,32
+Tremolada	63,56
+Marcenaro	59,39
+Arena	61,52
+Piccinini	57,30
+Zufferli	53,19
+Collu	53,57
+Rapuano	54,14
+Doveri	65,04
+Sozza	51,06
+La Penna	56,21
+Colombo	63,29
+Bonacina	58,50
+Marinelli	56,21
+Crezzini	57,06
+Fourneau	49,17
+Piccinini	54,51
+Doveri	47,10
+Feliciani	55,44
+Zufferli	56,48
+Arena	50,42
+Abisso	51,05
+Colombo	49,19
+Guida	57,17
+Guida	52,04
+Marcenaro	60,15
+Massa	55,18
+Ayroldi	48,03
+Marchetti	50,55
+Sozza	53,50
+Collu	64,07
+Marinelli	54,05
+Fabbri	49,12
+Zufferli	56,45
+Chiffi	56,10
+Feliciani	51,39
+Mariani	54,57
+Arena	57,39
+Bonacina	52,06
+Manganiello	49,54
+Dionisi	54,13
+La Penna	43,00
+Colombo	54,45
+Collu	54,46
+Doveri	59,25
+Marcenaro	53,25
+Di Bello	51,31
+Crezzini	53,34
+Ayroldi	57,36
+Abisso	46,31
+Sozza	54,25
+Pairetto	50,07
+Massa	57,15
+Fabbri	57,43
+Zufferli	56,49
+Chiffi	58,32
+Doveri	57,18
+Rapuano	52,10
+Arena	52,41
+Bonacina	47,22
+Guida	56,38
+Feliciani	55,16
+Sacchi	57,15
+Marcenaro	53,23
+Pezzuto	51,53
+Abisso	48,07
+Zufferli	64,42
+Di Bello	57,59
+Crezzini	60,28
+Chiffi	54,49
+Guida	46,12
+Collu	58,53
+Manganiello	59,00`,
+            "2024-25": `
+Feliciani	46,39
+Ayroldi	48,46
+Fabbri	44,43
+Maresca	58,27
+Caputi	48,59
+Marchetti	48,53
+Marinelli	53,36
+Tremolada	56,00
+Massa	54,12
+Marcenaro	56,43
+Sacchi	59,00
+Doveri	49,49
+Di Marco	56,21
+Mariani	56,58
+Rapuano	51,08
+Sozza	55,29
+Pairetto	53,23
+Zufferli	58,22
+Di Bello	53,12
+Giua	61,58
+Marcenaro	52,45
+Marchetti	53,40
+Marinelli	55,44
+Fabbri	47,36
+Massa	54,06
+Tremolada	60,21
+Colombo	54,53
+Ayroldi	51,32
+Guida	58,50
+Prontera	54,24
+Piccinini	54,03
+Di Bello	60,04
+Di Marco	57,21
+Giua	53,12
+Sacchi	51,04
+Colombo	54,31
+La Penna	50,07
+Pairetto	57,28
+Abisso	53,01
+Zufferli	56,25
+Sozza	48,44
+Marinelli	60,20
+Marchetti	48,20
+Doveri	64,10
+Guida	54,32
+Marcenaro	52,35
+Massa	55,34
+Feliciani	55,33
+Mariani	55,33
+Tremolada	58,21
+Zufferli	55,41
+Sacchi	61,58
+Colombo	58,44
+Rapuano	57,29
+Sozza	57,06
+Giua	49,47
+Abisso	52,36
+Aureliano	54,28
+Manganiello	60,33
+Fourneau	55,21
+Feliciani	59,25
+Guida	47,29
+Mariani	55,10
+Chiffi	55,41
+Marcenaro	54,09
+Marinelli	60,08
+Di Bello	54,55
+Ayroldi	53,07
+La Penna	56,25
+Pairetto	48,43
+Fabbri	60,51
+Doveri	47,58
+Chiffi	52,59
+Sacchi	56,44
+Abisso	51,43
+Fourneau	53,12
+Zufferli	54,15
+Aureliano	52,53
+Massa	59,00
+Dionisi	54,17
+Manganiello	54,38
+Ayroldi	55,42
+Tremolada	52,02
+Mariani	53,33
+Feliciani	58,27
+La Penna	55,33
+Piccinini	57,36
+Rapuano	49,01
+Guida	52,00
+Sozza	55,39
+Fourneau	55,29
+Mariani	49,06
+Colombo	60,55
+Marchetti	55,51
+Massa	49,10
+Piccinini	57,39
+Zufferli	61,18
+Chiffi	52,02
+Pairetto	50,20
+Fabbri	59,29
+Collu	50,36
+Abisso	55,50
+Feliciani	56,22
+Doveri	62,27
+La Penna	59,23
+Marcenaro	53,58
+Caputi	55,55
+Di Bello	54,05
+Guida	51,42
+Ayroldi	54,05
+Rapuano	50,21
+Sacchi	51,23
+Chiffi	57,06
+Fabbri	54,30
+Sozza	55,08
+Di Bello	51,34
+Zufferli	46,44
+Manganiello	49,51
+Colombo	56,45
+Mariani	56,03
+Colombo	65,30
+Chiffi	59,45
+Manganiello	66,25
+Sozza	53,26
+Marchetti	55,23
+Abisso	57,26
+Massa	58,44
+Rapuano	55,30
+Marinelli	58,51
+Pairetto	56,21
+Mariani	50,46
+Sacchi	51,14
+Dionisi	54,43
+Massimi	49,35
+Aureliano	57,46
+Zufferli	55,40
+Fabbri	59,16
+Doveri	53,53
+Rapuano	62,25
+Guida	55,10
+Abisso	55,37
+La Penna	59,24
+Marinelli	56,35
+Marchetti	52,19
+Chiffi	55,05
+Piccinini	53,17
+Di Bello	54,48
+Doveri	44,33
+Colombo	58,47
+Manganiello	53,45
+Bonacina	49,22
+Pairetto	57,31
+Doveri	51,56
+Giua	59,57
+Mariani	47,00
+Fabbri	48,30
+Sozza	54,08
+Rapuano	52,56
+Guida	61,42
+Chiffi	55,11
+Marinelli	54,44
+Piccinini	56,57
+La Penna	57,55
+Manganiello	56,47
+Di Bello	55,55
+Guida	49,18
+Feliciani	54,38
+Massa	61,14
+Marcenaro	53,21
+Giua	52,23
+Rapuano	51,47
+La Penna	48,53
+Doveri	52,18
+Massa	58,07
+Fourneau	54,20
+Cosso	54,07
+Mariani	51,51
+Fabbri	51,06
+Piccinini	52,23
+Ayroldi	46,47
+Sacchi	51,16
+Manganiello	49,34
+Dionisi	50,49
+Di Bello	48,31
+Marinelli	54,20
+Feliciani	59,17
+Pairetto	53,25
+Manganiello	50,49
+Doveri	64,13
+Pairetto	52,32
+Tremolada	47,58
+Chiffi	49,09
+Mariani	58,41
+Fabbri	60,08
+Fourneau	56,05
+Colombo	52,11
+Piccinini	55,10
+Abisso	54,11
+Zufferli	62,26
+Dionisi	60,55
+Zufferli	58,40
+Mariani	59,30
+Massa	56,11
+Colombo	57,43
+Marinelli	56,28
+Sacchi	51,45
+Fourneau	50,03
+Fabbri	55,10
+Feliciani	57,07
+Cosso	51,13
+Bonacina	57,17
+Pairetto	56,26
+Chiffi	54,14
+La Penna	46,31
+Abisso	52,02
+Sozza	56,19
+Marinelli	57,11
+Rapuano	53,46
+Manganiello	49,18
+Doveri	41,34
+Sozza	56,49
+Massa	53,12
+Mariani	42,22
+Piccinini	63,01
+Massimi	50,12
+Zufferli	45,47
+Collu	47,18
+Chiffi	58,36
+Fabbri	57,50
+Manganiello	55,09
+Abisso	50,13
+Sozza	56,03
+Pairetto	48,47
+Feliciani	57,33
+Zufferli	53,23
+Di Bello	52,57
+Aureliano	55,49
+Fourneau	52,43
+Marinelli	57,54
+La Penna	54,37
+Fabbri	46,59
+Marchetti	64,30
+Massa	55,22
+Fourneau	49,24
+Piccinini	58,37
+Collu	56,57
+Doveri	52,19
+Chiffi	58,43
+Mariani	55,49
+Marinelli	45,50
+Bonacina	54,09
+Abisso	52,14
+Marchetti	56,03
+Sozza	55,53
+Piccinini	58,04
+Manganiello	52,35
+Di Bello	51,57
+Mariani	51,29
+Colombo	60,44
+Maresca	61,54
+Marinelli	54,37
+Collu	59,11
+Doveri	52,11
+Maresca	57,58
+Rapuano	56,28
+Zufferli	51,33
+Massa	47,28
+Pairetto	61,34
+Manganiello	57,54
+Marchetti	55,31
+Fabbri	50,53
+Ayroldi	51,43
+Fourneau	46,27
+Doveri	52,03
+Zufferli	57,48
+Rapuano	56,41
+Colombo	59,57
+Di Bello	60,45
+Sozza	57,31
+Piccinini	59,55
+Maresca	51,18
+Manganiello	56,25
+Ayroldi	56,15
+Marchetti	51,46
+Chiffi	46,00
+Mariani	48,55
+Colombo	54,15
+Piccinini	60,28
+Fabbri	52,43
+Massa	54,31
+Mariani	52,17
+Di Bello	53,24
+Rapuano	54,24
+Manganiello	51,33
+Fourneau	50,35
+Doveri	55,08
+Chiffi	55,26
+Sozza	59,08
+Sacchi	51,46
+Massa	54,35
+Perenzoni	54,22
+Collu	58,00
+Doveri	57,35
+Ayroldi	53,20
+Piccinini	44,36
+La Penna	45,56
+Bonacina	52,10
+Chiffi	60,27
+Colombo	61,47
+Massa	51,14
+Sacchi	57,21
+Maresca	45,52
+Di Bello	61,00
+Zufferli	55,04
+Mariani	52,31
+Manganiello	59,22
+Marchetti	46,55
+Marcenaro	55,02
+Sozza	49,34
+Fabbri	54,09
+Sozza	46,22
+La Penna	56,00
+Pairetto	54,09
+Massa	44,36
+Colombo	50,02
+Piccinini	62,56
+Collu	53,25
+Marinelli	53,48
+Ayroldi	55,47
+Chiffi	58,32
+La Penna	56,54
+Arena	54,58
+Manganiello	52,47
+Rapuano	48,14
+Fabbri	58,15
+Perenzoni	55,31
+Mariani	58,59
+Maresca	47,37
+Abisso	51,05
+Sacchi	60,08
+Sozza	53,17
+Feliciani	55,29
+Di Bello	50,20
+Massa	58,14
+Manganiello	61,36
+Colombo	55,18
+Pairetto	57,35
+Chiffi	63,43
+Doveri	45,42
+Collu	52,54
+Marinelli	56,48
+Fourneau	54,24
+Massa	51,18
+Fabbri	47,27
+Crezzini	54,45
+Maresca	44,14
+La Penna	57,18
+Piccinini	55,15
+Marchetti	54,06
+Sozza	51,49
+Ghersini	52,40
+Pairetto	52,10
+Zufferli	51,27
+Chiffi	58,13
+Ayroldi	47,39
+Rapuano	55,00
+Marinelli	58,32
+Doveri	52,42
+Piccinini	61,26
+Abisso	48,53
+Massa	60,24
+La Penna	51,44
+Monaldi	46,03
+Rutella	59,23
+Marinelli	58,43
+Doveri	43,40
+Fabbri	52,01
+Di Bello	57,30
+Marcenaro	57,55
+Colombo	49,56`
+        };
+
+        const TOTAL_TIME_DB = `
 Massa	95,47
 Ayroldi	97,20
 Collu	97,21
@@ -394,9 +958,8 @@ Guida	97,03
 Collu	98,21
 Manganiello	97,11`;
 
-        // --- DATABASE STORICO ---
         const db = {
-            "2025-26": [
+             "2025-26": [
                 { name: "Luca Zufferli", matches: 7, fouls_avg: 26.71, penalties_ap: 0.57, yellows_ap: 3.00, yellows: 21, reds_ap: 0.00, reds: 0 },
                 { name: "Giuseppe Collu", matches: 7, fouls_avg: 23.29, penalties_ap: 0.57, yellows_ap: 4.29, yellows: 30, reds_ap: 0.00, reds: 0 },
                 { name: "Marco Guida", matches: 5, fouls_avg: 26.80, penalties_ap: 1.20, yellows_ap: 5.00, yellows: 25, reds_ap: 0.00, reds: 0 },
@@ -429,182 +992,8 @@ Manganiello	97,11`;
                 { name: "Federico Dionisi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Perenzoni", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }
             ],
-            "2024-25": [
-                { name: "Davide Massa", matches: 19, fouls_avg: 25.74, penalties_ap: 0.16, yellows_ap: 4.21, yellows: 80, reds_ap: 0.26, reds: 5 },
-                { name: "Maurizio Mariani", matches: 18, fouls_avg: 25.94, penalties_ap: 0.11, yellows_ap: 3.72, yellows: 67, reds_ap: 0.17, reds: 3 },
-                { name: "Michael Fabbri", matches: 18, fouls_avg: 24.89, penalties_ap: 0.06, yellows_ap: 3.89, yellows: 70, reds_ap: 0.33, reds: 6 },
-                { name: "Daniele Doveri", matches: 18, fouls_avg: 24.11, penalties_ap: 0.22, yellows_ap: 2.50, yellows: 45, reds_ap: 0.11, reds: 2 },
-                { name: "Daniele Chiffi", matches: 17, fouls_avg: 20.29, penalties_ap: 0.29, yellows_ap: 3.71, yellows: 63, reds_ap: 0.18, reds: 3 },
-                { name: "Gianluca Manganiello", matches: 17, fouls_avg: 25.59, penalties_ap: 0.24, yellows_ap: 3.24, yellows: 55, reds_ap: 0.18, reds: 3 },
-                { name: "Livio Marinelli", matches: 17, fouls_avg: 24.18, penalties_ap: 0.29, yellows_ap: 2.88, yellows: 49, reds_ap: 0.18, reds: 3 },
-                { name: "Simone Sozza", matches: 17, fouls_avg: 24.00, penalties_ap: 0.59, yellows_ap: 3.53, yellows: 60, reds_ap: 0.06, reds: 1 },
-                { name: "Marco Piccinini", matches: 16, fouls_avg: 24.00, penalties_ap: 0.19, yellows_ap: 3.81, yellows: 61, reds_ap: 0.06, reds: 1 },
-                { name: "Andrea Colombo", matches: 16, fouls_avg: 25.19, penalties_ap: 0.13, yellows_ap: 4.13, yellows: 66, reds_ap: 0.13, reds: 2 },
-                { name: "Marco Di Bello", matches: 15, fouls_avg: 26.20, penalties_ap: 0.27, yellows_ap: 2.60, yellows: 39, reds_ap: 0.13, reds: 2 },
-                { name: "Luca Zufferli", matches: 15, fouls_avg: 22.80, penalties_ap: 0.20, yellows_ap: 2.73, yellows: 41, reds_ap: 0.20, reds: 3 },
-                { name: "Luca Pairetto", matches: 14, fouls_avg: 26.57, penalties_ap: 0.29, yellows_ap: 4.14, yellows: 58, reds_ap: 0.50, reds: 7 },
-                { name: "Federico La Penna", matches: 14, fouls_avg: 27.71, penalties_ap: 0.43, yellows_ap: 4.36, yellows: 61, reds_ap: 0.07, reds: 1 },
-                { name: "Antonio Rapuano", matches: 14, fouls_avg: 27.93, penalties_ap: 0.14, yellows_ap: 4.50, yellows: 63, reds_ap: 0.43, reds: 6 },
-                { name: "Rosario Abisso", matches: 12, fouls_avg: 24.42, penalties_ap: 0.50, yellows_ap: 3.83, yellows: 46, reds_ap: 0.17, reds: 2 },
-                { name: "Matteo Marchetti", matches: 12, fouls_avg: 26.83, penalties_ap: 0.08, yellows_ap: 4.00, yellows: 48, reds_ap: 0.25, reds: 3 },
-                { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 24.27, penalties_ap: 0.09, yellows_ap: 3.36, yellows: 37, reds_ap: 0.18, reds: 2 },
-                { name: "Francesco Fourneau", matches: 11, fouls_avg: 27.55, penalties_ap: 0.27, yellows_ap: 4.18, yellows: 46, reds_ap: 0.09, reds: 1 },
-                { name: "Giovanni Ayroldi", matches: 11, fouls_avg: 26.91, penalties_ap: 0.36, yellows_ap: 5.73, yellows: 63, reds_ap: 0.55, reds: 6 },
-                { name: "Ermanno Feliciani", matches: 10, fouls_avg: 22.90, penalties_ap: 0.40, yellows_ap: 2.50, yellows: 25, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Guida", matches: 8, fouls_avg: 22.63, penalties_ap: 0.25, yellows_ap: 3.88, yellows: 31, reds_ap: 0.25, reds: 2 },
-                { name: "Matteo Marcenaro", matches: 8, fouls_avg: 22.88, penalties_ap: 0.50, yellows_ap: 5.00, yellows: 40, reds_ap: 0.38, reds: 3 },
-                { name: "Fabio Maresca", matches: 7, fouls_avg: 25.43, penalties_ap: 0.29, yellows_ap: 4.43, yellows: 31, reds_ap: 0.14, reds: 1 },
-                { name: "Giuseppe Collu", matches: 7, fouls_avg: 28.29, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 28, reds_ap: 0.00, reds: 0 },
-                { name: "Antonio Giua", matches: 5, fouls_avg: 22.20, penalties_ap: 0.60, yellows_ap: 3.60, yellows: 18, reds_ap: 0.20, reds: 1 },
-                { name: "Paride Tremolada", matches: 5, fouls_avg: 24.20, penalties_ap: 0.60, yellows_ap: 4.20, yellows: 21, reds_ap: 0.40, reds: 2 },
-                { name: "Gianluca Aureliano", matches: 4, fouls_avg: 22.50, penalties_ap: 0.25, yellows_ap: 2.75, yellows: 11, reds_ap: 0.25, reds: 1 },
-                { name: "Federico Dionisi", matches: 4, fouls_avg: 28.50, penalties_ap: 0.25, yellows_ap: 4.25, yellows: 17, reds_ap: 0.25, reds: 1 },
-                { name: "Kevin Bonacina", matches: 4, fouls_avg: 24.25, penalties_ap: 0.50, yellows_ap: 3.00, yellows: 12, reds_ap: 0.50, reds: 2 },
-                { name: "Luca Massimi", matches: 2, fouls_avg: 31.50, penalties_ap: 1.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.50, reds: 1 },
-                { name: "Francesco Cosso", matches: 2, fouls_avg: 24.00, penalties_ap: 0.50, yellows_ap: 2.50, yellows: 5, reds_ap: 1.00, reds: 2 },
-                { name: "Daniele Perenzoni", matches: 2, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.50, reds: 1 },
-                { name: "Maria Ferrieri Caputi", matches: 2, fouls_avg: 32.00, penalties_ap: 1.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Davide Di Marco", matches: 2, fouls_avg: 22.50, penalties_ap: 1.50, yellows_ap: 2.00, yellows: 4, reds_ap: 0.50, reds: 1 },
-                { name: "Davide Ghersini", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 0.00, yellows: 0, reds_ap: 0.00, reds: 0 },
-                { name: "Alessandro Prontera", matches: 1, fouls_avg: 25.00, penalties_ap: 1.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Rutella", matches: 1, fouls_avg: 17.00, penalties_ap: 0.00, yellows_ap: 1.00, yellows: 1, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Monaldi", matches: 1, fouls_avg: 36.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Valerio Crezzini", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 5, reds_ap: 0.00, reds: 0 }
-            ],
-            "2023-24": [
-                { name: "Marco Guida", matches: 17, fouls_avg: 23.59, penalties_ap: 0.47, yellows_ap: 4.00, yellows: 68, reds_ap: 0.06, reds: 1 },
-                { name: "Daniele Doveri", matches: 17, fouls_avg: 24.47, penalties_ap: 0.18, yellows_ap: 3.24, yellows: 55, reds_ap: 0.35, reds: 6 },
-                { name: "Daniele Orsato", matches: 16, fouls_avg: 23.38, penalties_ap: 0.31, yellows_ap: 4.69, yellows: 75, reds_ap: 0.19, reds: 3 },
-                { name: "Davide Massa", matches: 16, fouls_avg: 26.06, penalties_ap: 0.31, yellows_ap: 5.06, yellows: 81, reds_ap: 0.00, reds: 0 },
-                { name: "Fabio Maresca", matches: 16, fouls_avg: 25.50, penalties_ap: 0.25, yellows_ap: 5.69, yellows: 91, reds_ap: 0.06, reds: 1 },
-                { name: "Andrea Colombo", matches: 16, fouls_avg: 24.19, penalties_ap: 0.19, yellows_ap: 5.38, yellows: 86, reds_ap: 0.38, reds: 6 },
-                { name: "Maurizio Mariani", matches: 15, fouls_avg: 23.80, penalties_ap: 0.33, yellows_ap: 3.80, yellows: 57, reds_ap: 0.27, reds: 4 },
-                { name: "Federico La Penna", matches: 15, fouls_avg: 24.07, penalties_ap: 0.40, yellows_ap: 4.60, yellows: 69, reds_ap: 0.13, reds: 2 },
-                { name: "Juan Luca Sacchi", matches: 15, fouls_avg: 25.60, penalties_ap: 0.40, yellows_ap: 4.40, yellows: 66, reds_ap: 0.07, reds: 1 },
-                { name: "Antonio Rapuano", matches: 15, fouls_avg: 25.40, penalties_ap: 0.40, yellows_ap: 3.93, yellows: 59, reds_ap: 0.27, reds: 4 },
-                { name: "Luca Pairetto", matches: 14, fouls_avg: 23.36, penalties_ap: 0.50, yellows_ap: 4.14, yellows: 58, reds_ap: 0.00, reds: 0 },
-                { name: "Michael Fabbri", matches: 13, fouls_avg: 24.31, penalties_ap: 0.31, yellows_ap: 3.23, yellows: 42, reds_ap: 0.15, reds: 2 },
-                { name: "Ermanno Feliciani", matches: 13, fouls_avg: 22.38, penalties_ap: 0.23, yellows_ap: 3.08, yellows: 40, reds_ap: 0.08, reds: 1 },
-                { name: "Gianluca Aureliano", matches: 12, fouls_avg: 25.50, penalties_ap: 0.50, yellows_ap: 4.25, yellows: 51, reds_ap: 0.17, reds: 2 },
-                { name: "Gianluca Manganiello", matches: 12, fouls_avg: 22.33, penalties_ap: 0.25, yellows_ap: 3.67, yellows: 44, reds_ap: 0.25, reds: 3 },
-                { name: "Marco Piccinini", matches: 12, fouls_avg: 23.17, penalties_ap: 0.50, yellows_ap: 3.83, yellows: 46, reds_ap: 0.17, reds: 2 },
-                { name: "Matteo Marcenaro", matches: 12, fouls_avg: 22.58, penalties_ap: 0.33, yellows_ap: 4.83, yellows: 58, reds_ap: 0.25, reds: 3 },
-                { name: "Marco Di Bello", matches: 11, fouls_avg: 23.18, penalties_ap: 0.45, yellows_ap: 4.18, yellows: 46, reds_ap: 0.45, reds: 5 },
-                { name: "Antonio Giua", matches: 11, fouls_avg: 23.00, penalties_ap: 0.27, yellows_ap: 3.64, yellows: 40, reds_ap: 0.27, reds: 3 },
-                { name: "Simone Sozza", matches: 11, fouls_avg: 26.36, penalties_ap: 0.82, yellows_ap: 4.36, yellows: 48, reds_ap: 0.18, reds: 2 },
-                { name: "Matteo Marchetti", matches: 11, fouls_avg: 23.27, penalties_ap: 0.18, yellows_ap: 3.00, yellows: 33, reds_ap: 0.09, reds: 1 },
-                { name: "Daniele Chiffi", matches: 9, fouls_avg: 22.22, penalties_ap: 0.11, yellows_ap: 4.00, yellows: 36, reds_ap: 0.11, reds: 1 },
-                { name: "Alessandro Prontera", matches: 9, fouls_avg: 22.22, penalties_ap: 0.67, yellows_ap: 3.78, yellows: 34, reds_ap: 0.00, reds: 0 },
-                { name: "Federico Dionisi", matches: 9, fouls_avg: 27.89, penalties_ap: 0.11, yellows_ap: 3.22, yellows: 29, reds_ap: 0.11, reds: 1 },
-                { name: "Livio Marinelli", matches: 8, fouls_avg: 24.38, penalties_ap: 0.25, yellows_ap: 4.50, yellows: 36, reds_ap: 0.50, reds: 4 },
-                { name: "Luca Massimi", matches: 8, fouls_avg: 25.13, penalties_ap: 0.25, yellows_ap: 3.75, yellows: 30, reds_ap: 0.13, reds: 1 },
-                { name: "Giovanni Ayroldi", matches: 8, fouls_avg: 26.13, penalties_ap: 0.38, yellows_ap: 5.25, yellows: 42, reds_ap: 0.38, reds: 3 },
-                { name: "Maria Ferrieri Caputi", matches: 8, fouls_avg: 23.13, penalties_ap: 0.38, yellows_ap: 4.13, yellows: 33, reds_ap: 0.38, reds: 3 },
-                { name: "Rosario Abisso", matches: 7, fouls_avg: 23.86, penalties_ap: 0.43, yellows_ap: 5.29, yellows: 37, reds_ap: 0.14, reds: 1 },
-                { name: "Luca Zufferli", matches: 6, fouls_avg: 22.00, penalties_ap: 0.17, yellows_ap: 2.50, yellows: 15, reds_ap: 0.00, reds: 0 },
-                { name: "Francesco Fourneau", matches: 5, fouls_avg: 21.80, penalties_ap: 0.40, yellows_ap: 3.60, yellows: 18, reds_ap: 0.20, reds: 1 },
-                { name: "Alberto Santoro", matches: 3, fouls_avg: 26.67, penalties_ap: 0.33, yellows_ap: 5.00, yellows: 15, reds_ap: 0.00, reds: 0 },
-                { name: "Paride Tremolada", matches: 3, fouls_avg: 25.67, penalties_ap: 0.67, yellows_ap: 4.33, yellows: 13, reds_ap: 0.00, reds: 0 },
-                { name: "Giuseppe Collu", matches: 2, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 6, reds_ap: 0.00, reds: 0 },
-                { name: "Davide Di Marco", matches: 2, fouls_avg: 21.00, penalties_ap: 0.50, yellows_ap: 2.00, yellows: 4, reds_ap: 0.00, reds: 0 },
-                { name: "Davide Ghersini", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
-                { name: "Ivano Pezzuto", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 1.00, reds: 1 },
-                { name: "Francesco Cosso", matches: 1, fouls_avg: 20.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 }
-            ],
-            "2022-23": [
-                { name: "Daniele Orsato", matches: 15, fouls_avg: 21.40, penalties_ap: 0.07, yellows_ap: 3.00, yellows: 45, reds_ap: 0.07, reds: 1 },
-                { name: "Fabio Maresca", matches: 15, fouls_avg: 25.60, penalties_ap: 0.27, yellows_ap: 5.33, yellows: 80, reds_ap: 0.20, reds: 3 },
-                { name: "Daniele Chiffi", matches: 15, fouls_avg: 23.47, penalties_ap: 0.13, yellows_ap: 4.47, yellows: 67, reds_ap: 0.20, reds: 3 },
-                { name: "Maurizio Mariani", matches: 14, fouls_avg: 24.07, penalties_ap: 0.21, yellows_ap: 4.50, yellows: 63, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Doveri", matches: 14, fouls_avg: 25.43, penalties_ap: 0.36, yellows_ap: 3.50, yellows: 49, reds_ap: 0.21, reds: 3 },
-                { name: "Davide Massa", matches: 14, fouls_avg: 27.64, penalties_ap: 0.07, yellows_ap: 6.21, yellows: 87, reds_ap: 0.29, reds: 4 },
-                { name: "Antonio Rapuano", matches: 14, fouls_avg: 22.43, penalties_ap: 0.29, yellows_ap: 4.50, yellows: 63, reds_ap: 0.21, reds: 3 },
-                { name: "Livio Marinelli", matches: 14, fouls_avg: 24.07, penalties_ap: 0.64, yellows_ap: 3.36, yellows: 47, reds_ap: 0.21, reds: 3 },
-                { name: "Michael Fabbri", matches: 12, fouls_avg: 23.17, penalties_ap: 0.25, yellows_ap: 4.75, yellows: 57, reds_ap: 0.33, reds: 4 },
-                { name: "Luca Pairetto", matches: 12, fouls_avg: 26.08, penalties_ap: 0.42, yellows_ap: 4.42, yellows: 53, reds_ap: 0.17, reds: 2 },
-                { name: "Giovanni Ayroldi", matches: 12, fouls_avg: 27.50, penalties_ap: 0.25, yellows_ap: 5.25, yellows: 63, reds_ap: 0.08, reds: 1 },
-                { name: "Andrea Colombo", matches: 12, fouls_avg: 22.83, penalties_ap: 0.17, yellows_ap: 4.75, yellows: 57, reds_ap: 0.00, reds: 0 },
-                { name: "Matteo Marcenaro", matches: 12, fouls_avg: 23.42, penalties_ap: 0.25, yellows_ap: 4.83, yellows: 58, reds_ap: 0.50, reds: 6 },
-                { name: "Marco Di Bello", matches: 11, fouls_avg: 28.55, penalties_ap: 0.55, yellows_ap: 5.00, yellows: 55, reds_ap: 0.18, reds: 2 },
-                { name: "Antonio Giua", matches: 11, fouls_avg: 23.64, penalties_ap: 0.55, yellows_ap: 5.18, yellows: 57, reds_ap: 0.36, reds: 4 },
-                { name: "Simone Sozza", matches: 11, fouls_avg: 26.09, penalties_ap: 0.27, yellows_ap: 5.00, yellows: 55, reds_ap: 0.00, reds: 0 },
-                { name: "Matteo Marchetti", matches: 11, fouls_avg: 27.45, penalties_ap: 0.64, yellows_ap: 4.09, yellows: 45, reds_ap: 0.27, reds: 3 },
-                { name: "Massimiliano Irrati", matches: 10, fouls_avg: 23.70, penalties_ap: 0.40, yellows_ap: 5.10, yellows: 51, reds_ap: 0.20, reds: 2 },
-                { name: "Rosario Abisso", matches: 10, fouls_avg: 24.60, penalties_ap: 0.50, yellows_ap: 3.90, yellows: 39, reds_ap: 0.30, reds: 3 },
-                { name: "Francesco Fourneau", matches: 10, fouls_avg: 24.20, penalties_ap: 0.20, yellows_ap: 4.70, yellows: 47, reds_ap: 0.00, reds: 0 },
-                { name: "Luca Massimi", matches: 10, fouls_avg: 22.70, penalties_ap: 0.20, yellows_ap: 4.10, yellows: 41, reds_ap: 0.40, reds: 4 },
-                { name: "Juan Luca Sacchi", matches: 9, fouls_avg: 25.00, penalties_ap: 0.22, yellows_ap: 3.22, yellows: 29, reds_ap: 0.22, reds: 2 },
-                { name: "Marco Piccinini", matches: 9, fouls_avg: 25.33, penalties_ap: 0.11, yellows_ap: 4.44, yellows: 40, reds_ap: 0.00, reds: 0 },
-                { name: "Federico Dionisi", matches: 9, fouls_avg: 28.11, penalties_ap: 0.22, yellows_ap: 4.56, yellows: 41, reds_ap: 0.11, reds: 1 },
-                { name: "Gianluca Aureliano", matches: 8, fouls_avg: 24.25, penalties_ap: 0.38, yellows_ap: 3.13, yellows: 25, reds_ap: 0.13, reds: 1 },
-                { name: "Paolo Valeri", matches: 7, fouls_avg: 26.86, penalties_ap: 0.43, yellows_ap: 4.57, yellows: 32, reds_ap: 0.14, reds: 1 },
-                { name: "Davide Ghersini", matches: 7, fouls_avg: 23.00, penalties_ap: 0.43, yellows_ap: 4.14, yellows: 29, reds_ap: 0.29, reds: 2 },
-                { name: "Federico La Penna", matches: 7, fouls_avg: 25.14, penalties_ap: 0.14, yellows_ap: 3.86, yellows: 27, reds_ap: 0.00, reds: 0 },
-                { name: "Alessandro Prontera", matches: 7, fouls_avg: 26.29, penalties_ap: 0.29, yellows_ap: 4.43, yellows: 31, reds_ap: 0.14, reds: 1 },
-                { name: "Alberto Santoro", matches: 7, fouls_avg: 24.00, penalties_ap: 0.29, yellows_ap: 4.86, yellows: 34, reds_ap: 0.14, reds: 1 },
-                { name: "Gianluca Manganiello", matches: 6, fouls_avg: 21.17, penalties_ap: 0.33, yellows_ap: 3.50, yellows: 21, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Guida", matches: 5, fouls_avg: 23.20, penalties_ap: 0.20, yellows_ap: 4.00, yellows: 20, reds_ap: 0.00, reds: 0 },
-                { name: "Ivano Pezzuto", matches: 5, fouls_avg: 23.80, penalties_ap: 0.20, yellows_ap: 4.00, yellows: 20, reds_ap: 0.00, reds: 0 },
-                { name: "Francesco Cosso", matches: 5, fouls_avg: 22.20, penalties_ap: 0.20, yellows_ap: 3.40, yellows: 17, reds_ap: 0.40, reds: 2 },
-                { name: "Ermanno Feliciani", matches: 5, fouls_avg: 22.40, penalties_ap: 0.20, yellows_ap: 3.80, yellows: 19, reds_ap: 0.00, reds: 0 },
-                { name: "Niccolò Baroni", matches: 4, fouls_avg: 26.25, penalties_ap: 0.00, yellows_ap: 4.25, yellows: 17, reds_ap: 0.25, reds: 1 },
-                { name: "Manuel Volpi", matches: 4, fouls_avg: 26.75, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 16, reds_ap: 0.00, reds: 0 },
-                { name: "Giacomo Camplone", matches: 4, fouls_avg: 23.75, penalties_ap: 0.25, yellows_ap: 3.50, yellows: 14, reds_ap: 0.50, reds: 2 },
-                { name: "Luca Zufferli", matches: 3, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 9, reds_ap: 0.00, reds: 0 },
-                { name: "Maria Ferrieri Caputi", matches: 3, fouls_avg: 23.67, penalties_ap: 0.33, yellows_ap: 2.33, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Serra", matches: 2, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.50, reds: 1 },
-                { name: "Daniele Perenzoni", matches: 2, fouls_avg: 28.50, penalties_ap: 0.50, yellows_ap: 4.00, yellows: 8, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Minelli", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Paterna", matches: 1, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 2.00, reds: 2 },
-                { name: "Francesco Meraviglia", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }
-            ],
-            "2021-22": [
-                { name: "Daniele Doveri", matches: 17, fouls_avg: 26.82, penalties_ap: 0.35, yellows_ap: 3.47, yellows: 59, reds_ap: 0.18, reds: 3 },
-                { name: "Marco Di Bello", matches: 17, fouls_avg: 27.18, penalties_ap: 0.47, yellows_ap: 4.29, yellows: 73, reds_ap: 0.24, reds: 4 },
-                { name: "Fabio Maresca", matches: 16, fouls_avg: 24.75, penalties_ap: 0.38, yellows_ap: 4.50, yellows: 72, reds_ap: 0.31, reds: 5 },
-                { name: "Daniele Chiffi", matches: 16, fouls_avg: 24.88, penalties_ap: 0.31, yellows_ap: 3.63, yellows: 58, reds_ap: 0.19, reds: 3 },
-                { name: "Daniele Orsato", matches: 15, fouls_avg: 28.00, penalties_ap: 0.27, yellows_ap: 5.87, yellows: 88, reds_ap: 0.13, reds: 2 },
-                { name: "Maurizio Mariani", matches: 14, fouls_avg: 28.79, penalties_ap: 0.21, yellows_ap: 4.86, yellows: 68, reds_ap: 0.36, reds: 5 },
-                { name: "Marco Guida", matches: 14, fouls_avg: 27.14, penalties_ap: 0.29, yellows_ap: 4.79, yellows: 67, reds_ap: 0.21, reds: 3 },
-                { name: "Davide Massa", matches: 14, fouls_avg: 26.29, penalties_ap: 0.14, yellows_ap: 4.21, yellows: 59, reds_ap: 0.36, reds: 5 },
-                { name: "Livio Marinelli", matches: 14, fouls_avg: 21.86, penalties_ap: 0.29, yellows_ap: 3.93, yellows: 55, reds_ap: 0.00, reds: 0 },
-                { name: "Simone Sozza", matches: 14, fouls_avg: 26.43, penalties_ap: 0.29, yellows_ap: 4.36, yellows: 61, reds_ap: 0.21, reds: 3 },
-                { name: "Rosario Abisso", matches: 13, fouls_avg: 25.92, penalties_ap: 0.46, yellows_ap: 4.69, yellows: 61, reds_ap: 0.31, reds: 4 },
-                { name: "Paolo Valeri", matches: 12, fouls_avg: 30.25, penalties_ap: 0.42, yellows_ap: 5.00, yellows: 60, reds_ap: 0.17, reds: 2 },
-                { name: "Michael Fabbri", matches: 12, fouls_avg: 23.67, penalties_ap: 0.17, yellows_ap: 3.67, yellows: 44, reds_ap: 0.50, reds: 6 },
-                { name: "Luca Pairetto", matches: 12, fouls_avg: 26.58, penalties_ap: 0.92, yellows_ap: 4.33, yellows: 52, reds_ap: 0.25, reds: 3 },
-                { name: "Gianluca Manganiello", matches: 12, fouls_avg: 24.08, penalties_ap: 0.17, yellows_ap: 3.50, yellows: 42, reds_ap: 0.17, reds: 2 },
-                { name: "Massimiliano Irrati", matches: 11, fouls_avg: 27.00, penalties_ap: 0.64, yellows_ap: 5.64, yellows: 62, reds_ap: 0.27, reds: 3 },
-                { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 25.55, penalties_ap: 0.09, yellows_ap: 3.45, yellows: 38, reds_ap: 0.27, reds: 3 },
-                { name: "Francesco Fourneau", matches: 11, fouls_avg: 27.45, penalties_ap: 0.36, yellows_ap: 4.73, yellows: 52, reds_ap: 0.27, reds: 3 },
-                { name: "Luca Massimi", matches: 11, fouls_avg: 29.27, penalties_ap: 0.18, yellows_ap: 4.27, yellows: 47, reds_ap: 0.27, reds: 3 },
-                { name: "Giovanni Ayroldi", matches: 11, fouls_avg: 29.82, penalties_ap: 0.18, yellows_ap: 5.36, yellows: 59, reds_ap: 0.18, reds: 2 },
-                { name: "Alessandro Prontera", matches: 10, fouls_avg: 26.70, penalties_ap: 0.50, yellows_ap: 4.70, yellows: 47, reds_ap: 0.40, reds: 4 },
-                { name: "Antonio Rapuano", matches: 9, fouls_avg: 26.22, penalties_ap: 0.44, yellows_ap: 4.11, yellows: 37, reds_ap: 0.56, reds: 5 },
-                { name: "Davide Ghersini", matches: 8, fouls_avg: 21.38, penalties_ap: 0.63, yellows_ap: 3.25, yellows: 26, reds_ap: 0.13, reds: 1 },
-                { name: "Gianluca Aureliano", matches: 8, fouls_avg: 29.63, penalties_ap: 0.75, yellows_ap: 5.13, yellows: 41, reds_ap: 0.25, reds: 2 },
-                { name: "Marco Piccinini", matches: 8, fouls_avg: 26.00, penalties_ap: 0.38, yellows_ap: 4.25, yellows: 34, reds_ap: 0.50, reds: 4 },
-                { name: "Matteo Marchetti", matches: 8, fouls_avg: 26.13, penalties_ap: 0.50, yellows_ap: 4.50, yellows: 36, reds_ap: 0.00, reds: 0 },
-                { name: "Ivano Pezzuto", matches: 7, fouls_avg: 31.14, penalties_ap: 0.14, yellows_ap: 4.86, yellows: 34, reds_ap: 0.00, reds: 0 },
-                { name: "Federico Dionisi", matches: 7, fouls_avg: 26.86, penalties_ap: 0.43, yellows_ap: 3.57, yellows: 25, reds_ap: 0.43, reds: 3 },
-                { name: "Antonio Giua", matches: 6, fouls_avg: 25.67, penalties_ap: 0.50, yellows_ap: 5.33, yellows: 32, reds_ap: 0.17, reds: 1 },
-                { name: "Manuel Volpi", matches: 6, fouls_avg: 31.17, penalties_ap: 0.50, yellows_ap: 6.17, yellows: 37, reds_ap: 0.33, reds: 2 },
-                { name: "Piero Giacomelli", matches: 5, fouls_avg: 29.60, penalties_ap: 0.40, yellows_ap: 4.60, yellows: 23, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Serra", matches: 5, fouls_avg: 24.80, penalties_ap: 1.00, yellows_ap: 5.20, yellows: 26, reds_ap: 0.20, reds: 1 },
-                { name: "Lorenzo Maggioni", matches: 4, fouls_avg: 29.00, penalties_ap: 0.50, yellows_ap: 5.00, yellows: 20, reds_ap: 0.25, reds: 1 },
-                { name: "Giacomo Camplone", matches: 3, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 3.67, yellows: 11, reds_ap: 0.67, reds: 2 },
-                { name: "Andrea Colombo", matches: 3, fouls_avg: 25.33, penalties_ap: 0.00, yellows_ap: 5.33, yellows: 16, reds_ap: 0.33, reds: 1 },
-                { name: "Matteo Marcenaro", matches: 3, fouls_avg: 28.33, penalties_ap: 0.33, yellows_ap: 4.67, yellows: 14, reds_ap: 0.00, reds: 0 },
-                { name: "Valerio Marini", matches: 2, fouls_avg: 28.50, penalties_ap: 1.50, yellows_ap: 5.50, yellows: 11, reds_ap: 0.00, reds: 0 },
-                { name: "Alberto Santoro", matches: 2, fouls_avg: 25.50, penalties_ap: 0.00, yellows_ap: 2.50, yellows: 5, reds_ap: 0.00, reds: 0 },
-                { name: "Matteo Gariglio", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.00, reds: 0 },
-                { name: "Francesco Cosso", matches: 2, fouls_avg: 25.00, penalties_ap: 1.00, yellows_ap: 5.00, yellows: 10, reds_ap: 1.00, reds: 2 },
-                { name: "Antonio Di Martino", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
-                { name: "Niccolò Baroni", matches: 1, fouls_avg: 23.00, penalties_ap: 2.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Paterna", matches: 1, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Francesco Meraviglia", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Gianpiero Miele", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 }
-            ]
+            // ... altri anni (dati invariati)
+            "2024-25": [ { name: "Davide Massa", matches: 19, fouls_avg: 25.74, penalties_ap: 0.16, yellows_ap: 4.21, yellows: 80, reds_ap: 0.26, reds: 5 }, { name: "Maurizio Mariani", matches: 18, fouls_avg: 25.94, penalties_ap: 0.11, yellows_ap: 3.72, yellows: 67, reds_ap: 0.17, reds: 3 }, { name: "Michael Fabbri", matches: 18, fouls_avg: 24.89, penalties_ap: 0.06, yellows_ap: 3.89, yellows: 70, reds_ap: 0.33, reds: 6 }, { name: "Daniele Doveri", matches: 18, fouls_avg: 24.11, penalties_ap: 0.22, yellows_ap: 2.50, yellows: 45, reds_ap: 0.11, reds: 2 }, { name: "Daniele Chiffi", matches: 17, fouls_avg: 20.29, penalties_ap: 0.29, yellows_ap: 3.71, yellows: 63, reds_ap: 0.18, reds: 3 }, { name: "Gianluca Manganiello", matches: 17, fouls_avg: 25.59, penalties_ap: 0.24, yellows_ap: 3.24, yellows: 55, reds_ap: 0.18, reds: 3 }, { name: "Livio Marinelli", matches: 17, fouls_avg: 24.18, penalties_ap: 0.29, yellows_ap: 2.88, yellows: 49, reds_ap: 0.18, reds: 3 }, { name: "Simone Sozza", matches: 17, fouls_avg: 24.00, penalties_ap: 0.59, yellows_ap: 3.53, yellows: 60, reds_ap: 0.06, reds: 1 }, { name: "Marco Piccinini", matches: 16, fouls_avg: 24.00, penalties_ap: 0.19, yellows_ap: 3.81, yellows: 61, reds_ap: 0.06, reds: 1 }, { name: "Andrea Colombo", matches: 16, fouls_avg: 25.19, penalties_ap: 0.13, yellows_ap: 4.13, yellows: 66, reds_ap: 0.13, reds: 2 }, { name: "Marco Di Bello", matches: 15, fouls_avg: 26.20, penalties_ap: 0.27, yellows_ap: 2.60, yellows: 39, reds_ap: 0.13, reds: 2 }, { name: "Luca Zufferli", matches: 15, fouls_avg: 22.80, penalties_ap: 0.20, yellows_ap: 2.73, yellows: 41, reds_ap: 0.20, reds: 3 }, { name: "Luca Pairetto", matches: 14, fouls_avg: 26.57, penalties_ap: 0.29, yellows_ap: 4.14, yellows: 58, reds_ap: 0.50, reds: 7 }, { name: "Federico La Penna", matches: 14, fouls_avg: 27.71, penalties_ap: 0.43, yellows_ap: 4.36, yellows: 61, reds_ap: 0.07, reds: 1 }, { name: "Antonio Rapuano", matches: 14, fouls_avg: 27.93, penalties_ap: 0.14, yellows_ap: 4.50, yellows: 63, reds_ap: 0.43, reds: 6 }, { name: "Rosario Abisso", matches: 12, fouls_avg: 24.42, penalties_ap: 0.50, yellows_ap: 3.83, yellows: 46, reds_ap: 0.17, reds: 2 }, { name: "Matteo Marchetti", matches: 12, fouls_avg: 26.83, penalties_ap: 0.08, yellows_ap: 4.00, yellows: 48, reds_ap: 0.25, reds: 3 }, { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 24.27, penalties_ap: 0.09, yellows_ap: 3.36, yellows: 37, reds_ap: 0.18, reds: 2 }, { name: "Francesco Fourneau", matches: 11, fouls_avg: 27.55, penalties_ap: 0.27, yellows_ap: 4.18, yellows: 46, reds_ap: 0.09, reds: 1 }, { name: "Giovanni Ayroldi", matches: 11, fouls_avg: 26.91, penalties_ap: 0.36, yellows_ap: 5.73, yellows: 63, reds_ap: 0.55, reds: 6 }, { name: "Ermanno Feliciani", matches: 10, fouls_avg: 22.90, penalties_ap: 0.40, yellows_ap: 2.50, yellows: 25, reds_ap: 0.00, reds: 0 }, { name: "Marco Guida", matches: 8, fouls_avg: 22.63, penalties_ap: 0.25, yellows_ap: 3.88, yellows: 31, reds_ap: 0.25, reds: 2 }, { name: "Matteo Marcenaro", matches: 8, fouls_avg: 22.88, penalties_ap: 0.50, yellows_ap: 5.00, yellows: 40, reds_ap: 0.38, reds: 3 }, { name: "Fabio Maresca", matches: 7, fouls_avg: 25.43, penalties_ap: 0.29, yellows_ap: 4.43, yellows: 31, reds_ap: 0.14, reds: 1 }, { name: "Giuseppe Collu", matches: 7, fouls_avg: 28.29, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 28, reds_ap: 0.00, reds: 0 }, { name: "Antonio Giua", matches: 5, fouls_avg: 22.20, penalties_ap: 0.60, yellows_ap: 3.60, yellows: 18, reds_ap: 0.20, reds: 1 }, { name: "Paride Tremolada", matches: 5, fouls_avg: 24.20, penalties_ap: 0.60, yellows_ap: 4.20, yellows: 21, reds_ap: 0.40, reds: 2 }, { name: "Gianluca Aureliano", matches: 4, fouls_avg: 22.50, penalties_ap: 0.25, yellows_ap: 2.75, yellows: 11, reds_ap: 0.25, reds: 1 }, { name: "Federico Dionisi", matches: 4, fouls_avg: 28.50, penalties_ap: 0.25, yellows_ap: 4.25, yellows: 17, reds_ap: 0.25, reds: 1 }, { name: "Kevin Bonacina", matches: 4, fouls_avg: 24.25, penalties_ap: 0.50, yellows_ap: 3.00, yellows: 12, reds_ap: 0.50, reds: 2 }, { name: "Luca Massimi", matches: 2, fouls_avg: 31.50, penalties_ap: 1.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.50, reds: 1 }, { name: "Francesco Cosso", matches: 2, fouls_avg: 24.00, penalties_ap: 0.50, yellows_ap: 2.50, yellows: 5, reds_ap: 1.00, reds: 2 }, { name: "Daniele Perenzoni", matches: 2, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.50, reds: 1 }, { name: "Maria Ferrieri Caputi", matches: 2, fouls_avg: 32.00, penalties_ap: 1.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Davide Di Marco", matches: 2, fouls_avg: 22.50, penalties_ap: 1.50, yellows_ap: 2.00, yellows: 4, reds_ap: 0.50, reds: 1 }, { name: "Davide Ghersini", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 0.00, yellows: 0, reds_ap: 0.00, reds: 0 }, { name: "Alessandro Prontera", matches: 1, fouls_avg: 25.00, penalties_ap: 1.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }, { name: "Daniele Rutella", matches: 1, fouls_avg: 17.00, penalties_ap: 0.00, yellows_ap: 1.00, yellows: 1, reds_ap: 0.00, reds: 0 }, { name: "Marco Monaldi", matches: 1, fouls_avg: 36.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Valerio Crezzini", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 5, reds_ap: 0.00, reds: 0 } ], "2023-24": [ { name: "Marco Guida", matches: 17, fouls_avg: 23.59, penalties_ap: 0.47, yellows_ap: 4.00, yellows: 68, reds_ap: 0.06, reds: 1 }, { name: "Daniele Doveri", matches: 17, fouls_avg: 24.47, penalties_ap: 0.18, yellows_ap: 3.24, yellows: 55, reds_ap: 0.35, reds: 6 }, { name: "Daniele Orsato", matches: 16, fouls_avg: 23.38, penalties_ap: 0.31, yellows_ap: 4.69, yellows: 75, reds_ap: 0.19, reds: 3 }, { name: "Davide Massa", matches: 16, fouls_avg: 26.06, penalties_ap: 0.31, yellows_ap: 5.06, yellows: 81, reds_ap: 0.00, reds: 0 }, { name: "Fabio Maresca", matches: 16, fouls_avg: 25.50, penalties_ap: 0.25, yellows_ap: 5.69, yellows: 91, reds_ap: 0.06, reds: 1 }, { name: "Andrea Colombo", matches: 16, fouls_avg: 24.19, penalties_ap: 0.19, yellows_ap: 5.38, yellows: 86, reds_ap: 0.38, reds: 6 }, { name: "Maurizio Mariani", matches: 15, fouls_avg: 23.80, penalties_ap: 0.33, yellows_ap: 3.80, yellows: 57, reds_ap: 0.27, reds: 4 }, { name: "Federico La Penna", matches: 15, fouls_avg: 24.07, penalties_ap: 0.40, yellows_ap: 4.60, yellows: 69, reds_ap: 0.13, reds: 2 }, { name: "Juan Luca Sacchi", matches: 15, fouls_avg: 25.60, penalties_ap: 0.40, yellows_ap: 4.40, yellows: 66, reds_ap: 0.07, reds: 1 }, { name: "Antonio Rapuano", matches: 15, fouls_avg: 25.40, penalties_ap: 0.40, yellows_ap: 3.93, yellows: 59, reds_ap: 0.27, reds: 4 }, { name: "Luca Pairetto", matches: 14, fouls_avg: 23.36, penalties_ap: 0.50, yellows_ap: 4.14, yellows: 58, reds_ap: 0.00, reds: 0 }, { name: "Michael Fabbri", matches: 13, fouls_avg: 24.31, penalties_ap: 0.31, yellows_ap: 3.23, yellows: 42, reds_ap: 0.15, reds: 2 }, { name: "Ermanno Feliciani", matches: 13, fouls_avg: 22.38, penalties_ap: 0.23, yellows_ap: 3.08, yellows: 40, reds_ap: 0.08, reds: 1 }, { name: "Gianluca Aureliano", matches: 12, fouls_avg: 25.50, penalties_ap: 0.50, yellows_ap: 4.25, yellows: 51, reds_ap: 0.17, reds: 2 }, { name: "Gianluca Manganiello", matches: 12, fouls_avg: 22.33, penalties_ap: 0.25, yellows_ap: 3.67, yellows: 44, reds_ap: 0.25, reds: 3 }, { name: "Marco Piccinini", matches: 12, fouls_avg: 23.17, penalties_ap: 0.50, yellows_ap: 3.83, yellows: 46, reds_ap: 0.17, reds: 2 }, { name: "Matteo Marcenaro", matches: 12, fouls_avg: 22.58, penalties_ap: 0.33, yellows_ap: 4.83, yellows: 58, reds_ap: 0.25, reds: 3 }, { name: "Marco Di Bello", matches: 11, fouls_avg: 23.18, penalties_ap: 0.45, yellows_ap: 4.18, yellows: 46, reds_ap: 0.45, reds: 5 }, { name: "Antonio Giua", matches: 11, fouls_avg: 23.00, penalties_ap: 0.27, yellows_ap: 3.64, yellows: 40, reds_ap: 0.27, reds: 3 }, { name: "Simone Sozza", matches: 11, fouls_avg: 26.36, penalties_ap: 0.82, yellows_ap: 4.36, yellows: 48, reds_ap: 0.18, reds: 2 }, { name: "Matteo Marchetti", matches: 11, fouls_avg: 23.27, penalties_ap: 0.18, yellows_ap: 3.00, yellows: 33, reds_ap: 0.09, reds: 1 }, { name: "Daniele Chiffi", matches: 9, fouls_avg: 22.22, penalties_ap: 0.11, yellows_ap: 4.00, yellows: 36, reds_ap: 0.11, reds: 1 }, { name: "Alessandro Prontera", matches: 9, fouls_avg: 22.22, penalties_ap: 0.67, yellows_ap: 3.78, yellows: 34, reds_ap: 0.00, reds: 0 }, { name: "Federico Dionisi", matches: 9, fouls_avg: 27.89, penalties_ap: 0.11, yellows_ap: 3.22, yellows: 29, reds_ap: 0.11, reds: 1 }, { name: "Livio Marinelli", matches: 8, fouls_avg: 24.38, penalties_ap: 0.25, yellows_ap: 4.50, yellows: 36, reds_ap: 0.50, reds: 4 }, { name: "Luca Massimi", matches: 8, fouls_avg: 25.13, penalties_ap: 0.25, yellows_ap: 3.75, yellows: 30, reds_ap: 0.13, reds: 1 }, { name: "Giovanni Ayroldi", matches: 8, fouls_avg: 26.13, penalties_ap: 0.38, yellows_ap: 5.25, yellows: 42, reds_ap: 0.38, reds: 3 }, { name: "Maria Ferrieri Caputi", matches: 8, fouls_avg: 23.13, penalties_ap: 0.38, yellows_ap: 4.13, yellows: 33, reds_ap: 0.38, reds: 3 }, { name: "Rosario Abisso", matches: 7, fouls_avg: 23.86, penalties_ap: 0.43, yellows_ap: 5.29, yellows: 37, reds_ap: 0.14, reds: 1 }, { name: "Luca Zufferli", matches: 6, fouls_avg: 22.00, penalties_ap: 0.17, yellows_ap: 2.50, yellows: 15, reds_ap: 0.00, reds: 0 }, { name: "Francesco Fourneau", matches: 5, fouls_avg: 21.80, penalties_ap: 0.40, yellows_ap: 3.60, yellows: 18, reds_ap: 0.20, reds: 1 }, { name: "Alberto Santoro", matches: 3, fouls_avg: 26.67, penalties_ap: 0.33, yellows_ap: 5.00, yellows: 15, reds_ap: 0.00, reds: 0 }, { name: "Paride Tremolada", matches: 3, fouls_avg: 25.67, penalties_ap: 0.67, yellows_ap: 4.33, yellows: 13, reds_ap: 0.00, reds: 0 }, { name: "Giuseppe Collu", matches: 2, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 6, reds_ap: 0.00, reds: 0 }, { name: "Davide Di Marco", matches: 2, fouls_avg: 21.00, penalties_ap: 0.50, yellows_ap: 2.00, yellows: 4, reds_ap: 0.00, reds: 0 }, { name: "Davide Ghersini", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }, { name: "Ivano Pezzuto", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 1.00, reds: 1 }, { name: "Francesco Cosso", matches: 1, fouls_avg: 20.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 } ], "2022-23": [ { name: "Daniele Chiffi", matches: 17, fouls_avg: 22.53, penalties_ap: 0.24, yellows_ap: 4.35, yellows: 74, reds_ap: 0.18, reds: 3 }, { name: "Daniele Doveri", matches: 16, fouls_avg: 25.06, penalties_ap: 0.19, yellows_ap: 3.88, yellows: 62, reds_ap: 0.06, reds: 1 }, { name: "Davide Massa", matches: 16, fouls_avg: 26.31, penalties_ap: 0.25, yellows_ap: 5.38, yellows: 86, reds_ap: 0.19, reds: 3 }, { name: "Fabio Maresca", matches: 16, fouls_avg: 26.44, penalties_ap: 0.19, yellows_ap: 5.31, yellows: 85, reds_ap: 0.25, reds: 4 }, { name: "Michael Fabbri", matches: 15, fouls_avg: 25.20, penalties_ap: 0.07, yellows_ap: 4.40, yellows: 66, reds_ap: 0.20, reds: 3 }, { name: "Maurizio Mariani", matches: 15, fouls_avg: 23.80, penalties_ap: 0.07, yellows_ap: 4.33, yellows: 65, reds_ap: 0.27, reds: 4 }, { name: "Daniele Orsato", matches: 15, fouls_avg: 22.07, penalties_ap: 0.07, yellows_ap: 3.60, yellows: 54, reds_ap: 0.07, reds: 1 }, { name: "Antonio Rapuano", matches: 15, fouls_avg: 25.53, penalties_ap: 0.33, yellows_ap: 4.73, yellows: 71, reds_ap: 0.40, reds: 6 }, { name: "Simone Sozza", matches: 14, fouls_avg: 24.64, penalties_ap: 0.29, yellows_ap: 4.57, yellows: 64, reds_ap: 0.07, reds: 1 }, { name: "Gianluca Manganiello", matches: 14, fouls_avg: 23.57, penalties_ap: 0.21, yellows_ap: 3.86, yellows: 54, reds_ap: 0.21, reds: 3 }, { name: "Luca Pairetto", matches: 14, fouls_avg: 25.07, penalties_ap: 0.29, yellows_ap: 4.14, yellows: 58, reds_ap: 0.29, reds: 4 }, { name: "Rosario Abisso", matches: 14, fouls_avg: 25.29, penalties_ap: 0.29, yellows_ap: 4.79, yellows: 67, reds_ap: 0.14, reds: 2 }, { name: "Giovanni Ayroldi", matches: 13, fouls_avg: 27.62, penalties_ap: 0.31, yellows_ap: 5.31, yellows: 69, reds_ap: 0.31, reds: 4 }, { name: "Andrea Colombo", matches: 12, fouls_avg: 26.00, penalties_ap: 0.08, yellows_ap: 4.83, yellows: 58, reds_ap: 0.08, reds: 1 }, { name: "Livio Marinelli", matches: 12, fouls_avg: 24.33, penalties_ap: 0.25, yellows_ap: 4.17, yellows: 50, reds_ap: 0.25, reds: 3 }, { name: "Matteo Marcenaro", matches: 12, fouls_avg: 23.75, penalties_ap: 0.33, yellows_ap: 4.75, yellows: 57, reds_ap: 0.42, reds: 5 }, { name: "Marco Di Bello", matches: 11, fouls_avg: 24.64, penalties_ap: 0.36, yellows_ap: 3.82, yellows: 42, reds_ap: 0.09, reds: 1 }, { name: "Federico Dionisi", matches: 11, fouls_avg: 24.64, penalties_ap: 0.18, yellows_ap: 4.18, yellows: 46, reds_ap: 0.09, reds: 1 }, { name: "Marco Piccinini", matches: 11, fouls_avg: 24.18, penalties_ap: 0.36, yellows_ap: 4.00, yellows: 44, reds_ap: 0.18, reds: 2 }, { name: "Antonio Giua", matches: 11, fouls_avg: 23.09, penalties_ap: 0.36, yellows_ap: 4.64, yellows: 51, reds_ap: 0.36, reds: 4 }, { name: "Luca Massimi", matches: 10, fouls_avg: 25.50, penalties_ap: 0.10, yellows_ap: 4.60, yellows: 46, reds_ap: 0.20, reds: 2 }, { name: "Matteo Marchetti", matches: 9, fouls_avg: 24.44, penalties_ap: 0.00, yellows_ap: 3.56, yellows: 32, reds_ap: 0.22, reds: 2 }, { name: "Francesco Fourneau", matches: 9, fouls_avg: 25.33, penalties_ap: 0.22, yellows_ap: 4.56, yellows: 41, reds_ap: 0.22, reds: 2 }, { name: "Marco Guida", matches: 8, fouls_avg: 23.50, penalties_ap: 0.38, yellows_ap: 4.13, yellows: 33, reds_ap: 0.13, reds: 1 }, { name: "Gianluca Aureliano", matches: 8, fouls_avg: 25.75, penalties_ap: 0.25, yellows_ap: 4.75, yellows: 38, reds_ap: 0.13, reds: 1 }, { name: "Alessandro Prontera", matches: 7, fouls_avg: 25.86, penalties_ap: 0.29, yellows_ap: 4.86, yellows: 34, reds_ap: 0.14, reds: 1 }, { name: "Francesco Cosso", matches: 7, fouls_avg: 24.86, penalties_ap: 0.29, yellows_ap: 3.86, yellows: 27, reds_ap: 0.43, reds: 3 }, { name: "Federico La Penna", matches: 6, fouls_avg: 24.33, penalties_ap: 0.33, yellows_ap: 4.83, yellows: 29, reds_ap: 0.17, reds: 1 }, { name: "Davide Ghersini", matches: 6, fouls_avg: 22.33, penalties_ap: 0.33, yellows_ap: 4.50, yellows: 27, reds_ap: 0.00, reds: 0 }, { name: "Juan Luca Sacchi", matches: 6, fouls_avg: 26.67, penalties_ap: 0.00, yellows_ap: 3.83, yellows: 23, reds_ap: 0.17, reds: 1 }, { name: "Alberto Santoro", matches: 6, fouls_avg: 24.50, penalties_ap: 0.33, yellows_ap: 4.33, yellows: 26, reds_ap: 0.17, reds: 1 }, { name: "Ermanno Feliciani", matches: 5, fouls_avg: 21.40, penalties_ap: 0.20, yellows_ap: 3.60, yellows: 18, reds_ap: 0.20, reds: 1 }, { name: "Maria Ferrieri Caputi", matches: 3, fouls_avg: 24.33, penalties_ap: 0.67, yellows_ap: 3.67, yellows: 11, reds_ap: 0.00, reds: 0 }, { name: "Giacomo Camplone", matches: 3, fouls_avg: 24.67, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 13, reds_ap: 0.33, reds: 1 }, { name: "Daniele Perenzoni", matches: 3, fouls_avg: 26.67, penalties_ap: 0.67, yellows_ap: 4.67, yellows: 14, reds_ap: 0.00, reds: 0 }, { name: "Daniele Rutella", matches: 3, fouls_avg: 27.67, penalties_ap: 0.00, yellows_ap: 4.67, yellows: 14, reds_ap: 0.33, reds: 1 }, { name: "Luca Zufferli", matches: 3, fouls_avg: 23.67, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 13, reds_ap: 0.00, reds: 0 }, { name: "Marco Serra", matches: 2, fouls_avg: 24.50, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.00, reds: 0 }, { name: "Daniele Paterna", matches: 2, fouls_avg: 24.50, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Manuel Volpi", matches: 2, fouls_avg: 27.50, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.50, reds: 1 }, { name: "Giovanni Meraviglia", matches: 2, fouls_avg: 24.50, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 8, reds_ap: 0.50, reds: 1 }, { name: "Daniele Minelli", matches: 2, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Niccolò Baroni", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 }, { name: "Matteo Gualtieri", matches: 1, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Miele Gianpiero", matches: 1, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 }, { name: "Gariglio Matteo", matches: 1, fouls_avg: 18.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 } ], "2021-22": [ { name: "Daniele Doveri", matches: 17, fouls_avg: 26.82, penalties_ap: 0.35, yellows_ap: 3.47, yellows: 59, reds_ap: 0.18, reds: 3 }, { name: "Marco Di Bello", matches: 17, fouls_avg: 27.18, penalties_ap: 0.47, yellows_ap: 4.29, yellows: 73, reds_ap: 0.24, reds: 4 }, { name: "Fabio Maresca", matches: 16, fouls_avg: 24.75, penalties_ap: 0.38, yellows_ap: 4.50, yellows: 72, reds_ap: 0.31, reds: 5 }, { name: "Daniele Chiffi", matches: 16, fouls_avg: 24.88, penalties_ap: 0.31, yellows_ap: 3.63, yellows: 58, reds_ap: 0.19, reds: 3 }, { name: "Daniele Orsato", matches: 15, fouls_avg: 28.00, penalties_ap: 0.27, yellows_ap: 5.87, yellows: 88, reds_ap: 0.13, reds: 2 }, { name: "Maurizio Mariani", matches: 14, fouls_avg: 28.79, penalties_ap: 0.21, yellows_ap: 4.86, yellows: 68, reds_ap: 0.36, reds: 5 }, { name: "Marco Guida", matches: 14, fouls_avg: 27.14, penalties_ap: 0.29, yellows_ap: 4.79, yellows: 67, reds_ap: 0.21, reds: 3 }, { name: "Davide Massa", matches: 14, fouls_avg: 26.29, penalties_ap: 0.14, yellows_ap: 4.21, yellows: 59, reds_ap: 0.36, reds: 5 }, { name: "Livio Marinelli", matches: 14, fouls_avg: 21.86, penalties_ap: 0.29, yellows_ap: 3.93, yellows: 55, reds_ap: 0.00, reds: 0 }, { name: "Simone Sozza", matches: 14, fouls_avg: 26.43, penalties_ap: 0.29, yellows_ap: 4.36, yellows: 61, reds_ap: 0.21, reds: 3 }, { name: "Rosario Abisso", matches: 13, fouls_avg: 25.92, penalties_ap: 0.46, yellows_ap: 4.69, yellows: 61, reds_ap: 0.31, reds: 4 }, { name: "Paolo Valeri", matches: 12, fouls_avg: 30.25, penalties_ap: 0.42, yellows_ap: 5.00, yellows: 60, reds_ap: 0.17, reds: 2 }, { name: "Michael Fabbri", matches: 12, fouls_avg: 23.67, penalties_ap: 0.17, yellows_ap: 3.67, yellows: 44, reds_ap: 0.50, reds: 6 }, { name: "Luca Pairetto", matches: 12, fouls_avg: 26.58, penalties_ap: 0.92, yellows_ap: 4.33, yellows: 52, reds_ap: 0.25, reds: 3 }, { name: "Gianluca Manganiello", matches: 12, fouls_avg: 24.08, penalties_ap: 0.17, yellows_ap: 3.50, yellows: 42, reds_ap: 0.17, reds: 2 }, { name: "Massimiliano Irrati", matches: 11, fouls_avg: 27.00, penalties_ap: 0.64, yellows_ap: 5.64, yellows: 62, reds_ap: 0.27, reds: 3 }, { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 25.55, penalties_ap: 0.09, yellows_ap: 3.45, yellows: 38, reds_ap: 0.27, reds: 3 }, { name: "Francesco Fourneau", matches: 11, fouls_avg: 27.45, penalties_ap: 0.36, yellows_ap: 4.73, yellows: 52, reds_ap: 0.27, reds: 3 }, { name: "Luca Massimi", matches: 11, fouls_avg: 29.27, penalties_ap: 0.18, yellows_ap: 4.27, yellows: 47, reds_ap: 0.27, reds: 3 }, { name: "Giovanni Ayroldi", matches: 11, fouls_avg: 29.82, penalties_ap: 0.18, yellows_ap: 5.36, yellows: 59, reds_ap: 0.18, reds: 2 }, { name: "Alessandro Prontera", matches: 10, fouls_avg: 26.70, penalties_ap: 0.50, yellows_ap: 4.70, yellows: 47, reds_ap: 0.40, reds: 4 }, { name: "Antonio Rapuano", matches: 9, fouls_avg: 26.22, penalties_ap: 0.44, yellows_ap: 4.11, yellows: 37, reds_ap: 0.56, reds: 5 }, { name: "Davide Ghersini", matches: 8, fouls_avg: 21.38, penalties_ap: 0.63, yellows_ap: 3.25, yellows: 26, reds_ap: 0.13, reds: 1 }, { name: "Gianluca Aureliano", matches: 8, fouls_avg: 29.63, penalties_ap: 0.75, yellows_ap: 5.13, yellows: 41, reds_ap: 0.25, reds: 2 }, { name: "Marco Piccinini", matches: 8, fouls_avg: 26.00, penalties_ap: 0.38, yellows_ap: 4.25, yellows: 34, reds_ap: 0.50, reds: 4 }, { name: "Matteo Marchetti", matches: 8, fouls_avg: 26.13, penalties_ap: 0.50, yellows_ap: 4.50, yellows: 36, reds_ap: 0.00, reds: 0 }, { name: "Ivano Pezzuto", matches: 7, fouls_avg: 31.14, penalties_ap: 0.14, yellows_ap: 4.86, yellows: 34, reds_ap: 0.00, reds: 0 }, { name: "Federico Dionisi", matches: 7, fouls_avg: 26.86, penalties_ap: 0.43, yellows_ap: 3.57, yellows: 25, reds_ap: 0.43, reds: 3 }, { name: "Antonio Giua", matches: 6, fouls_avg: 25.67, penalties_ap: 0.50, yellows_ap: 5.33, yellows: 32, reds_ap: 0.17, reds: 1 }, { name: "Manuel Volpi", matches: 6, fouls_avg: 31.17, penalties_ap: 0.50, yellows_ap: 6.17, yellows: 37, reds_ap: 0.33, reds: 2 }, { name: "Piero Giacomelli", matches: 5, fouls_avg: 29.60, penalties_ap: 0.40, yellows_ap: 4.60, yellows: 23, reds_ap: 0.00, reds: 0 }, { name: "Marco Serra", matches: 5, fouls_avg: 24.80, penalties_ap: 1.00, yellows_ap: 5.20, yellows: 26, reds_ap: 0.20, reds: 1 }, { name: "Lorenzo Maggioni", matches: 4, fouls_avg: 29.00, penalties_ap: 0.50, yellows_ap: 5.00, yellows: 20, reds_ap: 0.25, reds: 1 }, { name: "Giacomo Camplone", matches: 3, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 3.67, yellows: 11, reds_ap: 0.67, reds: 2 }, { name: "Andrea Colombo", matches: 3, fouls_avg: 25.33, penalties_ap: 0.00, yellows_ap: 5.33, yellows: 16, reds_ap: 0.33, reds: 1 }, { name: "Matteo Marcenaro", matches: 3, fouls_avg: 28.33, penalties_ap: 0.33, yellows_ap: 4.67, yellows: 14, reds_ap: 0.00, reds: 0 }, { name: "Valerio Marini", matches: 2, fouls_avg: 28.50, penalties_ap: 1.50, yellows_ap: 5.50, yellows: 11, reds_ap: 0.00, reds: 0 }, { name: "Alberto Santoro", matches: 2, fouls_avg: 25.50, penalties_ap: 0.00, yellows_ap: 2.50, yellows: 5, reds_ap: 0.00, reds: 0 }, { name: "Matteo Gariglio", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.00, reds: 0 }, { name: "Francesco Cosso", matches: 2, fouls_avg: 25.00, penalties_ap: 1.00, yellows_ap: 5.00, yellows: 10, reds_ap: 1.00, reds: 2 }, { name: "Antonio Di Martino", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }, { name: "Niccolò Baroni", matches: 1, fouls_avg: 23.00, penalties_ap: 2.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }, { name: "Daniele Paterna", matches: 1, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Francesco Meraviglia", matches: 1, fouls_avg: 29.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 }, { name: "Gianpiero Miele", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 } ], "2020-21": [ { name: "Maurizio Mariani", matches: 18, fouls_avg: 27.11, penalties_ap: 0.50, yellows_ap: 3.67, yellows: 66, reds_ap: 0.11, reds: 2 }, { name: "Daniele Doveri", matches: 17, fouls_avg: 29.06, penalties_ap: 0.29, yellows_ap: 4.06, yellows: 69, reds_ap: 0.00, reds: 0 }, { name: "Davide Massa", matches: 17, fouls_avg: 27.76, penalties_ap: 0.35, yellows_ap: 4.47, yellows: 76, reds_ap: 0.24, reds: 4 }, { name: "Marco Di Bello", matches: 17, fouls_avg: 27.41, penalties_ap: 0.47, yellows_ap: 4.65, yellows: 79, reds_ap: 0.18, reds: 3 }, { name: "Piero Giacomelli", matches: 17, fouls_avg: 29.65, penalties_ap: 0.65, yellows_ap: 4.59, yellows: 78, reds_ap: 0.06, reds: 1 }, { name: "Gianpaolo Calvarese", matches: 16, fouls_avg: 27.00, penalties_ap: 0.50, yellows_ap: 3.50, yellows: 56, reds_ap: 0.31, reds: 5 }, { name: "Daniele Chiffi", matches: 16, fouls_avg: 27.75, penalties_ap: 0.31, yellows_ap: 3.56, yellows: 57, reds_ap: 0.00, reds: 0 }, { name: "Daniele Orsato", matches: 15, fouls_avg: 29.07, penalties_ap: 0.13, yellows_ap: 5.13, yellows: 77, reds_ap: 0.13, reds: 2 }, { name: "Luca Pairetto", matches: 15, fouls_avg: 28.67, penalties_ap: 0.47, yellows_ap: 3.80, yellows: 57, reds_ap: 0.40, reds: 6 }, { name: "Michael Fabbri", matches: 14, fouls_avg: 23.57, penalties_ap: 0.36, yellows_ap: 4.57, yellows: 64, reds_ap: 0.21, reds: 3 }, { name: "Fabio Maresca", matches: 14, fouls_avg: 26.64, penalties_ap: 0.07, yellows_ap: 6.00, yellows: 84, reds_ap: 0.29, reds: 4 }, { name: "Paolo Valeri", matches: 13, fouls_avg: 27.00, penalties_ap: 0.38, yellows_ap: 4.38, yellows: 57, reds_ap: 0.23, reds: 3 }, { name: "Rosario Abisso", matches: 13, fouls_avg: 27.23, penalties_ap: 0.62, yellows_ap: 4.31, yellows: 56, reds_ap: 0.31, reds: 4 }, { name: "Marco Piccinini", matches: 13, fouls_avg: 27.85, penalties_ap: 0.38, yellows_ap: 3.62, yellows: 47, reds_ap: 0.08, reds: 1 }, { name: "Fabrizio Pasqua", matches: 12, fouls_avg: 25.00, penalties_ap: 0.25, yellows_ap: 3.42, yellows: 41, reds_ap: 0.25, reds: 3 }, { name: "Juan Luca Sacchi", matches: 12, fouls_avg: 25.75, penalties_ap: 0.33, yellows_ap: 4.17, yellows: 50, reds_ap: 0.08, reds: 1 }, { name: "Massimiliano Irrati", matches: 11, fouls_avg: 27.73, penalties_ap: 0.09, yellows_ap: 4.55, yellows: 50, reds_ap: 0.00, reds: 0 }, { name: "Marco Guida", matches: 10, fouls_avg: 27.70, penalties_ap: 0.50, yellows_ap: 4.20, yellows: 42, reds_ap: 0.30, reds: 3 }, { name: "Federico La Penna", matches: 10, fouls_avg: 28.00, penalties_ap: 0.40, yellows_ap: 4.80, yellows: 48, reds_ap: 0.40, reds: 4 }, { name: "Gianluca Manganiello", matches: 10, fouls_avg: 25.40, penalties_ap: 0.20, yellows_ap: 3.00, yellows: 30, reds_ap: 0.10, reds: 1 }, { name: "Francesco Fourneau", matches: 9, fouls_avg: 29.00, penalties_ap: 0.67, yellows_ap: 5.56, yellows: 50, reds_ap: 0.22, reds: 2 }, { name: "Valerio Marini", matches: 7, fouls_avg: 30.57, penalties_ap: 0.71, yellows_ap: 4.29, yellows: 30, reds_ap: 0.00, reds: 0 }, { name: "Giovanni Ayroldi", matches: 7, fouls_avg: 26.00, penalties_ap: 0.57, yellows_ap: 3.86, yellows: 27, reds_ap: 0.43, reds: 3 }, { name: "Gianluca Aureliano", matches: 6, fouls_avg: 26.17, penalties_ap: 0.67, yellows_ap: 5.50, yellows: 33, reds_ap: 0.00, reds: 0 }, { name: "Livio Marinelli", matches: 6, fouls_avg: 23.83, penalties_ap: 0.17, yellows_ap: 4.00, yellows: 24, reds_ap: 0.17, reds: 1 }, { name: "Antonio Giua", matches: 6, fouls_avg: 31.00, penalties_ap: 0.33, yellows_ap: 3.83, yellows: 23, reds_ap: 0.33, reds: 2 }, { name: "Simone Sozza", matches: 6, fouls_avg: 25.00, penalties_ap: 0.17, yellows_ap: 3.33, yellows: 20, reds_ap: 0.33, reds: 2 }, { name: "Ivano Pezzuto", matches: 5, fouls_avg: 28.40, penalties_ap: 0.80, yellows_ap: 3.00, yellows: 15, reds_ap: 0.00, reds: 0 }, { name: "Alessandro Prontera", matches: 5, fouls_avg: 28.60, penalties_ap: 0.40, yellows_ap: 3.40, yellows: 17, reds_ap: 0.40, reds: 2 }, { name: "Manuel Volpi", matches: 5, fouls_avg: 32.20, penalties_ap: 0.40, yellows_ap: 3.20, yellows: 16, reds_ap: 0.00, reds: 0 }, { name: "Federico Dionisi", matches: 5, fouls_avg: 29.40, penalties_ap: 0.40, yellows_ap: 4.40, yellows: 22, reds_ap: 0.00, reds: 0 }, { name: "Davide Ghersini", matches: 4, fouls_avg: 25.75, penalties_ap: 1.00, yellows_ap: 4.50, yellows: 18, reds_ap: 0.00, reds: 0 }, { name: "Antonio Di Martino", matches: 4, fouls_avg: 28.75, penalties_ap: 0.25, yellows_ap: 4.75, yellows: 19, reds_ap: 0.75, reds: 3 }, { name: "Antonio Rapuano", matches: 4, fouls_avg: 27.50, penalties_ap: 0.50, yellows_ap: 4.75, yellows: 19, reds_ap: 0.00, reds: 0 }, { name: "Luca Massimi", matches: 4, fouls_avg: 31.25, penalties_ap: 0.50, yellows_ap: 4.50, yellows: 18, reds_ap: 0.25, reds: 1 }, { name: "Eugenio Abbattista", matches: 3, fouls_avg: 26.33, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 15, reds_ap: 0.33, reds: 1 }, { name: "Marco Serra", matches: 2, fouls_avg: 33.00, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.00, reds: 0 }, { name: "Daniele Paterna", matches: 2, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 4, reds_ap: 0.00, reds: 0 }, { name: "Alberto Santoro", matches: 2, fouls_avg: 27.00, penalties_ap: 0.50, yellows_ap: 4.00, yellows: 8, reds_ap: 0.00, reds: 0 }, { name: "Matteo Gariglio", matches: 2, fouls_avg: 25.00, penalties_ap: 0.50, yellows_ap: 2.00, yellows: 4, reds_ap: 0.00, reds: 0 }, { name: "Matteo Marchetti", matches: 2, fouls_avg: 32.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 8, reds_ap: 0.00, reds: 0 }, { name: "Riccardo Ros", matches: 1, fouls_avg: 37.00, penalties_ap: 1.00, yellows_ap: 6.00, yellows: 6, reds_ap: 1.00, reds: 1 }, { name: "Lorenzo Maggioni", matches: 1, fouls_avg: 21.00, penalties_ap: 0.00, yellows_ap: 1.00, yellows: 1, reds_ap: 0.00, reds: 0 }, { name: "Giacomo Camplone", matches: 1, fouls_avg: 20.00, penalties_ap: 1.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 }, { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 } ]
         };
 
         // State
@@ -612,7 +1001,58 @@ Manganiello	97,11`;
         let currentSort = { key: 'matches', order: 'desc' };
         let aggregatedData = [];
         let minMatchesFilter = 0;
-        let currentView = 'stats'; // 'stats' or 'playingTime'
+        let currentView = 'stats'; 
+        let hideInactive = false; // Modificato: Default false (mostra tutti)
+        
+        // --- SORTING SYSTEM FOR PLAYING TIME TABLE ---
+        let playingTimeSort = { column: null, order: 'asc' };
+
+        function sortPlayingTime(columnIndex, isNumeric = false) {
+            const tbody = document.getElementById("tableBody");
+            const mainRows = Array.from(tbody.querySelectorAll("tr:not(.details-row)"));
+
+            if (playingTimeSort.column === columnIndex) {
+                playingTimeSort.order = playingTimeSort.order === "asc" ? "desc" : "asc";
+            } else {
+                playingTimeSort.column = columnIndex;
+                playingTimeSort.order = "asc";
+            }
+
+            const multiplier = playingTimeSort.order === "asc" ? 1 : -1;
+
+            mainRows.sort((a, b) => {
+                if (!a.children[columnIndex] || !b.children[columnIndex]) return 0;
+
+                let A = a.children[columnIndex].innerText.trim();
+                let B = b.children[columnIndex].innerText.trim();
+
+                if (isNumeric) {
+                    if(A.includes("'")) {
+                         const [minA, secA] = A.replace("''", "").split("'").map(Number);
+                         const [minB, secB] = B.replace("''", "").split("'").map(Number);
+                         A = (minA || 0) * 60 + (secA || 0);
+                         B = (minB || 0) * 60 + (secB || 0);
+                    } else {
+                         A = parseFloat(A.replace(',', '.'));
+                         B = parseFloat(B.replace(',', '.'));
+                    }
+                    return (A - B) * multiplier;
+                } else {
+                    return A.localeCompare(B) * multiplier;
+                }
+            });
+
+            mainRows.forEach(row => {
+                tbody.appendChild(row);
+                const detailsId = row.getAttribute('data-details-id');
+                if (detailsId) {
+                    const detailsRow = document.getElementById(detailsId);
+                    if (detailsRow) {
+                        tbody.appendChild(detailsRow);
+                    }
+                }
+            });
+        }
 
         // --- UTILS ---
         function formatName(fullName, isInactive) {
@@ -631,142 +1071,308 @@ Manganiello	97,11`;
              return parts.join(' ').toLowerCase();
         }
 
+        function toggleInactiveRefs() {
+            hideInactive = document.getElementById('toggleInactive').checked;
+            aggregateData();
+        }
+
         // --- LOGIC ---
         function switchView(view) {
             currentView = view;
-            const backBtn = document.getElementById('back-to-stats-btn');
-            const standardControls = document.getElementById('standard-controls');
+            const statsControls = document.getElementById('stats-controls');
+            const playingTimeControls = document.getElementById('playing-time-controls');
             const insightsContainer = document.getElementById('insights-container');
+            const playingTimeTitle = document.getElementById('playing-time-title');
+            const commonControls = document.getElementById('common-controls');
+            const seasonBtns = commonControls.querySelectorAll('.season-btn');
+            const disclaimer = document.getElementById('disclaimer-2526');
             
+            // Update Nav Switcher Styling
+            const btnStats = document.getElementById('nav-stats');
+            const btnTime = document.getElementById('nav-time');
+
             if (view === 'playingTime') {
-                backBtn.classList.remove('hidden');
-                standardControls.classList.add('hidden');
+                // UI Styling for switcher
+                btnStats.classList.remove('active');
+                btnTime.classList.add('active');
+
+                statsControls.classList.add('hidden');
+                playingTimeControls.classList.remove('hidden');
                 insightsContainer.classList.add('hidden');
+                playingTimeTitle.classList.remove('hidden');
+                
+                // Playing Time View: Only show 2024/25 and 2025/26, enforce single selection
+                seasonBtns.forEach(btn => {
+                    const season = btn.dataset.season;
+                    if (season === '2025-26' || season === '2024-25') {
+                        btn.style.display = 'flex';
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                });
+                
+                // Ensure only one is active, default to 2025-26 if multiple or none
+                if (activeSeasons.length !== 1 || (activeSeasons[0] !== '2025-26' && activeSeasons[0] !== '2024-25')) {
+                     activeSeasons = ['2025-26'];
+                     updateSeasonButtonsUI();
+                }
+
                 processPlayingTimeData();
             } else {
-                backBtn.classList.add('hidden');
-                standardControls.classList.remove('hidden');
+                // UI Styling for switcher
+                btnStats.classList.add('active');
+                btnTime.classList.remove('active');
+
+                statsControls.classList.remove('hidden');
+                playingTimeControls.classList.add('hidden');
                 insightsContainer.classList.remove('hidden');
+                playingTimeTitle.classList.add('hidden');
+                
+                // Force Hide Disclaimer in Stats
+                disclaimer.classList.add('hidden');
+
+                // Stats View: Show all seasons
+                seasonBtns.forEach(btn => {
+                    btn.style.display = 'flex';
+                });
+                
                 aggregateData();
             }
         }
-
-        function processPlayingTimeData() {
-            // Process RAW data
-            const lines = RAW_PLAYING_TIME.trim().split('\n');
-            const stats = {};
-
-            lines.forEach(line => {
-                // Split by tab or spaces, handle comma decimal
-                const parts = line.trim().split(/\s+/);
-                if (parts.length < 2) return;
-                
-                // Extract name (first part) and time (last part)
-                // Handling simple names like "Massa" vs potential "Di Bello"
-                // The provided raw data seems to use Surnames mostly.
-                // Let's assume Last token is time, rest is name
-                const timeStr = parts.pop().replace(',', '.');
-                const name = parts.join(' ');
-                const time = parseFloat(timeStr);
-
-                if (!stats[name]) {
-                    stats[name] = {
-                        name: name,
-                        totalTime: 0,
-                        count: 0,
-                        matches: [] // Store individual times
-                    };
+        
+        function updateSeasonButtonsUI() {
+            const buttons = document.querySelectorAll('.season-btn');
+            buttons.forEach(btn => {
+                const season = btn.dataset.season;
+                if (activeSeasons.includes(season)) {
+                    btn.classList.add('active');
+                    btn.querySelector('.check-icon').classList.remove('opacity-0');
+                } else {
+                    btn.classList.remove('active');
+                    btn.querySelector('.check-icon').classList.add('opacity-0');
                 }
-                stats[name].totalTime += time;
-                stats[name].count += 1;
-                stats[name].matches.push(time);
             });
-
-            // Convert to array
-            const data = Object.values(stats).map(s => ({
-                name: s.name,
-                avgTime: s.totalTime / s.count,
-                matches: s.matches,
-                matchCount: s.count
-            }));
-
-            renderPlayingTimeTable(data);
         }
 
-        function renderPlayingTimeTable(data) {
+        function processPlayingTimeData() {
+            const stats = {};
+            const isSeason2526 = activeSeasons.includes('2025-26');
+
+            // Toggle Disclaimer Visibility (ONLY for 2025-26 in playing time view)
+            const disclaimer = document.getElementById('disclaimer-2526');
+            if (isSeason2526) {
+                disclaimer.classList.remove('hidden');
+            } else {
+                disclaimer.classList.add('hidden');
+            }
+            
+            updateBannerText(isSeason2526);
+
+            activeSeasons.forEach(season => {
+                const rawData = PLAYING_TIME_DB[season];
+                if (typeof rawData !== 'string') return;
+
+                const lines = rawData.trim().split('\n');
+                lines.forEach(line => {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length < 2) return;
+                    
+                    const timeStr = parts.pop(); 
+                    const name = parts.join(' ');
+                    
+                    const [min, sec] = timeStr.split(',').map(Number);
+                    if (isNaN(min)) return;
+
+                    const totalSeconds = min * 60 + (sec || 0);
+                    
+                    const displayMin = Math.floor(totalSeconds / 60);
+                    const displaySec = Math.round(totalSeconds % 60);
+                    const formattedMatchTime = `${displayMin}'${displaySec.toString().padStart(2, '0')}''`;
+
+                    if (!stats[name]) {
+                        stats[name] = {
+                            name: name,
+                            effSecondsAccumulated: 0,
+                            effCount: 0,
+                            effMatches: [],
+                            totalGameSecondsAccumulated: 0,
+                            totalGameCount: 0,
+                            totalGameMatches: []
+                        };
+                    }
+                    
+                    stats[name].effSecondsAccumulated += totalSeconds;
+                    stats[name].effCount += 1;
+                    stats[name].effMatches.push(formattedMatchTime);
+                });
+            });
+
+            if (isSeason2526) {
+                const lines = TOTAL_TIME_DB.trim().split('\n');
+                lines.forEach(line => {
+                     const parts = line.trim().split(/\s+/);
+                     if (parts.length < 2) return;
+                     const timeStr = parts.pop();
+                     const name = parts.join(' ');
+                     
+                     const [min, sec] = timeStr.split(',').map(Number);
+                     if (isNaN(min)) return;
+                     
+                     const totalSeconds = min * 60 + (sec || 0);
+                     const displayMin = Math.floor(totalSeconds / 60);
+                     const displaySec = Math.round(totalSeconds % 60);
+                     const formattedMatchTime = `${displayMin}'${displaySec.toString().padStart(2, '0')}''`;
+                     
+                     if(stats[name]) {
+                         stats[name].totalGameSecondsAccumulated += totalSeconds;
+                         stats[name].totalGameCount += 1;
+                         stats[name].totalGameMatches.push(formattedMatchTime);
+                     }
+                });
+            }
+
+            const data = Object.values(stats).map(s => {
+                const avgEffSeconds = s.effSecondsAccumulated / s.effCount;
+                const avgEffMin = Math.floor(avgEffSeconds / 60);
+                const avgEffSec = Math.round(avgEffSeconds % 60);
+                const avgEffFormatted = `${avgEffMin}'${avgEffSec.toString().padStart(2, '0')}''`;
+                
+                let avgTotFormatted = "-";
+                let avgTotSeconds = 0;
+                if (s.totalGameCount > 0) {
+                     const avgTotSecs = s.totalGameSecondsAccumulated / s.totalGameCount;
+                     const avgTotMin = Math.floor(avgTotSecs / 60);
+                     const avgTotSec = Math.round(avgTotSecs % 60);
+                     avgTotFormatted = `${avgTotMin}'${avgTotSec.toString().padStart(2, '0')}''`;
+                     avgTotSeconds = avgTotSecs;
+                }
+
+                return {
+                    name: s.name,
+                    avgEffFormatted: avgEffFormatted,
+                    avgEffSeconds: avgEffSeconds,
+                    matches: s.effMatches,
+                    matchCount: s.effCount,
+                    avgTotFormatted: avgTotFormatted,
+                    avgTotSeconds: avgTotSeconds,
+                    totalMatches: s.totalGameMatches
+                };
+            });
+            
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = data.filter(r => r.name.toLowerCase().includes(searchQuery));
+
+            renderPlayingTimeTable(filteredData, isSeason2526);
+        }
+
+        function renderPlayingTimeTable(data, showTotalTime) {
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFooter');
 
-            // Update Headers
-            thead.innerHTML = `
+            let headerHTML = `
                 <tr>
-                    <th class="px-6 py-4 font-bold text-white">Arbitro</th>
-                    <th class="px-4 py-4 font-bold text-center text-white">Media Minuti</th>
-                    <th class="px-4 py-4 font-bold text-center text-white">Partite</th>
-                </tr>
+                    <th class="px-6 py-4 font-bold text-white cursor-pointer sticky-col-head" onclick="sortPlayingTime(0)">Arbitro</th>
+                    <th class="px-4 py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(1, true)">Tempo Effettivo Medio</th>
             `;
+            
+            if (showTotalTime) {
+                headerHTML += `<th class="px-4 py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(2, true)">Tempo Totale Medio</th>`;
+                headerHTML += `<th class="px-4 py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(3, true)">Partite</th></tr>`;
+            } else {
+                headerHTML += `<th class="px-4 py-4 font-bold text-center text-white cursor-pointer" onclick="sortPlayingTime(2, true)">Partite</th></tr>`;
+            }
+            
+            thead.innerHTML = headerHTML;
 
-            // Sort by Average Time Descending
-            data.sort((a, b) => b.avgTime - a.avgTime);
+            // Default Sort
+            data.sort((a, b) => b.avgEffSeconds - a.avgEffSeconds);
 
             tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                const colSpan = showTotalTime ? 4 : 3;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center py-8 text-slate-500">Nessun dato disponibile.</td></tr>`;
+                tfoot.innerHTML = '';
+                return;
+            }
+
             data.forEach((ref, index) => {
                 const rowId = `details-${index}`;
-                const mainRow = `
-                    <tr class="hover:bg-white/5 transition-colors cursor-pointer border-b border-slate-800" onclick="toggleDetails('${rowId}')">
-                        <td class="px-6 py-4 font-bold text-white uppercase flex items-center gap-2">
+                let mainRowHTML = `
+                    <tr class="hover:bg-white/5 transition-colors cursor-pointer border-b border-slate-800" onclick="toggleDetails('${rowId}')" data-details-id="${rowId}">
+                        <td class="px-6 py-4 font-bold text-white uppercase flex items-center gap-2 sticky-col-body">
                             ${ref.name}
                             <i class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform" id="icon-${rowId}"></i>
                         </td>
-                        <td class="px-4 py-4 text-center text-lg font-mono text-green-400 font-bold">${ref.avgTime.toFixed(2)}'</td>
-                        <td class="px-4 py-4 text-center text-slate-400">${ref.matchCount}</td>
-                    </tr>
+                        <td class="px-4 py-4 text-center text-lg font-mono text-green-400 font-bold shadow-green-500/10 drop-shadow-sm">${ref.avgEffFormatted}</td>
                 `;
-
-                // Details Row (Hidden by default)
-                const matchList = ref.matches.map((m, i) => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700">${m.toFixed(2)}'</span>`).join('');
                 
+                if (showTotalTime) {
+                     mainRowHTML += `<td class="px-4 py-4 text-center text-lg font-mono text-blue-400 font-bold">${ref.avgTotFormatted}</td>`;
+                }
+                
+                mainRowHTML += `<td class="px-4 py-4 text-center text-slate-400">${ref.matchCount}</td></tr>`;
+
+                const matchList = ref.matches.map(m => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-green-300">${m}</span>`).join('');
+                let totalMatchList = "";
+                if(showTotalTime && ref.totalMatches.length > 0) {
+                    totalMatchList = ref.totalMatches.map(m => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-blue-300">${m}</span>`).join('');
+                }
+                
+                const colSpan = showTotalTime ? 4 : 3;
+                
+                let detailsContent = `
+                    <div class="flex flex-col gap-2">
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="text-xs text-green-500 uppercase font-bold mr-2 w-24">Effettivo:</span>
+                            ${matchList}
+                        </div>
+                `;
+                
+                if (showTotalTime) {
+                    detailsContent += `
+                        <div class="flex flex-wrap gap-2 items-center border-t border-white/5 pt-2">
+                             <span class="text-xs text-blue-500 uppercase font-bold mr-2 w-24">Totale:</span>
+                             ${totalMatchList}
+                        </div>
+                    `;
+                }
+                
+                detailsContent += `</div>`;
+
                 const detailsRow = `
                     <tr id="${rowId}" class="details-row bg-slate-900/50">
-                        <td colspan="3" class="px-6 py-4">
-                            <div class="flex flex-wrap gap-2 items-center">
-                                <span class="text-xs text-slate-500 uppercase font-bold mr-2">Singole Partite:</span>
-                                ${matchList}
-                            </div>
+                        <td colspan="${colSpan}" class="px-6 py-4">
+                            ${detailsContent}
                         </td>
                     </tr>
                 `;
 
-                tbody.innerHTML += mainRow + detailsRow;
+                tbody.innerHTML += mainRowHTML + detailsRow;
             });
-
-            tfoot.innerHTML = ''; // Clear footer for this view
-        }
-        
-        // Helper for toggle
-        window.toggleDetails = function(id) {
-            const row = document.getElementById(id);
-            const icon = document.getElementById('icon-' + id);
             
-            if (row.classList.contains('open')) {
-                row.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                row.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        };
+            tfoot.innerHTML = '';
+        }
 
 
         function aggregateData() {
-            if (currentView === 'playingTime') return; // Don't run stats logic if in playing time mode
+            if (currentView === 'playingTime') {
+                processPlayingTimeData();
+                return; 
+            }
 
             let map = {};
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const isSeason2526 = activeSeasons.includes('2025-26');
             
-            // Create set of active referees from 2025-26 data
-            const activeRefereesSet = new Set(db['2025-26'].map(r => r.name));
+            updateBannerText(isSeason2526);
+
+            // Active Referees Logic
+            // Base set from 2025-26 matches
+            const activeRefereesSet = new Set(db['2025-26'] ? db['2025-26'].map(r => r.name) : []);
+            // Force Maresca active as requested
+            activeRefereesSet.add("Fabio Maresca");
 
             activeSeasons.forEach(season => {
                 const seasonData = db[season];
@@ -783,7 +1389,7 @@ Manganiello	97,11`;
                             w_penalties: 0,
                             w_yellows_ap: 0,
                             w_reds_ap: 0,
-                            isInactive: !activeRefereesSet.has(ref.name) // Check if active
+                            isInactive: !activeRefereesSet.has(ref.name)
                         };
                     }
                     
@@ -813,9 +1419,14 @@ Manganiello	97,11`;
                 };
             });
             
-            // Search Filter
+            // Filters
             if (searchQuery) {
                 result = result.filter(r => r.name.toLowerCase().includes(searchQuery));
+            }
+            
+            // Modifica: se hideInactive è true, nascondiamo gli inattivi
+            if (hideInactive) {
+                result = result.filter(r => !r.isInactive);
             }
 
             aggregatedData = result;
@@ -824,11 +1435,22 @@ Manganiello	97,11`;
             updateInsights();
         }
         
+        function updateBannerText(isSeason2526) {
+             const banner = document.getElementById('bannerText');
+             if (isSeason2526) {
+                 banner.innerText = "Dati aggiornati all'11ª giornata";
+             } else {
+                 banner.innerText = "Dati storici";
+             }
+        }
+        
+        // Create alias for HTML onclick handler
+        window.handleSearch = aggregateData;
+
         function updateDynamicControls() {
             const maxMatchesInSet = Math.max(...aggregatedData.map(r => r.matches)) || 1;
             const rangeInput = document.getElementById('minMatches');
             
-            // Only update max if it changes significantly to avoid jumpiness, or if currently 0
             if (rangeInput.max != maxMatchesInSet) {
                  rangeInput.max = maxMatchesInSet;
                  document.getElementById('maxMatchesLabel').innerText = maxMatchesInSet;
@@ -849,25 +1471,28 @@ Manganiello	97,11`;
         }
 
         function toggleSeason(season) {
-            const btn = document.getElementById(`btn-${season}`);
-            
-            if (activeSeasons.includes(season)) {
-                if (activeSeasons.length > 1) {
-                    activeSeasons = activeSeasons.filter(s => s !== season);
-                    btn.classList.remove('active');
-                    btn.querySelector('.check-icon').classList.add('opacity-0');
-                }
+            if (currentView === 'playingTime') {
+                // Exclusive selection for Playing Time
+                activeSeasons = [season];
+                updateSeasonButtonsUI();
+                processPlayingTimeData();
             } else {
-                activeSeasons.push(season);
-                btn.classList.add('active');
-                btn.querySelector('.check-icon').classList.remove('opacity-0');
+                // Multi selection for Stats
+                const btn = document.getElementById(`btn-${season}`);
+                if (activeSeasons.includes(season)) {
+                    if (activeSeasons.length > 1) {
+                        activeSeasons = activeSeasons.filter(s => s !== season);
+                    }
+                } else {
+                    activeSeasons.push(season);
+                }
+                updateSeasonButtonsUI();
+                aggregateData();
             }
-            aggregateData();
         }
 
         // --- INSIGHTS CARDS ---
         function updateInsights() {
-            // Filter data based on current Min Matches slider
             const data = aggregatedData.filter(r => r.matches >= minMatchesFilter);
             if (data.length === 0) {
                 document.getElementById('insights-container').innerHTML = '';
@@ -880,18 +1505,12 @@ Manganiello	97,11`;
                 return sorted.filter(r => r[key] === topVal);
             };
 
-            // 1. Most Strict (Max YELLOWS/Game)
             const strictest = getTop(data, 'yellows_ap', true);
-            
-            // 2. Most Lenient (Min Fouls/Game)
             const lenient = getTop(data, 'fouls_avg', false);
-            
-            // 3. Workhorse (Max Matches)
             const workhorse = getTop(data, 'matches', true);
 
             const createCard = (title, icon, colorClass, referees, statLabel) => {
                 const statValue = referees.length > 0 ? (statLabel.includes('Presenze') ? referees[0].matches : (statLabel.includes('Falli') ? referees[0].fouls_avg.toFixed(2) : referees[0].yellows_ap.toFixed(2))) : '-';
-                
                 const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name, r.isInactive)}</div>`).join('');
 
                 return `
@@ -909,7 +1528,6 @@ Manganiello	97,11`;
                 </div>
             `};
 
-            // Updated first card to yellow theme and Yellows/Game stat
             document.getElementById('insights-container').innerHTML = `
                 ${createCard('IL Più Severo', 'fa-solid fa-square-full', 'border-yellow-500', strictest, 'Gialli/Partita')}
                 ${createCard('IL Meno Falloso', 'fa-regular fa-flag', 'border-green-500', lenient, 'Falli/Partita')}
@@ -919,10 +1537,9 @@ Manganiello	97,11`;
 
         // --- RENDER TABLE ---
         function updateRefereesTable() {
-            // Restore standard headers
             document.getElementById('tableHeader').innerHTML = `
                 <tr>
-                    <th scope="col" class="px-6 py-4 font-bold cursor-pointer hover:text-white transition group" onclick="sortData('name')">
+                    <th scope="col" class="px-6 py-4 font-bold cursor-pointer hover:text-white transition group sticky-col-head" onclick="sortData('name')">
                         Arbitro <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
                     <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('matches')">
@@ -931,21 +1548,18 @@ Manganiello	97,11`;
                     <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('fouls_avg')">
                         Falli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
-                    
                     <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows')">
                         GIALLI TOT <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
                     <th scope="col" class="px-4 py-4 font-bold text-center text-yellow-500 cursor-pointer hover:text-yellow-300 transition group" onclick="sortData('yellows_ap')">
                         Gialli/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
-                    
                     <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds')">
                         ROSSI TOT <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
                     <th scope="col" class="px-4 py-4 font-bold text-center text-red-500 cursor-pointer hover:text-red-400 transition group" onclick="sortData('reds_ap')">
                         Rossi/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
-
                     <th scope="col" class="px-4 py-4 font-bold text-center cursor-pointer hover:text-white transition group" onclick="sortData('penalties_ap')">
                         Rigori/P <i class="fa-solid fa-sort ml-1 opacity-30 group-hover:opacity-100 transition-opacity"></i>
                     </th>
@@ -975,10 +1589,7 @@ Manganiello	97,11`;
 
             const maxMatches = Math.max(...sorted.map(r => r.matches)) || 1;
             const maxFouls = Math.max(...sorted.map(r => r.fouls_avg)) || 1;
-            
-            // Min value for fouls bar is min of penalties/p across dataset as requested
             const minFoulsBarBase = Math.min(...sorted.map(r => r.penalties_ap)) || 0;
-            
             const maxYellowsAp = Math.max(...sorted.map(r => r.yellows_ap)) || 1;
             const maxRedsAp = Math.max(...sorted.map(r => r.reds_ap)) || 1;
             const maxPensAp = Math.max(...sorted.map(r => r.penalties_ap)) || 1;
@@ -1000,7 +1611,6 @@ Manganiello	97,11`;
 
                 const matchPercent = (ref.matches / maxMatches) * 100;
                 
-                // Scale fouls bar from minFoulsBarBase to maxFouls
                 let foulsPercent = 0;
                 if (maxFouls > minFoulsBarBase) {
                      foulsPercent = ((ref.fouls_avg - minFoulsBarBase) / (maxFouls - minFoulsBarBase)) * 100;
@@ -1015,7 +1625,7 @@ Manganiello	97,11`;
                 
                 const row = `
                     <tr class="hover:bg-white/5 group transition-colors">
-                        <td class="px-6 py-3 whitespace-nowrap">
+                        <td class="px-6 py-3 whitespace-nowrap sticky-col-body">
                              ${formatName(ref.name, ref.isInactive)}
                         </td>
                         <td class="px-4 py-3 text-center">
@@ -1075,15 +1685,18 @@ Manganiello	97,11`;
             const avgYellowsAp = totalMatches > 0 ? (totalYellows / totalMatches).toFixed(2) : "0.00";
             const avgRedsAp = totalMatches > 0 ? (totalReds / totalMatches).toFixed(2) : "0.00";
 
-            document.getElementById('footerRow').innerHTML = `
-                <td class="px-6 py-4 text-right uppercase tracking-wider text-slate-500 text-xs">Totale Filtrato</td>
-                <td class="px-4 py-4 text-center text-xl text-white">${totalMatches}</td>
-                <td class="px-4 py-4 text-center text-slate-400 text-sm">${avgFouls}</td>
-                <td class="px-4 py-4 text-center text-yellow-500 text-lg">${totalYellows}</td>
-                <td class="px-4 py-4 text-center text-yellow-500 text-sm">${avgYellowsAp}</td>
-                <td class="px-4 py-4 text-center text-red-500 text-lg">${totalReds}</td>
-                <td class="px-4 py-4 text-center text-red-500 text-sm">${avgRedsAp}</td>
-                <td class="px-4 py-4 text-center text-blue-400 text-sm">${avgPens}</td>
+            const tfoot = document.getElementById('tableFooter');
+            tfoot.innerHTML = `
+                <tr>
+                    <td class="px-6 py-4 text-right uppercase tracking-wider text-slate-500 text-xs sticky-col-body">Totale Filtrato</td>
+                    <td class="px-4 py-4 text-center text-xl text-white">${totalMatches}</td>
+                    <td class="px-4 py-4 text-center text-slate-400 text-sm">${avgFouls}</td>
+                    <td class="px-4 py-4 text-center text-yellow-500 text-lg">${totalYellows}</td>
+                    <td class="px-4 py-4 text-center text-yellow-500 text-sm">${avgYellowsAp}</td>
+                    <td class="px-4 py-4 text-center text-red-500 text-lg">${totalReds}</td>
+                    <td class="px-4 py-4 text-center text-red-500 text-sm">${avgRedsAp}</td>
+                    <td class="px-4 py-4 text-center text-blue-400 text-sm">${avgPens}</td>
+                </tr>
             `;
         }
 
@@ -1097,7 +1710,6 @@ Manganiello	97,11`;
             updateRefereesTable();
         }
         
-        // Ensure toggle details is globally available
         window.toggleDetails = function(id) {
             const row = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
@@ -1115,6 +1727,7 @@ Manganiello	97,11`;
         window.updateMinMatches = updateMinMatches;
         window.aggregateData = aggregateData;
         window.sortData = sortData;
+        window.toggleInactiveRefs = toggleInactiveRefs;
 
         window.onload = aggregateData;
 
