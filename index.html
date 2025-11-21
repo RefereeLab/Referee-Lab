@@ -205,14 +205,17 @@
                     </div>
                 </div>
                 
-                <!-- Center Navigation Switcher (NEW LOCATION) -->
-                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 mx-2">
-                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2">
+                <!-- Center Navigation Switcher -->
+                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 mx-2 overflow-x-auto">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2 whitespace-nowrap">
                         <i class="fa-solid fa-chart-simple"></i> <span class="hidden sm:inline">Statistiche</span>
                     </button>
-                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2">
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2 whitespace-nowrap">
                         <i class="fa-solid fa-stopwatch"></i> <span class="hidden sm:inline">Tempo Effettivo</span>
                         <span class="sm:hidden">T. Eff.</span>
+                    </button>
+                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-futbol"></i> <span>Partite</span>
                     </button>
                 </div>
 
@@ -241,9 +244,9 @@
                     
                     <!-- Common Controls (Always Visible) -->
                     <div id="common-controls" class="space-y-6">
-                        <!-- Cerca Arbitro -->
+                        <!-- Cerca Arbitro / Partita -->
                         <div>
-                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Cerca</label>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block" id="searchLabel">Cerca</label>
                             <div class="relative">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
                                 <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Nome arbitro..." 
@@ -269,9 +272,6 @@
                                 </button>
                                 <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2021-22">
                                     2021/2022 <i class="fa-solid fa-check opacity-0 check-icon"></i>
-                                </button>
-                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-btn px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 w-full text-left flex justify-between items-center" data-season="2020-21">
-                                    2020/2021 <i class="fa-solid fa-check opacity-0 check-icon"></i>
                                 </button>
                             </div>
                         </div>
@@ -307,10 +307,9 @@
                         </div>
                     </div>
                     
-                    <!-- Playing Time Only Controls (Empty now as nav button moved) -->
-                    <div id="playing-time-controls" class="hidden space-y-6">
-                        <!-- Placeholder for potential future controls specific to Time View -->
-                        <div class="text-xs text-slate-500 text-center">Visualizzazione Tempo Effettivo</div>
+                    <!-- Playing Time / Matches Controls -->
+                    <div id="extra-controls" class="hidden space-y-6">
+                        <!-- Placeholders if needed -->
                     </div>
                 </div>
                 
@@ -334,6 +333,14 @@
                         </h2>
                         <p class="text-slate-400 text-xs uppercase tracking-widest mt-2 font-semibold">Media minuti giocati per partita</p>
                     </div>
+                    
+                    <!-- Matches Title (Hidden by default) -->
+                    <div id="matches-title" class="hidden w-full text-center py-6 border-b border-white/10 bg-slate-900/50">
+                        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight view-title">
+                            ELENCO <span class="text-blue-400">PARTITE</span>
+                        </h2>
+                        <p class="text-slate-400 text-xs uppercase tracking-widest mt-2 font-semibold">Dettaglio Tempo di Gioco</p>
+                    </div>
 
                     <div class="overflow-x-auto flex-grow">
                         <table class="w-full text-sm text-left text-slate-300" id="mainTable">
@@ -349,11 +356,19 @@
                         </table>
                     </div>
 
-                    <!-- Disclaimer per 2025/26 (spostato sotto la tabella) -->
+                    <!-- Disclaimer per 2025/26 -->
                     <div id="disclaimer-2526" class="hidden w-full border-t border-white/10 bg-slate-900/30 p-4">
                         <p class="bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 text-xs p-3 rounded-lg flex items-center justify-center gap-2 text-center">
                             <i class="fa-solid fa-triangle-exclamation text-yellow-500 flex-shrink-0"></i>
                             <span>Attenzione: i dati sul tempo effettivo della stagione 2025/26 non sono completi in quanto non comunicati regolarmente dalla Lega Serie A.</span>
+                        </p>
+                    </div>
+                    
+                    <!-- Disclaimer Aggiornamento (per Partite 25/26) -->
+                    <div id="disclaimer-update" class="hidden w-full border-t border-white/10 bg-slate-900/30 p-4">
+                        <p class="bg-blue-500/10 border border-blue-500/20 text-blue-200 text-xs p-3 rounded-lg flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-spinner text-blue-500 flex-shrink-0 animate-spin"></i>
+                            <span>Dati stagione 2025/26 in fase di aggiornamento.</span>
                         </p>
                     </div>
                 </div>
@@ -376,9 +391,389 @@
 
     <script>
         // --- RAW DATA ---
+        const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%
+Parma-Fiorentina	97,04	48,46	49,9%
+Empoli-Monza	100,37	44,43	44,3%
+Milan-Torino	101,58	58,27	57,4%
+Bologna-Udinese	100,25	48,59	48,5%
+Verona-Napoli	101,32	48,53	47,9%
+Cagliari-Roma	94,22	53,36	56,6%
+Lazio-Venezia	96,00	56,00	58,3%
+Lecce-Atalanta	92,58	54,12	58,5%
+Juventus-Como	99,04	56,43	57,0%
+Parma-Milan	98,04	59,00	60,2%
+Udinese-Lazio	103,14	49,49	48,0%
+Inter-Lecce	98,08	56,21	57,3%
+Monza-Genoa	105,55	56,58	53,6%
+Torino-Atalanta	103,21	51,08	49,5%
+Fiorentina-Venezia	97,03	55,29	57,0%
+Napoli-Bologna	101,09	53,23	52,7%
+Roma-Empoli	97,20	58,22	59,9%
+Cagliari-Como	100,35	53,12	52,9%
+Verona-Juventus	97,02	61,58	63,5%
+Venezia-Torino	99,08	52,45	52,9%
+Inter-Atalanta 	97,01	53,40	55,0%
+Bologna-Empoli 	103,12	55,44	53,8%
+Lecce-Cagliari	100,37	47,36	47,2%
+Lazio-Milan	97,00	54,06	55,7%
+Napoli-Parma	109,08	60,21	55,2%
+Fiorentina-Monza	103,20	54,53	52,8%
+Genoa-Verona	99,33	51,32	51,7%
+Juventus-Roma	96,58	58,50	60,6%
+Udinese-Como	103,30	54,24	52,5%
+Como-Bologna	103,14	54,03	52,4%
+Empoli-Juventus	95,14	60,04	63,1%
+Milan-Venezia	97,55	57,21	58,6%
+Genoa-Roma	104,11	53,12	51,0%
+Atalanta-Fiorentina	95,42	51,04	53,5%
+Torino-Lecce	95,10	54,31	57,1%
+Cagliari-Napoli	102,10	50,07	49,0%
+Monza-Inter	95,18	57,28	60,2%
+Parma-Udinese	96,05	53,01	55,2%
+Lazio-Verona	96,07	56,25	58,6%
+Cagliari-Empoli	97,05	48,44	49,9%
+Verona-Torino	97,05	60,20	62,0%
+Venezia-Genoa	100,20	48,20	48,1%
+Juventus-Napoli	96,26	64,10	66,6%
+Lecce-Parma	98,37	54,32	55,2%
+Fiorentina-Lazio	97,15	52,35	53,9%
+Monza-Bologna	95,05	55,34	58,2%
+Roma-Udinese	95,00	55,33	58,2%
+Inter-Milan	97,50	55,33	56,7%
+Atalanta-Como	98,35	58,21	59,2%
+Milan-Lecce	96,02	55,41	57,7%
+Udinese-Inter	98,00	61,58	62,8%
+Genoa-Juventus	95,10	58,44	61,5%
+Bologna-Atalanta	97,44	57,29	58,8%
+Torino-Lazio	96,10	57,06	59,4%
+Como-Verona	96,57	49,47	51,2%
+Roma-Venezia	96,08	52,36	54,5%
+Empoli-Fiorentina	94,11	54,28	57,7%
+Napoli-Monza	95,57	60,33	63,1%
+Parma-Cagliari	95,58	55,21	57,8%
+Napoli-Como	96,28	59,25	61,5%
+Verona-Venezia	95,02	47,29	49,8%
+Udinese-Lecce	95,50	55,10	57,7%
+Atalanta-Genoa	95,55	55,41	58,0%
+Inter-Torino	98,30	54,09	55,0%
+Juventus-Cagliari	99,01	60,08	60,7%
+Bologna-Parma	95,58	54,55	57,1%
+Lazio-Empoli	100,48	53,07	52,8%
+Monza-Roma	99,08	56,25	56,8%
+Fiorentina-Milan	97,26	48,43	49,8%
+Como-Parma	96,09	60,51	63,0%
+Genoa-Bologna	95,51	47,58	49,8%
+Milan-Udinese	106,27	52,59	49,5%
+Juventus-Lazio	97,31	56,44	58,0%
+Empoli-Napoli	96,05	51,43	53,5%
+Lecce-Fiorentina	93,03	53,12	57,1%
+Venezia-Atalanta	94,10	54,15	57,5%
+Cagliari-Torino	96,35	52,53	54,5%
+Roma-Inter	97,00	59,00	60,8%
+Verona-Monza	94,00	54,17	57,6%
+Udinese-Cagliari	94,51	54,38	57,5%
+Torino-Como	97,40	55,42	56,9%
+Napoli-Lecce	96,27	52,02	54,0%
+Bologna-Milan	96,21	53,33	55,4%
+Atalanta-Verona	91,25	58,27	63,9%
+Parma-Empoli	95,45	55,33	58,0%
+Lazio-Genoa	96,07	57,36	59,7%
+Monza-Venezia	95,57	49,01	51,3%
+Inter-Juventus	95,12	52,00	54,7%
+Fiorentina-Roma	94,27	55,39	58,8%
+Cagliari-Bologna	94,25	55,29	58,7%
+Lecce-Verona	98,15	49,06	50,0%
+Milan-Napoli	96,55	60,55	62,7%
+Empoli-Inter	96,01	55,51	57,8%
+Venezia-Udinese	97,22	49,10	50,5%
+Atalanta-Monza	96,20	57,39	59,7%
+Juventus-Parma	95,30	61,18	64,2%
+Genoa-Fiorentina	98,09	52,02	53,0%
+Como-Lazio	97,44	50,20	51,5%
+Roma-Torino	95,15	59,29	62,3%
+Bologna-Lecce	95,25	50,36	52,9%
+Udinese-Juventus	96,07	55,50	57,8%
+Monza-Milan	98,17	56,22	57,3%
+Napoli-Atalanta	96,00	62,27	64,9%
+Torino-Fiorentina	97,17	59,23	61,0%
+Verona-Roma	97,43	53,58	55,0%
+Inter-Venezia	99,15	55,55	56,0%
+Empoli-Como	96,10	54,05	56,2%
+Parma-Genoa	97,16	51,42	52,9%
+Lazio-Cagliari	96,13	54,05	56,2%
+Genoa-Como	98,16	50,21	51,2%
+Lecce-Empoli	97,00	51,23	52,8%
+Venezia-Parma	95,15	57,06	60,0%
+Cagliari-Milan	100,14	54,30	54,2%
+Juventus-Torino	95,06	55,08	57,9%
+Atalanta-Udinese	98,40	51,34	52,2%
+Fiorentina-Verona	96,53	46,44	48,1%
+Roma-Bologna	98,55	49,51	50,2%
+Monza-Lazio	97,01	56,45	58,2%
+Inter-Napoli	95,15	56,03	58,9%
+Verona-Inter	93,00	65,30	70,2%
+Milan-Juvenrus	95,40	59,45	62,3%
+Parma-Atalanta	95,40	66,25	69,4%
+Genoa-Cagliari	98,00	53,26	54,3%
+Como-Fiorentina	97,00	55,23	56,9%
+Torino-Monza	93,12	57,26	61,5%
+Napoli-Roma	93,51	58,44	62,5%
+Lazio-Bologna	94,57	55,30	58,5%
+Empoli-Udinese	95,22	58,51	61,4%
+Venezia-Lecce	96,01	56,21	58,5%
+Cagliari-Verona	95,29	50,46	53,0%
+Como-Monza	96,30	51,14	53,1%
+Milan-Empoli	95,43	54,43	57,0%
+Bologna-Venezia	96,14	49,35	51,3%
+Udinese-Genoa	97,10	57,46	59,2%
+Parma-Lazio	103,52	55,40	53,5%
+Torino-Napoli	94,42	59,16	62,7%
+Fiorentina-Inter	101,09	53,53	53,0%
+Lecce-Juventus	95,05	62,25	65,5%
+Roma-Atalanta	95,03	55,10	58,0%
+Inter-Parma	95,00	55,37	58,3%
+Atalanta-Milan	97,25	59,24	60,9%
+Genoa-Torino	96,34	56,35	58,5%
+Juventus-Bologna	98,03	52,19	53,2%
+Roma-Lecce	97,28	55,05	56,6%
+Fiorentina-Cagliari	96,03	53,17	55,4%
+Verona-Empoli	97,20	54,48	56,0%
+Venezia-Como	95,28	44,33	46,5%
+Napoli-Lazio	98,45	58,47	59,4%
+Monza-Udinese	97,10	53,45	55,0%
+Empoli-Torino	95,04	49,22	51,8%
+Cagliari-Atalanta	96,30	57,31	59,5%
+Udinese-Napoli	97,00	51,56	53,2%
+Juventus-Venezia	98,50	59,57	60,5%
+Lecce-Monza	99,07	47,00	47,4%
+Bologna-Fiorentina	96,02	48,30	50,3%
+Parma-Verona	95,56	54,08	56,6%
+Como-Roma	98,32	52,56	53,5%
+Milan-Genoa	96,57	61,42	63,6%
+Lazio-Inter	99,10	55,11	55,6%
+Verona-Milan	99,21	54,44	54,9%
+Torino-Bologna	101,15	56,57	55,9%
+Genoa-Napoli	97,03	57,55	59,3%
+Lecce-Lazio	100,19	56,47	56,4%
+Roma-Parma	91,06	55,55	61,0%
+Venezia-Cagliari	96,33	49,18	51,1%
+Atalanta-Empoli	98,00	54,38	55,5%
+Monza-Juventus	96,32	61,14	63,5%
+Fiorentina-Udinese	100,55	53,21	52,9%
+Inter-Como	94,10	52,23	55,5%
+Empoli-Genoa	98,00	51,47	52,5%
+Parma-Monza	100,00	48,53	48,5%
+Cagliari-Inter	95,15	52,18	54,8%
+Lazio-Atalanta	96,05	58,07	60,5%
+Udinese-Torino	97,09	54,20	55,8%
+Napoli-Venezia	95,30	54,07	56,7%
+Juventus-Fiorentina	97,05	51,51	53,1%
+Milan-Roma	96,05	51,06	53,2%
+Como-Lecce	96,37	52,23	54,2%
+Bologna-Verona	97,39	46,47	47,7%
+Venezia-Empoli	94,56	51,16	54,1%
+Fiorentina-Napoli	95,50	49,34	51,7%
+Verona-Udinese	96,00	50,49	52,6%
+Monza-Cagliari	99,18	48,31	48,7%
+Lecce-Genoa	94,12	54,20	57,6%
+Torino-Parma	97,10	59,17	60,9%
+Roma-Lazio	97,15	53,25	54,8%
+Como-Milan	95,10	50,49	53,1%
+Atalanta-Juventus	97,45	64,13	65,8%
+Inter-Bologna	96,05	52,32	54,5%
+Lazio-Como	95,03	47,58	50,1%
+Lecce-Empoli	98,34	49,09	49,9%
+Udinese-Atalanta	97,38	58,41	60,0%
+Torino-Juventus	96,58	60,08	62,2%
+Milan-Cagliari	96,38	56,05	58,2%
+Genoa-Parma	96,37	52,11	54,1%
+Venezia-Inter	95,18	55,10	57,9%
+Bologna-Roma	98,34	54,11	55,0%
+Napoli-Verona	93,00	62,26	66,9%
+Monza-Fiorentina	97,05	60,55	62,4%
+Roma-Genoa	96,00	58,40	60,8%
+Bologna-Monza	97,41	59,30	60,9%
+Juventus-Milan	95,14	56,11	59,0%
+Atalanta-Napoli	95,06	57,43	60,4%
+Fiorentina-Torino	96,47	56,28	58,3%
+Cagliari-Lecce	95,56	51,45	53,8%
+Parma-Venezia	97,07	50,03	51,5%
+Verona-Lazio	94,55	55,10	58,3%
+Inter-Empoli	95,18	57,07	60,0%
+Como-Udinese	95,57	51,13	53,5%
+Torino-Cagliari	95,20	57,17	60,1%
+Como-Atalanta	97,39	56,26	57,8%
+Napoli-Juventus	97,37	54,14	55,6%
+Empoli-Bologna	98,56	46,31	47,0%
+Milan-Parma	99,11	52,02	52,5%
+Udinese-Roma	99,57	56,19	56,4%
+Lecce-Inter	93,56	57,11	61,0%
+Lazio-Fiorentina	100,15	53,46	53,4%
+Venezia-Verona	96,56	49,18	50,9%
+Genoa-Monza	97,00	41,34	42,6%
+Parma-Lecce	97,15	56,49	58,1%
+Monza-Verona	95,47	53,12	55,6%
+Udinese-Venezia	97,41	42,22	43,3%
+Atalanta-Torino	101,01	63,01	62,4%
+Bologna-Como	96,40	50,12	52,0%
+Juventus-Empoli	95,12	45,47	47,8%
+Fiorentina-Genoa	96,09	47,18	49,1%
+Milan-Inter	98,05	58,36	59,5%
+Roma-Napoli	96,44	57,50	59,6%
+Cagliari-Lazio	96,15	55,09	57,3%
+Como-Juventus	96,52	50,13	51,9%
+Verona-Atalanta	93,51	56,03	59,9%
+Empoli-Milan	98,38	48,47	49,3%
+Torino-Genoa	98,42	57,33	58,3%
+Venezia-Roma	95,45	53,23	55,8%
+Cagliari-Parma	96,34	52,57	54,6%
+Lazio-Monza	94,15	55,49	58,9%
+Lecce-Bologna	100,17	52,43	52,3%
+Napoli-Udinese	97,20	57,54	59,2%
+Inter-Fiorentina	96,10	54,37	56,6%
+Bologna-Torino	95,32	46,59	48,9%
+Atalanta-Cagliari	95,19	64,30	67,5%
+Lazio-Napoli	94,58	55,22	58,4%
+Milan-Verona	96,20	49,24	51,2%
+Fiorentina-Como	98,16	58,37	59,5%
+Monza-Lecce	95,57	56,57	59,2%
+Udinese-Empoli	95,06	52,19	54,9%
+Parma-Roma	97,39	58,43	60,0%
+Juventus-Inter	94,24	55,49	58,9%
+Genoa-Venezia	93,59	45,50	48,6%
+Lecce-Udinese	97,16	54,09	55,7%
+Parma-Bologna	97,04	52,14	53,7%
+Venezia-Lazio	96,59	56,03	58,0%
+Torino-Milan	95,15	55,53	58,4%
+Inter-Genoa	96,44	58,04	60,2%
+Como-Napoli	96,45	52,35	54,3%
+Verona-Fiorentina	98,57	51,57	52,3%
+Empoli-Atalanta	94,57	51,29	54,2%
+Cagliari-Juventus	96,00	60,44	63,0%
+Roma-Monza	93,11	61,54	66,1%
+Fiorentina-Lecce	98,25	54,37	55,3%
+Atalanta-Venezia	96,53	59,11	61,2%
+Napoli-Inter	99,30	52,11	52,5%
+Udinese-Parma	97,32	57,58	59,2%
+Monza-Torino	93,56	56,28	60,2%
+Bologna-Cagliari	96,19	51,33	53,4%
+Genoa-Empoli	96,53	47,28	49,0%
+Roma-Como	94,57	61,34	64,9%
+Milan-Lazio	101,13	57,54	56,9%
+Juventus-Verona	97,43	55,31	56,8%
+Cagliari-Genoa	96,07	50,53	52,6%
+Como-Venezia	96,12	51,43	53,5%
+Parma-Torino	96,32	46,27	48,0%
+Lecce-Milan	99,34	52,03	52,4%
+Inter-Monza	98,52	57,48	58,3%
+Verona-Bologna	96,23	56,41	58,6%
+Napoli-Fiorentina	96,52	59,57	61,7%
+Empoli-Roma	96,05	60,45	62,9%
+Juventus-Atalanta	94,15	57,31	60,9%
+Lazio-Udinese	97,05	59,55	61,4%
+Genoa-Lecce	98,10	51,18	52,2%
+Monza-Parma	94,56	56,25	59,5%
+Udinese-Verona	94,02	56,15	59,7%
+Milan-Como	99,27	51,46	51,8%
+Torino-Empoli	100,23	46,00	45,9%
+Venezia-Napoli	100,02	48,55	48,5%
+Bologna-Lazio	94,55	54,15	57,3%
+Roma-Cagliari	99,22	60,28	60,8%
+Fiorentina-Juventus	93,14	52,43	56,3%
+Atalanta-Inter	103,06	54,31	52,7%
+Como-Empoli	96,34	52,17	54,2%
+Venezia-Bologna	95,58	53,24	55,7%
+Juventus-Genoa	94,56	54,24	57,4%
+Lecce-Roma	97,25	51,33	52,8%
+Cagliari-Monza	95,57	50,35	52,7%
+Fiorentina-Atalanta	97,34	55,08	56,6%
+Inter-Udinese	98,25	55,26	56,2%
+Napoli-Milan	97,10	59,08	60,8%
+Verona-Parma	96,29	51,46	53,4%
+Lazio-Torino	97,50	54,35	55,7%
+Genoa-Udinese	96,33	54,22	56,3%
+Monza-Como	95,52	58,00	60,7%
+Parma-Inter	97,28	57,35	59,0%
+Milan-Fiorentina	99,07	53,20	53,7%
+Lecce-Venezia	95,06	44,36	46,7%
+Empoli-Cagliari	95,00	45,56	48,0%
+Torino-Verona	96,20	52,10	54,2%
+Atalanta-Lazio	98,36	60,27	61,3%
+Roma-Juventus	94,26	61,47	65,2%
+Bologna-Napoli	98,46	51,14	51,9%
+Udinese-Milan	96,01	57,21	59,6%
+Venezia-Monza	100,45	45,52	45,3%
+Inter-Cagliari	95,55	61,00	63,8%
+Juventus-Lecce	96,28	55,04	57,2%
+Atalanta-Bologna	100,02	52,31	52,3%
+Fiorentina-Parma	95,10	59,22	62,3%
+Verona-Genoa	96,18	46,55	48,4%
+Como-Torino	97,30	55,02	56,5%
+Lazio-Roma	96,24	49,34	51,3%
+Napoli-Empoli	94,02	54,09	57,5%
+Lecce-Como	100,53	46,22	46,0%
+Monza-Napoli	94,19	56,00	59,5%
+Roma-Verona	93,58	54,09	57,8%
+Empoli-Venezia	95,32	44,36	46,5%
+Bologna-Inter	98,55	50,02	50,8%
+Milan-Atalanta	95,50	62,56	65,5%
+Torino-Udinese	95,07	53,25	56,0%
+Cagliari-Fiorentina	100,56	53,48	53,2%
+Genoa-Lazio	102,15	55,47	54,3%
+Parma-Juventus	100,20	58,32	58,2%
+Atalanta-Lecce	99,02	56,54	57,1%
+Como-Genoa	96,15	54,58	56,8%
+Venezia-Milan	98,56	52,47	53,2%
+Fiorentina-Empoli	99,14	48,14	48,6%
+Inter-Roma	97,22	58,15	59,8%
+Juventus-Monza	97,00	55,31	57,0%
+Napoli-Torino	97,54	58,59	60,1%
+Udinese-Bologna	95,52	47,37	49,6%
+Verona-Cagliari	97,01	51,05	52,6%
+Lazio-Parma	98,08	60,08	61,3%
+Torino-Venezia	100,00	53,17	53,2%
+Cagliari-Udinese	97,49	55,29	56,7%
+Parma-Como	96,02	50,20	52,3%
+Lecce-Napoli	105,14	58,14	55,3%
+Inter-Verona	95,25	61,36	64,4%
+Empoli-Lazio	98,03	55,18	56,3%
+Monza-Atalanta	94,45	57,35	60,7%
+Roma-Fiorentina	101,34	63,43	62,6%
+Bologna-Juventus	98,06	45,42	46,3%
+Genoa-Milan	98,17	52,54	53,5%
+Milan-Bologna	97,45	56,48	58,0%
+Como-Cagliari	100,35	54,24	54,1%
+Lazio-Juventus	99,22	51,18	51,6%
+Empoli-Parma	98,00	47,27	48,2%
+Udinese-Monza	95,23	54,45	57,2%
+Verona-Lecce	98,03	44,14	45,0%
+Torino-Inter	99,11	57,18	57,7%
+Napoli-Genoa	98,25	55,15	56,1%
+Venezia-Fiorentina	98,32	54,06	55,0%
+Atalanta-Roma	97,05	51,49	53,1%
+Genoa-Atalanta	97,16	52,40	53,9%
+Cagliari-Venezia	98,25	52,10	53,0%
+Fiorentina-Bologna	98,55	51,27	52,0%
+Inter-Lazio	102,53	58,13	56,7%
+Juventus-Udinese	96,37	47,39	49,2%
+Lecce-Torino	96,47	55,00	57,0%
+Monza-Empoli	95,12	58,32	61,3%
+Parma-Napoli	103,36	52,42	50,7%
+Roma-Milan	96,20	61,26	63,7%
+Verona-Como	97,07	48,53	50,0%
+Como-Inter	98,45	60,24	61,2%
+Napoli-Cagliari	100,40	51,44	51,2%
+Bologna-Genoa	96,11	46,03	47,9%
+Milan-Monza	92,19	59,23	64,2%
+Atalanta-Parma	98,25	58,43	59,5%
+Empoli-Verona	99,03	43,40	43,8%
+Lazio-Lecce	99,12	52,01	52,5%
+Torino-Roma	94,54	57,30	60,6%
+Udinese-Fiorentina	96,02	57,55	59,9%
+Venezia-Juventus	98,32	49,56	50,4%`;
+
         const PLAYING_TIME_DB = {
-            "2025-26": `
-Massa	46,53
+            "2025-26": `Massa	46,53
 Ayroldi	60,05
 Collu	65,26
 Zufferli	59,56
@@ -476,8 +871,7 @@ Chiffi	54,49
 Guida	46,12
 Collu	58,53
 Manganiello	59,00`,
-            "2024-25": `
-Feliciani	46,39
+            "2024-25": `Feliciani	46,39
 Ayroldi	48,46
 Fabbri	44,43
 Maresca	58,27
@@ -856,11 +1250,11 @@ Doveri	43,40
 Fabbri	52,01
 Di Bello	57,30
 Marcenaro	57,55
-Colombo	49,56`
+Colombo	49,56`,
+            "2023-24": ``, "2022-23": ``, "2021-22": ``, "2020-21": ``
         };
 
-        const TOTAL_TIME_DB = `
-Massa	95,47
+        const TOTAL_TIME_DB = `Massa	95,47
 Ayroldi	97,20
 Collu	97,21
 Zufferli	96,35
@@ -1228,7 +1622,6 @@ Manganiello	97,11`;
                 { name: "Giacomo Camplone", matches: 1, fouls_avg: 20.00, penalties_ap: 1.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 },
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 }
             ],
-
         };
 
         // State
@@ -1239,42 +1632,9 @@ Manganiello	97,11`;
         let currentView = 'stats'; // 'stats' or 'playingTime'
         let hideInactive = false; // Filter for inactive refs
         let playingTimeSort = { column: null, order: 'asc' };
+        let matchesSort = { column: null, order: 'asc' };
 
-        // --- UTILS ---
-        function formatName(fullName, isInactive) {
-            const parts = fullName.trim().split(' ');
-            if (parts.length < 2) return fullName;
-            const firstName = parts.shift();
-            const surname = parts.join(' ');
-            const asterisk = isInactive ? '<span class="text-red-500 ml-1 text-lg leading-none">*</span>' : '';
-            return `<div class="flex items-center"><span class="font-bold text-white text-base uppercase leading-tight">${surname}</span> <span class="text-slate-400 font-normal text-xs ml-1">${firstName}</span>${asterisk}</div>`;
-        }
-        
-        function getSurname(fullName) {
-             const parts = fullName.trim().split(' ');
-             if (parts.length < 2) return fullName;
-             const firstName = parts.shift();
-             return parts.join(' ').toLowerCase();
-        }
-
-        function toggleInactiveRefs() {
-            hideInactive = document.getElementById('toggleInactive').checked;
-            aggregateData();
-        }
-        
-        function toggleDetails(id) {
-            const row = document.getElementById(id);
-            const icon = document.getElementById('icon-' + id);
-            
-            if (row.classList.contains('open')) {
-                row.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                row.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
-
+        // --- FUNCTIONS ---
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
             document.getElementById('minMatchesValue').innerText = val;
@@ -1291,117 +1651,18 @@ Manganiello	97,11`;
             }
             updateRefereesTable();
         }
-        
-        function updateDynamicControls() {
-            const maxMatchesInSet = Math.max(...aggregatedData.map(r => r.matches)) || 1;
-            const rangeInput = document.getElementById('minMatches');
-            
-            if (rangeInput.max != maxMatchesInSet) {
-                 rangeInput.max = maxMatchesInSet;
-                 document.getElementById('maxMatchesLabel').innerText = maxMatchesInSet;
-            }
-            
-            if (minMatchesFilter > maxMatchesInSet) {
-                minMatchesFilter = maxMatchesInSet;
-                rangeInput.value = minMatchesFilter;
-                document.getElementById('minMatchesValue').innerText = minMatchesFilter;
-            }
+
+        function toggleDetails(id) {
+             const row = document.getElementById(id);
+             const icon = document.getElementById('icon-' + id);
+             if (row.classList.contains('open')) {
+                 row.classList.remove('open');
+                 icon.style.transform = 'rotate(0deg)';
+             } else {
+                 row.classList.add('open');
+                 icon.style.transform = 'rotate(180deg)';
+             }
         }
-
-        // --- LOGIC ---
-        function switchView(view) {
-            currentView = view;
-            const statsControls = document.getElementById('stats-controls');
-            const playingTimeControls = document.getElementById('playing-time-controls');
-            const insightsContainer = document.getElementById('insights-container');
-            const playingTimeTitle = document.getElementById('playing-time-title');
-            const commonControls = document.getElementById('common-controls');
-            const seasonBtns = commonControls.querySelectorAll('.season-btn');
-            
-            // Nav Switcher Buttons
-            const btnStats = document.getElementById('nav-stats');
-            const btnTime = document.getElementById('nav-time');
-
-            if (view === 'playingTime') {
-                statsControls.classList.add('hidden');
-                playingTimeControls.classList.remove('hidden');
-                insightsContainer.classList.add('hidden');
-                playingTimeTitle.classList.remove('hidden');
-                
-                btnStats.classList.remove('active');
-                btnTime.classList.add('active');
-                
-                // Playing Time View: Only show 2024/25 and 2025/26, enforce single selection
-                seasonBtns.forEach(btn => {
-                    const season = btn.dataset.season;
-                    if (season === '2025-26' || season === '2024-25') {
-                        btn.style.display = 'flex';
-                    } else {
-                        btn.style.display = 'none';
-                    }
-                });
-                
-                // Ensure only one is active, default to 2025-26 if multiple or none
-                if (activeSeasons.length !== 1 || (activeSeasons[0] !== '2025-26' && activeSeasons[0] !== '2024-25')) {
-                     activeSeasons = ['2025-26'];
-                     updateSeasonButtonsUI();
-                }
-
-                processPlayingTimeData();
-            } else {
-                statsControls.classList.remove('hidden');
-                playingTimeControls.classList.add('hidden');
-                insightsContainer.classList.remove('hidden');
-                playingTimeTitle.classList.add('hidden');
-                
-                btnStats.classList.add('active');
-                btnTime.classList.remove('active');
-
-                // Stats View: Show all seasons
-                seasonBtns.forEach(btn => {
-                    btn.style.display = 'flex';
-                });
-                
-                aggregateData();
-            }
-        }
-        
-        function updateSeasonButtonsUI() {
-            const buttons = document.querySelectorAll('.season-btn');
-            buttons.forEach(btn => {
-                const season = btn.dataset.season;
-                if (activeSeasons.includes(season)) {
-                    btn.classList.add('active');
-                    btn.querySelector('.check-icon').classList.remove('opacity-0');
-                } else {
-                    btn.classList.remove('active');
-                    btn.querySelector('.check-icon').classList.add('opacity-0');
-                }
-            });
-        }
-
-        function toggleSeason(season) {
-            if (currentView === 'playingTime') {
-                // Exclusive selection for Playing Time
-                activeSeasons = [season];
-                updateSeasonButtonsUI();
-                processPlayingTimeData();
-            } else {
-                // Multi selection for Stats
-                const btn = document.getElementById(`btn-${season}`);
-                if (activeSeasons.includes(season)) {
-                    if (activeSeasons.length > 1) {
-                        activeSeasons = activeSeasons.filter(s => s !== season);
-                    }
-                } else {
-                    activeSeasons.push(season);
-                }
-                updateSeasonButtonsUI();
-                aggregateData();
-            }
-        }
-
-        // --- DATA PROCESSING ---
 
         function processPlayingTimeData() {
             const stats = {};
@@ -1415,25 +1676,25 @@ Manganiello	97,11`;
                 disclaimer.classList.add('hidden');
             }
 
-            // Process Effective Time (available for both seasons)
+            // Process Effective Time
             activeSeasons.forEach(season => {
                 const rawData = PLAYING_TIME_DB[season];
-                if (typeof rawData !== 'string') return;
+                if (typeof rawData !== 'string' || !rawData) return;
 
                 const lines = rawData.trim().split('\n');
                 lines.forEach(line => {
                     const parts = line.trim().split(/\s+/);
                     if (parts.length < 2) return;
                     
-                    const timeStr = parts.pop(); // e.g. "46,39"
+                    const timeStr = parts.pop(); 
                     const name = parts.join(' ');
                     
-                    const [min, sec] = timeStr.split(',').map(Number);
+                    const [min, sec] = timeStr.replace('.', ',').split(',').map(Number);
                     if (isNaN(min)) return;
 
-                    // Rounding Logic: Convert to total seconds then back
                     const totalSeconds = min * 60 + (sec || 0);
                     
+                    // Format for list
                     const displayMin = Math.floor(totalSeconds / 60);
                     const displaySec = Math.round(totalSeconds % 60);
                     const formattedMatchTime = `${displayMin}'${displaySec.toString().padStart(2, '0')}''`;
@@ -1462,10 +1723,10 @@ Manganiello	97,11`;
                 lines.forEach(line => {
                      const parts = line.trim().split(/\s+/);
                      if (parts.length < 2) return;
-                     const timeStr = parts.pop(); // e.g. 95,47
+                     const timeStr = parts.pop(); 
                      const name = parts.join(' ');
                      
-                     const [min, sec] = timeStr.split(',').map(Number);
+                     const [min, sec] = timeStr.replace('.', ',').split(',').map(Number);
                      if (isNaN(min)) return;
                      
                      const totalSeconds = min * 60 + (sec || 0);
@@ -1489,7 +1750,7 @@ Manganiello	97,11`;
                 const avgEffSec = Math.round(avgEffSeconds % 60);
                 const avgEffFormatted = `${avgEffMin}'${avgEffSec.toString().padStart(2, '0')}''`;
                 
-                // Total Game Average (if applicable)
+                // Total Game Average
                 let avgTotFormatted = "-";
                 let avgTotSeconds = 0;
                 if (s.totalGameCount > 0) {
@@ -1518,121 +1779,26 @@ Manganiello	97,11`;
             renderPlayingTimeTable(filteredData, isSeason2526);
         }
 
-        function aggregateData() {
-            if (currentView === 'playingTime') {
-                processPlayingTimeData();
-                return; 
-            }
-
-            let map = {};
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            
-            // Active Referees Logic
-            // Base set from 2025-26 matches
-            const activeRefereesSet = new Set(db['2025-26'] ? db['2025-26'].map(r => r.name) : []);
-            // Force Maresca active as requested
-            activeRefereesSet.add("Fabio Maresca");
-
-            activeSeasons.forEach(season => {
-                const seasonData = db[season];
-                if (!seasonData) return;
-
-                seasonData.forEach(ref => {
-                    if (!map[ref.name]) {
-                        map[ref.name] = {
-                            name: ref.name,
-                            matches: 0,
-                            yellows: 0,
-                            reds: 0,
-                            w_fouls: 0,
-                            w_penalties: 0,
-                            w_yellows_ap: 0,
-                            w_reds_ap: 0,
-                            isInactive: !activeRefereesSet.has(ref.name)
-                        };
-                    }
-                    
-                    const entry = map[ref.name];
-                    entry.matches += ref.matches;
-                    entry.yellows += ref.yellows;
-                    entry.reds += ref.reds;
-                    entry.w_fouls += (ref.fouls_avg * ref.matches);
-                    entry.w_penalties += (ref.penalties_ap * ref.matches);
-                    entry.w_yellows_ap += (ref.yellows_ap * ref.matches);
-                    entry.w_reds_ap += (ref.reds_ap * ref.matches);
-                });
-            });
-
-            let result = Object.values(map).map(entry => {
-                const m = entry.matches;
-                return {
-                    name: entry.name,
-                    matches: m,
-                    yellows: entry.yellows,
-                    reds: entry.reds,
-                    fouls_avg: m > 0 ? entry.w_fouls / m : 0,
-                    penalties_ap: m > 0 ? entry.w_penalties / m : 0,
-                    yellows_ap: m > 0 ? entry.w_yellows_ap / m : 0,
-                    reds_ap: m > 0 ? entry.w_reds_ap / m : 0,
-                    isInactive: entry.isInactive
-                };
-            });
-            
-            // Filters
-            if (searchQuery) {
-                result = result.filter(r => r.name.toLowerCase().includes(searchQuery));
-            }
-            if (hideInactive) {
-                result = result.filter(r => !r.isInactive);
-            }
-
-            aggregatedData = result;
-            updateDynamicControls();
-            updateRefereesTable();
-            updateInsights();
+        // --- UTILS ---
+        function formatName(fullName, isInactive) {
+            const parts = fullName.trim().split(' ');
+            if (parts.length < 2) return fullName;
+            const firstName = parts.shift();
+            const surname = parts.join(' ');
+            const asterisk = isInactive ? '<span class="text-red-500 ml-1 text-lg leading-none">*</span>' : '';
+            return `<div class="flex items-center"><span class="font-bold text-white text-base uppercase leading-tight">${surname}</span> <span class="text-slate-400 font-normal text-xs ml-1">${firstName}</span>${asterisk}</div>`;
+        }
+        
+        function getSurname(fullName) {
+             const parts = fullName.trim().split(' ');
+             if (parts.length < 2) return fullName;
+             const firstName = parts.shift();
+             return parts.join(' ').toLowerCase();
         }
 
-        function updateInsights() {
-            const data = aggregatedData.filter(r => r.matches >= minMatchesFilter);
-            if (data.length === 0) {
-                document.getElementById('insights-container').innerHTML = '';
-                return;
-            }
-
-            const getTop = (data, key, isDesc) => {
-                const sorted = [...data].sort((a,b) => isDesc ? b[key] - a[key] : a[key] - b[key]);
-                const topVal = sorted[0][key];
-                return sorted.filter(r => r[key] === topVal);
-            };
-
-            const strictest = getTop(data, 'yellows_ap', true);
-            const lenient = getTop(data, 'fouls_avg', false);
-            const workhorse = getTop(data, 'matches', true);
-
-            const createCard = (title, icon, colorClass, referees, statLabel) => {
-                const statValue = referees.length > 0 ? (statLabel.includes('Presenze') ? referees[0].matches : (statLabel.includes('Falli') ? referees[0].fouls_avg.toFixed(2) : referees[0].yellows_ap.toFixed(2))) : '-';
-                const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name, r.isInactive)}</div>`).join('');
-
-                return `
-                <div class="glass-panel p-4 rounded-xl border-l-4 ${colorClass} flex items-center justify-between group hover:bg-white/5 transition-colors">
-                    <div class="overflow-hidden">
-                        <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">${title}</p>
-                        <div class="flex flex-col gap-1 max-h-24 overflow-y-auto custom-scrollbar">
-                            ${namesHtml}
-                        </div>
-                        <p class="text-xs text-slate-500 mt-1">${statLabel}: <span class="text-white font-mono">${statValue}</span></p>
-                    </div>
-                    <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0 ml-2">
-                        <i class="${icon} text-lg ${colorClass.replace('border-', 'text-')}"></i>
-                    </div>
-                </div>
-            `};
-
-            document.getElementById('insights-container').innerHTML = `
-                ${createCard('IL Più Severo', 'fa-solid fa-square-full', 'border-yellow-500', strictest, 'Gialli/Partita')}
-                ${createCard('IL Meno Falloso', 'fa-regular fa-flag', 'border-green-500', lenient, 'Falli/Partita')}
-                ${createCard('IL Più Presente', 'fa-solid fa-stopwatch', 'border-blue-500', workhorse, 'Presenze')}
-            `;
+        function toggleInactiveRefs() {
+            hideInactive = document.getElementById('toggleInactive').checked;
+            aggregateData();
         }
 
         function sortPlayingTime(columnIndex, isNumeric = false) {
@@ -1679,8 +1845,9 @@ Manganiello	97,11`;
             });
         }
 
+        // --- MAIN LOGIC UPDATES FOR MOBILE ---
+
         function updateRefereesTable() {
-            // UPDATED: Added sm: prefixes for larger padding/text, defaults are smaller for mobile
             document.getElementById('tableHeader').innerHTML = `
                 <tr>
                     <th scope="col" class="px-2 py-3 sm:px-6 sm:py-4 font-bold cursor-pointer hover:text-white transition group sticky-col-head" onclick="sortData('name')">
@@ -1893,7 +2060,7 @@ Manganiello	97,11`;
                 
                 mainRowHTML += `<td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-slate-400 text-xs sm:text-base">${ref.matchCount}</td></tr>`;
 
-                // Details
+                // ... (Same detail row logic)
                 const matchList = ref.matches.map(m => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-green-300">${m}</span>`).join('');
                 let totalMatchList = "";
                 if(showTotalTime && ref.totalMatches.length > 0) {
@@ -1933,9 +2100,427 @@ Manganiello	97,11`;
             });
             tfoot.innerHTML = '';
         }
+        
+        // --- MATCHES LOGIC ---
+        function processMatchesData() {
+            const isSeason2526 = activeSeasons.includes('2025-26');
+            
+            // Show Update Disclaimer for 25/26
+            const disclaimer = document.getElementById('disclaimer-update');
+            if (isSeason2526) {
+                disclaimer.classList.remove('hidden');
+            } else {
+                disclaimer.classList.add('hidden');
+            }
 
-        // --- INITIALIZATION ---
-        window.handleSearch = aggregateData;
+            let data = [];
+            if (activeSeasons.includes('2024-25')) {
+                const lines = MATCHES_DB_2425.trim().split('\n');
+                data = lines.map(line => {
+                    const parts = line.split('\t');
+                    if (parts.length < 4) return null;
+                    
+                    const matchName = parts[0].trim();
+                    const totalTimeStr = parts[1].trim();
+                    const effTimeStr = parts[2].trim();
+                    const percStr = parts[3].trim().replace('%', '');
+
+                    const totalSec = parseTimeToSeconds(totalTimeStr);
+                    const effSec = parseTimeToSeconds(effTimeStr);
+                    const perc = parseFloat(percStr.replace(',', '.'));
+
+                    return {
+                        match: matchName,
+                        totalTimeDisplay: formatTimeDisplay(totalTimeStr), 
+                        totalTimeRaw: totalTimeStr,
+                        effTimeRaw: effTimeStr,
+                        percRaw: percStr + '%',
+                        
+                        sortTotal: totalSec,
+                        sortEff: effSec,
+                        sortPerc: perc
+                    };
+                }).filter(x => x !== null);
+            }
+
+            // Search Filter
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if (query) {
+                data = data.filter(d => d.match.toLowerCase().includes(query));
+            }
+
+            renderMatchesTable(data);
+        }
+
+        function parseTimeToSeconds(timeStr) {
+            const parts = timeStr.replace('.', ',').split(',');
+            const min = parseInt(parts[0]) || 0;
+            const sec = parseInt(parts[1]) || 0;
+            return min * 60 + sec;
+        }
+
+        function formatTimeDisplay(timeStr) {
+            const parts = timeStr.replace('.', ',').split(',');
+            return `${parts[0]}'${parts[1] || '00'}''`;
+        }
+
+        function sortMatches(columnIndex, isNumeric) {
+            matchesSort.column = columnIndex;
+            matchesSort.order = matchesSort.order === 'asc' ? 'desc' : 'asc';
+            processMatchesData(); // Re-render
+        }
+
+        function renderMatchesTable(data) {
+            const thead = document.getElementById('tableHeader');
+            const tbody = document.getElementById('tableBody');
+            const tfoot = document.getElementById('tableFooter');
+
+            // Custom Sort Logic applied here before render
+            if (matchesSort.column !== null) {
+                const colMap = ['match', 'sortTotal', 'sortEff', 'sortPerc'];
+                const key = colMap[matchesSort.column];
+                const mult = matchesSort.order === 'asc' ? 1 : -1;
+                
+                data.sort((a, b) => {
+                    if (typeof a[key] === 'string') {
+                        return a[key].localeCompare(b[key]) * mult;
+                    } else {
+                        return (a[key] - b[key]) * mult;
+                    }
+                });
+            }
+
+            thead.innerHTML = `
+                <tr>
+                    <th class="px-2 py-3 sm:px-6 sm:py-4 font-bold text-white cursor-pointer sticky-col-head" onclick="sortMatches(0, false)">Partita <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
+                    <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-blue-400 cursor-pointer" onclick="sortMatches(1, true)"><span class="sm:hidden">T. Tot</span><span class="hidden sm:inline">Tempo Totale</span> <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
+                    <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-green-400 cursor-pointer" onclick="sortMatches(2, true)"><span class="sm:hidden">T. Eff</span><span class="hidden sm:inline">Tempo Effettivo</span> <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
+                    <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-yellow-400 cursor-pointer" onclick="sortMatches(3, true)">% <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
+                </tr>
+            `;
+
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-500">Nessun dato disponibile.</td></tr>`;
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            data.forEach(row => {
+                const tr = `
+                    <tr class="hover:bg-white/5 transition-colors border-b border-slate-800">
+                        <td class="px-2 py-3 sm:px-6 sm:py-4 font-bold text-white uppercase sticky-col-body text-xs sm:text-sm">
+                            ${row.match}
+                        </td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center font-mono text-blue-300 text-sm sm:text-base">
+                            ${formatTimeDisplay(row.totalTimeRaw)}
+                        </td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center font-mono text-green-300 font-bold text-sm sm:text-base">
+                            ${formatTimeDisplay(row.effTimeRaw)}
+                        </td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center font-bold text-yellow-500 text-sm sm:text-base">
+                            ${row.percRaw}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+            
+            // Footer stats
+            if (data.length > 0) {
+                let avgEffSec = data.reduce((a,b) => a + b.sortEff, 0) / data.length;
+                let avgTotSec = data.reduce((a,b) => a + b.sortTotal, 0) / data.length;
+                let avgPerc = data.reduce((a,b) => a + b.sortPerc, 0) / data.length;
+                
+                const formatSec = (s) => {
+                     const m = Math.floor(s/60);
+                     const sec = Math.round(s%60);
+                     return `${m}'${sec.toString().padStart(2,'0')}''`;
+                };
+
+                tfoot.innerHTML = `
+                    <tr>
+                        <td class="px-2 py-3 sm:px-6 sm:py-4 text-right text-xs sm:text-sm text-slate-500 uppercase sticky-col-body">Media</td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-blue-400 font-mono text-sm sm:text-base">${formatSec(avgTotSec)}</td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-green-400 font-mono text-sm sm:text-base">${formatSec(avgEffSec)}</td>
+                        <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-yellow-400 font-bold text-sm sm:text-base">${avgPerc.toFixed(1)}%</td>
+                    </tr>
+                `;
+            } else {
+                tfoot.innerHTML = '';
+            }
+        }
+
+        // --- LOGIC ---
+        function switchView(view) {
+            currentView = view;
+            const statsControls = document.getElementById('stats-controls');
+            const extraControls = document.getElementById('extra-controls'); // Fixed: use correct ID from HTML
+            const insightsContainer = document.getElementById('insights-container');
+            const playingTimeTitle = document.getElementById('playing-time-title');
+            const matchesTitle = document.getElementById('matches-title');
+            const commonControls = document.getElementById('common-controls');
+            const seasonBtns = commonControls.querySelectorAll('.season-btn');
+            const searchLabel = document.getElementById('searchLabel');
+            const searchInput = document.getElementById('searchInput');
+            
+            // Nav Switcher Buttons
+            const btnStats = document.getElementById('nav-stats');
+            const btnTime = document.getElementById('nav-time');
+            const btnMatches = document.getElementById('nav-matches');
+
+            // Reset active states
+            btnStats.classList.remove('active');
+            btnTime.classList.remove('active');
+            btnMatches.classList.remove('active');
+            
+            // Reset Season Buttons Display
+            seasonBtns.forEach(btn => btn.style.display = 'flex');
+
+            // Hide Disclaimers
+            document.getElementById('disclaimer-2526').classList.add('hidden');
+            document.getElementById('disclaimer-update').classList.add('hidden');
+
+            if (view === 'playingTime') {
+                statsControls.classList.add('hidden');
+                extraControls.classList.remove('hidden');
+                insightsContainer.classList.add('hidden');
+                playingTimeTitle.classList.remove('hidden');
+                matchesTitle.classList.add('hidden');
+                
+                btnTime.classList.add('active');
+                searchLabel.innerText = "Cerca Arbitro";
+                searchInput.placeholder = "Nome arbitro...";
+                
+                // Season Logic: 24/25 & 25/26 only, Single Select
+                seasonBtns.forEach(btn => {
+                    const season = btn.dataset.season;
+                    if (season !== '2025-26' && season !== '2024-25') btn.style.display = 'none';
+                });
+                if (activeSeasons.length !== 1 || !['2025-26', '2024-25'].includes(activeSeasons[0])) {
+                     activeSeasons = ['2025-26'];
+                     updateSeasonButtonsUI();
+                }
+                processPlayingTimeData();
+
+            } else if (view === 'matches') {
+                statsControls.classList.add('hidden');
+                extraControls.classList.add('hidden'); // Reusing hiding logic
+                insightsContainer.classList.add('hidden');
+                playingTimeTitle.classList.add('hidden');
+                matchesTitle.classList.remove('hidden');
+                
+                btnMatches.classList.add('active');
+                searchLabel.innerText = "Cerca Partita";
+                searchInput.placeholder = "Es. Inter-Juve...";
+
+                // Season Logic: 24/25 & 25/26 only, Single Select
+                seasonBtns.forEach(btn => {
+                    const season = btn.dataset.season;
+                    if (season !== '2025-26' && season !== '2024-25') btn.style.display = 'none';
+                });
+                if (activeSeasons.length !== 1 || !['2025-26', '2024-25'].includes(activeSeasons[0])) {
+                     activeSeasons = ['2025-26'];
+                     updateSeasonButtonsUI();
+                }
+                processMatchesData();
+
+            } else {
+                // Stats View
+                statsControls.classList.remove('hidden');
+                extraControls.classList.add('hidden');
+                insightsContainer.classList.remove('hidden');
+                playingTimeTitle.classList.add('hidden');
+                matchesTitle.classList.add('hidden');
+                
+                btnStats.classList.add('active');
+                searchLabel.innerText = "Cerca Arbitro";
+                searchInput.placeholder = "Nome arbitro...";
+                
+                aggregateData();
+            }
+        }
+        
+        function updateSeasonButtonsUI() {
+            const buttons = document.querySelectorAll('.season-btn');
+            buttons.forEach(btn => {
+                const season = btn.dataset.season;
+                if (activeSeasons.includes(season)) {
+                    btn.classList.add('active');
+                    btn.querySelector('.check-icon').classList.remove('opacity-0');
+                } else {
+                    btn.classList.remove('active');
+                    btn.querySelector('.check-icon').classList.add('opacity-0');
+                }
+            });
+        }
+
+        function toggleSeason(season) {
+            if (currentView === 'playingTime' || currentView === 'matches') {
+                // Exclusive selection
+                activeSeasons = [season];
+                updateSeasonButtonsUI();
+                if(currentView === 'playingTime') processPlayingTimeData();
+                if(currentView === 'matches') processMatchesData();
+            } else {
+                // Multi selection for Stats
+                const btn = document.getElementById(`btn-${season}`);
+                if (activeSeasons.includes(season)) {
+                    if (activeSeasons.length > 1) {
+                        activeSeasons = activeSeasons.filter(s => s !== season);
+                    }
+                } else {
+                    activeSeasons.push(season);
+                }
+                updateSeasonButtonsUI();
+                aggregateData();
+            }
+        }
+
+        // --- UTILS ---
+        function updateDynamicControls() {
+            const maxMatchesInSet = Math.max(...aggregatedData.map(r => r.matches)) || 1;
+            const rangeInput = document.getElementById('minMatches');
+            
+            if (rangeInput.max != maxMatchesInSet) {
+                 rangeInput.max = maxMatchesInSet;
+                 document.getElementById('maxMatchesLabel').innerText = maxMatchesInSet;
+            }
+            
+            if (minMatchesFilter > maxMatchesInSet) {
+                minMatchesFilter = maxMatchesInSet;
+                rangeInput.value = minMatchesFilter;
+                document.getElementById('minMatchesValue').innerText = minMatchesFilter;
+            }
+        }
+
+        function updateInsights() {
+            const data = aggregatedData.filter(r => r.matches >= minMatchesFilter);
+            if (data.length === 0) {
+                document.getElementById('insights-container').innerHTML = '';
+                return;
+            }
+
+            const getTop = (data, key, isDesc) => {
+                const sorted = [...data].sort((a,b) => isDesc ? b[key] - a[key] : a[key] - b[key]);
+                const topVal = sorted[0][key];
+                return sorted.filter(r => r[key] === topVal);
+            };
+
+            const strictest = getTop(data, 'yellows_ap', true);
+            const lenient = getTop(data, 'fouls_avg', false);
+            const workhorse = getTop(data, 'matches', true);
+
+            const createCard = (title, icon, colorClass, referees, statLabel) => {
+                const statValue = referees.length > 0 ? (statLabel.includes('Presenze') ? referees[0].matches : (statLabel.includes('Falli') ? referees[0].fouls_avg.toFixed(2) : referees[0].yellows_ap.toFixed(2))) : '-';
+                const namesHtml = referees.map(r => `<div class="text-lg font-bold text-white leading-tight truncate">${formatName(r.name, r.isInactive)}</div>`).join('');
+
+                return `
+                <div class="glass-panel p-4 rounded-xl border-l-4 ${colorClass} flex items-center justify-between group hover:bg-white/5 transition-colors">
+                    <div class="overflow-hidden">
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">${title}</p>
+                        <div class="flex flex-col gap-1 max-h-24 overflow-y-auto custom-scrollbar">
+                            ${namesHtml}
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">${statLabel}: <span class="text-white font-mono">${statValue}</span></p>
+                    </div>
+                    <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0 ml-2">
+                        <i class="${icon} text-lg ${colorClass.replace('border-', 'text-')}"></i>
+                    </div>
+                </div>
+            `};
+
+            document.getElementById('insights-container').innerHTML = `
+                ${createCard('IL Più Severo', 'fa-solid fa-square-full', 'border-yellow-500', strictest, 'Gialli/Partita')}
+                ${createCard('IL Meno Falloso', 'fa-regular fa-flag', 'border-green-500', lenient, 'Falli/Partita')}
+                ${createCard('IL Più Presente', 'fa-solid fa-stopwatch', 'border-blue-500', workhorse, 'Presenze')}
+            `;
+        }
+
+        function aggregateData() {
+            if (currentView === 'playingTime') {
+                processPlayingTimeData();
+                return; 
+            }
+            if (currentView === 'matches') {
+                processMatchesData();
+                return;
+            }
+
+            let map = {};
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Active Referees Logic
+            // Base set from 2025-26 matches
+            const activeRefereesSet = new Set(db['2025-26'] ? db['2025-26'].map(r => r.name) : []);
+            // Force Maresca active as requested
+            activeRefereesSet.add("Fabio Maresca");
+
+            activeSeasons.forEach(season => {
+                const seasonData = db[season];
+                if (!seasonData) return;
+
+                seasonData.forEach(ref => {
+                    if (!map[ref.name]) {
+                        map[ref.name] = {
+                            name: ref.name,
+                            matches: 0,
+                            yellows: 0,
+                            reds: 0,
+                            w_fouls: 0,
+                            w_penalties: 0,
+                            w_yellows_ap: 0,
+                            w_reds_ap: 0,
+                            isInactive: !activeRefereesSet.has(ref.name)
+                        };
+                    }
+                    
+                    const entry = map[ref.name];
+                    entry.matches += ref.matches;
+                    entry.yellows += ref.yellows;
+                    entry.reds += ref.reds;
+                    entry.w_fouls += (ref.fouls_avg * ref.matches);
+                    entry.w_penalties += (ref.penalties_ap * ref.matches);
+                    entry.w_yellows_ap += (ref.yellows_ap * ref.matches);
+                    entry.w_reds_ap += (ref.reds_ap * ref.matches);
+                });
+            });
+
+            let result = Object.values(map).map(entry => {
+                const m = entry.matches;
+                return {
+                    name: entry.name,
+                    matches: m,
+                    yellows: entry.yellows,
+                    reds: entry.reds,
+                    fouls_avg: m > 0 ? entry.w_fouls / m : 0,
+                    penalties_ap: m > 0 ? entry.w_penalties / m : 0,
+                    yellows_ap: m > 0 ? entry.w_yellows_ap / m : 0,
+                    reds_ap: m > 0 ? entry.w_reds_ap / m : 0,
+                    isInactive: entry.isInactive
+                };
+            });
+            
+            // Filters
+            if (searchQuery) {
+                result = result.filter(r => r.name.toLowerCase().includes(searchQuery));
+            }
+            if (hideInactive) {
+                result = result.filter(r => !r.isInactive);
+            }
+
+            aggregatedData = result;
+            updateDynamicControls();
+            updateRefereesTable();
+            updateInsights();
+        }
+
+        window.handleSearch = function() {
+            if (currentView === 'playingTime') processPlayingTimeData();
+            else if (currentView === 'matches') processMatchesData();
+            else aggregateData();
+        };
         window.switchView = switchView;
         window.toggleSeason = toggleSeason;
         window.updateMinMatches = updateMinMatches;
@@ -1947,4 +2532,3 @@ Manganiello	97,11`;
     </script>
 </body>
 </html>
-
