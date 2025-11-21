@@ -185,6 +185,11 @@
             background: linear-gradient(to right, rgba(0,0,0,0.2), transparent);
             pointer-events: none;
         }
+        
+        /* Tooltip styling improvements */
+        .tooltip-trigger {
+            cursor: help;
+        }
 
     </style>
 </head>
@@ -390,6 +395,106 @@
     </main>
 
     <script>
+        // --- MATCH LOOKUP DATA 2025/26 ---
+        const MATCH_LOOKUP_RAW_2526 = `Genoa-Lecce	Massa	46,53
+Sassuolo-Napoli	Ayroldi	60,05
+Milan-Cremonese	Collu	65,26
+Roma-Bologna	Zufferli	59,56
+Cagliari-Fiorentina	Sozza	49,03
+Como-Lazio	Manganiello	54,15
+Atalanta-Pisa	Arena	57,39
+Juventus-Parma	Marcenaro	55,01
+Udinese-Verona	Tremolada	54,35
+Inter-Torino	La Penna	52,19
+Cremonese-Sassuolo	Guida	59,20
+Lecce-Milan	Marinelli	58,39
+Bologna-Como	Doveri	55,35
+Parma-Atalanta	Mariani	59,53
+Napoli-Cagliari	Bonacina	64,09
+Pisa-Roma	Collu	59,27
+Genoa-Juventus	Chiffi	54,37
+Torino-Fiorentina	Abisso	51,30
+Inter-Udinese	Marchetti	57,38
+Lazio-Verona	Crezzini	59,58
+Cagliari-Parma	Fourneau	54,11
+Juventus-Inter	Colombo	54,23
+Fiorentina-Napoli	Zufferli	54,04
+Roma-Torino	Ayroldi	56,51
+Atalanta-Lecce	Manganiello	58,12
+Pisa-Udinese	Massa	58,32
+Sassuolo-Lazio	Tremolada	63,56
+Milan-Bologna	Marcenaro	59,39
+Verona-Cremonese	Arena	61,52
+Como-Genoa	Piccinini	57,30
+Lecce-Cagliari	Zufferli	53,19
+Bologna-Genoa	Collu	53,57
+Verona-Juventus	Rapuano	54,14
+Udinese-Milan	Doveri	65,04
+Lazio-Roma	Sozza	51,06
+Cremonese-Parma	La Penna	56,21
+Torino-Atalanta	Colombo	63,29
+Fiorentina-Como	Bonacina	58,50
+Inter-Sassuolo	Marinelli	56,21
+Napoli-Pisa	Crezzini	57,06
+Verona-Sassuolo	Fourneau	49,17
+Lazio-Torino	Piccinini	54,51
+Parma-Lecce	Doveri	47,10
+Inter-Cremonese	Feliciani	55,44
+Atalanta-Como	Zufferli	56,48
+Udinese-Cagliari	Arena	50,42
+Bologna-Pisa	Abisso	51,05
+Fiorentina-Roma	Colombo	49,19
+Juventus-Milan	Guida	57,17
+Pisa-Verona	Guida	52,04
+Torino-Napoli	Marcenaro	60,15
+Roma-Inter	Massa	55,18
+Como-Juventus	Ayroldi	48,03
+Cagliari-Bologna	Marchetti	50,55
+Genoa-Parma	Sozza	53,50
+Atalanta-Lazio	Collu	64,07
+Milan-Fiorentina	Marinelli	54,05
+Cremonese-Udinese	Fabbri	49,12
+Milan-Pisa	Zufferli	56,45
+Parma-Como	Chiffi	56,10
+Udinese-Lecce	Feliciani	51,39
+Napoli-Inter	Mariani	54,57
+Cremonese-Atalanta	Arena	57,39
+Torino-Genoa	Bonacina	52,06
+Sassuolo-Roma	Manganiello	49,54
+Verona-Cagliari	Dionisi	54,13
+Fiorentina-Bologna	La Penna	43,00
+Lazio-Juventus	Colombo	54,45
+Lecce-Napoli	Collu	54,46
+Atalanta-Milan	Doveri	59,25
+Como-Verona	Marcenaro	53,25
+Juventus-Udinese	Di Bello	51,31
+Roma-Parma	Crezzini	53,34
+Bologna-Torino	Ayroldi	57,36
+Genoa-Cremonese	Abisso	46,31
+Inter-Fiorentina	Sozza	54,25
+Cagliari-Sassuolo	Pairetto	50,07
+Pisa-Lazio	Massa	57,15
+Udinese-Atalanta	Fabbri	57,43
+Napoli-Como	Zufferli	56,49
+Cremonese-Juventus	Chiffi	58,32
+Verona-Inter	Doveri	57,18
+Fiorentina-Lecce	Rapuano	52,10
+Torino-Pisa	Arena	52,41
+Parma-Bologna	Bonacina	47,22
+Milan-Roma	Guida	56,38
+Sassuolo-Genoa	Feliciani	55,16
+Lazio-Cagliari	Sacchi	57,15
+Pisa-Cremonese	Marcenaro	53,23
+Como-Cagliari	Pezzuto	51,53
+Lecce-Verona	Abisso	48,07
+Juventus-Torino	Zufferli	64,42
+Parma-Milan	Di Bello	57,59
+Atalanta-Sassuolo	Crezzini	60,28
+Bologna-Napoli	Chiffi	54,49
+Genoa-Fiorentina	Guida	46,12
+Roma-Udinese	Collu	58,53
+Inter-Lazio	Manganiello	59,00`;
+
         // --- RAW DATA ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%
 Parma-Fiorentina	97,04	48,46	49,9%
@@ -629,7 +734,7 @@ Venezia-Roma	95,45	53,23	55,8%
 Cagliari-Parma	96,34	52,57	54,6%
 Lazio-Monza	94,15	55,49	58,9%
 Lecce-Bologna	100,17	52,43	52,3%
-Napoli-Udinese	97,20	57,54	59,2%
+Napoli-Udinese	97,20	57,55	59,2%
 Inter-Fiorentina	96,10	54,37	56,6%
 Bologna-Torino	95,32	46,59	48,9%
 Atalanta-Cagliari	95,19	64,30	67,5%
@@ -1251,7 +1356,179 @@ Fabbri	52,01
 Di Bello	57,30
 Marcenaro	57,55
 Colombo	49,56`,
-            "2023-24": ``, "2022-23": ``, "2021-22": ``, "2020-21": ``
+            "2023-24": `Marco Guida	23,59
+Daniele Doveri	24,47
+Daniele Orsato	23,38
+Davide Massa	26,06
+Fabio Maresca	25,50
+Andrea Colombo	24,19
+Maurizio Mariani	23,80
+Federico La Penna	24,07
+Juan Luca Sacchi	25,60
+Antonio Rapuano	25,40
+Luca Pairetto	23,36
+Michael Fabbri	24,31
+Ermanno Feliciani	22,38
+Gianluca Aureliano	25,50
+Gianluca Manganiello	22,33
+Marco Piccinini	23,17
+Matteo Marcenaro	22,58
+Marco Di Bello	23,18
+Antonio Giua	23,00
+Simone Sozza	26,36
+Matteo Marchetti	23,27
+Daniele Chiffi	22,22
+Alessandro Prontera	22,22
+Federico Dionisi	27,89
+Livio Marinelli	24,38
+Luca Massimi	25,13
+Giovanni Ayroldi	26,13
+Maria Ferrieri Caputi	23,13
+Rosario Abisso	23,86
+Luca Zufferli	22,00
+Francesco Fourneau	21,80
+Alberto Santoro	26,67
+Paride Tremolada	25,67
+Giuseppe Collu	21,00
+Davide Di Marco	21,00
+Davide Ghersini	26,00
+Ivano Pezzuto	24,00
+Francesco Cosso	20,00`, 
+            "2022-23": `Daniele Orsato	21,40
+Fabio Maresca	25,60
+Daniele Chiffi	23,47
+Maurizio Mariani	24,07
+Daniele Doveri	25,43
+Davide Massa	27,64
+Antonio Rapuano	22,43
+Livio Marinelli	24,07
+Michael Fabbri	23,17
+Luca Pairetto	26,08
+Giovanni Ayroldi	27,50
+Andrea Colombo	22,83
+Matteo Marcenaro	23,42
+Marco Di Bello	28,55
+Antonio Giua	23,64
+Simone Sozza	26,09
+Matteo Marchetti	27,45
+Massimiliano Irrati	23,70
+Rosario Abisso	24,60
+Francesco Fourneau	24,20
+Luca Massimi	22,70
+Juan Luca Sacchi	25,00
+Marco Piccinini	25,33
+Federico Dionisi	28,11
+Gianluca Aureliano	24,25
+Paolo Valeri	26,86
+Davide Ghersini	23,00
+Federico La Penna	25,14
+Alessandro Prontera	26,29
+Alberto Santoro	24,00
+Gianluca Manganiello	21,17
+Marco Guida	23,20
+Ivano Pezzuto	23,80
+Francesco Cosso	22,20
+Ermanno Feliciani	22,40
+Niccolò Baroni	26,25
+Manuel Volpi	26,75
+Giacomo Camplone	23,75
+Luca Zufferli	26,00
+Maria Ferrieri Caputi	23,67
+Marco Serra	28,00
+Daniele Perenzoni	28,50
+Daniele Minelli	26,00
+Daniele Paterna	30,00
+Francesco Meraviglia	24,00`, 
+            "2021-22": `Daniele Doveri	26,82
+Marco Di Bello	27,18
+Fabio Maresca	24,75
+Daniele Chiffi	24,88
+Daniele Orsato	28,00
+Maurizio Mariani	28,79
+Marco Guida	27,14
+Davide Massa	26,29
+Livio Marinelli	21,86
+Simone Sozza	26,43
+Rosario Abisso	25,92
+Paolo Valeri	30,25
+Michael Fabbri	23,67
+Luca Pairetto	26,58
+Gianluca Manganiello	24,08
+Massimiliano Irrati	27,00
+Juan Luca Sacchi	25,55
+Francesco Fourneau	27,45
+Luca Massimi	29,27
+Giovanni Ayroldi	29,82
+Alessandro Prontera	26,70
+Antonio Rapuano	26,22
+Davide Ghersini	21,38
+Gianluca Aureliano	29,63
+Marco Piccinini	26,00
+Matteo Marchetti	26,13
+Ivano Pezzuto	31,14
+Federico Dionisi	26,86
+Antonio Giua	25,67
+Manuel Volpi	31,17
+Piero Giacomelli	29,60
+Marco Serra	24,80
+Lorenzo Maggioni	29,00
+Giacomo Camplone	30,00
+Andrea Colombo	25,33
+Matteo Marcenaro	28,33
+Valerio Marini	28,50
+Alberto Santoro	25,50
+Matteo Gariglio	25,00
+Francesco Cosso	25,00
+Antonio Di Martino	26,00
+Niccolò Baroni	23,00
+Daniele Paterna	30,00
+Francesco Meraviglia	29,00
+Gianpiero Miele	27,00`, 
+            "2020-21": `Maurizio Mariani	27,11
+Daniele Doveri	29,06
+Davide Massa	27,76
+Marco Di Bello	27,41
+Piero Giacomelli	29,65
+Gianpaolo Calvarese	27,00
+Daniele Chiffi	27,75
+Daniele Orsato	29,07
+Luca Pairetto	28,67
+Michael Fabbri	23,57
+Fabio Maresca	26,64
+Paolo Valeri	27,00
+Rosario Abisso	27,23
+Marco Piccinini	27,85
+Fabrizio Pasqua	25,00
+Juan Luca Sacchi	25,75
+Massimiliano Irrati	27,73
+Marco Guida	27,70
+Federico La Penna	28,00
+Gianluca Manganiello	25,40
+Francesco Fourneau	29,00
+Valerio Marini	30,57
+Giovanni Ayroldi	26,00
+Gianluca Aureliano	26,17
+Livio Marinelli	23,83
+Antonio Giua	31,00
+Simone Sozza	25,00
+Ivano Pezzuto	28,40
+Alessandro Prontera	28,60
+Manuel Volpi	32,20
+Federico Dionisi	29,40
+Davide Ghersini	25,75
+Antonio Di Martino	28,75
+Antonio Rapuano	27,50
+Luca Massimi	31,25
+Eugenio Abbattista	26,33
+Marco Serra	33,00
+Daniele Paterna	21,00
+Alberto Santoro	27,00
+Matteo Gariglio	25,00
+Matteo Marchetti	32,00
+Riccardo Ros	37,00
+Lorenzo Maggioni	21,00
+Giacomo Camplone	20,00
+Francesco Meraviglia	22,00`
         };
 
         const TOTAL_TIME_DB = `Massa	95,47
@@ -1633,8 +1910,29 @@ Manganiello	97,11`;
         let hideInactive = false; // Filter for inactive refs
         let playingTimeSort = { column: null, order: 'asc' };
         let matchesSort = { column: null, order: 'asc' };
+        let matchLookup2526 = {};
 
         // --- FUNCTIONS ---
+        function parseMatchLookup() {
+             const lines = MATCH_LOOKUP_RAW_2526.trim().split('\n');
+             // Structure: key is "timeStr_refereeSurname", value is "MatchName"
+             matchLookup2526 = {};
+             lines.forEach(line => {
+                  // Split by whitespace or tab
+                  const parts = line.trim().split(/\s+/);
+                  if(parts.length < 3) return;
+                  
+                  // Expected: MatchName Referee Time
+                  const time = parts.pop(); // Last element is the time (e.g., 46,53)
+                  const refName = parts.pop(); // Second to last is the referee surname (e.g., "Massa")
+                  const match = parts.join(' '); // Remainder is the match name (e.g., "Genoa-Lecce")
+                  
+                  // Create a composite key to handle duplicates like 56,21
+                  const key = `${time}_${refName.toLowerCase()}`;
+                  matchLookup2526[key] = match;
+             });
+        }
+
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
             document.getElementById('minMatchesValue').innerText = val;
@@ -1698,6 +1996,15 @@ Manganiello	97,11`;
                     const displayMin = Math.floor(totalSeconds / 60);
                     const displaySec = Math.round(totalSeconds % 60);
                     const formattedMatchTime = `${displayMin}'${displaySec.toString().padStart(2, '0')}''`;
+                    
+                    // NEW: Lookup Match Name for 2025-26 using Ref Name + Time
+                    let matchName = "";
+                    if(season === '2025-26') {
+                         // Get surname from full name or just use name if it's already surname
+                         const surname = name.split(' ').pop().toLowerCase();
+                         const key = `${timeStr}_${surname}`;
+                         matchName = matchLookup2526[key] || "";
+                    }
 
                     if (!stats[name]) {
                         stats[name] = {
@@ -1713,7 +2020,11 @@ Manganiello	97,11`;
                     
                     stats[name].effSecondsAccumulated += totalSeconds;
                     stats[name].effCount += 1;
-                    stats[name].effMatches.push(formattedMatchTime);
+                    stats[name].effMatches.push({
+                        formatted: formattedMatchTime,
+                        raw: timeStr,
+                        matchName: matchName
+                    });
                 });
             });
 
@@ -2060,8 +2371,13 @@ Manganiello	97,11`;
                 
                 mainRowHTML += `<td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-slate-400 text-xs sm:text-base">${ref.matchCount}</td></tr>`;
 
-                // ... (Same detail row logic)
-                const matchList = ref.matches.map(m => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-green-300">${m}</span>`).join('');
+                // NEW: Updated match list rendering with Tooltip
+                const matchList = ref.matches.map(m => {
+                    // Check if we have a match name. If so, add title attribute for tooltip
+                    const tooltipAttr = m.matchName ? `title="${m.matchName}" class="tooltip-trigger bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-green-300 cursor-help hover:bg-slate-700 transition-colors"` : `class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-green-300"`;
+                    return `<span ${tooltipAttr}>${m.formatted}</span>`;
+                }).join('');
+
                 let totalMatchList = "";
                 if(showTotalTime && ref.totalMatches.length > 0) {
                     totalMatchList = ref.totalMatches.map(m => `<span class="bg-slate-800 px-2 py-1 rounded text-xs font-mono border border-slate-700 text-blue-300">${m}</span>`).join('');
@@ -2256,7 +2572,7 @@ Manganiello	97,11`;
         function switchView(view) {
             currentView = view;
             const statsControls = document.getElementById('stats-controls');
-            const extraControls = document.getElementById('extra-controls'); // Fixed: use correct ID from HTML
+            const extraControls = document.getElementById('extra-controls'); 
             const insightsContainer = document.getElementById('insights-container');
             const playingTimeTitle = document.getElementById('playing-time-title');
             const matchesTitle = document.getElementById('matches-title');
@@ -2306,7 +2622,7 @@ Manganiello	97,11`;
 
             } else if (view === 'matches') {
                 statsControls.classList.add('hidden');
-                extraControls.classList.add('hidden'); // Reusing hiding logic
+                extraControls.classList.add('hidden'); 
                 insightsContainer.classList.add('hidden');
                 playingTimeTitle.classList.add('hidden');
                 matchesTitle.classList.remove('hidden');
@@ -2527,7 +2843,11 @@ Manganiello	97,11`;
         window.aggregateData = aggregateData;
         window.sortData = sortData;
         window.toggleInactiveRefs = toggleInactiveRefs;
-        window.onload = aggregateData;
+        
+        window.onload = function() {
+            parseMatchLookup(); // Initialize lookup
+            aggregateData(); // Initial render
+        };
 
     </script>
 </body>
