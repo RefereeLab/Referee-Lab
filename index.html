@@ -382,11 +382,20 @@
                     </div>
                     
                     <!-- Matches Title (Hidden by default) -->
-                    <div id="matches-title" class="hidden w-full text-center py-6 border-b border-white/10 bg-slate-900/50">
-                        <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight view-title">
-                            ELENCO <span class="text-blue-400">PARTITE</span>
-                        </h2>
-                        <p class="text-slate-400 text-xs uppercase tracking-widest mt-2 font-semibold">Dettaglio Tempo di Gioco</p>
+                    <div id="matches-title" class="hidden w-full relative py-6 border-b border-white/10 bg-slate-900/50 flex items-center justify-center">
+                         <!-- Pulsante Indietro per tornare a Tempo Effettivo -->
+                        <button onclick="switchView('playingTime')" class="absolute left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider bg-white/5 px-3 py-2 rounded-lg hover:bg-white/10 border border-white/10 group">
+                             <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> 
+                             <span class="hidden sm:inline">Tempo Effettivo</span>
+                             <span class="sm:hidden">Indietro</span>
+                        </button>
+                        
+                        <div class="text-center">
+                            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight view-title">
+                                ELENCO <span class="text-blue-400">PARTITE</span>
+                            </h2>
+                            <p class="text-slate-400 text-xs uppercase tracking-widest mt-2 font-semibold">Dettaglio Tempo di Gioco</p>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto flex-grow">
@@ -423,8 +432,10 @@
             </div>
         </div>
         
-        <div class="mt-2 text-center">
-            <p class="text-xs text-slate-500">© 2025 RefereeLab. Tutti i diritti riservati.</p>
+            <div class="text-slate-500 text-[10px] sm:text-xs max-w-2xl mx-auto px-4">
+                <p class="mb-1">Le informazioni qui presentate derivano da dati pubblicati dalla Lega Serie A, successivamente elaborati.</p>
+                <p>© 2025 RefereeLab. Tutti i diritti riservati.</p>
+            </div>
         </div>
 
     </main>
