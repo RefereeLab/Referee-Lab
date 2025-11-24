@@ -1996,6 +1996,9 @@ Manganiello	97,11`;
         let playingTimeSort = { column: null, order: 'asc' };
         let matchesSort = { column: null, order: 'asc' };
 
+// *** AGGIUNTA PER PRESTAZIONI: Limite visualizzazione partite ***
+        let matchesViewLimit = 50;
+
         // --- FUNCTIONS ---
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
@@ -2531,22 +2534,23 @@ Manganiello	97,11`;
         }
         
         // --- MATCHES LOGIC ---
-        function processMatchesData() {
+function processMatchesData(resetLimit = true) {
+            // *** 1. RESETTA IL LIMITE SE NECESSARIO ***
+            if (resetLimit) matchesViewLimit = 50;
+
             const isSeason2526 = activeSeasons.includes('2025-26');
-            
-            // Show Update Disclaimer for 25/26
             const disclaimer = document.getElementById('disclaimer-update');
+            
+            // Gestione visualizzazione disclaimer
             if (isSeason2526) {
-                disclaimer.classList.remove('hidden');
+                if(disclaimer) disclaimer.classList.remove('hidden');
             } else {
-                disclaimer.classList.add('hidden');
+                if(disclaimer) disclaimer.classList.add('hidden');
             }
 
-// *** NUOVA AGGIUNTA: Gestione stagioni "In Arrivo" ***
+            // *** GESTIONE STAGIONI "IN ARRIVO" ***
             const comingSoonSeasons = ['2023-24', '2022-23', '2021-22', '2020-21'];
             if (activeSeasons.length === 1 && comingSoonSeasons.includes(activeSeasons[0])) {
-                
-                // Imposta l'header della tabella (standard)
                 const thead = document.getElementById('tableHeader');
                 thead.innerHTML = `
                     <tr>
@@ -2557,8 +2561,6 @@ Manganiello	97,11`;
                         <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-red-400">Falli</th>
                     </tr>
                 `;
-
-                // Messaggio "Dati in Arrivo"
                 document.getElementById('tableBody').innerHTML = `
                     <tr>
                         <td colspan="5" class="text-center py-12">
@@ -2570,8 +2572,8 @@ Manganiello	97,11`;
                         </td>
                     </tr>`;
                 document.getElementById('tableFooter').innerHTML = '';
-                disclaimer.classList.add('hidden'); // Nascondi disclaimer aggiornamento
-                return; // Esci dalla funzione
+                if(disclaimer) disclaimer.classList.add('hidden');
+                return;
             }
 
             let data = [];
@@ -2592,8 +2594,6 @@ Manganiello	97,11`;
                 const totalTimeStr = parts[1].trim();
                 const effTimeStr = parts[2].trim();
                 let percStr = parts.length > 3 ? parts[3].trim().replace('%', '') : '0';
-
-                // Nuova colonna FALLI (se non c’è → 0)
                 const foulsStr = parts.length > 4 ? parts[4].replace(/[\r\n]/g, '').trim() : '0';
                 const fouls = parseInt(foulsStr, 10) || 0;
 
@@ -2622,15 +2622,12 @@ Manganiello	97,11`;
                     sortTotal: totalSec,
                     sortEff: effSec,
                     sortPerc: perc,
-
-                    // 👉 nuova colonna aggiunta a destra
                     fouls: fouls
                 };
             }).filter(x => x !== null);
 
-            // Calcolo i massimi per le barre prima del filtro di ricerca
-            const maxTotalSec = Math.max(...data.map(d => d.sortTotal), 5400); // Min 90 min
-            const maxEffSec = Math.max(...data.map(d => d.sortEff), 1800);     // Min 30 min
+            const maxTotalSec = Math.max(...data.map(d => d.sortTotal), 5400); 
+            const maxEffSec = Math.max(...data.map(d => d.sortEff), 1800);     
 
             // Search Filter
             const query = document.getElementById('searchInput').value.toLowerCase();
@@ -2661,36 +2658,34 @@ Manganiello	97,11`;
             processMatchesData(); // Re-render
         }
 
-        function renderMatchesTable(data, maxTotalSec, maxEffSec) {
+// *** FUNZIONE NUOVA: CARICA ALTRI ***
+        function loadMoreMatches() {
+            matchesViewLimit += 50; // Carica altri 50
+            processMatchesData(false); // NON resettare
+        }
+
+// *** FUNZIONE RENDER OTTIMIZZATA ***
+function renderMatchesTable(data, maxTotalSec, maxEffSec) {
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFooter');
 
-            // Custom Sort Logic applied here before render
+            // Custom Sort Logic
             if (matchesSort.column !== null) {
                 const colMap = ['match', 'sortTotal', 'sortEff', 'sortPerc', 'fouls'];
                 const key = colMap[matchesSort.column];
                 const mult = matchesSort.order === 'asc' ? 1 : -1;
                 
                 data.sort((a, b) => {
-                    // Custom logic for numeric columns to keep ND (0) at bottom
                     if (key !== 'match') {
                         const valA = a[key];
                         const valB = b[key];
-                        
-                        if (valA === 0 && valB !== 0) return 1; // A (ND) goes bottom
-                        if (valA !== 0 && valB === 0) return -1; // B (ND) goes bottom
+                        if (valA === 0 && valB !== 0) return 1; 
+                        if (valA !== 0 && valB === 0) return -1; 
                         if (valA === 0 && valB === 0) return 0;
-
                         return (valA - valB) * mult;
                     }
-
-                    // String sort for Match Name
-                    if (typeof a[key] === 'string') {
-                        return a[key].localeCompare(b[key]) * mult;
-                    } else {
-                        return (a[key] - b[key]) * mult;
-                    }
+                    return a.match.localeCompare(b.match) * mult;
                 });
             }
 
@@ -2701,34 +2696,31 @@ Manganiello	97,11`;
                     <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-green-400 cursor-pointer" onclick="sortMatches(2, true)"><span class="sm:hidden">T. Eff</span><span class="hidden sm:inline">Tempo Effettivo</span> <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
                     <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-yellow-400 cursor-pointer" onclick="sortMatches(3, true)">% <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
                     <th class="px-1 py-3 sm:px-4 sm:py-4 font-bold text-center text-red-400 cursor-pointer" onclick="sortMatches(4, true)">falli <i class="fa-solid fa-sort ml-1 opacity-50"></i></th>
-
                 </tr>
             `;
 
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-500">Nessun dato disponibile.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">Nessun dato disponibile.</td></tr>`;
                 tfoot.innerHTML = '';
                 return;
             }
 
-            data.forEach((row, index) => {
-                // Calcolo Percentuali Barre
-                
-                // Tempo Totale (Scala: 90min - Max)
-                const minTotalBar = 5400; // 90 min in secondi
+            // *** PRENDI SOLO LE PARTITE VISIBILI ***
+            const visibleData = data.slice(0, matchesViewLimit);
+
+            // *** QUI C'ERA L'ERRORE: ORA USIAMO SOLO MAP CORRETTAMENTE ***
+            let rowsHTML = visibleData.map(row => {
+                const minTotalBar = 5400; 
                 let percentTotal = 0;
                 if (row.sortTotal > minTotalBar) {
                     percentTotal = ((row.sortTotal - minTotalBar) / (maxTotalSec - minTotalBar)) * 100;
                 } else if (row.sortTotal > 0) {
-                    // Se è valido ma <= 90, diamo un minimo visibile o 0
                     percentTotal = 0; 
                 }
-                // Se ND o 0, rimane 0
 
-                // Tempo Effettivo (Scala: 30min - Max)
-                const minEffBar = 1800; // 30 min in secondi
+                const minEffBar = 1800; 
                 let percentEff = 0;
                 if (row.sortEff > minEffBar) {
                     percentEff = ((row.sortEff - minEffBar) / (maxEffSec - minEffBar)) * 100;
@@ -2736,10 +2728,9 @@ Manganiello	97,11`;
                     percentEff = 0;
                 }
 
-                // Percentuale (Scala: 0 - 100)
-                let percentPerc = row.sortPerc; // Valore diretto
-                
-                const tr = `
+                let percentPerc = row.sortPerc;
+
+                return `
                     <tr class="hover:bg-white/5 transition-colors border-b border-slate-800">
                         <td class="px-2 py-2 sm:px-6 sm:py-2 font-bold text-white uppercase sticky-col-body text-xs sm:text-sm relative group">
                             <span>${row.match}</span>
@@ -2771,16 +2762,30 @@ Manganiello	97,11`;
                                 </div>` : ''}
                             </div>
                         </td>
-        <!-- ⭐ COLONNA FALLI -->
-        <td class="px-1 py-2 sm:px-4 sm:py-2 text-center">
-            <span class="font-bold text-red-400 text-sm sm:text-base">${row.fouls}</span>
-        </td>
-    </tr>
-  `;
-                tbody.innerHTML += tr;
+                        <td class="px-1 py-2 sm:px-4 sm:py-2 text-center">
+                            <span class="font-bold text-red-400 text-sm sm:text-base">${row.fouls}</span>
+                        </td>
+                    </tr>
+                `;
             });
+
+            // *** AGGIUNGI BOTTONE CARICA ALTRI ***
+            if (data.length > matchesViewLimit) {
+                rowsHTML.push(`
+                    <tr>
+                        <td colspan="5" class="text-center py-4 bg-slate-900/30">
+                            <button onclick="loadMoreMatches()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 px-6 rounded-full border border-white/10 transition-all text-sm shadow-lg">
+                                <i class="fa-solid fa-plus mr-2"></i> Carica altre partite (${data.length - matchesViewLimit} rimanenti)
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            }
             
-            // Footer stats (exclude ND)
+            // *** UNISCI L'ARRAY IN UNA STRINGA ***
+            tbody.innerHTML = rowsHTML.join(''); 
+
+            // Footer stats
             const validData = data.filter(d => d.sortEff > 0 && !isNaN(d.fouls));
             if (validData.length > 0) {
                 let avgEffSec = validData.reduce((a,b) => a + b.sortEff, 0) / validData.length;
@@ -2796,7 +2801,7 @@ Manganiello	97,11`;
 
                 tfoot.innerHTML = `
                     <tr>
-                        <td class="px-2 py-3 sm:px-6 sm:py-4 text-right text-xs sm:text-sm text-slate-500 uppercase sticky-col-body">Media (Visibili)</td>
+                        <td class="px-2 py-3 sm:px-6 sm:py-4 text-right text-xs sm:text-sm text-slate-500 uppercase sticky-col-body">Media</td>
                         <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-blue-400 font-mono text-sm sm:text-base">${formatSec(avgTotSec)}</td>
                         <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-green-400 font-mono text-sm sm:text-base">${formatSec(avgEffSec)}</td>
                         <td class="px-1 py-3 sm:px-4 sm:py-4 text-center text-yellow-400 font-bold text-sm sm:text-base">${avgPerc.toFixed(1)}%</td>
@@ -2809,7 +2814,7 @@ Manganiello	97,11`;
         }
 
         // --- LOGIC ---
-        function switchView(view) {
+function switchView(view) {
             currentView = view;
             const statsControls = document.getElementById('stats-controls');
             const extraControls = document.getElementById('extra-controls'); 
@@ -3124,7 +3129,7 @@ Manganiello	97,11`;
             updateInsights();
         }
 
-        window.handleSearch = function() {
+window.handleSearch = function() {
             if (currentView === 'playingTime') processPlayingTimeData();
             else if (currentView === 'matches') processMatchesData();
             else aggregateData();
@@ -3136,7 +3141,12 @@ Manganiello	97,11`;
         window.aggregateData = aggregateData;
         window.sortData = sortData;
         window.toggleInactiveRefs = toggleInactiveRefs;
-        window.onload = aggregateData;
+        window.loadMoreMatches = loadMoreMatches; // EXPORT CARICA ALTRI
+        window.onload = function() {
+            activeSeasons = ['2025-26'];
+            updateSeasonButtonsUI();
+            aggregateData();
+        };
 
     </script>
 </body>
