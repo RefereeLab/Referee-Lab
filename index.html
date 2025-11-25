@@ -92,7 +92,7 @@
         /* Sticky Column Logic - Solid Backgrounds to prevent overlap transparency issues */
         .sticky-col-head { position: sticky; left: 0; z-index: 30; background-color: #0f172a; box-shadow: 4px 0 8px -2px rgba(0,0,0,0.3); }
         
-        /* The sticky body column now uses a SINGLE solid color (matching body) instead of alternating colors */
+        /* The sticky body column uses a SINGLE solid color (matching body) */
         .sticky-col-body { 
             position: sticky; 
             left: 0; 
@@ -130,7 +130,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="window.location.reload()">
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-900 shadow-glow group-hover:scale-105 transition-transform">
+                    <!-- FIX: Hidden on mobile (default hidden), shown on sm (sm:flex) -->
+                    <div class="hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center text-slate-900 shadow-glow group-hover:scale-105 transition-transform">
                         <i class="fa-solid fa-whistle text-xs sm:text-sm"></i>
                     </div>
                     <div class="flex flex-col">
@@ -171,10 +172,12 @@
                 <div class="glass-panel rounded-xl p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Cerca</label>
-                        <div class="relative group">
-                            <!-- Increased left padding to pl-14 to absolutely prevent overlap -->
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-yellow-500 transition-colors"></i>
-                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca..." class="w-full bg-slate-900/60 border border-slate-700 text-white text-xs sm:text-sm rounded-lg focus:ring-1 focus:ring-yellow-500 pl-14 p-2 sm:p-2.5 outline-none transition-all">
+                        <!-- FIX: FLEX CONTAINER for Search to prevent overlap -->
+                        <div class="group flex items-center w-full bg-slate-900/60 border border-slate-700 rounded-lg focus-within:ring-1 focus-within:ring-yellow-500 transition-all overflow-hidden">
+                            <div class="pl-3 py-2 sm:py-2.5 text-slate-500 group-focus-within:text-yellow-500 transition-colors flex-shrink-0">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca..." class="w-full bg-transparent border-none text-white text-xs sm:text-sm p-2 sm:p-2.5 focus:ring-0 outline-none placeholder-slate-500">
                         </div>
                     </div>
 
@@ -318,10 +321,66 @@
                             </div>
                         </div>
                         <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">FIORENTINA – JUVENTUS</div>
+                            <div class="text-white font-medium mb-2 tracking-wide">UDINESE – BOLOGNA</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">CAMPLONE</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> SACCHI</div>
+                            </div>
+                        </div>
+                         <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">FIORENTINA – JUVE</div>
                             <div class="flex justify-between items-center text-[10px]">
                                 <div class="text-slate-500">VAR: <span class="text-slate-300">GUIDA</span></div>
                                 <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DOVERI</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">NAPOLI – ATALANTA</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">DI PAOLO</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DI BELLO</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">VERONA – PARMA</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">PATERNA</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> PAIRETTO</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">CREMONESE – ROMA</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">PEZZUTO</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> AYROLDI</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">LAZIO – LECCE</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">SERRA</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> ARENA</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">INTER – MILAN</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">AURELIANO</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> SOZZA</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">TORINO – COMO</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">PRONTERA</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> BONACINA</div>
+                            </div>
+                        </div>
+                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
+                            <div class="text-white font-medium mb-2 tracking-wide">SASSUOLO – PISA</div>
+                            <div class="flex justify-between items-center text-[10px]">
+                                <div class="text-slate-500">VAR: <span class="text-slate-300">GARIGLIO</span></div>
+                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DI MARCO</div>
                             </div>
                         </div>
                     </div>
