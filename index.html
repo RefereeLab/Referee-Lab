@@ -88,10 +88,20 @@
         /* Table & Sticky */
         #mainTable tr { transition: background-color 0.1s ease; }
         #mainTable tbody tr:hover { background-color: rgba(255,255,255,0.03); }
+        
+        /* Sticky Column Logic - Solid Backgrounds to prevent overlap transparency issues */
         .sticky-col-head { position: sticky; left: 0; z-index: 30; background-color: #0f172a; box-shadow: 4px 0 8px -2px rgba(0,0,0,0.3); }
-        .sticky-col-body { position: sticky; left: 0; z-index: 20; background-color: #020617; border-right: 1px solid rgba(255,255,255,0.05); }
-        tr:nth-child(odd) .sticky-col-body { background-color: rgba(17, 24, 39, 0.4); }
-        tr:nth-child(even) .sticky-col-body { background-color: rgba(17, 24, 39, 0.6); }
+        
+        /* The sticky body column now uses a SINGLE solid color (matching body) instead of alternating colors */
+        .sticky-col-body { 
+            position: sticky; 
+            left: 0; 
+            z-index: 20; 
+            background-color: #020617; /* Solid color matching body */
+            border-right: 1px solid rgba(255,255,255,0.05); 
+        }
+        
+        /* Ensure the hover effect works on sticky col too */
         tr:hover .sticky-col-body { background-color: #1e293b; }
 
         /* Accordion Animation */
@@ -129,14 +139,15 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 overflow-x-auto max-w-[200px] sm:max-w-none scrollbar-hide">
-                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex-shrink-0 flex items-center gap-2 transition-all">
+                <!-- MOBILE NAV FIXED: w-full and justify-between for mobile -->
+                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full sm:w-auto max-w-[280px] sm:max-w-none justify-between sm:justify-start mx-4 sm:mx-0">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-chart-simple"></i> <span class="inline">Stats</span>
                     </button>
-                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex-shrink-0 flex items-center gap-2 transition-all">
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-stopwatch"></i> <span class="inline">Tempo</span>
                     </button>
-                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex-shrink-0 flex items-center gap-2 transition-all">
+                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-futbol"></i> <span>Partite</span>
                     </button>
                 </div>
@@ -157,13 +168,13 @@
             
             <!-- Controls -->
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
-                <!-- Mobile Toggle for Controls (could be added here if needed, keeping visible for now) -->
                 <div class="glass-panel rounded-xl p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Cerca</label>
                         <div class="relative group">
+                            <!-- Increased left padding to pl-14 to absolutely prevent overlap -->
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-yellow-500 transition-colors"></i>
-                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca..." class="w-full bg-slate-900/60 border border-slate-700 text-white text-xs sm:text-sm rounded-lg focus:ring-1 focus:ring-yellow-500 pl-9 p-2 sm:p-2.5 outline-none transition-all">
+                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca..." class="w-full bg-slate-900/60 border border-slate-700 text-white text-xs sm:text-sm rounded-lg focus:ring-1 focus:ring-yellow-500 pl-14 p-2 sm:p-2.5 outline-none transition-all">
                         </div>
                     </div>
 
@@ -1670,19 +1681,7 @@ Manganiello	97,11`;
                 { name: "Giacomo Camplone", matches: 1, fouls_avg: 20.00, penalties_ap: 1.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 },
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 }
             ],
-        };
-        // --- STATS DB (IMPORTANTE: INCOLLA QUI IL TUO CODICE con const db = { ... }) ---
-        // Il sistema userà questa variabile per le statistiche.
-        
-        const STATS_DB = {
-            "2025-26": [],
-            "2024-25": [],
-            "2023-24": [],
-            "2022-23": [],
-            "2021-22": [],
-            "2020-21": []
-        };
-        
+        };        
         // SE USI "const db = ...", INCOLLALO SOPRA DI QUESTO COMMENTO 
         // E SCOMMENTA LA RIGA SOTTOSTANTE SE VUOI ASSEGNARE db A STATS_DB AUTOMATICAMENTE
         // if (typeof db !== 'undefined') Object.assign(STATS_DB, db);
@@ -1952,7 +1951,11 @@ Manganiello	97,11`;
                 }
             }
 
-            const q = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            if(currentView === 'matches') searchInput.placeholder = "es. inter-milan";
+            else searchInput.placeholder = "Cerca...";
+
+            const q = searchInput.value.toLowerCase();
             if(q && result.length > 0) {
                 if(currentView === 'matches') result = result.filter(r => r.match.toLowerCase().includes(q));
                 else result = result.filter(r => r.name.toLowerCase().includes(q));
