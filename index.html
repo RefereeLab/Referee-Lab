@@ -215,35 +215,45 @@
                     <!-- FIX #7: Diminuzione gap a 2 -->
                     <div class="flex flex-col gap-y-2 text-xs"> 
                         <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-green-500/20">
-                            <div class="text-slate-900 font-bold bg-green-500/90 text-center py-1 tracking-wider">MILAN - JUVENTUS</div>
+                            <div class="text-slate-900 font-bold bg-green-500/90 text-center py-1 tracking-wider">COMO - SASSUOLO</div>
                             <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-400">Arbitro</span>
-                                    <span class="text-white font-bold text-sm">CHIFFI</span>
+                                    <span class="text-white font-bold text-sm">Marchetti</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500">VAR</span>
-                                    <span class="text-violet-300 font-mono">MAZZOLENI</span>
+                                    <span class="text-violet-300 font-mono">Ghersini</span>
                                 </div>
                             </div>
                         </div>
                         <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-slate-700/50">
-                            <div class="text-slate-200 font-bold bg-slate-800/50 text-center py-1 tracking-wider">ROMA - NAPOLI</div>
+                            <div class="text-slate-200 font-bold bg-slate-800/50 text-center py-1 tracking-wider">GENOA - VERONA</div>
                             <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-400">Arbitro</span>
-                                    <span class="text-white font-bold text-sm">MASSA</span>
+                                    <span class="text-white font-bold text-sm">Fabbri</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500">VAR</span>
-                                    <span class="text-violet-300 font-mono">ABISSO</span>
+                                    <span class="text-violet-300 font-mono">Mazzoleni</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-slate-500 text-center text-xs mt-4 p-4 border border-dashed border-slate-700 rounded-lg">
-                            <i class="fa-solid fa-database mb-2"></i><br>
-                            Dati completi in arrivo...
+                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-slate-700/50">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 text-center py-1 tracking-wider">PARMA - UDINESE</div>
+                            <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-slate-400">Arbitro</span>
+                                    <span class="text-white font-bold text-sm">Piccinini</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">VAR</span>
+                                    <span class="text-violet-300 font-mono">Prontera</span>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -490,6 +500,12 @@
                     <!-- FIX #5: Eliminazione Legenda -->
                     <!-- Rimosso blocco Legenda/Footer Info -->
                 </div>
+
+                <!-- Footer MOVED HERE: Inside Main Content Column -->
+                <div class="mt-4 border-t border-white/5 pt-6 pb-6 text-center text-slate-600 text-[10px] uppercase tracking-widest bg-slate-950/90 rounded-xl backdrop-blur-sm">
+                    <p class="mb-2">RefereeLab Analytics Platform v2.0</p>
+                    <p>Dati elaborati da fonti pubbliche. Non affiliato con AIA/FIGC.</p>
+                </div>
             </div>
 
             <!-- Designations (Desktop Only - Enhanced) -->
@@ -501,40 +517,176 @@
                         </h3>
                         <div class="flex justify-between items-end">
                             <span class="text-yellow-500 font-mono text-[14px] font-bold uppercase tracking-wider">13ª Giornata</span>
-                            <span class="bg-red-500/20 text-red-400 text-[9px] px-1.5 rounded border border-red-500/30 font-bold animate-pulse">LIVE</span>
+                            <span class="bg-red-500/20 text-red-400 text-[12px] px-1.5 rounded border border-red-500/30 font-bold animate-pulse">LIVE</span>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
                         <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
-                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1.5 flex justify-between">
-                                <span>MILAN - JUVENTUS</span>
-                                <span class="text-slate-500 text-[10px]">SAB 18:00</span>
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>COMO - SASSUOLO</span>
                             </div>
-                            <div class="p-2 space-y-1">
+                            <div class="p-1 space-y-0">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-slate-400 text-[10px] uppercase">Arb</span>
-                                    <span class="text-green-400 font-bold">CHIFFI</span>
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Marchetti</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-slate-400 text-[10px] uppercase">Var</span>
-                                    <span class="text-slate-300">MAZZOLENI</span>
+                                    <span class="text-slate-300 text-[10px]">Ghersini</span>
                                 </div>
                             </div>
                         </div>
-                         <!-- Dummy Items to fill space -->
-                         <div class="p-4 text-center border border-dashed border-slate-700 rounded-lg text-slate-600">
-                             <span class="text-[10px] italic">Altre designazioni in caricamento...</span>
-                         </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>GENOA - VERONA</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Fabbri</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Mazzoleni</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>PARMA - UDINESE</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Piccinini</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Prontera</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>JUVENTUS - CAGLIARI</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Crezzini</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Di Bello</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>MILAN - LAZIO</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Collu</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Di Paolo</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>LECCE - TORINO</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Mariani</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Marini</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>PISA -   INTER</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Guida</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Paterna</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>ATALANTA - FIORENTINA</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Marcenaro</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Camplone</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>ROMA - NAPOLI</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Massa</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Aureliano</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1 flex justify-between">
+                                <span>BOLOGNA - CREMONESE</span>
+                            </div>
+                            <div class="p-1 space-y-0">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-green-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Feliciani</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300 text-[10px]">Gariglio</span>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div> 
 
-        <div class="mt-8 border-t border-white/5 pt-6 pb-6 text-center text-slate-600 text-[10px] uppercase tracking-widest bg-slate-950/90 z-40 backdrop-blur-sm">
-            <p class="mb-2">RefereeLab Analytics Platform v2.0</p>
-            <p>Dati elaborati da fonti pubbliche. Non affiliato con AIA/FIGC.</p>
-        </div>
     </main>
 
     <script>
