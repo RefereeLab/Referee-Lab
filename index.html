@@ -116,6 +116,13 @@
             border-color: #EAB308;
         }
 
+        /* FIX #1 & #2: Container for Nav Buttons - Flex on desktop to hug content */
+        .nav-buttons-container {
+            border: 1px solid rgba(234, 179, 8, 0.5); /* Contorno giallo */
+            background-color: rgba(15, 23, 42, 0.8); /* Sfondo semi-trasparente */
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+        }
+
         /* Range Slider Styling */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { 
@@ -187,7 +194,8 @@
                         <span class="text-yellow-500 font-mono text-base font-bold uppercase tracking-wider">13ª Giornata</span>
                     </div>
                     <!-- Mock Content -->
-                    <div class="flex flex-col gap-y-4 text-xs"> <!-- Gap aumentato qui -->
+                    <!-- FIX #7: Diminuzione gap a 2 -->
+                    <div class="flex flex-col gap-y-2 text-xs"> 
                         <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-green-500/20">
                             <div class="text-slate-900 font-bold bg-green-500/90 text-center py-1 tracking-wider">MILAN - JUVENTUS</div>
                             <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
@@ -198,6 +206,19 @@
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500">VAR</span>
                                     <span class="text-violet-300 font-mono">MAZZOLENI</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-slate-700/50">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 text-center py-1 tracking-wider">ROMA - NAPOLI</div>
+                            <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-slate-400">Arbitro</span>
+                                    <span class="text-white font-bold text-sm">MASSA</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">VAR</span>
+                                    <span class="text-violet-300 font-mono">ABISSO</span>
                                 </div>
                             </div>
                         </div>
@@ -228,20 +249,19 @@
                     </div>
                 </div>
 
-                <!-- Nav buttons: FIX #1 (Mobile Fixed Grid) & FIX #2 (Style restoration) -->
-                <!-- Utilizzo w-full e grid per mobile, e flex normale per desktop -->
-                <div class="grid grid-cols-4 gap-1 w-full sm:flex sm:w-auto sm:gap-4 mx-2 sm:mx-8">
-                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2">
+                <!-- Nav buttons: FIX #2 (Flex on Desktop) -->
+                <div class="grid grid-cols-4 sm:flex gap-1 w-full sm:w-auto sm:gap-4 mx-2 sm:mx-8 nav-buttons-container rounded-full p-1 border-yellow-500 border">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2 bg-transparent shadow-none">
                         <i class="fa-solid fa-chart-simple"></i> <span class="hidden sm:inline font-semibold">Stats</span> <span class="inline sm:hidden">Stats</span>
                     </button>
-                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2">
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2 bg-transparent shadow-none">
                         <i class="fa-solid fa-stopwatch"></i> <span class="hidden sm:inline font-semibold">Tempo</span> <span class="inline sm:hidden">Tempo</span>
                     </button>
-                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2">
+                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn justify-center px-1 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 sm:gap-2 bg-transparent shadow-none">
                         <i class="fa-solid fa-futbol"></i> <span class="hidden sm:inline font-semibold">Partite</span> <span class="inline sm:hidden">Part.</span>
                     </button>
-                    <!-- Designations Button in Fixed Grid -->
-                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn justify-center px-1 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 text-red-400 hover:text-red-500">
+                    <!-- Designations Button in Fixed Grid on Mobile -->
+                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn justify-center px-1 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 text-red-400 hover:text-red-500 bg-transparent shadow-none">
                         <i class="fa-solid fa-calendar-check"></i> <span class="hidden sm:inline">Design.</span> <span class="inline sm:hidden font-bold">Des.</span>
                     </button>
                 </div>
@@ -301,18 +321,35 @@
                                 <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2024-25">
                                     <span class="font-mono">2024/25</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <!-- FIX #7: Inactive Seasons -->
-                                <button id="btn-2023-24" class="season-btn disabled px-3 py-2.5 rounded-lg text-xs font-medium text-slate-600 w-full text-left flex justify-between items-center shadow-sm cursor-not-allowed">
-                                    <span class="font-mono">2023/24</span> <i class="fa-solid fa-lock text-xs opacity-50"></i>
+                                
+                                <!-- Historic Seasons -->
+                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2023-24">
+                                    <span class="font-mono">2023/24</span> 
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] uppercase font-bold text-slate-600 coming-soon-label hidden">PRESTO</span>
+                                        <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
+                                    </div>
                                 </button>
-                                <button id="btn-2022-23" class="season-btn disabled px-3 py-2.5 rounded-lg text-xs font-medium text-slate-600 w-full text-left flex justify-between items-center shadow-sm cursor-not-allowed">
-                                    <span class="font-mono">2022/23</span> <i class="fa-solid fa-lock text-xs opacity-50"></i>
+                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2022-23">
+                                    <span class="font-mono">2022/23</span> 
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] uppercase font-bold text-slate-600 coming-soon-label hidden">PRESTO</span>
+                                        <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
+                                    </div>
                                 </button>
-                                <button id="btn-2021-22" class="season-btn disabled px-3 py-2.5 rounded-lg text-xs font-medium text-slate-600 w-full text-left flex justify-between items-center shadow-sm cursor-not-allowed">
-                                    <span class="font-mono">2021/22</span> <i class="fa-solid fa-lock text-xs opacity-50"></i>
+                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2021-22">
+                                    <span class="font-mono">2021/22</span> 
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] uppercase font-bold text-slate-600 coming-soon-label hidden">PRESTO</span>
+                                        <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
+                                    </div>
                                 </button>
-                                <button id="btn-2020-21" class="season-btn disabled px-3 py-2.5 rounded-lg text-xs font-medium text-slate-600 w-full text-left flex justify-between items-center shadow-sm cursor-not-allowed">
-                                    <span class="font-mono">2020/21</span> <i class="fa-solid fa-lock text-xs opacity-50"></i>
+                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2020-21">
+                                    <span class="font-mono">2020/21</span> 
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[9px] uppercase font-bold text-slate-600 coming-soon-label hidden">PRESTO</span>
+                                        <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
+                                    </div>
                                 </button>
                             </div>
                         </div>
@@ -344,7 +381,7 @@
                     </div>
                 </div>
 
-                <!-- Insights / Filters Info Container -->
+                <!-- Insights / Filters Info Container - FIX #3: Removed specific insights, kept for future use if needed -->
                 <div id="insights-container" class="flex flex-col gap-3 hidden sm:flex animate-fade-in-up"></div>
             </div>
 
@@ -404,7 +441,7 @@
                     <!-- Alert Banner -->
                     <div id="update-alert-2526" class="hidden w-full bg-blue-500/5 border-b border-blue-500/10 p-2 text-center flex items-center justify-center gap-2">
                          <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-                        <p class="text-[10px] sm:text-xs text-blue-200 font-mono tracking-wide">Dati aggiornati alla 12ª giornata</p>
+                        <p class="text-[10px] sm:text-xs text-blue-200 font-mono tracking-wide">Dati aggiornati alla 12ª giornata del campionato 2025/26</p>
                     </div>
 
                     <!-- Main Table -->
@@ -432,18 +469,8 @@
                         </div>
                     </div>
 
-                    <!-- Legend / Footer Info -->
-                    <div class="p-3 border-t border-white/5 bg-slate-950/50 text-[10px] text-slate-500 flex flex-wrap gap-4 justify-center sm:justify-between items-center">
-                        <div class="flex gap-3">
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400"></span> Sopra Media</span>
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400"></span> Alta Criticità</span>
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-600"></span> ND: Non Disp.</span>
-                        </div>
-                        <div id="disclaimer-2526" class="hidden flex items-center gap-2 text-amber-500/80">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <span>Alcuni dati T.E. 25/26 parziali.</span>
-                        </div>
-                    </div>
+                    <!-- FIX #5: Eliminazione Legenda -->
+                    <!-- Rimosso blocco Legenda/Footer Info -->
                 </div>
             </div>
 
@@ -460,7 +487,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-y-4 text-xs"> <!-- Gap aumentato richiesta 11 -->
+                    <div class="flex flex-col gap-y-2 text-xs"> <!-- FIX #7: Riduzione gap-y a 2 -->
                         <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
                             <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1.5 flex justify-between">
                                 <span>MILAN - JUVENTUS</span>
@@ -486,7 +513,7 @@
             </div>
         </div> 
 
-        <div class="mt-8 border-t border-white/5 pt-6 pb-6 text-center text-slate-600 text-[10px] uppercase tracking-widest">
+        <div class="mt-8 border-t border-white/5 pt-6 pb-6 text-center text-slate-600 text-[10px] uppercase tracking-widest bg-slate-950/90 z-40 backdrop-blur-sm">
             <p class="mb-2">RefereeLab Analytics Platform v2.0</p>
             <p>Dati elaborati da fonti pubbliche. Non affiliato con AIA/FIGC.</p>
         </div>
@@ -494,6 +521,7 @@
 
     <script>
         // --- DATA SECTION ---
+
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
 Parma-Fiorentina	97,04	48,46	49,9%	24
 Empoli-Monza	100,37	44,43	44,3%	35
@@ -1876,6 +1904,8 @@ Di Marco	98,18`;
             ],
         };
 
+        const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
+
         // -----------------------
         // --- LOGIC SECTION ---
         // -----------------------
@@ -1892,7 +1922,7 @@ Di Marco	98,18`;
         const ACTIVE_EXCEPTIONS = ["Maresca", "Caputi", "Ferrieri Caputi"];
         const HISTORICAL_SURNAMES = ["Irrati", "Orsato", "Valeri", "Pasqua", "Calvarese", "Giacomelli"];
 
-        // --- Parsing Functions ---
+        // --- Parsing Functions (UNCHANGED) ---
         function parseTimeStr(str) {
             if(!str || str.trim().toUpperCase() === 'ND') return NaN;
             const clean = str.replace(/[^\d,\.]/g, '').replace(',', '.');
@@ -1928,7 +1958,6 @@ Di Marco	98,18`;
                    ACTIVE_EXCEPTIONS.some(ex => searchName.includes(ex.toUpperCase()));
         }
 
-        // --- FIX #6: Remove Trend Indicators ---
         function formatRefereeNameHTML(fullName) {
             const upperName = fullName.toUpperCase();
             const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
@@ -1950,7 +1979,6 @@ Di Marco	98,18`;
             }
             const formattedFirst = firstname.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             
-            // Removed trend logic
             return `<div class="flex items-center">
                         <span class="font-sans font-normal text-slate-400 capitalize mr-1">${formattedFirst}</span> 
                         <span class="font-sans font-bold text-white uppercase tracking-wide">${surname}</span>
@@ -1992,7 +2020,7 @@ Di Marco	98,18`;
              }).filter(x => x);
         }
 
-        // --- Data Processing ---
+        // --- Data Processing (UNCHANGED) ---
         function processStatsData() {
             let statsMap = new Map();
             const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB;
@@ -2087,73 +2115,121 @@ Di Marco	98,18`;
         function aggregateData() {
             let result = [];
             // Reset UI
-            document.getElementById('stats-controls').classList.add('hidden');
-            document.getElementById('playing-time-title').classList.add('hidden');
-            document.getElementById('matches-title').classList.add('hidden');
-            document.getElementById('disclaimer-2526').classList.add('hidden');
-            document.getElementById('update-alert-2526').classList.add('hidden');
-            document.getElementById('empty-state-msg').classList.add('hidden');
-            document.getElementById('historical-data-msg').classList.add('hidden');
-            document.getElementById('mainTable').classList.remove('hidden');
+            const elementsToReset = [
+                'stats-controls', 'playing-time-title', 'matches-title', 'disclaimer-2526', 
+                'update-alert-2526', 'empty-state-msg', 'historical-data-msg', 'mainTable'
+            ];
+
+            elementsToReset.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'mainTable' || id === 'empty-state-msg' || id === 'historical-data-msg') {
+                        // Special handling for elements where we need to toggle 'hidden' based on state
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Specific reset for display titles
+            const playingTimeTitle = document.getElementById('playing-time-title');
+            if (playingTimeTitle) playingTimeTitle.classList.add('hidden');
+            const matchesTitle = document.getElementById('matches-title');
+            if (matchesTitle) matchesTitle.classList.add('hidden');
+
 
             const is2526Active = activeSeasons.includes('2025-26');
-            const historicalSeasons = ['2020-21', '2021-22', '2022-23', '2023-24'];
-            const isOnlyHistorical = activeSeasons.every(s => historicalSeasons.includes(s)) && activeSeasons.length > 0;
+            
+            // FIX #1: Check if ONLY historical seasons are active for playingTime or matches views
+            const isOnlyHistoricalActive = activeSeasons.length > 0 && activeSeasons.every(s => HISTORICAL_SEASONS.includes(s));
 
             if (currentView === 'stats') {
-                document.getElementById('stats-controls').classList.remove('hidden');
-                if(is2526Active) document.getElementById('update-alert-2526').classList.remove('hidden');
+                const statsControls = document.getElementById('stats-controls');
+                if (statsControls) statsControls.classList.remove('hidden');
+                if(is2526Active) {
+                    const updateAlert = document.getElementById('update-alert-2526');
+                    if (updateAlert) updateAlert.classList.remove('hidden');
+                }
                 result = processStatsData();
                 if(result.length > 0) {
                     const maxMatches = Math.max(...result.map(r => r.matches));
                     const sliderDesktop = document.getElementById('minMatches');
                     const sliderMobile = document.getElementById('minMatches_mobile');
-                    sliderDesktop.max = maxMatches; sliderMobile.max = maxMatches;
-                    if(parseInt(sliderDesktop.value) > maxMatches) {
-                        sliderDesktop.value = 0; sliderMobile.value = 0;
+                    if (sliderDesktop) sliderDesktop.max = maxMatches;
+                    if (sliderMobile) sliderMobile.max = maxMatches;
+
+                    if(sliderDesktop && parseInt(sliderDesktop.value) > maxMatches) {
+                        sliderDesktop.value = 0;
+                        if (sliderMobile) sliderMobile.value = 0;
                         updateMinMatches(0); minMatchesFilter = 0;
-                        document.getElementById('minMatchesValue').innerText = 0;
-                        document.getElementById('minMatchesValue_mobile').innerText = 0;
+                        const minMatchesValue = document.getElementById('minMatchesValue');
+                        if (minMatchesValue) minMatchesValue.innerText = 0;
+                        const minMatchesValueMobile = document.getElementById('minMatchesValue_mobile');
+                        if (minMatchesValueMobile) minMatchesValueMobile.innerText = 0;
                     }
                 }
                 result = result.filter(r => r.matches >= minMatchesFilter);
                 if(hideInactive) result = result.filter(r => !r.isInactive);
             }
             else if (currentView === 'playingTime') {
-                document.getElementById('playing-time-title').classList.remove('hidden');
-                if(is2526Active) document.getElementById('disclaimer-2526').classList.remove('hidden');
-                if (isOnlyHistorical) {
-                    document.getElementById('mainTable').classList.add('hidden');
-                    document.getElementById('historical-data-msg').classList.remove('hidden');
-                    document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    renderTable([]); updateKPIDashboard([]); return;
+                if (playingTimeTitle) playingTimeTitle.classList.remove('hidden');
+                if(is2526Active) {
+                    const disclaimer = document.getElementById('disclaimer-2526');
+                    if (disclaimer) disclaimer.classList.remove('hidden');
                 }
+                
                 result = processPlayingTimeViewData();
+                
+                // Historical Data Logic - Only if NO data found
+                if (result.length === 0 && isOnlyHistoricalActive) {
+                    const mainTable = document.getElementById('mainTable');
+                    if (mainTable) mainTable.classList.add('hidden');
+                    const historicalDataMsg = document.getElementById('historical-data-msg');
+                    if (historicalDataMsg) historicalDataMsg.classList.remove('hidden');
+                    const historicalMsgTitle = document.getElementById('historical-msg-title');
+                    if (historicalMsgTitle) historicalMsgTitle.innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
+                    renderTable([]); updateKPIDashboard([]); 
+                    updateSeasonButtonsUI();
+                    return;
+                }
             }
             else if (currentView === 'matches') {
-                document.getElementById('matches-title').classList.remove('hidden');
+                if (matchesTitle) matchesTitle.classList.remove('hidden');
                 if(is2526Active) {
-                     document.getElementById('disclaimer-2526').classList.remove('hidden');
-                     document.getElementById('update-alert-2526').classList.remove('hidden');
+                     const disclaimer = document.getElementById('disclaimer-2526');
+                     if (disclaimer) disclaimer.classList.remove('hidden');
+                     const updateAlert = document.getElementById('update-alert-2526');
+                     if (updateAlert) updateAlert.classList.remove('hidden');
                 }
-                if (isOnlyHistorical) {
-                    document.getElementById('mainTable').classList.add('hidden');
-                    document.getElementById('historical-data-msg').classList.remove('hidden');
-                    document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    renderTable([]); updateKPIDashboard([]); return;
-                }
+                
                 result = processMatchesViewData();
+                
+                 // Historical Data Logic - Only if NO data found
+                if (result.length === 0 && isOnlyHistoricalActive) {
+                    const mainTable = document.getElementById('mainTable');
+                    if (mainTable) mainTable.classList.add('hidden');
+                    const historicalDataMsg = document.getElementById('historical-data-msg');
+                    if (historicalDataMsg) historicalDataMsg.classList.remove('hidden');
+                    const historicalMsgTitle = document.getElementById('historical-msg-title');
+                    if (historicalMsgTitle) historicalMsgTitle.innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
+                    renderTable([]); updateKPIDashboard([]); 
+                    updateSeasonButtonsUI();
+                    return;
+                }
             }
 
             // FIX #5: Placeholder dinamico
             const searchInput = document.getElementById('searchInput');
-            if (currentView === 'matches') {
-                searchInput.placeholder = 'Squadra...';
-            } else {
-                searchInput.placeholder = 'Arbitro...';
+            if (searchInput) {
+                if (currentView === 'matches') {
+                    searchInput.placeholder = 'Squadra...';
+                } else {
+                    searchInput.placeholder = 'Arbitro...';
+                }
             }
 
-            const q = searchInput.value.toLowerCase();
+
+            const q = searchInput ? searchInput.value.toLowerCase() : '';
             if(q && result.length > 0) {
                 if(currentView === 'matches') result = result.filter(r => r.match.toLowerCase().includes(q));
                 else result = result.filter(r => r.name.toLowerCase().includes(q));
@@ -2169,33 +2245,44 @@ Di Marco	98,18`;
 
             renderTable(result);
             updateKPIDashboard(result);
+            updateSeasonButtonsUI(); // Assicurati che l'UI dei pulsanti sia corretta dopo aver determinato la view.
 
-            if(currentView === 'stats') renderStatsInsights(result);
-            else if(currentView === 'matches') renderMatchesInsights(result);
-            else document.getElementById('insights-container').innerHTML = '';
+            // FIX #3: Empty insights container instead of rendering cards
+            const insightsContainer = document.getElementById('insights-container');
+            if (insightsContainer) insightsContainer.innerHTML = '';
         }
 
-        // --- Render Table ---
+        // --- Render Table (UNCHANGED) ---
         function renderTable(data) {
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFooter');
-            thead.innerHTML = ''; tbody.innerHTML = ''; tfoot.innerHTML = '';
+            
+            if (thead) thead.innerHTML = '';
+            if (tbody) tbody.innerHTML = '';
+            if (tfoot) tfoot.innerHTML = '';
+
+            const mainTable = document.getElementById('mainTable');
+            const emptyStateMsg = document.getElementById('empty-state-msg');
+
+            // Logic already handled in aggregateData for historical
+            if(data.length === 0 && !document.getElementById('historical-data-msg').classList.contains('hidden')) {
+                 return; // Do nothing if historical message is shown
+            }
 
             if(data.length === 0) {
-                document.getElementById('empty-state-msg').classList.remove('hidden');
-                document.getElementById('mainTable').classList.add('hidden');
+                if (emptyStateMsg) emptyStateMsg.classList.remove('hidden');
+                if (mainTable) mainTable.classList.add('hidden');
                 return;
             }
-            document.getElementById('empty-state-msg').classList.add('hidden');
-            document.getElementById('mainTable').classList.remove('hidden');
+            if (emptyStateMsg) emptyStateMsg.classList.add('hidden');
+            if (mainTable) mainTable.classList.remove('hidden');
 
             const thClass = "p-3 sm:p-4 text-center cursor-pointer hover:bg-slate-800 transition-colors group";
             const tdClass = "p-3 sm:p-4 text-center border-b border-white/5";
 
-            // FIX #4: Tooltip nativi (title attribute)
             if (currentView === 'stats') {
-                thead.innerHTML = `<tr>
+                if (thead) thead.innerHTML = `<tr>
                     <th class="p-3 sm:p-4 sticky-col-head text-left w-1/3 cursor-pointer" onclick="handleSort('name')">Arbitro</th>
                     <th class="${thClass} text-lime-400 font-bold" onclick="handleSort('matches')" title="Presenze Totali">PRES</th>
                     <th class="${thClass} text-red-300" onclick="handleSort('avgFouls')" title="Media Falli per Partita">FALLI/P</th>
@@ -2222,9 +2309,9 @@ Di Marco	98,18`;
                         <td class="${tdClass} text-red-700">${r.avgReds.toFixed(2)}</td>
                         <td class="${tdClass} text-slate-400">${r.avgPens.toFixed(2)}</td>
                     `;
-                    tbody.appendChild(row);
+                    if (tbody) tbody.appendChild(row);
                 });
-                tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
+                if (tfoot) tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
                     <td class="p-4 font-bold sticky-col-body text-left">TOTALE LEGA</td>
                     <td class="p-4 text-center text-lime-400 font-bold">${totM}</td>
                     <td class="p-4 text-center">${(totF/totM).toFixed(2)}</td>
@@ -2237,7 +2324,7 @@ Di Marco	98,18`;
 
             } else if (currentView === 'playingTime') {
                 const showTotalTime = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
-                thead.innerHTML = `<tr>
+                if (thead) thead.innerHTML = `<tr>
                     <th class="p-3 sm:p-4 sticky-col-head text-left w-1/4 cursor-pointer" onclick="handleSort('name')">Arbitro</th>
                     <th class="${thClass} w-24" onclick="handleSort('matches')">Partite</th>
                     <th class="${thClass} text-green-400 text-right pr-6" onclick="handleSort('avgEffSec')" title="Tempo Effettivo Medio">Media T.E.</th>
@@ -2253,7 +2340,6 @@ Di Marco	98,18`;
                     tr.style.animationDelay = `${i * 0.03}s`;
                     tr.onclick = () => toggleDetails(i);
                     
-                    // FIX #8: Rimosse barre sotto T.E.
                     tr.innerHTML = `
                         <td class="p-3 sm:p-4 sticky-col-body text-left font-sans text-white tracking-wide">${formatRefereeNameHTML(r.name)}</td>
                         <td class="${tdClass} text-slate-300 font-bold">${r.matches}</td>
@@ -2261,7 +2347,7 @@ Di Marco	98,18`;
                         ${showTotalTime ? `<td class="${tdClass} text-right font-mono text-blue-400 pr-6">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
                         <td class="${tdClass} text-slate-500 group-hover:text-white"><i class="fa-solid fa-chevron-down text-xs transition-transform" id="icon-${i}"></i></td>
                     `;
-                    tbody.appendChild(tr);
+                    if (tbody) tbody.appendChild(tr);
 
                     const detailsTr = document.createElement('tr');
                     detailsTr.id = `details-${i}`;
@@ -2282,10 +2368,10 @@ Di Marco	98,18`;
                         <h4 class="text-[10px] uppercase font-bold text-slate-500 mb-3 tracking-widest flex items-center gap-2"><i class="fa-solid fa-list-ul"></i> Dettaglio Partite</h4>
                         ${matchesHtml || '<span class="text-slate-600 text-xs italic">Nessun dettaglio.</span>'}
                     </div></td>`;
-                    tbody.appendChild(detailsTr);
+                    if (tbody) tbody.appendChild(detailsTr);
                 });
             } else { // Matches
-                thead.innerHTML = `<tr>
+                if (thead) thead.innerHTML = `<tr>
                     <th class="p-3 sm:p-4 sticky-col-head text-left cursor-pointer" onclick="handleSort('match')">Partita</th>
                     <th class="${thClass}" onclick="handleSort('season')">Stagione</th>
                     <th class="${thClass} text-right text-blue-400" onclick="handleSort('totalTimeSec')">T. Totale</th>
@@ -2294,13 +2380,10 @@ Di Marco	98,18`;
                     <th class="${thClass} text-red-500" onclick="handleSort('fouls')">Falli</th>
                 </tr>`;
 
-                // Calculate Max Fouls for Bar Logic (FIX #10)
                 const maxFouls = data.length > 0 ? Math.max(...data.map(d => d.fouls)) : 1;
 
                 data.forEach((r,i) => {
                     const displayRatio = isNaN(r.ratio) ? "ND" : `${r.ratio}%`;
-                    // FIX #9: Rimossa barra ratio
-                    // FIX #10: Aggiunta barra falli
                     const foulsPerc = Math.min((r.fouls / maxFouls) * 100, 100);
 
                     const tr = document.createElement('tr');
@@ -2317,67 +2400,73 @@ Di Marco	98,18`;
                             <div class="mini-bar-bg"><div class="mini-bar-fill danger" style="width:${foulsPerc}%"></div></div>
                         </td>
                     `;
-                    tbody.appendChild(tr);
+                    if (tbody) tbody.appendChild(tr);
                 });
             }
         }
 
-        // --- FIX #3: Context-Aware KPI Dashboard ---
+        // --- FIX: Context-Aware KPI Dashboard ---
         function updateKPIDashboard(data) {
-            // Se mobile (hidden md:grid gestisce la visibilità CSS), ma JS aggiorna comunque i valori
-            if (!data) return;
-            const count = data.length;
-
+            // FIX: Retrieve elements with null check
             const l1 = document.getElementById('kpi-label-1'); const v1 = document.getElementById('kpi-value-1');
             const l2 = document.getElementById('kpi-label-2'); const v2 = document.getElementById('kpi-value-2');
             const l3 = document.getElementById('kpi-label-3'); const v3 = document.getElementById('kpi-value-3');
             const l4 = document.getElementById('kpi-label-4'); const v4 = document.getElementById('kpi-value-4');
+            
+            // Check if any KPI element exists (only rendered on desktop)
+            if (!l1 || !v1) return;
 
+            const count = data.length;
+
+            // Utility per resettare classi
+            const resetClasses = (v, color, isMono=true) => {
+                v.className = `text-2xl font-mono font-bold mt-1 ${isMono ? 'font-mono' : 'font-sans'} text-${color} ${count === 0 ? 'text-slate-600' : ''}`;
+            };
+            const resetLabelClasses = (l) => {
+                 l.className = "text-[9px] uppercase tracking-widest text-slate-500 font-bold";
+            }
+            
+            // Esecuzione
             if (currentView === 'stats') {
-                // STATS VIEW
-                let totalF = 0, totalMatches = 0, totalPens = 0;
+                // STATS VIEW: Arbitri Tot, Falli/P, Gialli/P, Rossi/P
+                let totalF = 0, totalMatches = 0, totalY = 0, totalR = 0;
                 data.forEach(r => {
                     totalF += (r.avgFouls * r.matches);
                     totalMatches += r.matches;
-                    totalPens += (r.avgPens * r.matches);
+                    totalY += r.yellows;
+                    totalR += r.reds;
                 });
-                const avgFouls = totalMatches ? (totalF / totalMatches).toFixed(2) : 0;
+                const avgFoulsPerMatch = totalMatches ? (totalF / totalMatches).toFixed(2) : 0;
+                const avgYellowsPerMatch = totalMatches ? (totalY / totalMatches).toFixed(2) : 0;
+                const avgRedsPerMatch = totalMatches ? (totalR / totalMatches).toFixed(3) : 0;
                 
-                l1.innerText = "Arbitri Tot."; v1.innerText = count;
-                l2.innerText = "Media Falli"; v2.innerText = avgFouls;
-                l2.className = "text-[9px] uppercase tracking-widest text-slate-500 font-bold";
-                v2.className = "text-2xl font-mono text-yellow-400 font-bold mt-1";
-
-                l3.innerText = "Media T.E."; v3.innerText = "ND"; // Non rilevante qui
-                v3.className = "text-2xl font-mono text-slate-600 font-bold mt-1";
-
-                l4.innerText = "Rigori Tot."; v4.innerText = totalPens.toFixed(0);
-                v4.className = "text-2xl font-mono text-blue-400 font-bold mt-1";
+                resetLabelClasses(l1); resetLabelClasses(l2); resetLabelClasses(l3); resetLabelClasses(l4);
+                
+                l1.innerText = "Arbitri Tot."; v1.innerText = count; resetClasses(v1, 'white');
+                l2.innerText = "Falli / P"; v2.innerText = avgFoulsPerMatch; resetClasses(v2, 'red-400');
+                l3.innerText = "Gialli / P"; v3.innerText = avgYellowsPerMatch; resetClasses(v3, 'yellow-500');
+                l4.innerText = "Rossi / P"; v4.innerText = avgRedsPerMatch; resetClasses(v4, 'red-700');
 
             } else if (currentView === 'playingTime') {
-                // TIME VIEW
+                // TIME VIEW: Arbitri Tot, Partite Tot, Media T. Eff, Media T. Tot
                 let totEffSec = 0, validEff = 0;
                 let totTotSec = 0, validTot = 0;
                 data.forEach(r => { 
                     if(r.avgEffSec) { totEffSec += r.avgEffSec; validEff++; }
                     if(r.avgTotSec) { totTotSec += r.avgTotSec; validTot++; }
                 });
-                const avgEff = validEff ? formatSecondsToTime(totEffSec / validEff) : "00'00''";
-                const avgTot = validTot ? formatSecondsToTime(totTotSec / validTot) : "00'00''";
+                const avgEff = validEff ? formatSecondsToTime(totEffSec / validEff) : "ND";
+                const avgTot = validTot ? formatSecondsToTime(totTotSec / validTot) : "ND";
 
-                l1.innerText = "Arbitri Tot."; v1.innerText = count;
-                
-                l2.innerText = "Media T. Totale"; v2.innerText = avgTot;
-                v2.className = "text-2xl font-mono text-blue-400 font-bold mt-1"; // Blue
+                resetLabelClasses(l1); resetLabelClasses(l2); resetLabelClasses(l3); resetLabelClasses(l4);
 
-                l3.innerText = "Media T. Eff"; v3.innerText = avgEff;
-                v3.className = "text-2xl font-mono text-green-400 font-bold mt-1"; // Green
-
-                l4.innerText = "-"; v4.innerText = "-"; // Empty
-                v4.className = "text-2xl font-mono text-slate-700 font-bold mt-1";
+                l1.innerText = "Arbitri Tot."; v1.innerText = count; resetClasses(v1, 'white');
+                l2.innerText = "Partite Tot."; v2.innerText = data.reduce((sum, r) => sum + r.matches, 0); resetClasses(v2, 'lime-400');
+                l3.innerText = "Media T. Eff"; v3.innerText = avgEff; resetClasses(v3, 'green-400');
+                l4.innerText = "Media T. Tot"; v4.innerText = avgTot; resetClasses(v4, 'blue-400');
 
             } else { 
-                // MATCHES VIEW
+                // MATCHES VIEW: Partite Vis, Media Falli, Media T.E., Media T.Tot
                 let totF = 0;
                 let totEff = 0, cntEff = 0;
                 let totTot = 0, cntTot = 0;
@@ -2388,19 +2477,15 @@ Di Marco	98,18`;
                     if(!isNaN(r.totalTimeSec)) { totTot += r.totalTimeSec; cntTot++; }
                 });
                 const avgFouls = count ? (totF / count).toFixed(1) : 0;
-                const avgEff = cntEff ? formatSecondsToTime(totEff / cntEff) : "00'00''";
-                const avgTot = cntTot ? formatSecondsToTime(totTot / cntTot) : "00'00''";
+                const avgEff = cntEff ? formatSecondsToTime(totEff / cntEff) : "ND";
+                const avgTot = cntTot ? formatSecondsToTime(totTot / cntTot) : "ND";
 
-                l1.innerText = "Partite Vis."; v1.innerText = count;
+                resetLabelClasses(l1); resetLabelClasses(l2); resetLabelClasses(l3); resetLabelClasses(l4);
 
-                l2.innerText = "Media Falli"; v2.innerText = avgFouls;
-                v2.className = "text-2xl font-mono text-red-400 font-bold mt-1";
-
-                l3.innerText = "Media T.E."; v3.innerText = avgEff;
-                v3.className = "text-2xl font-mono text-green-400 font-bold mt-1";
-
-                l4.innerText = "Media T.Tot"; v4.innerText = avgTot;
-                v4.className = "text-2xl font-mono text-blue-400 font-bold mt-1";
+                l1.innerText = "Partite Vis."; v1.innerText = count; resetClasses(v1, 'white');
+                l2.innerText = "Media Falli"; v2.innerText = avgFouls; resetClasses(v2, 'red-400');
+                l3.innerText = "Media T.E."; v3.innerText = avgEff; resetClasses(v3, 'green-400');
+                l4.innerText = "Media T.Tot"; v4.innerText = avgTot; resetClasses(v4, 'blue-400');
             }
         }
 
@@ -2419,17 +2504,33 @@ Di Marco	98,18`;
 
         function switchView(view) {
             currentView = view;
-            document.querySelectorAll('.nav-switcher-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-switcher-btn').forEach(b => {
+                 b.classList.remove('active');
+                 b.classList.remove('bg-transparent');
+            });
+            
+            // FIX #4: Reset Search Input and Filter
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
+            
             if(view === 'stats') { document.getElementById('nav-stats').classList.add('active'); sortColumn = 'matches'; sortDirection = 'desc'; }
             if(view === 'playingTime') { document.getElementById('nav-time').classList.add('active'); sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
             if(view === 'matches') { document.getElementById('nav-matches').classList.add('active'); sortColumn = 'match'; sortDirection = 'asc'; }
-            aggregateData();
+            
+            // Forza il ripristino delle classi 'bg-transparent' per i bottoni NON attivi
+            document.querySelectorAll('.nav-switcher-btn').forEach(b => {
+                if (!b.classList.contains('active')) {
+                    b.classList.add('bg-transparent');
+                    b.classList.remove('shadow-none'); // Opzionale, ma mantiene lo stile coerente
+                }
+            });
+
+            aggregateData(); // Aggrega i dati con il filtro di ricerca azzerato
         }
 
         function toggleSeason(s) {
-            // FIX #7: Prevent toggle for inactive seasons
-            if(['2023-24','2022-23','2021-22','2020-21'].includes(s)) return;
-
+            // FIX #6: Permetti il toggle se STATS è la view O se la stagione è 25/26 o 24/25
+            
             if(window.innerWidth < 1024) { /* Prevent auto close */ }
             if(activeSeasons.includes(s)) activeSeasons = activeSeasons.filter(x => x !== s);
             else activeSeasons.push(s);
@@ -2438,8 +2539,11 @@ Di Marco	98,18`;
         }
 
         function toggleAllSeasons() {
-            // Only toggle active seasons
-            const all = ['2025-26','2024-25'];
+            // Se STATS, considera tutte le stagioni. Altrimenti solo le 25/26 e 24/25.
+            let all = ['2025-26', '2024-25'];
+            if(currentView === 'stats') {
+                all = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
+            }
             activeSeasons = activeSeasons.length === all.length ? [] : [...all];
             updateSeasonButtonsUI();
             aggregateData();
@@ -2449,23 +2553,51 @@ Di Marco	98,18`;
             if (window.innerWidth >= 1024) return;
             const content = document.getElementById('season-dropdown-content');
             const icon = document.getElementById('season-toggle-icon');
+            if (!content || !icon) return; // Safety check
             isSeasonDropdownOpen = !isSeasonDropdownOpen;
             if (isSeasonDropdownOpen) { content.classList.add('open'); icon.style.transform = 'rotate(180deg)'; } 
             else { content.classList.remove('open'); icon.style.transform = 'rotate(0deg)'; }
         }
 
+        // FIX #6 & #1: Aggiornamento UI Pulsanti Stagione
         function updateSeasonButtonsUI() {
-            ['2025-26','2024-25'].forEach(s => {
+            const allSeasons = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
+            
+            allSeasons.forEach(s => {
                 const btn = document.getElementById(`btn-${s}`);
+                
+                if (!btn) return; // safety check
+                
+                const labelComingSoon = btn.querySelector('.coming-soon-label');
+                const isHistorical = HISTORICAL_SEASONS.includes(s);
+
+                // 1. Logica Etichetta "PRESTO"
+                if (isHistorical && currentView !== 'stats') {
+                     if (labelComingSoon) labelComingSoon.classList.remove('hidden');
+                } else {
+                     if (labelComingSoon) labelComingSoon.classList.add('hidden');
+                }
+                
+                // 2. Stato Attivo/Non Attivo (Checkmark)
                 const icon = btn.querySelector('.check-icon');
-                if(activeSeasons.includes(s)) { btn.classList.add('active'); icon.classList.remove('opacity-0'); } 
-                else { btn.classList.remove('active'); icon.classList.add('opacity-0'); }
+                if (icon) {
+                    if(activeSeasons.includes(s)) { btn.classList.add('active'); icon.classList.remove('opacity-0'); } 
+                    else { btn.classList.remove('active'); icon.classList.add('opacity-0'); }
+                }
+            });
+            
+            // Ripristino del corretto stato active/bg-transparent per la nav bar
+            document.querySelectorAll('.nav-switcher-btn').forEach(b => {
+                if (!b.classList.contains('active')) {
+                    b.classList.add('bg-transparent');
+                }
             });
         }
 
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
-            document.getElementById('minMatchesValue').innerText = val;
+            const minMatchesValue = document.getElementById('minMatchesValue');
+            if (minMatchesValue) minMatchesValue.innerText = val;
             const mobileVal = document.getElementById('minMatchesValue_mobile');
             if(mobileVal) mobileVal.innerText = val;
             const sliderD = document.getElementById('minMatches');
@@ -2475,30 +2607,20 @@ Di Marco	98,18`;
             aggregateData();
         }
 
-        function toggleInactiveRefs() { hideInactive = document.getElementById('toggleInactive').checked; aggregateData(); }
+        function toggleInactiveRefs() { 
+            const toggle = document.getElementById('toggleInactive');
+            if (toggle) hideInactive = toggle.checked; 
+            aggregateData(); 
+        }
         function handleSearch() { aggregateData(); }
 
-        function renderStatsInsights(data) {
-             const c = document.getElementById('insights-container');
-             c.innerHTML = `
-                <div class="glass-panel p-3 rounded-xl border-l-4 border-yellow-500 bg-slate-800/50">
-                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-1">Arbitri Visualizzati</div>
-                    <div class="text-xl text-white font-mono font-bold">${data.length}</div>
-                </div>
-             `;
-        }
-        function renderMatchesInsights(data) {
-             const c = document.getElementById('insights-container');
-             c.innerHTML = `
-                <div class="glass-panel p-3 rounded-xl border-l-4 border-blue-500 bg-slate-800/50">
-                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-1">Partite Selezionate</div>
-                    <div class="text-xl text-white font-mono font-bold">${data.length}</div>
-                </div>
-             `;
-        }
+        // FIX #3: Removed renderStatsInsights and renderMatchesInsights calls usage, left empty functions
+        function renderStatsInsights(data) {}
+        function renderMatchesInsights(data) {}
 
         function toggleDesignationsModal(shouldOpen) {
             const modal = document.getElementById('designations-modal');
+            if (!modal) return; // Safety check
             if (shouldOpen) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; } 
             else { modal.classList.remove('open'); document.body.style.overflow = ''; }
         }
@@ -2509,9 +2631,11 @@ Di Marco	98,18`;
             if (window.innerWidth < 1024) {
                 const content = document.getElementById('season-dropdown-content');
                 const icon = document.getElementById('season-toggle-icon');
-                content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-                isSeasonDropdownOpen = false;
+                if (content && icon) {
+                    content.classList.remove('open');
+                    icon.style.transform = 'rotate(0deg)';
+                    isSeasonDropdownOpen = false;
+                }
             }
         };
     </script>
