@@ -253,9 +253,9 @@
                     <div id="season-accordion-wrapper">
                         <!-- Header visibile / Pulsante per comprimere/espandere -->
                         <button onclick="toggleSeasonDropdown()" class="w-full flex justify-between items-center py-2 -mx-1 px-1 transition-colors hover:bg-white/5 rounded-lg lg:cursor-default lg:pointer-events-none">
-                            <div class="flex items-center gap-2"> <!-- Modifica: Contenitore per Stagione + Freccia -->
+                            <div class="flex items-center gap-2"> <!-- Contenitore per Stagione + Freccia -->
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer">Stagione</label>
-                                <i id="season-toggle-icon" class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform duration-300 lg:hidden"></i> <!-- Modifica: Freccia solo su mobile -->
+                                <i id="season-toggle-icon" class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform duration-300 lg:hidden"></i> <!-- Freccia solo su mobile -->
                             </div>
                             <!-- Bottone Tutte Stagioni per Desktop (sempre visibile) -->
                             <button onclick="toggleAllSeasons()" class="hidden lg:block text-[10px] text-yellow-500 hover:text-white uppercase font-bold tracking-wider transition-colors">Tutte</button>
@@ -302,13 +302,24 @@
                             </div>
                         </div>
 
+                        <!-- MODIFICA QUI: Ripristino layout PC con layout mobile compatto sotto lg: -->
                         <div class="bg-slate-900/40 p-3 rounded-lg border border-white/5">
-                            <div class="flex justify-between items-center mb-3">
+                            <!-- Desktop view (original layout: Title and Value on top, Slider below) -->
+                            <div class="hidden lg:flex justify-between items-center mb-3">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Min. Presenze</span>
                                 <span id="minMatchesValue" class="text-yellow-500 font-mono font-medium text-sm">0</span>
                             </div>
-                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)">
+                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="hidden lg:block">
+                            
+                            <!-- Mobile view (compact layout: Title, Slider, Value on one line) -->
+                            <div class="flex items-center justify-between gap-3 lg:hidden">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex-shrink-0">Min. Presenze</span>
+                                <input type="range" id="minMatches_mobile" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="flex-grow">
+                                <!-- Nota: La visualizzazione del valore usa sempre lo stesso ID 'minMatchesValue' gestito da JS -->
+                                <span id="minMatchesValue_mobile" class="text-yellow-500 font-mono font-medium text-sm w-4 text-right flex-shrink-0">0</span>
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
 
@@ -574,7 +585,7 @@
                 // FIX: Rendi il parsing robusto: usa espressione regolare per split su tabulazioni multiple
                 const p = line.trim().split(/\t+/);
 
-                // Il formato dei dati è: [Partita] [T.Tot] [T.Eff] [%] [Falli]
+                // Il formato dei dati è: [Partita] [T.Tot] [T.Eff] [Ratio] [Falli]
                 // Questo richiede almeno 5 colonne. Se non ci sono 5 colonne, la riga viene ignorata.
                 if (p.length < 5) return null;
 
@@ -809,13 +820,22 @@
                 // Dynamic Filter Update (only for Stats)
                 if(result.length > 0) {
                     const maxMatches = Math.max(...result.map(r => r.matches));
-                    const slider = document.getElementById('minMatches');
-                    slider.max = maxMatches;
-                    if(parseInt(slider.value) > maxMatches) {
-                        slider.value = 0;
+                    
+                    // Sincronizza lo slider mobile con quello desktop, e aggiorna il max
+                    const sliderDesktop = document.getElementById('minMatches');
+                    const sliderMobile = document.getElementById('minMatches_mobile');
+                    
+                    sliderDesktop.max = maxMatches;
+                    sliderMobile.max = maxMatches;
+                    
+                    // Assicura che i valori siano sincronizzati se l'utente ha modificato la selezione stagioni
+                    if(parseInt(sliderDesktop.value) > maxMatches) {
+                        sliderDesktop.value = 0;
+                        sliderMobile.value = 0;
                         updateMinMatches(0);
                         minMatchesFilter = 0;
                         document.getElementById('minMatchesValue').innerText = 0;
+                        document.getElementById('minMatchesValue_mobile').innerText = 0;
                     }
                 }
 
@@ -1184,7 +1204,17 @@
 
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
+            // Aggiorna ENTRAMBI i valori visualizzati
             document.getElementById('minMatchesValue').innerText = val;
+            const mobileValueElement = document.getElementById('minMatchesValue_mobile');
+            if (mobileValueElement) mobileValueElement.innerText = val;
+
+            // Sincronizza lo slider mobile con quello desktop (se l'aggiornamento viene da uno dei due)
+            const sliderDesktop = document.getElementById('minMatches');
+            const sliderMobile = document.getElementById('minMatches_mobile');
+            if (sliderDesktop) sliderDesktop.value = val;
+            if (sliderMobile) sliderMobile.value = val;
+            
             aggregateData();
         }
 
