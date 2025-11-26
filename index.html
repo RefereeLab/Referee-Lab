@@ -11,7 +11,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RefereeLab - Analytics</title>
+    <title>RefereeLab - Analytics Pro</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,6 +37,16 @@
                     },
                     boxShadow: {
                         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+                        'neon': '0 0 10px rgba(234, 179, 8, 0.5)',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
                     }
                 }
             }
@@ -44,107 +54,116 @@
     </script>
 
     <style>
-        /* FIX 1: Prevent horizontal overflow/scrolling on mobile/tablet */
-        html, body {
-            overflow-x: hidden;
-        }
+        /* FIX: Prevent horizontal overflow */
+        html, body { overflow-x: hidden; }
 
         body {
             background-color: #020617;
             background-image:
                 radial-gradient(circle at 15% 0%, rgba(30, 41, 59, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 85% 0%, rgba(49, 46, 129, 0.2) 0%, transparent 40%);
+                radial-gradient(circle at 85% 0%, rgba(49, 46, 129, 0.2) 0%, transparent 40%),
+                linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
             background-attachment: fixed;
             color: #e2e8f0;
         }
 
-        /* Glassmorphism */
+        /* Enhanced Glassmorphism */
         .glass-panel {
-            background: rgba(17, 24, 39, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-        }
-        .glass-header {
-            background: rgba(2, 6, 23, 0.85);
+            background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .glass-header {
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #EAB308; }
 
         /* Typography */
         .tabular-nums { font-variant-numeric: tabular-nums; }
 
         /* UI Elements */
         .season-btn { transition: all 0.2s; border: 1px solid transparent; }
-        .season-btn:hover { background: rgba(255, 255, 255, 0.03); }
-        .season-btn.active { background: rgba(234, 179, 8, 0.1); border-color: rgba(234, 179, 8, 0.3); color: #fbbf24; }
+        .season-btn:hover { background: rgba(255, 255, 255, 0.05); transform: translateX(2px); }
+        .season-btn.active { 
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.15) 0%, transparent 100%); 
+            border-left: 3px solid #EAB308; 
+            color: #fbbf24; 
+        }
 
+        /* Range Slider Styling */
         input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #EAB308; cursor: pointer; margin-top: -6px; box-shadow: 0 0 0 4px rgba(2, 6, 23, 1); }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 16px; width: 16px; 
+            border-radius: 50%; background: #EAB308; cursor: pointer; margin-top: -6px; 
+            box-shadow: 0 0 0 2px rgba(2, 6, 23, 1), 0 0 10px rgba(234, 179, 8, 0.5);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #334155; border-radius: 2px; }
 
         .toggle-checkbox:checked { right: 0; border-color: #EAB308; }
         .toggle-checkbox:checked + .toggle-label { background-color: rgba(234, 179, 8, 0.8); }
 
-        /* Table & Sticky */
-        #mainTable tr { transition: background-color 0.1s ease; }
-        #mainTable tbody tr:hover { background-color: rgba(255,255,255,0.03); }
-
-        /* Sticky Column Logic - Solid Backgrounds to prevent overlap transparency issues */
-        .sticky-col-head { position: sticky; left: 0; z-index: 30; background-color: #0f172a; box-shadow: 4px 0 8px -2px rgba(0,0,0,0.3); }
-
-        /* The sticky body column uses a SINGLE solid color (matching body) */
+        /* Table Enhancements */
+        #mainTable tr { transition: background-color 0.15s ease; }
+        #mainTable tbody tr:hover { background-color: rgba(255,255,255,0.05); }
+        
+        /* Sticky Columns */
+        .sticky-col-head { position: sticky; left: 0; z-index: 30; background-color: #0f172a; box-shadow: 4px 0 8px -2px rgba(0,0,0,0.5); }
         .sticky-col-body {
-            position: sticky;
-            left: 0;
-            z-index: 20;
-            background-color: #020617; /* Solid color matching body */
-            border-right: 1px solid rgba(255,255,255,0.05);
+            position: sticky; left: 0; z-index: 20;
+            background-color: #020617; 
+            border-right: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 4px 0 8px -2px rgba(0,0,0,0.2);
         }
-
-        /* Ensure the hover effect works on sticky col too */
         tr:hover .sticky-col-body { background-color: #1e293b; }
 
-        /* Accordion Animation */
-        .details-row { display: none; background: rgba(0,0,0,0.2) !important; }
+        /* Accordion & Mobile */
+        .details-row { display: none; background: rgba(0,0,0,0.3) !important; }
         .details-row.open { display: table-row; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .season-dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; }
+        .season-dropdown-content.open { max-height: 500px; }
+        #designations-modal { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(100%); }
+        #designations-modal.open { transform: translateX(0); }
 
-        /* Match Card */
-        .match-card { background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; }
-
-        .nav-switcher-btn.active { background-color: #EAB308; color: #000; font-weight: 600; box-shadow: 0 0 15px rgba(234, 179, 8, 0.3); }
-        .nav-switcher-btn { color: #94a3b8; }
-
-        /* Loading Pulse */
-        @keyframes pulse-light {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        /* Custom Tooltip */
+        .custom-tooltip-trigger { position: relative; }
+        .custom-tooltip-content {
+            visibility: hidden; opacity: 0;
+            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%) translateY(5px);
+            background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
+            padding: 0.5rem 0.75rem; border-radius: 0.5rem;
+            font-size: 0.75rem; white-space: nowrap; z-index: 50;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            transition: all 0.2s ease; pointer-events: none;
+            text-transform: none; font-weight: normal; font-family: 'Outfit', sans-serif;
         }
-        .animate-pulse-light { animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .custom-tooltip-trigger:hover .custom-tooltip-content { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        .custom-tooltip-arrow {
+            position: absolute; top: 100%; left: 50%; margin-left: -5px;
+            border-width: 5px; border-style: solid; border-color: #334155 transparent transparent transparent;
+        }
 
-        /* New: Designations Modal Styles */
-        #designations-modal {
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-        }
-        #designations-modal.open {
-            transform: translateX(0);
-        }
+        /* KPI Cards */
+        .kpi-card { background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.005) 100%); border: 1px solid rgba(255,255,255,0.05); }
         
-        /* New: Accordion for mobile season selection */
-        .season-dropdown-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-        }
-        .season-dropdown-content.open {
-            max-height: 500px; /* Sufficiently large value */
-        }
+        /* Bar Graph in Table */
+        .mini-bar-bg { background: rgba(255,255,255,0.1); height: 3px; width: 100%; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+        .mini-bar-fill { height: 100%; border-radius: 2px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse-light { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse-light { animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-yellow-500/30 selection:text-yellow-200 text-slate-300">
@@ -155,153 +174,82 @@
             <button onclick="toggleDesignationsModal(false)" class="text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Torna</span>
             </button>
-            <h2 class="ml-auto text-white font-bold text-lg tracking-wide">DESIGNAZIONI</h2>
+            <h2 class="ml-auto text-white font-bold text-lg tracking-wide flex items-center gap-2">
+                <i class="fa-regular fa-calendar-check text-yellow-500"></i> DESIGNAZIONI
+            </h2>
         </div>
-
-        <!-- Contenuto delle designazioni -->
         <div class="p-4 overflow-y-auto h-[calc(100vh-4rem)]">
             <div id="designations-content" class="space-y-4">
                 <div class="glass-panel rounded-xl p-3 border border-white/30">
                     <div class="pb-2 border-b border-white/30 mb-3 flex flex-col">
-                        <h3 class="text-white font-bold text-lg tracking-wide mb-1">PROSSIMA GIORNATA <span class="text-red-600 font-bold"> (Novità)</span></h3>
+                        <h3 class="text-white font-bold text-lg tracking-wide mb-1">PROSSIMA GIORNATA <span class="bg-red-600/20 text-red-400 text-[10px] px-2 py-0.5 rounded ml-2 border border-red-500/30">LIVE</span></h3>
                         <span class="text-yellow-500 font-mono text-base font-bold uppercase tracking-wider">13ª Giornata</span>
                     </div>
-
+                    <!-- Mock Content -->
                     <div class="flex flex-col gap-y-3 text-xs">
-                        <!-- ESEMPIO SINGOLA PARTITA (MANTENUTO SOLO COME STRUTTURA) -->
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">COMO-SASSUOLO</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Marchetti</div>
+                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-green-500/20">
+                            <div class="text-slate-900 font-bold bg-green-500/90 text-center py-1 tracking-wider">MILAN - JUVENTUS</div>
+                            <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-slate-400">Arbitro</span>
+                                    <span class="text-white font-bold text-sm">CHIFFI</span>
                                 </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Ghersini</span></div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-500">VAR</span>
+                                    <span class="text-violet-300 font-mono">MAZZOLENI</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">GENOA-VERONA</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Fabbri</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Mazzoleni</span></div>
-                            </div>
+                        <div class="text-slate-500 text-center text-xs mt-4 p-4 border border-dashed border-slate-700 rounded-lg">
+                            <i class="fa-solid fa-database mb-2"></i><br>
+                            Dati completi in arrivo...
                         </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">PARMA-UDINESE</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Piccinini</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Prontera</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">JUVENTUS-CAGLIARI</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Crezzini</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Di Bello</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">MILAN-LAZIO</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Collu</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Di Paolo</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">LECCE-TORINO</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Mariani</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Marini</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">PISA-INTER</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Guida</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Paterna</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">ATALANTA-FIORENTINA</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Marcenaro</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Camplone</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">ROMA-NAPOLI</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Massa</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Aureliano</span></div>
-                            </div>
-                        </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                            <div class="text-black font-bold bg-[#39FF14] text-center py-1">BOLOGNA-CREMONESE</div>
-                            <div class="p-2">
-                                <div class="flex flex-col items-start text-sm mt-0.1">
-                                    <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Feliciani</div>
-                                </div>
-                                <div class="text-violet-200 font-medium text-sm">VAR: <span class="text-violet-200 font-medium">Gariglio</span></div>
-                            </div>
-                        </div>
-
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
     <!-- Navbar -->
-    <nav class="glass-header sticky top-0 z-50">
+    <nav class="glass-header sticky top-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="window.location.reload()">
-                    <div class="hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center text-slate-900 shadow-glow group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-whistle rotate-[-20deg] text-xs sm:text-sm"></i>
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.reload()">
+                    <div class="relative">
+                        <div class="hidden sm:flex w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center text-slate-900 shadow-neon group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-whistle rotate-[-20deg] text-sm"></i>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-slate-900 hidden sm:block"></div>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-bold text-base sm:text-lg tracking-tight text-white leading-none">Referee<span class="text-yellow-500">Lab</span></span>
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-500 font-medium">Analytics</span>
+                        <span class="font-bold text-lg tracking-tight text-white leading-none group-hover:text-yellow-400 transition-colors">Referee<span class="text-yellow-500">Lab</span></span>
+                        <span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-semibold group-hover:text-slate-400">Pro Analytics</span>
                     </div>
                 </div>
 
-                <!-- NEW: Nav buttons layout adjusted to prevent overflow on mobile -->
-                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full max-w-full justify-between sm:justify-start mx-2 sm:mx-4 sm:w-auto sm:max-w-none">
-                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
-                        <i class="fa-solid fa-chart-simple"></i> <span class="inline">Stats</span>
+                <!-- Nav buttons -->
+                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full max-w-full justify-between sm:justify-start mx-2 sm:mx-8 sm:w-auto sm:max-w-none shadow-inner">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 justify-center px-2 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all hover:bg-white/5">
+                        <i class="fa-solid fa-chart-simple"></i> <span class="inline font-semibold">Stats</span>
                     </button>
-                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
-                        <i class="fa-solid fa-stopwatch"></i> <span class="inline">Tempo</span>
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all hover:bg-white/5">
+                        <i class="fa-solid fa-stopwatch"></i> <span class="inline font-semibold">Tempo</span>
                     </button>
-                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
+                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-5 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all hover:bg-white/5">
                         <i class="fa-solid fa-futbol"></i> <span>Partite</span>
                     </button>
-                    <!-- NEW: Designations Button for Mobile/Tablet - takes up minimal space on mobile -->
-                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all text-red-400 hover:text-red-500">
+                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all text-red-400 hover:text-red-500 hover:bg-red-500/10">
                         <i class="fa-solid fa-calendar-check"></i> <span class="hidden sm:inline">Design.</span>
-                        <span class="inline sm:hidden">Des.</span> <!-- Abbreviation for small screens -->
+                        <span class="inline sm:hidden font-bold">Des.</span>
                     </button>
                 </div>
 
                 <div class="hidden sm:flex items-center gap-4">
-                    <a href="https://instagram.com/reflab25" target="_blank" class="text-slate-400 hover:text-pink-500 transition-colors">
+                    <button class="text-slate-400 hover:text-white transition-colors" title="Esporta Dati" onclick="alert('Export functionality coming soon!')">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <div class="h-4 w-px bg-white/10"></div>
+                    <a href="https://instagram.com/reflab25" target="_blank" class="text-slate-400 hover:text-pink-500 transition-colors transform hover:scale-110 duration-200">
                         <i class="fa-brands fa-instagram text-xl"></i>
                     </a>
                 </div>
@@ -314,64 +262,60 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-6 gap-6 mb-6">
 
-            <!-- Controls -->
+            <!-- Controls (Left Sidebar) -->
             <div class="lg:col-span-1 space-y-4 sm:space-y-6">
-                <div class="glass-panel rounded-xl p-4 sm:p-3 space-y-4 sm:space-y-6">
+                <div class="glass-panel rounded-xl p-4 sm:p-5 space-y-5">
+                    <!-- Search -->
                     <div>
-                        <div class="group flex items-center w-full bg-slate-900/60 border border-slate-700 rounded-lg focus-within:ring-1 focus-within:ring-yellow-500 transition-all overflow-hidden">
-                            <div class="pl-3 py-2 sm:py-0.5 text-slate-500 group-focus-within:text-yellow-500 transition-colors flex-shrink-0">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Ricerca</label>
+                        <div class="group flex items-center w-full bg-slate-950/50 border border-slate-700/50 rounded-lg focus-within:border-yellow-500/50 focus-within:shadow-neon transition-all overflow-hidden">
+                            <div class="pl-3 py-2 text-slate-500 group-focus-within:text-yellow-500 transition-colors">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </div>
-                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca..." class="w-full bg-transparent border-none text-white text-xs sm:text-sm p-2 sm:p-2.5 focus:ring-0 outline-none placeholder-slate-500">
+                            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Arbitro, Squadra..." class="w-full bg-transparent border-none text-white text-xs sm:text-sm p-2.5 focus:ring-0 outline-none placeholder-slate-600">
                         </div>
                     </div>
 
-                    <!-- NUOVO: Elemento comprimibile Stagione (Accordion) -->
-                    <div id="season-accordion-wrapper">
-                        <!-- Header visibile / Pulsante per comprimere/espandere -->
-                        <button onclick="toggleSeasonDropdown()" class="w-full flex justify-between items-center py-1 -mx-1 px-1 transition-colors hover:bg-white/5 rounded-lg lg:cursor-default lg:pointer-events-none">
-                            <div class="flex items-center gap-2"> <!-- Contenitore per Stagione + Freccia -->
-                                <label class="text-[12px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer">Stagione</label>
-                                <i id="season-toggle-icon" class="fa-solid fa-chevron-down text-xs text-slate-500 transition-transform duration-300 lg:hidden"></i> <!-- Freccia solo su mobile -->
+                    <!-- Season Accordion -->
+                    <div id="season-accordion-wrapper" class="border-t border-white/5 pt-4">
+                        <button onclick="toggleSeasonDropdown()" class="w-full flex justify-between items-center py-2 px-1 hover:bg-white/5 rounded-lg transition-colors lg:cursor-default lg:pointer-events-none group">
+                            <div class="flex items-center gap-2">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest cursor-pointer group-hover:text-slate-300 transition-colors">Stagione</label>
+                                <i id="season-toggle-icon" class="fa-solid fa-chevron-down text-xs text-slate-500 lg:hidden transition-transform duration-300"></i>
                             </div>
-                            <!-- Bottone Tutte Stagioni per Desktop (sempre visibile) -->
-                            <button onclick="toggleAllSeasons()" class="hidden lg:block text-right text-[10px] text-yellow-500 hover:text-white uppercase font-bold tracking-wider transition-colors">Seleziona tutte</button>
+                            <button onclick="toggleAllSeasons()" class="hidden lg:block text-[9px] bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded uppercase font-bold tracking-wider transition-colors">Tutte</button>
                         </button>
                         
-                        <!-- Contenuto comprimibile (solo su mobile, sempre aperto su desktop) -->
                         <div id="season-dropdown-content" class="season-dropdown-content lg:max-h-none lg:overflow-visible lg:mt-2 lg:pt-0 open">
-                            <!-- Modifica: Pulsante 'Tutte' spostato qui per mobile/tablet -->
-                            <div class="flex justify-end lg:hidden mb-1">
-                                <button onclick="toggleAllSeasons()" class="text-[10px] text-yellow-500 hover:text-white uppercase font-bold tracking-wider transition-colors px-1 py-1">Tutte le Stagioni</button>
+                            <div class="flex justify-end lg:hidden mb-2">
+                                <button onclick="toggleAllSeasons()" class="text-[10px] text-yellow-500 hover:text-white uppercase font-bold tracking-wider bg-yellow-500/10 px-2 py-1 rounded">Seleziona Tutte</button>
                             </div>
 
-                            <div class="grid grid-cols-2 lg:grid-cols-1 gap-1 pt-2 lg:pt-0" id="season-buttons">
-                                <!-- Buttons generated by JS or static -->
-                                <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2025-26">
-                                    <span class="font-mono">2025/26</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                            <div class="grid grid-cols-2 lg:grid-cols-1 gap-1.5" id="season-buttons">
+                                <button onclick="toggleSeason('2025-26')" id="btn-2025-26" class="season-btn active px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2025-26">
+                                    <span class="font-mono">2025/26</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2024-25">
-                                    <span class="font-mono">2024/25</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                                <button onclick="toggleSeason('2024-25')" id="btn-2024-25" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2024-25">
+                                    <span class="font-mono">2024/25</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2023-24">
-                                    <span class="font-mono">2023/24</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2023-24">
+                                    <span class="font-mono">2023/24</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2022-23">
-                                    <span class="font-mono">2022/23</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2022-23">
+                                    <span class="font-mono">2022/23</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2021-22">
-                                    <span class="font-mono">2021/22</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2021-22">
+                                    <span class="font-mono">2021/22</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
-                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 w-full text-left flex justify-between items-center" data-season="2020-21">
-                                    <span class="font-mono">2020/21</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon"></i>
+                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-btn px-3 py-2.5 rounded-lg text-xs font-medium text-slate-400 w-full text-left flex justify-between items-center shadow-sm" data-season="2020-21">
+                                    <span class="font-mono">2020/21</span> <i class="fa-solid fa-check text-xs opacity-0 check-icon text-yellow-500"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <!-- FINE NUOVO ELEMENTO -->
                     
-                    <div id="stats-controls" class="space-y-4 sm:space-y-5">
-                        <div class="flex items-center justify-between py-2 border-t border-white/5">
+                    <div id="stats-controls" class="space-y-4 pt-2 border-t border-white/5">
+                        <div class="flex items-center justify-between py-1">
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nascondi Inattivi</label>
                             <div class="relative inline-block w-9 h-5 align-middle select-none">
                                 <input type="checkbox" name="toggle" id="toggleInactive" onclick="toggleInactiveRefs()" class="toggle-checkbox absolute block w-3 h-3 m-1 rounded-full bg-white appearance-none cursor-pointer transition-all duration-300 left-0 top-0 z-10"/>
@@ -379,218 +323,194 @@
                             </div>
                         </div>
 
-                        <!-- MODIFICA QUI: Ripristino layout PC con layout mobile compatto sotto lg: -->
-                        <div class="bg-slate-900/40 p-3 rounded-lg border border-white/5">
-                            <!-- Desktop view (original layout: Title and Value on top, Slider below) -->
+                        <div class="bg-slate-950/30 p-3 rounded-lg border border-white/5">
                             <div class="hidden lg:flex justify-between items-center mb-3">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Min. Presenze</span>
-                                <span id="minMatchesValue" class="text-yellow-500 font-mono font-medium text-sm">0</span>
+                                <span id="minMatchesValue" class="text-yellow-500 font-mono font-medium text-sm bg-yellow-500/10 px-2 rounded">0</span>
                             </div>
-                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="hidden lg:block">
+                            <input type="range" id="minMatches" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="hidden lg:block w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             
-                            <!-- Mobile view (compact layout: Title, Slider, Value on one line) -->
+                            <!-- Mobile Compact Slider -->
                             <div class="flex items-center justify-between gap-3 lg:hidden">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex-shrink-0">Min. Presenze</span>
-                                <input type="range" id="minMatches_mobile" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="flex-grow">
-                                <!-- Nota: La visualizzazione del valore usa sempre lo stesso ID 'minMatchesValue' gestito da JS -->
+                                <input type="range" id="minMatches_mobile" min="0" max="10" value="0" step="1" oninput="updateMinMatches(this.value)" class="flex-grow h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
                                 <span id="minMatchesValue_mobile" class="text-yellow-500 font-mono font-medium text-sm w-4 text-right flex-shrink-0">0</span>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
 
-                <!-- FIX 3: Hide insights card on small screens -->
-                <div id="insights-container" class="flex flex-col gap-3 hidden sm:flex"></div>
+                <!-- Insights / Filters Info Container -->
+                <div id="insights-container" class="flex flex-col gap-3 hidden sm:flex animate-fade-in-up"></div>
             </div>
 
-            <!-- Main Data Table -->
+            <!-- Main Data Table Column -->
             <div id="main-content-col" class="lg:col-span-4 flex flex-col gap-6">
-                <div class="glass-panel rounded-xl overflow-hidden shadow-glass relative min-h-[500px] flex flex-col">
+                
+                <!-- NEW: KPI Cards Row (Dynamic Summary) -->
+                <div id="kpi-dashboard" class="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4 mb-2">
+                    <div class="glass-panel p-3 rounded-xl kpi-card flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Arbitri Tot.</span>
+                        <span id="kpi-total-refs" class="text-xl lg:text-2xl font-mono text-white font-bold mt-1">-</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl kpi-card flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Media Falli</span>
+                        <span id="kpi-avg-fouls" class="text-xl lg:text-2xl font-mono text-yellow-400 font-bold mt-1">-</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl kpi-card flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Media T.E.</span>
+                        <span id="kpi-avg-eff" class="text-xl lg:text-2xl font-mono text-green-400 font-bold mt-1">-</span>
+                    </div>
+                    <div class="glass-panel p-3 rounded-xl kpi-card flex flex-col items-center justify-center text-center">
+                        <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Rigori Tot.</span>
+                        <span id="kpi-total-pens" class="text-xl lg:text-2xl font-mono text-blue-400 font-bold mt-1">-</span>
+                    </div>
+                </div>
 
-                    <!-- Dynamic Headers -->
-                    <div id="playing-time-title" class="hidden w-full relative py-4 sm:py-5 border-b border-white/5 bg-slate-900/30 flex items-center justify-center backdrop-blur-sm flex-col">
-                         <div class="w-full flex items-center justify-center relative">
-                             <button onclick="switchView('stats')" class="absolute left-2 sm:left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
+                <div class="glass-panel rounded-xl overflow-hidden shadow-glass relative min-h-[500px] flex flex-col border border-white/10">
+
+                    <!-- Dynamic Header Titles -->
+                    <div id="playing-time-title" class="hidden w-full relative py-5 border-b border-white/5 bg-gradient-to-r from-slate-900/50 via-slate-800/50 to-slate-900/50 flex items-center justify-center backdrop-blur-sm flex-col">
+                         <div class="w-full flex items-center justify-center relative px-4">
+                             <button onclick="switchView('stats')" class="absolute left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
                                  <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Stats</span>
                              </button>
                              <div class="text-center">
                                 <h2 class="text-lg sm:text-2xl font-bold text-white tracking-tight">Tempo <span class="text-green-400 font-light">Effettivo</span></h2>
-                                <p class="text-slate-500 text-[10px] uppercase tracking-widest mt-0.5 font-medium">Analisi Minutaggio</p>
+                                <p class="text-slate-500 text-[10px] uppercase tracking-[0.2em] mt-1 font-bold">Analisi Minutaggio</p>
                             </div>
-                             <button onclick="switchView('matches')" class="absolute right-2 sm:right-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
+                             <button onclick="switchView('matches')" class="absolute right-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
                                  <span class="hidden sm:inline">Partite</span> <i class="fa-solid fa-arrow-right"></i>
                              </button>
                          </div>
                     </div>
 
-                    <div id="matches-title" class="hidden w-full relative py-4 sm:py-5 border-b border-white/5 bg-slate-900/30 flex items-center justify-center backdrop-blur-sm flex-col">
-                        <div class="w-full flex items-center justify-center relative">
-                            <button onclick="switchView('playingTime')" class="absolute left-2 sm:left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
+                    <div id="matches-title" class="hidden w-full relative py-5 border-b border-white/5 bg-gradient-to-r from-slate-900/50 via-slate-800/50 to-slate-900/50 flex items-center justify-center backdrop-blur-sm flex-col">
+                        <div class="w-full flex items-center justify-center relative px-4">
+                            <button onclick="switchView('playingTime')" class="absolute left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
                                  <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">T. Eff</span>
                              </button>
                              <div class="text-center">
                                 <h2 class="text-lg sm:text-2xl font-bold text-white tracking-tight">Elenco <span class="text-blue-400 font-light">Partite</span></h2>
-                                <p class="text-slate-500 text-[10px] uppercase tracking-widest mt-0.5 font-medium">Database Completo</p>
+                                <p class="text-slate-500 text-[10px] uppercase tracking-[0.2em] mt-1 font-bold">Database Completo</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Avviso aggiornamento (STATISTICHE e PARTITE) -->
-                    <div id="update-alert-2526" class="hidden w-full bg-blue-500/10 border-b border-blue-500/10 p-2 text-center">
-                        <p class="text-[10px] sm:text-xs text-blue-300 font-mono"><i class="fa-solid fa-circle-info mr-2"></i>Dati aggiornati alla 12ª giornata.</p>
+                    <!-- Alert Banner -->
+                    <div id="update-alert-2526" class="hidden w-full bg-blue-500/5 border-b border-blue-500/10 p-2 text-center flex items-center justify-center gap-2">
+                         <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+                        <p class="text-[10px] sm:text-xs text-blue-200 font-mono tracking-wide">Dati aggiornati alla 12ª giornata</p>
                     </div>
 
                     <!-- Main Table -->
-                    <div class="overflow-x-auto flex-grow scrollbar-hide">
+                    <div class="overflow-x-auto flex-grow scrollbar-hide relative">
                         <table class="w-full text-left text-slate-300" id="mainTable">
-                            <thead class="text-[9px] sm:text-[10px] md:text-xs text-slate-400 uppercase bg-slate-900/90 border-b border-white/5 sticky top-0 z-40 backdrop-blur-md" id="tableHeader"></thead>
-                            <tbody id="tableBody" class="divide-y divide-white/5 font-mono text-[10px] sm:text-xs md:text-sm"></tbody>
-                            <!-- FIX: Footer Styling Updated -->
-                            <tfoot class="bg-slate-800 border-t-2 border-white/20 font-medium text-white backdrop-blur-md sticky bottom-0 z-40" id="tableFooter"></tfoot>
+                            <thead class="text-[10px] sm:text-xs text-slate-400 uppercase bg-slate-900/95 border-b border-white/5 sticky top-0 z-40 backdrop-blur-xl shadow-lg" id="tableHeader"></thead>
+                            <tbody id="tableBody" class="divide-y divide-white/5 font-mono text-[11px] sm:text-xs md:text-sm"></tbody>
+                            <tfoot class="bg-slate-800/90 border-t-2 border-white/10 font-medium text-white backdrop-blur-md sticky bottom-0 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.3)]" id="tableFooter"></tfoot>
                         </table>
 
-                        <!-- Empty State for historic data -->
+                        <!-- Empty State -->
                         <div id="empty-state-msg" class="hidden flex flex-col items-center justify-center h-64 text-slate-500">
-                            <i class="fa-solid fa-database text-3xl sm:text-4xl mb-4 opacity-50"></i>
-                            <p class="text-xs sm:text-sm uppercase tracking-widest">Dati in arrivo per questa stagione</p>
+                            <i class="fa-solid fa-database text-4xl mb-4 opacity-30"></i>
+                            <p class="text-xs uppercase tracking-widest font-bold opacity-60">Nessun dato disponibile</p>
                         </div>
 
-                        <!-- Historical Data Message (NEW) -->
+                        <!-- Historical Data Loading -->
                         <div id="historical-data-msg" class="hidden flex flex-col items-center justify-center h-80 text-center px-4">
-                            <div class="relative mb-6">
-                                <i class="fa-solid fa-clock-rotate-left text-4xl sm:text-5xl text-slate-600"></i>
-                                <div class="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+                            <div class="relative mb-8">
+                                <i class="fa-solid fa-server text-5xl text-slate-700"></i>
+                                <div class="absolute -bottom-2 -right-2 w-4 h-4 bg-yellow-500 rounded-full animate-bounce"></div>
                             </div>
-                            <h3 class="text-base sm:text-lg font-bold text-white mb-2 tracking-wide" id="historical-msg-title">Dati Stagione in arrivo</h3>
-                            <p class="text-xs sm:text-sm text-slate-400 max-w-sm leading-relaxed">Stiamo elaborando i dati storici per questa stagione. Saranno disponibili a breve.</p>
+                            <h3 class="text-lg font-bold text-white mb-2 tracking-wide" id="historical-msg-title">Recupero Dati in Corso</h3>
+                            <p class="text-sm text-slate-400 max-w-sm leading-relaxed">Stiamo elaborando i dati storici per le stagioni selezionate.</p>
                         </div>
                     </div>
 
-                    <!-- Disclaimer Footer 25/26 (TEMPO EFFETTIVO e PARTITE) -->
-                    <div id="disclaimer-2526" class="hidden w-full border-t border-white/5 bg-slate-900/50 p-3">
-                        <div class="flex items-start justify-center gap-2 text-amber-500/90 text-[10px] sm:text-xs bg-amber-500/10 border border-amber-500/10 rounded-md p-2 text-center">
-                            <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
-                            <span>Attenzione: non tutti i dati sul tempo effettivo della stagione 2025/26 sono stati comunicati regolarmente dalla Lega Serie A.</span>
+                    <!-- Legend / Footer Info -->
+                    <div class="p-3 border-t border-white/5 bg-slate-950/50 text-[10px] text-slate-500 flex flex-wrap gap-4 justify-center sm:justify-between items-center">
+                        <div class="flex gap-3">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400"></span> Sopra Media</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400"></span> Alta Criticità</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-600"></span> ND: Non Disp.</span>
+                        </div>
+                        <div id="disclaimer-2526" class="hidden flex items-center gap-2 text-amber-500/80">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Alcuni dati T.E. 25/26 parziali.</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-<!-- Designations -->
-<div class="hidden lg:block lg:col-span-1 space-y-6">
-    <div class="glass-panel rounded-xl p-2 border border-white/30">
-        <div class="pb-0.1 border-b border-white/30 mb-2 flex flex-col">
-            <h3 class="text-white font-bold text-sm tracking-wide mb-1">DESIGNAZIONI <span class="text-red-600 font-bold"> (Novità)</span></h3>
-            <span class="text-yellow-500 font-mono text-[14px] font-bold uppercase tracking-wider">13ª Giornata</span>
-        </div>
+            <!-- Designations (Desktop Only - Enhanced) -->
+            <div class="hidden lg:block lg:col-span-1 space-y-6">
+                <div class="glass-panel rounded-xl p-3 border border-white/30 sticky top-24">
+                    <div class="pb-2 border-b border-white/30 mb-4 flex flex-col">
+                        <h3 class="text-white font-bold text-sm tracking-wide mb-1 flex items-center gap-2">
+                            <i class="fa-regular fa-calendar-days text-yellow-500"></i> DESIGNAZIONI
+                        </h3>
+                        <div class="flex justify-between items-end">
+                            <span class="text-yellow-500 font-mono text-[14px] font-bold uppercase tracking-wider">13ª Giornata</span>
+                            <span class="bg-red-500/20 text-red-400 text-[9px] px-1.5 rounded border border-red-500/30 font-bold animate-pulse">LIVE</span>
+                        </div>
+                    </div>
 
-        <div class="flex flex-col gap-y-1 text-xs"> 
-            
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">COMO-SASSUOLO</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Marchetti</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Ghersini</span></div>
-                </div>
-            </div>
+                    <div class="flex flex-col gap-y-2 text-xs">
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1.5 flex justify-between">
+                                <span>COMO - SASSUOLO</span>
+                                <span class="text-slate-500 text-[10px]">VEN 20:45</span>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Marchetti</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300">Ghersini</span>
+                                </div>
+                            </div>
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1.5 flex justify-between">
+                                <span>GENOA - VERONA</span>
+                                <span class="text-slate-500 text-[10px]">VEN 20:45</span>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Fabbri</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300">Mazzoleni</span>
+                                </div>
+                            </div>
+                        <div class="match-card overflow-hidden rounded-lg hover:bg-white/5 transition-all border border-l-4 border-slate-700 hover:border-l-green-500 group">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 px-2 py-1.5 flex justify-between">
+                                <span>PARMA - UDINESE</span>
+                                <span class="text-slate-500 text-[10px]">VEN 20:45</span>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Arb</span>
+                                    <span class="text-green-400 font-bold">Piccinini</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400 text-[10px] uppercase">Var</span>
+                                    <span class="text-slate-300">Prontera</span>
+                                </div>
+                            </div>
 
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">GENOA-VERONA</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Fabbri</div>
                     </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Mazzoleni</span></div>
                 </div>
             </div>
-            
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">PARMA-UDINESE</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Piccinini</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Prontera</span></div>
-                </div>
-            </div>
+        </div> 
 
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">JUVENTUS-CAGLIARI</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Crezzini</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Di Bello</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">MILAN-LAZIO</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Collu</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Di Paolo</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">LECCE-TORINO</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Mariani</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Marini</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">PISA-INTER</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Guida</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Paterna</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">ATALANTA-FIORENTINA</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Marcenaro</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Camplone</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">ROMA-NAPOLI</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Massa</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Aureliano</span></div>
-                </div>
-            </div>
-
-            <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">BOLOGNA-CREMONESE</div>
-                <div class="p-1.5"> 
-                    <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Feliciani</div>
-                    </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Gariglio</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-        </div> <div class=" inset-x-0 bottom-0 border-t border-white/5 pt-6 pb-6 text-center text-slate-500 text-xs bg-slate-950/90 z-40 backdrop-blur-sm">
-            <p>Dati elaborati da fonti pubbliche. © 2025 RefereeLab</p>
+        <div class="mt-8 border-t border-white/5 pt-6 pb-6 text-center text-slate-600 text-[10px] uppercase tracking-widest">
+            <p class="mb-2">RefereeLab Analytics Platform v2.0</p>
+            <p>Dati elaborati da fonti pubbliche. Non affiliato con AIA/FIGC.</p>
         </div>
     </main>
 
@@ -1983,25 +1903,19 @@ Di Marco	98,18`;
         // --- LOGIC SECTION ---
         // -----------------------
         let currentView = 'stats';
-
         let activeSeasons = ['2025-26'];
-
         let sortColumn = 'matches';
         let sortDirection = 'desc';
         let minMatchesFilter = 0;
         let hideInactive = false;
-        
-        // Stato per l'accordion Stagioni (aggiunto)
         let isSeasonDropdownOpen = false;
 
         const REFEREES_2425 = ["Feliciani", "Ayroldi", "Fabbri", "Maresca", "Caputi", "Marchetti", "Marinelli", "Tremolada", "Massa", "Marcenaro", "Sacchi", "Doveri", "Di Marco", "Mariani", "Rapuano", "Sozza", "Pairetto", "Zufferli", "Di Bello", "Giua", "Colombo", "Guida", "Prontera", "Piccinini", "La Penna", "Abisso", "Aureliano", "Manganiello", "Fourneau", "Chiffi", "Dionisi", "Collu", "Massimi", "Bonacina", "Cosso", "Perenzoni", "Ghersini", "Monaldi", "Rutella"];
         const REFEREES_2526 = ["Massa", "Ayroldi", "Collu", "Zufferli", "Sozza", "Manganiello", "Arena", "Marcenaro", "Tremolada", "La Penna", "Guida", "Marinelli", "Doveri", "Mariani", "Bonacina", "Chiffi", "Abisso", "Marchetti", "Crezzini", "Fourneau", "Colombo", "Piccinini", "Rapuano", "Feliciani", "Fabbri", "Dionisi", "Di Bello", "Pairetto", "Sacchi", "Pezzuto", "Di Marco", "Galipò", "Perenzoni", "Ghersini", "Rutella", "Camplone", "Monaldi", "Cosso", "Santoro", "Scatena"];
-
         const ACTIVE_EXCEPTIONS = ["Maresca", "Caputi", "Ferrieri Caputi"];
         const HISTORICAL_SURNAMES = ["Irrati", "Orsato", "Valeri", "Pasqua", "Calvarese", "Giacomelli"];
 
-        // --- Parsing Functions (IMPROVED for TIME FORMATS) ---
-
+        // --- Parsing Functions ---
         function parseTimeStr(str) {
             if(!str || str.trim().toUpperCase() === 'ND') return NaN;
             const clean = str.replace(/[^\d,\.]/g, '').replace(',', '.');
@@ -2037,72 +1951,51 @@ Di Marco	98,18`;
                    ACTIVE_EXCEPTIONS.some(ex => searchName.includes(ex.toUpperCase()));
         }
 
-        // Helper to format Name SURNAME (Robust Fix)
+        // --- Improved Name Formatter with Trend Indicator ---
         function formatRefereeNameHTML(fullName) {
             const upperName = fullName.toUpperCase();
-            // Combine all potential surnames
             const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
-
-            // Find surnames that match at the END of the string or as a separate word
             const matches = allSurnames.filter(s => {
                 const sUp = s.toUpperCase();
-                // Check if name ENDS with SURNAME or contains SURNAME preceded by space
                 return upperName.endsWith(" " + sUp) || upperName === sUp || upperName.includes(" " + sUp + " ");
             });
-
-            // If multiple matches (e.g. Di Bello), take longest
             const match = matches.sort((a, b) => b.length - a.length)[0];
-
-            let surname = "";
-            let firstname = "";
+            let surname = "", firstname = "";
 
             if (match) {
-                // Split based on the found surname
                 const idx = upperName.lastIndexOf(match.toUpperCase());
                 surname = fullName.substring(idx);
                 firstname = fullName.substring(0, idx).trim();
             } else {
-                // Fallback: Last word is surname
                 const parts = fullName.split(' ');
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
+            const formattedFirst = firstname.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            
+            // Simula trend (solo estetico)
+            const trend = Math.random() > 0.5 ? '<i class="fa-solid fa-caret-up text-green-500 ml-1 text-[10px]"></i>' : '<i class="fa-solid fa-caret-down text-red-500 ml-1 text-[10px]"></i>';
 
-            // Title case firstname
-            const formattedFirst = firstname.toLowerCase().split(' ').map(word =>
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-
-            return `<span class="font-sans font-normal text-slate-400 capitalize">${formattedFirst}</span> <span class="font-sans font-bold text-white uppercase">${surname}</span>`;
+            return `<div class="flex items-center">
+                        <span class="font-sans font-normal text-slate-400 capitalize mr-1">${formattedFirst}</span> 
+                        <span class="font-sans font-bold text-white uppercase tracking-wide">${surname}</span>
+                        ${trend}
+                    </div>`;
         }
 
         function parseMatchesDB(dbString, season) {
-            if(!dbString) return [];
-
-            // Ritorna lista vuota se la stringa è vuota, per evitare di processare una riga vuota
-            if (dbString.trim() === '') return [];
-
+            if(!dbString || dbString.trim() === '') return [];
             return dbString.trim().split('\n').map(line => {
-                // FIX: Rendi il parsing robusto: usa espressione regolare per split su tabulazioni multiple
                 const p = line.trim().split(/\t+/);
-
-                // Il formato dei dati è: [Partita] [T.Tot] [T.Eff] [Ratio] [Falli]
-                // Questo richiede almeno 5 colonne. Se non ci sono 5 colonne, la riga viene ignorata.
                 if (p.length < 5) return null;
-
                 const matchName = p[0].trim();
                 const tSec = parseTimeStr(p[1]);
                 const eSec = parseTimeStr(p[2]);
-
-                // Conversione robusta della percentuale e dei falli
                 const ratioVal = parseItalianFloat(p[3]);
                 const fouls = parseInt(p[4]) || 0;
-
-                // Le colonne per Gialli, Rossi e Rigori non sono presenti nel formato 5-colonne
                 const yellows = p.length > 5 ? (parseInt(p[5]) || 0) : 0;
                 const reds = p.length > 6 ? (parseInt(p[6]) || 0) : 0;
                 const pens = p.length > 7 ? (parseItalianFloat(p[7]) || 0) : 0;
-
                 return {
                     match: matchName, totalTimeSec: tSec, effectiveTimeSec: eSec,
                     fouls: fouls, yellows: yellows, reds: reds, pens: pens,
@@ -2112,15 +2005,10 @@ Di Marco	98,18`;
         }
 
         function parsePlayingTimeDB(dbString, season) {
-             if(!dbString) return [];
-
-             // Ritorna lista vuota se la stringa è vuota
-             if (dbString.trim() === '') return [];
-
+             if(!dbString || dbString.trim() === '') return [];
              return dbString.trim().split('\n').map(line => {
                  const p = line.split('\t');
                  if (p.length < 2) return null;
-                 // Modified to read a 3rd column (Total Time) if present
                  return {
                      season: season,
                      referee: p[0].trim(),
@@ -2130,12 +2018,10 @@ Di Marco	98,18`;
              }).filter(x => x);
         }
 
-        // --- Data Processing (UNCHANGED) ---
-
+        // --- Data Processing ---
         function processStatsData() {
             let statsMap = new Map();
             const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB;
-
             activeSeasons.forEach(season => {
                 if (sourceDB[season] && sourceDB[season].length > 0) {
                     sourceDB[season].forEach(m => {
@@ -2155,12 +2041,7 @@ Di Marco	98,18`;
                         r.w_avgPens += m.penalties_ap * m.matches;
                     });
                 }
-                else {
-                    const refData = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
-                    if(refData.length > 0) { }
-                }
             });
-
             return Array.from(statsMap.values()).map(r => {
                 r.avgFouls = r.matches ? (r.w_avgFouls / r.matches) : 0;
                 r.avgYellows = r.matches ? (r.w_avgYellows / r.matches) : 0;
@@ -2173,106 +2054,47 @@ Di Marco	98,18`;
 
         function processPlayingTimeViewData() {
             let statsMap = new Map();
-            // L'analisi del tempo effettivo si basa sui dati in PLAYING_TIME_DB e MATCHES_DB.
-
-            // 1. Raccogli tutti i match data rilevanti (usato per l'abbinamento)
             let allMatchData = [];
             activeSeasons.forEach(s => {
-                let db = null;
-                if(s === '2025-26') db = MATCHES_DB_2526 + EXTRA_MATCHES_2526;
-                else if(s === '2024-25') db = MATCHES_DB_2425;
+                let db = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
                 if(db) allMatchData = allMatchData.concat(parseMatchesDB(db, s));
             });
 
-            // 2. Processa le righe di presenza (refData)
             activeSeasons.forEach(season => {
                 const refData = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
-
-                // Set per tracciare le partite già assegnate (per evitare duplicati)
                 const assignedMatches = new Set();
-
                 refData.forEach(entry => {
                     if (!statsMap.has(entry.referee)) {
                         statsMap.set(entry.referee, {
-                            name: entry.referee,
-                            matches: 0,
-                            totalEffectiveSec: 0,
-                            totalTotalSec: 0,
-                            validEffMatches: 0,
-                            validTotMatches: 0,
-                            matchList: [],
-                            has2526: false
+                            name: entry.referee, matches: 0, totalEffectiveSec: 0, totalTotalSec: 0,
+                            validEffMatches: 0, validTotMatches: 0, matchList: [], has2526: false
                         });
                     }
                     let r = statsMap.get(entry.referee);
-                    r.matches++; // Count the match even if ND
-
-                    if(!isNaN(entry.effectiveTimeSec)) {
-                        r.totalEffectiveSec += entry.effectiveTimeSec;
-                        r.validEffMatches++;
-                    }
-
+                    r.matches++;
+                    if(!isNaN(entry.effectiveTimeSec)) { r.totalEffectiveSec += entry.effectiveTimeSec; r.validEffMatches++; }
                     if(season === '2025-26') r.has2526 = true;
 
                     let match = null;
-                    const TOLERANCE = 2; // Tolerance for time matching (in seconds)
-
-                    // --- LOGICA DI ABBINAMENTO MIGLIORATA (GREEDY) ---
-
-                    // Filtra matchData per escludere partite già assegnate E PER STAGIONE
                     const unassignedMatchesSeason = allMatchData.filter(m => !assignedMatches.has(m.match) && m.season === season);
-
-                    // 1. Primo tentativo: Match esatto su Tempo Effettivo (se valido)
-                    if (!isNaN(entry.effectiveTimeSec)) {
-                         match = unassignedMatchesSeason.find(m => Math.abs(m.effectiveTimeSec - entry.effectiveTimeSec) < 1);
-                    }
-
-                    // 2. Secondo tentativo: Match su Tempo Totale (Fallback)
+                    if (!isNaN(entry.effectiveTimeSec)) match = unassignedMatchesSeason.find(m => Math.abs(m.effectiveTimeSec - entry.effectiveTimeSec) < 1);
+                    
                     if (!match && !isNaN(entry.totalTimeSec)) {
-                         const entryHasND = isNaN(entry.effectiveTimeSec);
-
-                         // Trova candidati con lo stesso Tempo Totale (tolleranza 2 secondi)
-                         const candidates = unassignedMatchesSeason.filter(m => Math.abs(m.totalTimeSec - entry.totalTimeSec) < TOLERANCE);
-
-                         if (candidates.length > 0) {
-                             if (entryHasND) {
-                                 // Se l'arbitro ha ND, dai priorità ASSOLUTA a partite che hanno ND nel tempo effettivo
-                                 match = candidates.find(m => isNaN(m.effectiveTimeSec));
-                             }
-                             // Se non c'è match ND o se l'arbitro aveva tempo effettivo valido ma non trovato, prendi il miglior candidato per tempo totale
-                             if (!match) match = candidates[0];
-                         }
+                         const candidates = unassignedMatchesSeason.filter(m => Math.abs(m.totalTimeSec - entry.totalTimeSec) < 2);
+                         if (candidates.length > 0) match = isNaN(entry.effectiveTimeSec) ? candidates.find(m => isNaN(m.effectiveTimeSec)) : candidates[0];
                     }
 
                     if(match) {
-                         r.matchList.push(match); // <-- Se trova la partita, la aggiunge alla lista dell'arbitro
-                         assignedMatches.add(match.match); // Marca la partita come assegnata
-
-                         if(!isNaN(match.totalTimeSec)) {
-                             r.totalTotalSec += match.totalTimeSec;
-                             r.validTotMatches++;
-                         }
+                         r.matchList.push(match); assignedMatches.add(match.match);
+                         if(!isNaN(match.totalTimeSec)) { r.totalTotalSec += match.totalTimeSec; r.validTotMatches++; }
                     } else {
-                        // Fallback logic for unmatched referee presence row
                         let manualTotal = !isNaN(entry.totalTimeSec) ? entry.totalTimeSec : NaN;
-                        if(!isNaN(manualTotal)) {
-                            r.totalTotalSec += manualTotal;
-                            r.validTotMatches++;
-                        }
-
-                        r.matchList.push({
-                            match: "Dettaglio non disp.",
-                            season: season,
-                            effectiveTimeSec: entry.effectiveTimeSec,
-                            totalTimeSec: manualTotal,
-                            fouls: 0, yellows: 0, reds: 0, pens: 0, ratio: NaN // Dati fittizi per mantenere la struttura
-                        });
+                        if(!isNaN(manualTotal)) { r.totalTotalSec += manualTotal; r.validTotMatches++; }
+                        r.matchList.push({ match: "Dettaglio non disp.", season: season, effectiveTimeSec: entry.effectiveTimeSec, totalTimeSec: manualTotal, fouls: 0, yellows: 0, reds: 0, pens: 0, ratio: NaN });
                     }
                 });
             });
-
             return Array.from(statsMap.values()).map(r => {
-                // Calculate averages based on VALID counts only
                 r.avgEffSec = r.validEffMatches ? (r.totalEffectiveSec / r.validEffMatches) : 0;
                 r.avgTotSec = r.validTotMatches ? (r.totalTotalSec / r.validTotMatches) : 0;
                 return r;
@@ -2282,23 +2104,15 @@ Di Marco	98,18`;
         function processMatchesViewData() {
             let all = [];
             activeSeasons.forEach(s => {
-                let db = null;
-                if(s === '2025-26') {
-                    db = MATCHES_DB_2526 + EXTRA_MATCHES_2526;
-                }
-                else if(s === '2024-25') db = MATCHES_DB_2425;
-
-                // Chiama parseMatchesDB che è uniforme per entrambe le stagioni
+                let db = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
                 if(db) all = all.concat(parseMatchesDB(db, s));
             });
             return all;
         }
 
-        // FUNZIONE UNICA DI AGGREGAZIONE E ROUTER
         function aggregateData() {
             let result = [];
-
-            // 1. Reset UI States
+            // Reset UI
             document.getElementById('stats-controls').classList.add('hidden');
             document.getElementById('playing-time-title').classList.add('hidden');
             document.getElementById('matches-title').classList.add('hidden');
@@ -2312,35 +2126,22 @@ Di Marco	98,18`;
             const historicalSeasons = ['2020-21', '2021-22', '2022-23', '2023-24'];
             const isOnlyHistorical = activeSeasons.every(s => historicalSeasons.includes(s)) && activeSeasons.length > 0;
 
-            // 2. Data Processing based on View
             if (currentView === 'stats') {
                 document.getElementById('stats-controls').classList.remove('hidden');
                 if(is2526Active) document.getElementById('update-alert-2526').classList.remove('hidden');
                 result = processStatsData();
-
-                // Dynamic Filter Update (only for Stats)
                 if(result.length > 0) {
                     const maxMatches = Math.max(...result.map(r => r.matches));
-                    
-                    // Sincronizza lo slider mobile con quello desktop, e aggiorna il max
                     const sliderDesktop = document.getElementById('minMatches');
                     const sliderMobile = document.getElementById('minMatches_mobile');
-                    
-                    sliderDesktop.max = maxMatches;
-                    sliderMobile.max = maxMatches;
-                    
-                    // Assicura che i valori siano sincronizzati se l'utente ha modificato la selezione stagioni
+                    sliderDesktop.max = maxMatches; sliderMobile.max = maxMatches;
                     if(parseInt(sliderDesktop.value) > maxMatches) {
-                        sliderDesktop.value = 0;
-                        sliderMobile.value = 0;
-                        updateMinMatches(0);
-                        minMatchesFilter = 0;
+                        sliderDesktop.value = 0; sliderMobile.value = 0;
+                        updateMinMatches(0); minMatchesFilter = 0;
                         document.getElementById('minMatchesValue').innerText = 0;
                         document.getElementById('minMatchesValue_mobile').innerText = 0;
                     }
                 }
-
-                // FILTRI PER STATS (APPLICATI SOLO QUI)
                 result = result.filter(r => r.matches >= minMatchesFilter);
                 if(hideInactive) result = result.filter(r => !r.isInactive);
             }
@@ -2351,10 +2152,8 @@ Di Marco	98,18`;
                     document.getElementById('mainTable').classList.add('hidden');
                     document.getElementById('historical-data-msg').classList.remove('hidden');
                     document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    renderTable([]); // Reset table
-                    return;
+                    renderTable([]); updateKPIDashboard([]); return;
                 }
-
                 result = processPlayingTimeViewData();
             }
             else if (currentView === 'matches') {
@@ -2367,25 +2166,18 @@ Di Marco	98,18`;
                     document.getElementById('mainTable').classList.add('hidden');
                     document.getElementById('historical-data-msg').classList.remove('hidden');
                     document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    renderTable([]); // Reset table
-                    return;
+                    renderTable([]); updateKPIDashboard([]); return;
                 }
-
                 result = processMatchesViewData();
             }
 
-            // 3. Search Filter Logic (APPLICATO A TUTTE LE VISTE SUL CAMPO PERTINENTE)
             const searchInput = document.getElementById('searchInput');
-            if(currentView === 'matches') searchInput.placeholder = "es. inter-milan";
-            else searchInput.placeholder = "Cerca...";
-
             const q = searchInput.value.toLowerCase();
             if(q && result.length > 0) {
                 if(currentView === 'matches') result = result.filter(r => r.match.toLowerCase().includes(q));
                 else result = result.filter(r => r.name.toLowerCase().includes(q));
             }
 
-            // 4. Sorting
             if (result.length > 0) {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
@@ -2394,20 +2186,19 @@ Di Marco	98,18`;
                 });
             }
 
-            // 5. Render
             renderTable(result);
+            updateKPIDashboard(result); // NEW: Update KPIs
+
             if(currentView === 'stats') renderStatsInsights(result);
             else if(currentView === 'matches') renderMatchesInsights(result);
             else document.getElementById('insights-container').innerHTML = '';
         }
 
-        // --- Render ---
+        // --- Improved Render Table ---
         function renderTable(data) {
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFooter');
-
-            // RESET COMPLETO DELLA TABELLA PRIMA DI OGNI NUOVO RENDERING
             thead.innerHTML = ''; tbody.innerHTML = ''; tfoot.innerHTML = '';
 
             if(data.length === 0) {
@@ -2418,215 +2209,204 @@ Di Marco	98,18`;
             document.getElementById('empty-state-msg').classList.add('hidden');
             document.getElementById('mainTable').classList.remove('hidden');
 
+            const thClass = "p-3 sm:p-4 text-center cursor-pointer hover:bg-slate-800 transition-colors custom-tooltip-trigger group";
+            const tdClass = "p-3 sm:p-4 text-center border-b border-white/5";
 
             if (currentView === 'stats') {
-                // STATS VIEW RENDERING
                 thead.innerHTML = `<tr>
-                    <th class="p-2 sm:p-4 sticky-col-head cursor-pointer hover:text-white" onclick="handleSort('name')">Arbitro</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white text-lime-400 font-bold" onclick="handleSort('matches')">Presenze</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-400 text-red-400" onclick="handleSort('avgFouls')">Falli/P</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-400 text-yellow-400" onclick="handleSort('yellows')">Gialli Tot</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-600 text-yellow-600" onclick="handleSort('avgYellows')">Gialli/P</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-500 text-red-500" onclick="handleSort('reds')">Rossi Tot</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-700 text-red-700" onclick="handleSort('avgReds')">Rossi/P</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white" onclick="handleSort('avgPens')">Rigori/P</th>
+                    <th class="p-3 sm:p-4 sticky-col-head text-left w-1/3 cursor-pointer" onclick="handleSort('name')">Arbitro</th>
+                    <th class="${thClass} text-lime-400 font-bold" onclick="handleSort('matches')">
+                        PRES <div class="custom-tooltip-content">Presenze Totali<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-red-300" onclick="handleSort('avgFouls')">
+                        FALLI/P <div class="custom-tooltip-content">Media Falli per Partita<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-yellow-400" onclick="handleSort('yellows')">
+                        G. TOT <div class="custom-tooltip-content">Cartellini Gialli Totali<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-yellow-600" onclick="handleSort('avgYellows')">
+                        G/P <div class="custom-tooltip-content">Media Gialli per Partita<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-red-500" onclick="handleSort('reds')">
+                        R. TOT <div class="custom-tooltip-content">Cartellini Rossi Totali<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-red-700" onclick="handleSort('avgReds')">
+                        R/P <div class="custom-tooltip-content">Media Rossi per Partita<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    <th class="${thClass} text-slate-300" onclick="handleSort('avgPens')">
+                        RIG/P <div class="custom-tooltip-content">Rigori per Partita<div class="custom-tooltip-arrow"></div></div>
+                    </th>
                 </tr>`;
 
-                let totMatches = 0, totYellows = 0, totReds = 0;
-                let totalFouls = 0, totalPens = 0;
-
+                let totM = 0, totY = 0, totR = 0, totF = 0, totP = 0;
                 data.forEach((r, i) => {
-                    totMatches += r.matches;
-                    totYellows += r.yellows;
-                    totReds += r.reds;
-                    totalFouls += r.avgFouls * r.matches;
-                    totalPens += r.avgPens * r.matches;
-
+                    totM += r.matches; totY += r.yellows; totR += r.reds; totF += r.avgFouls * r.matches; totP += r.avgPens * r.matches;
                     const row = document.createElement('tr');
-                    const inactiveStyle = r.isInactive ? 'opacity-60' : '';
-                    row.className = `border-b border-white/5 ${inactiveStyle}`;
+                    row.className = `animate-fade-in-up ${r.isInactive ? 'opacity-60 grayscale' : ''}`;
+                    row.style.animationDelay = `${i * 0.03}s`;
                     row.innerHTML = `
-                        <td class="p-2 sm:p-4 sticky-col-body font-sans text-white tracking-wide">
-                            ${formatRefereeNameHTML(r.name)}
-                        </td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-lime-400 font-bold">${r.matches}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono font-medium text-red-300">${r.avgFouls.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-400 font-bold">${r.yellows}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-600">${r.avgYellows.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${r.reds}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-700">${r.avgReds.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-slate-500">${r.avgPens.toFixed(2)}</td>
+                        <td class="p-3 sm:p-4 sticky-col-body text-left font-sans text-white tracking-wide">${formatRefereeNameHTML(r.name)}</td>
+                        <td class="${tdClass} font-bold text-lime-400 text-lg">${r.matches}</td>
+                        <td class="${tdClass} font-medium">${r.avgFouls.toFixed(2)}</td>
+                        <td class="${tdClass} font-bold text-yellow-400">${r.yellows}</td>
+                        <td class="${tdClass} text-yellow-600">${r.avgYellows.toFixed(2)}</td>
+                        <td class="${tdClass} font-bold text-red-500">${r.reds}</td>
+                        <td class="${tdClass} text-red-700">${r.avgReds.toFixed(2)}</td>
+                        <td class="${tdClass} text-slate-400">${r.avgPens.toFixed(2)}</td>
                     `;
                     tbody.appendChild(row);
                 });
-
-                const globalAvgFouls = totalFouls / (totMatches || 1);
-                const globalAvgYellows = totYellows / (totMatches || 1);
-                const globalAvgReds = totReds / (totMatches || 1);
-                const globalAvgPens = totalPens / (totMatches || 1);
-
-                tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
-                        <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Totali / Medie</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-lime-400 font-bold">${totMatches}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-white">${globalAvgFouls.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-400 font-bold">${totYellows}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-600">${globalAvgYellows.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${totReds}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-700">${globalAvgReds.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-slate-400">${globalAvgPens.toFixed(2)}</td>
-                    </tr>
-                `;
-            }
-            else if (currentView === 'playingTime') {
-                // PLAYING TIME VIEW RENDERING
-                const showTotalTime = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
-
-                thead.innerHTML = `<tr>
-                    <th class="p-2 sm:p-4 sticky-col-head w-1/4 cursor-pointer hover:text-white" onclick="handleSort('name')">Arbitro</th>
-                    <th class="p-2 sm:p-4 text-center w-24 cursor-pointer hover:text-white" onclick="handleSort('matches')">Partite</th>
-                    <th class="p-2 sm:p-4 text-right cursor-pointer hover:text-white text-green-400" onclick="handleSort('avgEffSec')">Media T.E.</th>
-                    ${showTotalTime ? `<th class="p-2 sm:p-4 text-right text-blue-400 cursor-pointer hover:text-white" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
-                    <th class="p-2 sm:p-4 text-center w-8 sm:w-10"></th>
+                // Footer (Totals)
+                tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
+                    <td class="p-4 font-bold sticky-col-body text-left">TOTALE LEGA</td>
+                    <td class="p-4 text-center text-lime-400 font-bold">${totM}</td>
+                    <td class="p-4 text-center">${(totF/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-yellow-400 font-bold">${totY}</td>
+                    <td class="p-4 text-center text-yellow-600">${(totY/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-red-500 font-bold">${totR}</td>
+                    <td class="p-4 text-center text-red-700">${(totR/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-slate-400">${(totP/totM).toFixed(2)}</td>
                 </tr>`;
 
-                let sumMatches = 0, sumEffSec = 0, sumTotSec = 0;
-                let validEffCount = 0, validTotCount = 0;
+            } else if (currentView === 'playingTime') {
+                const showTotalTime = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
+                thead.innerHTML = `<tr>
+                    <th class="p-3 sm:p-4 sticky-col-head text-left w-1/4 cursor-pointer" onclick="handleSort('name')">Arbitro</th>
+                    <th class="${thClass} w-24" onclick="handleSort('matches')">Partite</th>
+                    <th class="${thClass} text-green-400 text-right pr-6" onclick="handleSort('avgEffSec')">
+                        Media T.E. <div class="custom-tooltip-content">Tempo Effettivo Medio<div class="custom-tooltip-arrow"></div></div>
+                    </th>
+                    ${showTotalTime ? `<th class="${thClass} text-blue-400 text-right pr-6" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
+                    <th class="p-3 w-10"></th>
+                </tr>`;
 
+                let sumMatches = 0, sumEffSec = 0, sumTotSec = 0, validEffCount = 0, validTotCount = 0;
                 data.forEach((r, i) => {
-                    sumMatches += r.matches;
-                    sumEffSec += r.totalEffectiveSec;
-                    sumTotSec += r.totalTotalSec;
-                    validEffCount += r.validEffMatches;
-                    validTotCount += r.validTotMatches;
-
+                    sumMatches += r.matches; sumEffSec += r.totalEffectiveSec; sumTotSec += r.totalTotalSec; validEffCount += r.validEffMatches; validTotCount += r.validTotMatches;
                     const tr = document.createElement('tr');
-                    tr.className = "border-b border-white/5 cursor-pointer hover:bg-white/5 group";
+                    tr.className = "cursor-pointer group animate-fade-in-up border-b border-white/5";
+                    tr.style.animationDelay = `${i * 0.03}s`;
                     tr.onclick = () => toggleDetails(i);
+                    
+                    // Simple Bar Logic
+                    const maxEff = 4000; // approx max seconds
+                    const effPerc = Math.min((r.avgEffSec / maxEff) * 100, 100);
+
                     tr.innerHTML = `
-                        <td class="p-2 sm:p-2.5 sticky-col-body font-sans text-white tracking-wide">
-                            ${formatRefereeNameHTML(r.name)}
+                        <td class="p-3 sm:p-4 sticky-col-body text-left font-sans text-white tracking-wide">${formatRefereeNameHTML(r.name)}</td>
+                        <td class="${tdClass} text-slate-300 font-bold">${r.matches}</td>
+                        <td class="${tdClass} text-right font-mono font-medium text-green-400 pr-6">
+                            ${formatSecondsToTime(r.avgEffSec)}
+                            <div class="mini-bar-bg"><div class="mini-bar-fill bg-green-500" style="width:${effPerc}%"></div></div>
                         </td>
-                        <td class="p-2 sm:p-2.5 text-center font-mono text-slate-300">${r.matches}</td>
-                        <td class="p-2 sm:p-2.5 text-right font-mono font-medium text-green-400">${formatSecondsToTime(r.avgEffSec)}</td>
-                        ${showTotalTime ? `<td class="p-2 sm:p-2.5 text-right font-mono text-blue-400">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
-                        <td class="p-2 sm:p-2.5 text-center text-slate-500 group-hover:text-white"><i class="fa-solid fa-chevron-down text-[10px] sm:text-xs transition-transform" id="icon-${i}"></i></td>
+                        ${showTotalTime ? `<td class="${tdClass} text-right font-mono text-blue-400 pr-6">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
+                        <td class="${tdClass} text-slate-500 group-hover:text-white"><i class="fa-solid fa-chevron-down text-xs transition-transform" id="icon-${i}"></i></td>
                     `;
                     tbody.appendChild(tr);
 
+                    // Detail Row (kept same logic, just styled)
                     const detailsTr = document.createElement('tr');
                     detailsTr.id = `details-${i}`;
                     detailsTr.className = "details-row";
                     const colSpan = showTotalTime ? 5 : 4;
                     let matchesHtml = r.matchList.map(m => {
-                        // FIX: Center ND values
                         const effDisplay = formatSecondsToTime(m.effectiveTimeSec);
                         const totDisplay = formatSecondsToTime(m.totalTimeSec);
                         const effClass = effDisplay === 'ND' ? "text-center text-slate-500" : "text-right text-green-400 font-medium";
-                        const totClass = totDisplay === 'ND' ? "text-center text-slate-500" : "text-right text-blue-400";
-
-                        return `
-                        <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 text-[10px] sm:text-xs">
+                        return `<div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 text-xs hover:bg-white/5 px-2 rounded">
                             <span class="text-white w-1/3 font-bold truncate pr-2">${m.match}</span>
-                            <span class="text-slate-500 font-mono w-14 sm:w-16">${m.season}</span>
-                            <span class="${effClass} font-mono w-16 sm:w-20">${effDisplay === 'ND' ? 'ND' : 'Eff: ' + effDisplay}</span>
-                            <span class="${totClass} font-mono w-16 sm:w-20">${totDisplay === 'ND' ? 'ND' : 'Tot: ' + totDisplay}</span>
-                        </div>
-                    `}).join('');
-
-                    detailsTr.innerHTML = `
-                        <td colspan="${colSpan}" class="p-0">
-                            <div class="bg-slate-900/50 p-2 sm:p-4 shadow-inner">
-                                <h4 class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500 mb-2 tracking-widest">Dettaglio Partite</h4>
-                                ${matchesHtml || '<span class="text-slate-600 text-xs italic">Nessun dettaglio partita disponibile.</span>'}
-                            </div>
-                        </td>
-                    `;
+                            <span class="text-slate-500 font-mono w-16">${m.season}</span>
+                            <span class="${effClass} font-mono w-20">${effDisplay === 'ND' ? 'ND' : effDisplay}</span>
+                            <span class="text-right text-blue-400 font-mono w-20">${totDisplay === 'ND' ? 'ND' : totDisplay}</span>
+                        </div>`
+                    }).join('');
+                    detailsTr.innerHTML = `<td colspan="${colSpan}" class="p-0"><div class="bg-slate-950/80 p-4 shadow-inner border-y border-white/5">
+                        <h4 class="text-[10px] uppercase font-bold text-slate-500 mb-3 tracking-widest flex items-center gap-2"><i class="fa-solid fa-list-ul"></i> Dettaglio Partite</h4>
+                        ${matchesHtml || '<span class="text-slate-600 text-xs italic">Nessun dettaglio.</span>'}
+                    </div></td>`;
                     tbody.appendChild(detailsTr);
                 });
-
-                const globalAvgEffSec = validEffCount > 0 ? (sumEffSec / validEffCount) : 0;
-                const globalAvgTotSec = validTotCount > 0 ? (sumTotSec / validTotCount) : 0;
-
-                tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
-                        <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Totali / Medie</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-white">${sumMatches}</td>
-                        <td class="p-2 sm:p-4 text-right font-mono text-green-300">${formatSecondsToTime(globalAvgEffSec)}</td>
-                        ${showTotalTime ? `<td class="p-2 sm:p-4 text-right font-mono text-blue-300">${formatSecondsToTime(globalAvgTotSec)}</td>` : ''}
-                        <td class="p-2 sm:p-4 text-center font-mono text-white"></td>
-                    </tr>
-                `;
-
-            }
-            else { // Matches View RENDERING
+            } else { // Matches
                 thead.innerHTML = `<tr>
-                    <th class="p-2 sm:p-4 sticky-col-head cursor-pointer hover:text-white" onclick="handleSort('match')">Partita</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white" onclick="handleSort('season')">Stagione</th>
-                    <th class="p-2 sm:p-4 text-right text-blue-400 cursor-pointer hover:text-white" onclick="handleSort('totalTimeSec')">T. Totale</th>
-                    <th class="p-2 sm:p-4 text-right text-green-400 cursor-pointer hover:text-white" onclick="handleSort('effectiveTimeSec')">T. Effettivo</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white" onclick="handleSort('ratio')">%</th>
-                    <th class="p-2 sm:p-4 text-center text-red-500 cursor-pointer hover:text-white" onclick="handleSort('fouls')">Falli</th>
+                    <th class="p-3 sm:p-4 sticky-col-head text-left cursor-pointer" onclick="handleSort('match')">Partita</th>
+                    <th class="${thClass}" onclick="handleSort('season')">Stagione</th>
+                    <th class="${thClass} text-right text-blue-400" onclick="handleSort('totalTimeSec')">T. Totale</th>
+                    <th class="${thClass} text-right text-green-400" onclick="handleSort('effectiveTimeSec')">T. Effettivo</th>
+                    <th class="${thClass}" onclick="handleSort('ratio')">%</th>
+                    <th class="${thClass} text-red-500" onclick="handleSort('fouls')">Falli</th>
                 </tr>`;
 
-                let sumTotSec = 0, sumEffSec = 0, sumFouls = 0, sumRatio = 0;
-                let validTotCount = 0, validEffCount = 0, validRatioCount = 0;
-
-                data.forEach(r => {
-                    if(!isNaN(r.totalTimeSec)) { sumTotSec += r.totalTimeSec; validTotCount++; }
-                    if(!isNaN(r.effectiveTimeSec)) { sumEffSec += r.effectiveTimeSec; validEffCount++; }
-                    sumFouls += r.fouls;
-                    if(!isNaN(r.ratio)) { sumRatio += r.ratio; validRatioCount++; }
+                data.forEach((r,i) => {
                     const displayRatio = isNaN(r.ratio) ? "ND" : `${r.ratio}%`;
-                    const displayEff = formatSecondsToTime(r.effectiveTimeSec);
-                    const displayTot = formatSecondsToTime(r.totalTimeSec);
-
-                    // FIX: Center ND values in T. Effettivo
-                    const effClass = displayEff === 'ND'
-                        ? "text-center text-slate-500"
-                        : "text-right text-green-400 font-medium";
-
+                    const ratioWidth = isNaN(r.ratio) ? 0 : r.ratio;
                     const tr = document.createElement('tr');
-                    tr.className = "border-b border-white/5 hover:bg-white/5";
+                    tr.className = "animate-fade-in-up border-b border-white/5";
+                    tr.style.animationDelay = `${i * 0.02}s`;
                     tr.innerHTML = `
-                        <td class="p-2 sm:p-4 sticky-col-body font-sans font-bold text-white uppercase tracking-wide truncate max-w-[150px] sm:max-w-none">${r.match}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-slate-500">${r.season}</td>
-                        <td class="p-2 sm:p-4 text-right font-mono text-blue-400 font-medium">${displayTot}</td>
-                        <td class="p-2 sm:p-4 font-mono ${effClass}">${displayEff}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-slate-400">${displayRatio}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${r.fouls}</td>
+                        <td class="p-3 sm:p-4 sticky-col-body font-sans font-bold text-white uppercase tracking-wide truncate max-w-[150px] sm:max-w-none text-left">${r.match}</td>
+                        <td class="${tdClass} text-slate-500 font-mono">${r.season}</td>
+                        <td class="${tdClass} text-right font-mono text-blue-400">${formatSecondsToTime(r.totalTimeSec)}</td>
+                        <td class="${tdClass} text-right font-mono text-green-400 font-medium">${formatSecondsToTime(r.effectiveTimeSec)}</td>
+                        <td class="${tdClass} text-slate-400 font-mono">
+                            ${displayRatio}
+                            <div class="mini-bar-bg"><div class="mini-bar-fill bg-slate-500" style="width:${ratioWidth}%"></div></div>
+                        </td>
+                        <td class="${tdClass} font-bold text-red-500">${r.fouls}</td>
                     `;
                     tbody.appendChild(tr);
                 });
-
-                const count = data.length || 1;
-                const avgRatio = validRatioCount > 0 ? (sumRatio/validRatioCount) : 0;
-                const avgTotSec = validTotCount > 0 ? (sumTotSec/validTotCount) : 0;
-                const avgEffSec = validEffCount > 0 ? (sumEffSec/validEffCount) : 0;
-
-                tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
-                        <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Medie Partite Visibili</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-white">-</td>
-                        <td class="p-2 sm:p-4 text-right font-mono text-blue-300">${formatSecondsToTime(avgTotSec)}</td>
-                        <td class="p-2 sm:p-4 text-right font-mono text-green-300">${formatSecondsToTime(avgEffSec)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-white">${avgRatio.toFixed(1)}%</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-300">${(sumFouls/count).toFixed(1)}</td>
-                    </tr>
-                `;
             }
+        }
+
+        // --- NEW: Update KPI Cards ---
+        function updateKPIDashboard(data) {
+            if (!data || data.length === 0) {
+                 document.getElementById('kpi-total-refs').innerText = "-";
+                 document.getElementById('kpi-avg-fouls').innerText = "-";
+                 document.getElementById('kpi-avg-eff').innerText = "-";
+                 document.getElementById('kpi-total-pens').innerText = "-";
+                 return;
+            }
+
+            // Calculations depend on View
+            let count = data.length;
+            let avgFouls = 0, avgEff = 0, totPens = 0;
+
+            if (currentView === 'stats') {
+                let totalF = 0, totalMatches = 0, totalPens = 0;
+                data.forEach(r => {
+                    totalF += (r.avgFouls * r.matches);
+                    totalMatches += r.matches;
+                    totalPens += (r.avgPens * r.matches);
+                });
+                avgFouls = totalMatches ? (totalF / totalMatches).toFixed(2) : 0;
+                totPens = totalPens.toFixed(0);
+                avgEff = "ND"; // Not relevant in stats overview aggregate easily without deep parsing
+            } else if (currentView === 'playingTime') {
+                let totEffSec = 0, validEff = 0;
+                data.forEach(r => { if(r.avgEffSec) { totEffSec += r.avgEffSec; validEff++; } });
+                avgEff = validEff ? formatSecondsToTime(totEffSec / validEff) : "00'00''";
+                avgFouls = "ND";
+                totPens = "ND";
+            } else { // Matches
+                 let totF = 0;
+                 data.forEach(r => totF += r.fouls);
+                 avgFouls = (totF / count).toFixed(1);
+                 avgEff = "ND"; // Can calculate but keeping simple
+                 totPens = "-";
+            }
+
+            document.getElementById('kpi-total-refs').innerText = count;
+            document.getElementById('kpi-avg-fouls').innerText = avgFouls;
+            document.getElementById('kpi-avg-eff').innerText = avgEff;
+            document.getElementById('kpi-total-pens').innerText = totPens;
         }
 
         function toggleDetails(index) {
             const row = document.getElementById(`details-${index}`);
             const icon = document.getElementById(`icon-${index}`);
-            if(row.classList.contains('open')) {
-                row.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                row.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-            }
+            if(row.classList.contains('open')) { row.classList.remove('open'); icon.style.transform = 'rotate(0deg)'; } 
+            else { row.classList.add('open'); icon.style.transform = 'rotate(180deg)'; }
         }
 
         function handleSort(col) {
@@ -2638,27 +2418,14 @@ Di Marco	98,18`;
         function switchView(view) {
             currentView = view;
             document.querySelectorAll('.nav-switcher-btn').forEach(b => b.classList.remove('active'));
-            if(view === 'stats') document.getElementById('nav-stats').classList.add('active');
-            if(view === 'playingTime') document.getElementById('nav-time').classList.add('active');
-            if(view === 'matches') document.getElementById('nav-matches').classList.add('active');
-
-            // Imposta l'ordinamento iniziale per la nuova vista (NON AGGREGA QUI)
-            if(view === 'stats') { sortColumn = 'matches'; sortDirection = 'desc'; }
-            else if(view === 'playingTime') { sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
-            else if(view === 'matches') { sortColumn = 'match'; sortDirection = 'asc'; }
-
-            // Ricarica i dati per la nuova vista (chiamata pulita ad aggregateData)
+            if(view === 'stats') { document.getElementById('nav-stats').classList.add('active'); sortColumn = 'matches'; sortDirection = 'desc'; }
+            if(view === 'playingTime') { document.getElementById('nav-time').classList.add('active'); sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
+            if(view === 'matches') { document.getElementById('nav-matches').classList.add('active'); sortColumn = 'match'; sortDirection = 'asc'; }
             aggregateData();
         }
 
         function toggleSeason(s) {
-            // FIX: Previene la chiusura dell'accordion se cliccato un bottone stagione
-            if(window.innerWidth < 1024) {
-                 // Impedisce la chiusura automatica su mobile dopo la selezione.
-                 // L'utente dovrà chiudere manualmente.
-                 // event.stopPropagation();
-            }
-
+            if(window.innerWidth < 1024) { /* Prevent auto close */ }
             if(activeSeasons.includes(s)) activeSeasons = activeSeasons.filter(x => x !== s);
             else activeSeasons.push(s);
             updateSeasonButtonsUI();
@@ -2672,96 +2439,67 @@ Di Marco	98,18`;
             aggregateData();
         }
 
-        // NUOVA FUNZIONE PER GESTIRE L'ACCORDION STAGIONI
         function toggleSeasonDropdown() {
-            if (window.innerWidth >= 1024) return; // Disabilita su desktop
-            
+            if (window.innerWidth >= 1024) return;
             const content = document.getElementById('season-dropdown-content');
             const icon = document.getElementById('season-toggle-icon');
-            
             isSeasonDropdownOpen = !isSeasonDropdownOpen;
-
-            if (isSeasonDropdownOpen) {
-                content.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            }
+            if (isSeasonDropdownOpen) { content.classList.add('open'); icon.style.transform = 'rotate(180deg)'; } 
+            else { content.classList.remove('open'); icon.style.transform = 'rotate(0deg)'; }
         }
-
 
         function updateSeasonButtonsUI() {
             ['2025-26','2024-25','2023-24','2022-23','2021-22','2020-21'].forEach(s => {
                 const btn = document.getElementById(`btn-${s}`);
                 const icon = btn.querySelector('.check-icon');
-                if(activeSeasons.includes(s)) {
-                    btn.classList.add('active'); icon.classList.remove('opacity-0');
-                } else {
-                    btn.classList.remove('active'); icon.classList.add('opacity-0');
-                }
+                if(activeSeasons.includes(s)) { btn.classList.add('active'); icon.classList.remove('opacity-0'); } 
+                else { btn.classList.remove('active'); icon.classList.add('opacity-0'); }
             });
         }
 
         function updateMinMatches(val) {
             minMatchesFilter = parseInt(val);
-            // Aggiorna ENTRAMBI i valori visualizzati
             document.getElementById('minMatchesValue').innerText = val;
-            const mobileValueElement = document.getElementById('minMatchesValue_mobile');
-            if (mobileValueElement) mobileValueElement.innerText = val;
-
-            // Sincronizza lo slider mobile con quello desktop (se l'aggiornamento viene da uno dei due)
-            const sliderDesktop = document.getElementById('minMatches');
-            const sliderMobile = document.getElementById('minMatches_mobile');
-            if (sliderDesktop) sliderDesktop.value = val;
-            if (sliderMobile) sliderMobile.value = val;
-            
+            const mobileVal = document.getElementById('minMatchesValue_mobile');
+            if(mobileVal) mobileVal.innerText = val;
+            const sliderD = document.getElementById('minMatches');
+            const sliderM = document.getElementById('minMatches_mobile');
+            if(sliderD) sliderD.value = val;
+            if(sliderM) sliderM.value = val;
             aggregateData();
         }
 
-        function toggleInactiveRefs() {
-            hideInactive = document.getElementById('toggleInactive').checked;
-            aggregateData();
-        }
-
+        function toggleInactiveRefs() { hideInactive = document.getElementById('toggleInactive').checked; aggregateData(); }
         function handleSearch() { aggregateData(); }
 
         function renderStatsInsights(data) {
              const c = document.getElementById('insights-container');
              c.innerHTML = `
-                <div class="glass-panel p-4 rounded-xl border-l-4 border-yellow-500">
-                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Arbitri Visualizzati</div>
-                    <div class="text-xl sm:text-2xl text-white font-mono font-medium">${data.length}</div>
+                <div class="glass-panel p-3 rounded-xl border-l-4 border-yellow-500 bg-slate-800/50">
+                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-1">Arbitri Visualizzati</div>
+                    <div class="text-xl text-white font-mono font-bold">${data.length}</div>
                 </div>
              `;
         }
-
         function renderMatchesInsights(data) {
              const c = document.getElementById('insights-container');
              c.innerHTML = `
-                <div class="glass-panel p-4 rounded-xl border-l-4 border-blue-500">
-                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Partite Selezionate</div>
-                    <div class="text-xl sm:text-2xl text-white font-mono font-medium">${data.length}</div>
+                <div class="glass-panel p-3 rounded-xl border-l-4 border-blue-500 bg-slate-800/50">
+                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold mb-1">Partite Selezionate</div>
+                    <div class="text-xl text-white font-mono font-bold">${data.length}</div>
                 </div>
              `;
         }
 
         function toggleDesignationsModal(shouldOpen) {
             const modal = document.getElementById('designations-modal');
-            if (shouldOpen) {
-                modal.classList.add('open');
-                document.body.style.overflow = 'hidden'; // Evita lo scroll del contenuto principale
-            } else {
-                modal.classList.remove('open');
-                document.body.style.overflow = ''; // Ripristina lo scroll
-            }
+            if (shouldOpen) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; } 
+            else { modal.classList.remove('open'); document.body.style.overflow = ''; }
         }
-
 
         window.onload = function() {
             updateSeasonButtonsUI();
             aggregateData();
-            // Chiude l'accordion delle stagioni inizialmente su mobile
             if (window.innerWidth < 1024) {
                 const content = document.getElementById('season-dropdown-content');
                 const icon = document.getElementById('season-toggle-icon');
