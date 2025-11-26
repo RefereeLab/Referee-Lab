@@ -44,6 +44,11 @@
     </script>
 
     <style>
+        /* FIX 1: Prevent horizontal overflow/scrolling on mobile/tablet */
+        html, body {
+            overflow-x: hidden;
+        }
+
         body {
             background-color: #020617;
             background-image:
@@ -121,7 +126,7 @@
             50% { opacity: 0.5; }
         }
         .animate-pulse-light { animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        
+
         /* New: Designations Modal Styles */
         #designations-modal {
             transition: transform 0.3s ease-in-out;
@@ -142,7 +147,7 @@
             </button>
             <h2 class="ml-auto text-white font-bold text-lg tracking-wide">DESIGNAZIONI</h2>
         </div>
-        
+
         <!-- Contenuto delle designazioni -->
         <div class="p-4 overflow-y-auto h-[calc(100vh-4rem)]">
             <div id="designations-content" class="space-y-4">
@@ -151,12 +156,12 @@
                         <h3 class="text-white font-bold text-lg tracking-wide mb-1">PROSSIMA GIORNATA <span class="text-red-600 font-bold"> (Novità)</span></h3>
                         <span class="text-yellow-500 font-mono text-base font-bold uppercase tracking-wider">13ª Giornata</span>
                     </div>
-            
-                    <div class="flex flex-col gap-y-3 text-xs"> 
+
+                    <div class="flex flex-col gap-y-3 text-xs">
                         <!-- ESEMPIO SINGOLA PARTITA (MANTENUTO SOLO COME STRUTTURA) -->
                         <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
                             <div class="text-black font-bold bg-[#39FF14] text-center py-1">PARTITA-PARTITA</div>
-                            <div class="p-2"> 
+                            <div class="p-2">
                                 <div class="flex flex-col items-start text-sm mt-0.1">
                                     <div class="text-[#39FF14] font-medium text-lg mb-1">ARB: Cognome</div>
                                 </div>
@@ -189,19 +194,21 @@
                     </div>
                 </div>
 
-                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full sm:w-auto max-w-[400px] justify-between sm:justify-start mx-2 sm:mx-4">
-                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
+                <!-- NEW: Nav buttons layout adjusted to prevent overflow on mobile -->
+                <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full max-w-full justify-between sm:justify-start mx-2 sm:mx-4 sm:w-auto sm:max-w-none">
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
                         <i class="fa-solid fa-chart-simple"></i> <span class="inline">Stats</span>
                     </button>
-                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
+                    <button onclick="switchView('playingTime')" id="nav-time" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
                         <i class="fa-solid fa-stopwatch"></i> <span class="inline">Tempo</span>
                     </button>
-                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
+                    <button onclick="switchView('matches')" id="nav-matches" class="nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all">
                         <i class="fa-solid fa-futbol"></i> <span>Partite</span>
                     </button>
-                    <!-- NEW: Designations Button for Mobile/Tablet -->
-                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all text-red-400 hover:text-red-500">
-                        <i class="fa-solid fa-calendar-check"></i> <span class="inline">Design.</span>
+                    <!-- NEW: Designations Button for Mobile/Tablet - takes up minimal space on mobile -->
+                    <button onclick="toggleDesignationsModal(true)" id="nav-designations-mobile" class="lg:hidden nav-switcher-btn flex-1 justify-center px-2 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-xs uppercase tracking-wider flex items-center gap-1 transition-all text-red-400 hover:text-red-500">
+                        <i class="fa-solid fa-calendar-check"></i> <span class="hidden sm:inline">Design.</span>
+                        <span class="inline sm:hidden">Des.</span> <!-- Abbreviation for small screens -->
                     </button>
                 </div>
 
@@ -279,7 +286,8 @@
                     </div>
                 </div>
 
-                <div id="insights-container" class="flex flex-col gap-3"></div>
+                <!-- FIX 3: Hide insights card on small screens -->
+                <div id="insights-container" class="flex flex-col gap-3 hidden sm:flex"></div>
             </div>
 
             <!-- Main Data Table -->
@@ -366,15 +374,15 @@
         <div class="flex flex-col gap-y-1 text-xs">
             <!-- PARTITE DESIGNAZIONI (DA INSERIRE) -->
             <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-[#39FF14]/40">
-                <div class="text-black font-bold bg-[#39FF14] text-center py-1">COMO-SASSUOLO</div>
+                <div class="text-black font-bold bg-[#39FF14] text-center py-1">PARTITA-PARTITA</div>
                 <div class="p-1.5">
                     <div class="flex flex-col items-start text-[11px] mt-0.1">
-                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Marchetti</div>
+                        <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Cognome</div>
                     </div>
-                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Ghersini</span></div>
+                    <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Cognome</span></div>
                 </div>
             </div>
-            <!-- ... Altre partite ... -->
+            <!-- ... Altre partite (Dummy) ... -->
             <div class="text-slate-500 text-center text-[10px] mt-2">
                 Dati completi da inserire.
             </div>
@@ -405,42 +413,33 @@
 
         const TOTAL_TIME_DB = ``;
 
-        // --- STATS DB (IMPORTANTE: INCOLLA QUI IL TUO CODICE con const db = { ... }) ---
+        // --- STATS DB (TRUNCATED) ---
         const db = {
             "2025-26": [
-                // DATI ARBITRI TRUNCATI
                 { name: "Luca Zufferli", matches: 7, fouls_avg: 26.71, penalties_ap: 0.57, yellows_ap: 3.00, yellows: 21, reds_ap: 0.00, reds: 0 },
                 { name: "Giuseppe Collu", matches: 7, fouls_avg: 23.29, penalties_ap: 0.57, yellows_ap: 4.29, yellows: 30, reds_ap: 0.00, reds: 0 },
             ],
             "2024-25": [
-                // DATI ARBITRI TRUNCATI
                 { name: "Davide Massa", matches: 19, fouls_avg: 25.74, penalties_ap: 0.16, yellows_ap: 4.21, yellows: 80, reds_ap: 0.26, reds: 5 },
                 { name: "Maurizio Mariani", matches: 18, fouls_avg: 25.94, penalties_ap: 0.11, yellows_ap: 3.72, yellows: 67, reds_ap: 0.17, reds: 3 },
             ],
             "2023-24": [
-                // DATI ARBITRI TRUNCATI
                 { name: "Marco Guida", matches: 17, fouls_avg: 23.59, penalties_ap: 0.47, yellows_ap: 4.00, yellows: 68, reds_ap: 0.06, reds: 1 },
                 { name: "Daniele Doveri", matches: 17, fouls_avg: 24.47, penalties_ap: 0.18, yellows_ap: 3.24, yellows: 55, reds_ap: 0.35, reds: 6 },
             ],
             "2022-23": [
-                 // DATI ARBITRI TRUNCATI
                  { name: "Daniele Orsato", matches: 15, fouls_avg: 21.40, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 45, reds_ap: 0.07, reds: 1 },
                  { name: "Fabio Maresca", matches: 15, fouls_avg: 25.60, penalties_ap: 0.00, yellows_ap: 5.33, yellows: 80, reds_ap: 0.20, reds: 3 },
             ],
             "2021-22": [
-                // DATI ARBITRI TRUNCATI
                 { name: "Daniele Doveri", matches: 17, fouls_avg: 26.82, penalties_ap: 0.35, yellows_ap: 3.47, yellows: 59, reds_ap: 0.18, reds: 3 },
                 { name: "Marco Di Bello", matches: 17, fouls_avg: 27.18, penalties_ap: 0.47, yellows_ap: 4.29, yellows: 73, reds_ap: 0.24, reds: 4 },
             ],
             "2020-21": [
-                // DATI ARBITRI TRUNCATI
                 { name: "Maurizio Mariani", matches: 18, fouls_avg: 27.11, penalties_ap: 0.50, yellows_ap: 3.67, yellows: 66, reds_ap: 0.11, reds: 2 },
                 { name: "Daniele Doveri", matches: 17, fouls_avg: 29.06, penalties_ap: 0.29, yellows_ap: 4.06, yellows: 69, reds_ap: 0.00, reds: 0 },
             ],
         };
-        // SE USI "const db = ...", INCOLLALO SOPRA DI QUESTO COMMENTO
-        // E SCOMMENTA LA RIGA SOTTOSTANTE SE VUOI ASSEGNARE db A STATS_DB AUTOMATICAMENTE
-        // if (typeof db !== 'undefined') Object.assign(STATS_DB, db);
 
         // -----------------------
         // --- LOGIC SECTION ---
@@ -590,7 +589,7 @@
              }).filter(x => x);
         }
 
-        // --- Data Processing ---
+        // --- Data Processing (UNCHANGED) ---
 
         function processStatsData() {
             let statsMap = new Map();
@@ -849,7 +848,7 @@
             renderTable(result);
             if(currentView === 'stats') renderStatsInsights(result);
             else if(currentView === 'matches') renderMatchesInsights(result);
-            else document.getElementById('insights-container').innerHTML = '';
+            // Non c'è bisogno di un 'else' qui, perché il container viene aggiornato solo per stats e matches
         }
 
         // --- Render ---
