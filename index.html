@@ -130,7 +130,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="window.location.reload()">
-                    <!-- FIX: Hidden on mobile (default hidden), shown on sm (sm:flex) -->
                     <div class="hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center text-slate-900 shadow-glow group-hover:scale-105 transition-transform">
                         <i class="fa-solid fa-whistle text-xs sm:text-sm"></i>
                     </div>
@@ -140,7 +139,6 @@
                     </div>
                 </div>
                 
-                <!-- MOBILE NAV FIXED: w-full and justify-between for mobile -->
                 <div class="flex items-center bg-slate-900/80 rounded-full p-1 border border-white/10 w-full sm:w-auto max-w-[280px] sm:max-w-none justify-between sm:justify-start mx-4 sm:mx-0">
                     <button onclick="switchView('stats')" id="nav-stats" class="nav-switcher-btn active flex-1 sm:flex-none justify-center px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all">
                         <i class="fa-solid fa-chart-simple"></i> <span class="inline">Stats</span>
@@ -172,7 +170,6 @@
                 <div class="glass-panel rounded-xl p-4 sm:p-5 space-y-4 sm:space-y-6">
                     <div>
                         <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Cerca</label>
-                        <!-- FIX: FLEX CONTAINER for Search to prevent overlap -->
                         <div class="group flex items-center w-full bg-slate-900/60 border border-slate-700 rounded-lg focus-within:ring-1 focus-within:ring-yellow-500 transition-all overflow-hidden">
                             <div class="pl-3 py-2 sm:py-2.5 text-slate-500 group-focus-within:text-yellow-500 transition-colors flex-shrink-0">
                                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -273,7 +270,8 @@
                         <table class="w-full text-left text-slate-300" id="mainTable">
                             <thead class="text-[9px] sm:text-[10px] md:text-xs text-slate-400 uppercase bg-slate-900/90 border-b border-white/5 sticky top-0 z-40 backdrop-blur-md" id="tableHeader"></thead>
                             <tbody id="tableBody" class="divide-y divide-white/5 font-mono text-[10px] sm:text-xs md:text-sm"></tbody>
-                            <tfoot class="bg-slate-950/90 border-t border-white/5 font-medium text-white backdrop-blur-md sticky bottom-0 z-40" id="tableFooter"></tfoot>
+                            <!-- FIX: Footer Styling Updated -->
+                            <tfoot class="bg-slate-800 border-t-2 border-white/20 font-medium text-white backdrop-blur-md sticky bottom-0 z-40" id="tableFooter"></tfoot>
                         </table>
                         
                         <!-- Empty State for historic data -->
@@ -306,9 +304,9 @@
             <!-- Designations -->
             <div class="hidden lg:block lg:col-span-1 space-y-6">
                 <div class="glass-panel rounded-xl p-4 h-fit">
-                    <div class="pb-3 border-b border-white/5 mb-3 flex justify-between items-baseline">
-                        <h3 class="text-white font-bold text-sm tracking-wide">DESIGNAZIONI</h3>
-                        <span class="text-yellow-500 font-mono text-[10px] font-medium border border-yellow-500/20 px-1.5 py-0.5 rounded">12ª G</span>
+                    <div class="pb-3 border-b border-white/5 mb-3 flex flex-col">
+                        <h3 class="text-white font-bold text-sm tracking-wide mb-1">DESIGNAZIONI</h3>
+                        <span class="text-yellow-500 font-mono text-[10px] font-medium uppercase tracking-wider">12ª Giornata</span>
                     </div>
 
                     <div class="flex flex-col gap-2.5 text-xs">
@@ -889,7 +887,31 @@ Genoa-Fiorentina	97,03	46,12	47,5%	35
 Roma-Udinese	98,21	58,53	59,6%	27
 Inter-Lazio	97,11	59,00	60,8%	37`;
 
-
+        // DATI PARTITE ND AGGIUNTI MANUALMENTE
+        const EXTRA_MATCHES_2526 = `
+Como-Cremonese\t97,54\tND\tND\t33
+Juventus-Atalanta\t98,52\tND\tND\t13
+Cagliari-Inter\t96,35\tND\tND\t27
+Sassuolo-Udinese\t98,39\tND\tND\t27
+Pisa-Fiorentina\t98,27\tND\tND\t30
+Roma-Verona\t100,00\tND\tND\t30
+Lecce-Bologna\t97,51\tND\tND\t26
+Milan-Napoli\t99,10\tND\tND\t13
+Parma-Torino\t98,49\tND\tND\t22
+Genoa-Lazio\t96,06\tND\tND\t34
+Verona-Sassuolo\t99,27\t49,17\t49,5%\t26
+Lazio-Torino\t103,57\t54,51\t52,6%\t35
+Parma-Lecce\t101,04\t47,10\t46,6%\t32
+Inter-Cremonese\t95,20\t55,44\t58,2%\t17
+Atalanta-Como\t95,25\t56,48\t59,3%\t29
+Udinese-Cagliari\t97,10\t50,42\t51,9%\t29
+Bologna-Pisa\t91,03\t51,05\t56,1%\t28
+Fiorentina-Roma\t98,08\t49,19\t50,2%\t40
+Napoli-Genoa\t96,31\tND\tND\t31
+Juventus-Milan\t94,13\t57,17\t60,7%\t23
+Lecce-Sassuolo\t97,33\tND\tND\t30
+        `;
+        
         const PLAYING_TIME_DB = {
             "2025-26": `Massa	46,53
 Ayroldi	60,05
@@ -1741,6 +1763,7 @@ Manganiello	97,11`;
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 }
             ],
         };        
+        
         // SE USI "const db = ...", INCOLLALO SOPRA DI QUESTO COMMENTO 
         // E SCOMMENTA LA RIGA SOTTOSTANTE SE VUOI ASSEGNARE db A STATS_DB AUTOMATICAMENTE
         // if (typeof db !== 'undefined') Object.assign(STATS_DB, db);
@@ -1749,7 +1772,7 @@ Manganiello	97,11`;
         // --- LOGIC SECTION ---
         // -----------------------
         let currentView = 'stats';
-        let activeSeasons = ['2025-26', '2024-25'];
+        let activeSeasons = ['2025-26'];
         let sortColumn = 'matches';
         let sortDirection = 'desc';
         let minMatchesFilter = 0;
@@ -1859,7 +1882,13 @@ Manganiello	97,11`;
              return dbString.trim().split('\n').map(line => {
                  const p = line.split('\t');
                  if (p.length < 2) return null;
-                 return { season: season, referee: p[0].trim(), effectiveTimeSec: parseTimeStr(p[1]) };
+                 // Modified to read a 3rd column (Total Time) if present
+                 return { 
+                     season: season, 
+                     referee: p[0].trim(), 
+                     effectiveTimeSec: parseTimeStr(p[1]),
+                     totalTimeSec: p.length > 2 ? parseTimeStr(p[2]) : NaN 
+                 };
              }).filter(x => x);
         }
 
@@ -1908,32 +1937,91 @@ Manganiello	97,11`;
             let statsMap = new Map();
             activeSeasons.forEach(season => {
                 const refData = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
-                const matchData = parseMatchesDB(season === '2025-26' ? MATCHES_DB_2526 : MATCHES_DB_2425, season);
+                
+                // UNISCI I DATI MANUALI SE E' 25/26
+                let dbString2526 = MATCHES_DB_2526;
+                if (season === '2025-26') {
+                    dbString2526 += EXTRA_MATCHES_2526;
+                }
+                
+                const matchData = parseMatchesDB(season === '2025-26' ? dbString2526 : MATCHES_DB_2425, season);
+                
                 const matchByEffTime = new Map();
+                // Store ND matches separately for greedy matching
+                const availableNDMatches = [];
+
                 matchData.forEach(m => {
-                     if(!isNaN(m.effectiveTimeSec)) matchByEffTime.set(m.effectiveTimeSec, m);
+                     if(!isNaN(m.effectiveTimeSec)) {
+                        matchByEffTime.set(m.effectiveTimeSec, m);
+                     } else {
+                        availableNDMatches.push(m);
+                     }
                 });
+                
                 refData.forEach(entry => {
                     if (!statsMap.has(entry.referee)) {
                         statsMap.set(entry.referee, {
-                            name: entry.referee, matches: 0, totalEffectiveSec: 0, totalTotalSec: 0,
-                            matchList: [], has2526: false
+                            name: entry.referee, 
+                            matches: 0, 
+                            totalEffectiveSec: 0, 
+                            totalTotalSec: 0,
+                            validEffMatches: 0,
+                            validTotMatches: 0,
+                            matchList: [], 
+                            has2526: false
                         });
                     }
                     let r = statsMap.get(entry.referee);
-                    r.matches++;
-                    if(!isNaN(entry.effectiveTimeSec)) r.totalEffectiveSec += entry.effectiveTimeSec;
+                    r.matches++; // Count the match even if ND
+                    
+                    if(!isNaN(entry.effectiveTimeSec)) {
+                        r.totalEffectiveSec += entry.effectiveTimeSec;
+                        r.validEffMatches++;
+                    }
+                    
                     if(season === '2025-26') r.has2526 = true;
-                    const match = matchByEffTime.get(entry.effectiveTimeSec);
+                    
+                    let match = null;
+
+                    // 1. Try to find match by Effective Time
+                    if (!isNaN(entry.effectiveTimeSec)) {
+                        match = matchByEffTime.get(entry.effectiveTimeSec);
+                    } 
+                    // 2. If Effective Time is ND, try to find in available ND matches (Greedy Approach)
+                    else {
+                        if (availableNDMatches.length > 0) {
+                            match = availableNDMatches.shift(); // Take one and remove it
+                        }
+                    }
+                    
                     if(match) {
                          r.matchList.push(match);
-                         if(!isNaN(match.totalTimeSec)) r.totalTotalSec += match.totalTimeSec;
+                         if(!isNaN(match.totalTimeSec)) {
+                             r.totalTotalSec += match.totalTimeSec;
+                             r.validTotMatches++;
+                         }
+                    } else {
+                        // Fallback logic
+                        let manualTotal = !isNaN(entry.totalTimeSec) ? entry.totalTimeSec : NaN;
+                        if(!isNaN(manualTotal)) {
+                            r.totalTotalSec += manualTotal;
+                            r.validTotMatches++;
+                        }
+                        
+                        r.matchList.push({
+                            match: "Dettaglio non disp.",
+                            season: season,
+                            effectiveTimeSec: entry.effectiveTimeSec,
+                            totalTimeSec: manualTotal
+                        });
                     }
                 });
             });
+            
             return Array.from(statsMap.values()).map(r => {
-                r.avgEffSec = r.matches ? (r.totalEffectiveSec / r.matches) : 0;
-                r.avgTotSec = r.matches ? (r.totalTotalSec / r.matches) : 0;
+                // Calculate averages based on VALID counts only
+                r.avgEffSec = r.validEffMatches ? (r.totalEffectiveSec / r.validEffMatches) : 0;
+                r.avgTotSec = r.validTotMatches ? (r.totalTotalSec / r.validTotMatches) : 0;
                 return r;
             });
         }
@@ -1942,7 +2030,10 @@ Manganiello	97,11`;
             let all = [];
             activeSeasons.forEach(s => {
                 let db = null;
-                if(s === '2025-26') db = MATCHES_DB_2526;
+                if(s === '2025-26') {
+                    // Combine standard DB + Extra ND matches
+                    db = MATCHES_DB_2526 + EXTRA_MATCHES_2526;
+                }
                 else if(s === '2024-25') db = MATCHES_DB_2425;
                 if(db) all = all.concat(parseMatchesDB(db, s));
             });
@@ -2089,7 +2180,7 @@ Manganiello	97,11`;
                 const globalAvgPens = totalPens / (totMatches || 1);
 
                 tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-900/80">
+                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800">
                         <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Totali / Medie</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-lime-400 font-bold">${totMatches}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-white">${globalAvgFouls.toFixed(2)}</td>
@@ -2102,11 +2193,13 @@ Manganiello	97,11`;
                 `;
             }
             else if (currentView === 'playingTime') {
+                const showTotalTime = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
+                
                 thead.innerHTML = `<tr>
                     <th class="p-2 sm:p-4 sticky-col-head w-1/4 cursor-pointer hover:text-white" onclick="handleSort('name')">Arbitro</th>
                     <th class="p-2 sm:p-4 text-center w-24 cursor-pointer hover:text-white" onclick="handleSort('matches')">Partite</th>
                     <th class="p-2 sm:p-4 text-right cursor-pointer hover:text-white" onclick="handleSort('avgEffSec')">Media T.E.</th>
-                    ${activeSeasons.includes('2025-26') ? `<th class="p-2 sm:p-4 text-right text-blue-300 cursor-pointer hover:text-white" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
+                    ${showTotalTime ? `<th class="p-2 sm:p-4 text-right text-blue-300 cursor-pointer hover:text-white" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
                     <th class="p-2 sm:p-4 text-center w-8 sm:w-10"></th>
                 </tr>`;
                 
@@ -2119,8 +2212,8 @@ Manganiello	97,11`;
                             ${formatRefereeNameHTML(r.name)}
                         </td>
                         <td class="p-2 sm:p-2.5 text-center font-mono text-slate-300">${r.matches}</td>
-                        <td class="p-2 sm:p-2.5 text-right font-mono font-medium text-green-400 text-sm sm:text-lg">${formatSecondsToTime(r.avgEffSec)}</td>
-                        ${activeSeasons.includes('2025-26') ? `<td class="p-2 sm:p-2.5 text-right font-mono text-blue-400">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
+                        <td class="p-2 sm:p-2.5 text-right font-mono font-medium text-green-400">${formatSecondsToTime(r.avgEffSec)}</td>
+                        ${showTotalTime ? `<td class="p-2 sm:p-2.5 text-right font-mono text-blue-400">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
                         <td class="p-2 sm:p-2.5 text-center text-slate-500 group-hover:text-white"><i class="fa-solid fa-chevron-down text-[10px] sm:text-xs transition-transform" id="icon-${i}"></i></td>
                     `;
                     tbody.appendChild(tr);
@@ -2128,15 +2221,22 @@ Manganiello	97,11`;
                     const detailsTr = document.createElement('tr');
                     detailsTr.id = `details-${i}`;
                     detailsTr.className = "details-row";
-                    const colSpan = activeSeasons.includes('2025-26') ? 5 : 4;
-                    let matchesHtml = r.matchList.map(m => `
+                    const colSpan = showTotalTime ? 5 : 4;
+                    let matchesHtml = r.matchList.map(m => {
+                        // FIX: Center ND values
+                        const effDisplay = formatSecondsToTime(m.effectiveTimeSec);
+                        const totDisplay = formatSecondsToTime(m.totalTimeSec);
+                        const effClass = effDisplay === 'ND' ? "text-center text-slate-500" : "text-right text-green-400 font-medium";
+                        const totClass = totDisplay === 'ND' ? "text-center text-slate-500" : "text-right text-blue-400";
+                        
+                        return `
                         <div class="flex justify-between items-center py-2 border-b border-white/5 last:border-0 text-[10px] sm:text-xs">
                             <span class="text-white w-1/3 font-bold truncate pr-2">${m.match}</span>
                             <span class="text-slate-500 font-mono w-14 sm:w-16">${m.season}</span>
-                            <span class="text-green-400 font-mono text-right w-16 sm:w-20">Eff: ${formatSecondsToTime(m.effectiveTimeSec)}</span>
-                            <span class="text-blue-400 font-mono text-right w-16 sm:w-20">Tot: ${formatSecondsToTime(m.totalTimeSec)}</span>
+                            <span class="${effClass} font-mono w-16 sm:w-20">${effDisplay === 'ND' ? 'ND' : 'Eff: ' + effDisplay}</span>
+                            <span class="${totClass} font-mono w-16 sm:w-20">${totDisplay === 'ND' ? 'ND' : 'Tot: ' + totDisplay}</span>
                         </div>
-                    `).join('');
+                    `}).join('');
 
                     detailsTr.innerHTML = `
                         <td colspan="${colSpan}" class="p-0">
@@ -2170,13 +2270,19 @@ Manganiello	97,11`;
                     const displayRatio = isNaN(r.ratio) ? "ND" : `${r.ratio}%`;
                     const displayEff = formatSecondsToTime(r.effectiveTimeSec);
                     const displayTot = formatSecondsToTime(r.totalTimeSec);
+                    
+                    // FIX: Center ND values
+                    const effClass = displayEff === 'ND' 
+                        ? "text-center text-slate-500" 
+                        : "text-right text-green-400 font-medium";
+
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-white/5 hover:bg-white/5";
                     tr.innerHTML = `
                         <td class="p-2 sm:p-4 sticky-col-body font-sans font-bold text-white uppercase tracking-wide truncate max-w-[150px] sm:max-w-none">${r.match}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-slate-500">${r.season}</td>
                         <td class="p-2 sm:p-4 text-right font-mono text-blue-400 font-medium">${displayTot}</td>
-                        <td class="p-2 sm:p-4 text-right font-mono text-green-400 font-medium">${displayEff}</td>
+                        <td class="p-2 sm:p-4 font-mono ${effClass}">${displayEff}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-slate-400">${displayRatio}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${r.fouls}</td>
                     `;
@@ -2189,7 +2295,7 @@ Manganiello	97,11`;
                 const avgEffSec = validEffCount > 0 ? (sumEffSec/validEffCount) : 0;
 
                 tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-900/80">
+                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800">
                         <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Medie Partite Visibili</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-white">-</td>
                         <td class="p-2 sm:p-4 text-right font-mono text-blue-300">${formatSecondsToTime(avgTotSec)}</td>
