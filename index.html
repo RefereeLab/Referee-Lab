@@ -2398,7 +2398,7 @@ Di Marco	98,18`;
             renderTable(result);
             if(currentView === 'stats') renderStatsInsights(result);
             else if(currentView === 'matches') renderMatchesInsights(result);
-            // Non c'è bisogno di un 'else' qui, perché il container viene aggiornato solo per stats e matches
+            else document.getElementById('insights-container').innerHTML = '';
         }
 
         // --- Render ---
