@@ -131,7 +131,7 @@
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="window.location.reload()">
                     <div class="hidden sm:flex w-7 h-7 sm:w-8 sm:h-8 rounded bg-gradient-to-br from-yellow-400 to-yellow-600 items-center justify-center text-slate-900 shadow-glow group-hover:scale-105 transition-transform">
-                        <i class="fa-solid fa-whistle text-xs sm:text-sm"></i>
+                        <i class="fa-solid fa-whistle rotate-[-20deg] text-xs sm:text-sm"></i>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-bold text-base sm:text-lg tracking-tight text-white leading-none">Referee<span class="text-yellow-500">Lab</span></span>
@@ -251,9 +251,9 @@
                     <div id="matches-title" class="hidden w-full relative py-4 sm:py-5 border-b border-white/5 bg-slate-900/30 flex items-center justify-center backdrop-blur-sm flex-col">
                         <div class="w-full flex items-center justify-center relative">
                             <button onclick="switchView('playingTime')" class="absolute left-2 sm:left-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5">
-                                <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">T. Eff</span>
-                            </button>
-                            <div class="text-center">
+                                 <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">T. Eff</span>
+                             </button>
+                             <div class="text-center">
                                 <h2 class="text-lg sm:text-2xl font-bold text-white tracking-tight">Elenco <span class="text-blue-400 font-light">Partite</span></h2>
                                 <p class="text-slate-500 text-[10px] uppercase tracking-widest mt-0.5 font-medium">Database Completo</p>
                             </div>
@@ -262,7 +262,7 @@
 
                     <!-- Avviso aggiornamento (STATISTICHE e PARTITE) -->
                     <div id="update-alert-2526" class="hidden w-full bg-blue-500/10 border-b border-blue-500/10 p-2 text-center">
-                        <p class="text-[10px] sm:text-xs text-blue-300 font-mono"><i class="fa-solid fa-circle-info mr-2"></i>Dati aggiornati all'11ª giornata.</p>
+                        <p class="text-[10px] sm:text-xs text-blue-300 font-mono"><i class="fa-solid fa-circle-info mr-2"></i>Dati aggiornati alla 12ª giornata.</p>
                     </div>
 
                     <!-- Main Table -->
@@ -301,84 +301,101 @@
                 </div>
             </div>
 
-            <!-- Designations -->
-            <div class="hidden lg:block lg:col-span-1 space-y-6">
-                <div class="glass-panel rounded-xl p-4 h-fit">
-                    <div class="pb-3 border-b border-white/5 mb-3 flex flex-col">
+<!-- Designations --><div class="hidden lg:block lg:col-span-1 space-y-6">
+                <div class="glass-panel rounded-xl p-2 h-fit">
+                    <div class="pb-1 border-b border-white/5 mb-2 flex flex-col">
                         <h3 class="text-white font-bold text-sm tracking-wide mb-1">DESIGNAZIONI</h3>
-                        <span class="text-yellow-500 font-mono text-[10px] font-medium uppercase tracking-wider">12ª Giornata</span>
+                        <span class="text-yellow-500 font-mono text-[12px] font-medium uppercase tracking-wider">12ª Giornata</span>
                     </div>
 
-                    <div class="flex flex-col gap-2.5 text-xs">
-                        <!-- Example Cards -->
-                         <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">CAGLIARI – GENOA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">ABISSO</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> LA PENNA</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">CAGLIARI-GENOA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: La Penna</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Abisso</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">UDINESE – BOLOGNA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">CAMPLONE</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> SACCHI</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">UDINESE-BOLOGNA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Sacchi</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Camplone</span></div>
                             </div>
                         </div>
-                         <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">FIORENTINA – JUVE</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">GUIDA</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DOVERI</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">JUVENTUS-FIORENTINA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Doveri</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Guida</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">NAPOLI – ATALANTA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">DI PAOLO</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DI BELLO</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">NAPOLI-ATALANTA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Di Bello</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Di Paolo</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">VERONA – PARMA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">PATERNA</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> PAIRETTO</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">VERONA-PARMA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Pairetto</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Paterna</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">CREMONESE – ROMA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">PEZZUTO</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> AYROLDI</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">CREMONESE-ROMA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Ayroldi</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Pezzuto</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">LAZIO – LECCE</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">SERRA</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> ARENA</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">LAZIO-LECCE</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Arena</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Serra</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">INTER – MILAN</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">AURELIANO</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> SOZZA</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">INTER-MILAN</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Sozza</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Aureliano</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">TORINO – COMO</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">PRONTERA</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> BONACINA</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">TORINO-COMO</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Bonacina</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Prontera</span></div>
                             </div>
                         </div>
-                        <div class="match-card p-2.5 hover:bg-white/5 transition-colors">
-                            <div class="text-white font-medium mb-2 tracking-wide">SASSUOLO – PISA</div>
-                            <div class="flex justify-between items-center text-[10px]">
-                                <div class="text-slate-500">VAR: <span class="text-slate-300">GARIGLIO</span></div>
-                                <div class="text-green-400 font-mono font-medium flex items-center gap-1.5"><i class="fa-solid fa-whistle text-[9px]"></i> DI MARCO</div>
+                    <div class="flex flex-col gap-3 text-xs">
+                        <!-- Example Cards --><div class="match-card p-3 hover:bg-white/5 transition-colors">
+                            <div class="text-white-200 font-medium mb-2">SASSUOLO-PISA</div>
+                            <div class="flex flex-col items-start text-[11px]">
+                            <div class="text-[#39FF14] font-medium text-sm mb-0.2">ARB: Di Marco</div>
+                                </div>
+                                <div class="text-violet-200 font-medium ">VAR: <span class="text-violet-200 font-medium">Gariglio</span></div>
                             </div>
                         </div>
                     </div>
@@ -393,8 +410,9 @@
     </main>
 
     <script>
-        // --- RAW DATA ---
-
+        // --- DATA SECTION ---
+        
+        // PASTE YOUR ORIGINAL DATA HERE
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
 Parma-Fiorentina	97,04	48,46	49,9%	24
 Empoli-Monza	100,37	44,43	44,3%	35
@@ -776,6 +794,7 @@ Torino-Roma	94,54	57,30	60,6%	26
 Udinese-Fiorentina	96,02	57,55	59,9%	21
 Venezia-Juventus	98,32	49,56	50,4%	28`;
 
+        // INIEZIONE DEI NUOVI DATI FORNITI DALL'UTENTE
         const MATCHES_DB_2526 = `Genoa-Lecce	95,47	46,53	48,7%	29
 Sassuolo-Napoli	97,20	60,05	61,8%	30
 Milan-Cremonese	97,21	65,26	67,1%	28
@@ -885,32 +904,19 @@ Atalanta-Sassuolo	99,06	60,28	60,9%	17
 Bologna-Napoli	99,24	54,49	54,9%	29
 Genoa-Fiorentina	97,03	46,12	47,5%	35
 Roma-Udinese	98,21	58,53	59,6%	27
-Inter-Lazio	97,11	59,00	60,8%	37`;
-
+Inter-Lazio	97,11	59,00	60,8%	37
+Cagliari-Genoa	96,36	45,56	47,3%	38
+Udinese-Bologna	101,03	46,21	45,7%	35
+Fiorentina-Juventus	101,06	55,15	54,6%	29
+Napoli-Atalanta	96,16	56,23	58,5%	23
+Verona-Parma	98,17	54,51	55,5%	30
+Cremonese-Roma	100,43	53,23	53,0%	28
+Lazio-Lecce	98,36	59,36	60,4%	21
+Inter-MIlan	98,01	60,11	61,3%	16
+Torino-Como	96,52	ND	ND	15
+Sassuolo-Pisa	98,18	ND	ND	20`;
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
-        const EXTRA_MATCHES_2526 = `
-Como-Cremonese\t97,54\tND\tND\t33
-Juventus-Atalanta\t98,52\tND\tND\t13
-Cagliari-Inter\t96,35\tND\tND\t27
-Sassuolo-Udinese\t98,39\tND\tND\t27
-Pisa-Fiorentina\t98,27\tND\tND\t30
-Roma-Verona\t100,00\tND\tND\t30
-Lecce-Bologna\t97,51\tND\tND\t26
-Milan-Napoli\t99,10\tND\tND\t13
-Parma-Torino\t98,49\tND\tND\t22
-Genoa-Lazio\t96,06\tND\tND\t34
-Verona-Sassuolo\t99,27\t49,17\t49,5%\t26
-Lazio-Torino\t103,57\t54,51\t52,6%\t35
-Parma-Lecce\t101,04\t47,10\t46,6%\t32
-Inter-Cremonese\t95,20\t55,44\t58,2%\t17
-Atalanta-Como\t95,25\t56,48\t59,3%\t29
-Udinese-Cagliari\t97,10\t50,42\t51,9%\t29
-Bologna-Pisa\t91,03\t51,05\t56,1%\t28
-Fiorentina-Roma\t98,08\t49,19\t50,2%\t40
-Napoli-Genoa\t96,31\tND\tND\t31
-Juventus-Milan\t94,13\t57,17\t60,7%\t23
-Lecce-Sassuolo\t97,33\tND\tND\t30
-        `;
+        const EXTRA_MATCHES_2526 = ``;
         
         const PLAYING_TIME_DB = {
             "2025-26": `Massa	46,53
@@ -1010,7 +1016,16 @@ Crezzini	60,28
 Chiffi	54,49
 Guida	46,12
 Collu	58,53
-Manganiello	59,00`,
+Manganiello	59,00
+La Penna	45,56
+Sacchi	46,21
+Doveri	55,15
+Di Bello	56,23
+Pairetto	54,51
+Ayroldi	53,23
+Arena	59,36
+Sozza	60,11'
+`,
             "2024-25": `Feliciani	46,39
 Ayroldi	48,46
 Fabbri	44,43
@@ -1393,7 +1408,7 @@ Marcenaro	57,55
 Colombo	49,56`,
             "2023-24": ``, "2022-23": ``, "2021-22": ``, "2020-21": ``
         };
-
+        
         const TOTAL_TIME_DB = `Massa	95,47
 Ayroldi	97,20
 Collu	97,21
@@ -1503,28 +1518,41 @@ Crezzini	99,06
 Chiffi	99,24
 Guida	97,03
 Collu	98,21
-Manganiello	97,11`;
+Manganiello	97,11
+La Penna	96,36
+Sacchi	101,03
+Doveri	101,06
+Di Bello	96,16
+Pairetto	98,17
+Ayroldi	100,43
+Arena	98,36
+Sozza	98,01
+Bonacina	96,52
+Di Marco	98,18`;
 
+        // --- STATS DB (IMPORTANTE: INCOLLA QUI IL TUO CODICE con const db = { ... }) ---
+        // Il sistema userà questa variabile per le statistiche.
+        
         const db = {
             "2025-26": [
                 { name: "Luca Zufferli", matches: 7, fouls_avg: 26.71, penalties_ap: 0.57, yellows_ap: 3.00, yellows: 21, reds_ap: 0.00, reds: 0 },
                 { name: "Giuseppe Collu", matches: 7, fouls_avg: 23.29, penalties_ap: 0.57, yellows_ap: 4.29, yellows: 30, reds_ap: 0.00, reds: 0 },
                 { name: "Marco Guida", matches: 5, fouls_avg: 26.80, penalties_ap: 1.20, yellows_ap: 5.00, yellows: 25, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Doveri", matches: 5, fouls_avg: 23.40, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 20, reds_ap: 0.00, reds: 0 },
+                { name: "Daniele Doveri", matches: 6, fouls_avg: 24.33, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 26, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Chiffi", matches: 5, fouls_avg: 23.40, penalties_ap: 0.20, yellows_ap: 2.00, yellows: 10, reds_ap: 0.20, reds: 1 },
                 { name: "Gianluca Manganiello", matches: 5, fouls_avg: 29.40, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 15, reds_ap: 0.00, reds: 0 },
-                { name: "Simone Sozza", matches: 5, fouls_avg: 27.20, penalties_ap: 0.40, yellows_ap: 3.00, yellows: 15, reds_ap: 1.00, reds: 5 },
-                { name: "Giovanni Ayroldi", matches: 5, fouls_avg: 31.80, penalties_ap: 0.00, yellows_ap: 4.40, yellows: 22, reds_ap: 0.20, reds: 1 },
+                { name: "Simone Sozza", matches: 6, fouls_avg: 25.33, penalties_ap: 0.50, yellows_ap: 3.00, yellows: 18, reds_ap: 0.83, reds: 5 },
+                { name: "Giovanni Ayroldi", matches: 6, fouls_avg: 31.17, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 26, reds_ap: 0.17, reds: 1 },
                 { name: "Matteo Marcenaro", matches: 5, fouls_avg: 26.60, penalties_ap: 0.00, yellows_ap: 4.40, yellows: 22, reds_ap: 0.20, reds: 1 },
                 { name: "Valerio Crezzini", matches: 5, fouls_avg: 23.80, penalties_ap: 0.40, yellows_ap: 2.60, yellows: 13, reds_ap: 0.00, reds: 0 },
-                { name: "Alberto Arena", matches: 5, fouls_avg: 21.20, penalties_ap: 0.20, yellows_ap: 3.00, yellows: 15, reds_ap: 0.00, reds: 0 },
+                { name: "Alberto Arena", matches: 6, fouls_avg: 21.17, penalties_ap: 0.17, yellows_ap: 2.83, yellows: 17, reds_ap: 0.00, reds: 0 },
                 { name: "Davide Massa", matches: 4, fouls_avg: 33.00, penalties_ap: 0.00, yellows_ap: 4.75, yellows: 19, reds_ap: 0.00, reds: 0 },
                 { name: "Rosario Abisso", matches: 4, fouls_avg: 29.75, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 14, reds_ap: 0.25, reds: 1 },
-                { name: "Federico La Penna", matches: 4, fouls_avg: 27.00, penalties_ap: 0.50, yellows_ap: 2.75, yellows: 11, reds_ap: 0.25, reds: 1 },
+                { name: "Federico La Penna", matches: 5, fouls_avg: 29.20, penalties_ap: 0.40, yellows_ap: 3.20, yellows: 16, reds_ap: 0.40, reds: 2 },
                 { name: "Andrea Colombo", matches: 4, fouls_avg: 28.25, penalties_ap: 0.25, yellows_ap: 3.75, yellows: 15, reds_ap: 0.00, reds: 0 },
                 { name: "Ermanno Feliciani", matches: 4, fouls_avg: 24.25, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 14, reds_ap: 0.00, reds: 0 },
-                { name: "Kevin Bonacina", matches: 4, fouls_avg: 29.25, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 18, reds_ap: 0.25, reds: 1 },
-                { name: "Marco Di Bello", matches: 3, fouls_avg: 27.33, penalties_ap: 1.00, yellows_ap: 4.67, yellows: 14, reds_ap: 0.33, reds: 1 },
+                { name: "Kevin Bonacina", matches: 5, fouls_avg: 26.40, penalties_ap: 0.20, yellows_ap: 3.80, yellows: 19, reds_ap: 0.20, reds: 1 },
+                { name: "Marco Di Bello", matches: 4, fouls_avg: 26.25, penalties_ap: 0.75, yellows_ap: 4.25, yellows: 17, reds_ap: 0.25, reds: 1 },
                 { name: "Marco Piccinini", matches: 3, fouls_avg: 30.67, penalties_ap: 0.33, yellows_ap: 4.00, yellows: 12, reds_ap: 0.33, reds: 1 },
                 { name: "Livio Marinelli", matches: 3, fouls_avg: 22.33, penalties_ap: 0.33, yellows_ap: 3.33, yellows: 10, reds_ap: 0.00, reds: 0 },
                 { name: "Francesco Fourneau", matches: 3, fouls_avg: 28.33, penalties_ap: 0.67, yellows_ap: 5.00, yellows: 15, reds_ap: 0.00, reds: 0 },
@@ -1533,11 +1561,12 @@ Manganiello	97,11`;
                 { name: "Antonio Rapuano", matches: 2, fouls_avg: 31.50, penalties_ap: 0.50, yellows_ap: 5.50, yellows: 11, reds_ap: 0.00, reds: 0 },
                 { name: "Matteo Marchetti", matches: 2, fouls_avg: 29.50, penalties_ap: 0.50, yellows_ap: 4.00, yellows: 8, reds_ap: 0.00, reds: 0 },
                 { name: "Paride Tremolada", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 14, reds_ap: 0.00, reds: 0 },
-                { name: "Luca Pairetto", matches: 1, fouls_avg: 41.00, penalties_ap: 0.00, yellows_ap: 8.00, yellows: 8, reds_ap: 0.00, reds: 0 },
+                { name: "Luca Pairetto", matches: 2, fouls_avg: 35.50, penalties_ap: 0.00, yellows_ap: 7.50, yellows: 15, reds_ap: 0.00, reds: 0 },
                 { name: "Ivano Pezzuto", matches: 1, fouls_avg: 36.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 },
-                { name: "Juan Luca Sacchi", matches: 1, fouls_avg: 26.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 },
+                { name: "Juan Luca Sacchi", matches: 2, fouls_avg: 30.50, penalties_ap: 0.50, yellows_ap: 1.50, yellows: 3, reds_ap: 0.00, reds: 0 },
                 { name: "Federico Dionisi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Daniele Perenzoni", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }
+                { name: "Daniele Perenzoni", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
+                { name: "Davide Di Marco", matches: 1, fouls_avg: 20.00, penalties_ap: 1.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 }
             ],
             "2024-25": [
                 { name: "Davide Massa", matches: 19, fouls_avg: 25.74, penalties_ap: 0.16, yellows_ap: 4.21, yellows: 80, reds_ap: 0.26, reds: 5 },
@@ -1763,7 +1792,6 @@ Manganiello	97,11`;
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 }
             ],
         };        
-        
         // SE USI "const db = ...", INCOLLALO SOPRA DI QUESTO COMMENTO 
         // E SCOMMENTA LA RIGA SOTTOSTANTE SE VUOI ASSEGNARE db A STATS_DB AUTOMATICAMENTE
         // if (typeof db !== 'undefined') Object.assign(STATS_DB, db);
@@ -1772,7 +1800,9 @@ Manganiello	97,11`;
         // --- LOGIC SECTION ---
         // -----------------------
         let currentView = 'stats';
-        let activeSeasons = ['2025-26'];
+        
+        let activeSeasons = ['2025-26']; 
+        
         let sortColumn = 'matches';
         let sortDirection = 'desc';
         let minMatchesFilter = 0;
@@ -1862,16 +1892,34 @@ Manganiello	97,11`;
 
         function parseMatchesDB(dbString, season) {
             if(!dbString) return [];
+            
+            // Ritorna lista vuota se la stringa è vuota, per evitare di processare una riga vuota
+            if (dbString.trim() === '') return [];
+            
             return dbString.trim().split('\n').map(line => {
-                const p = line.split('\t');
+                // FIX: Rendi il parsing robusto: usa espressione regolare per split su tabulazioni multiple
+                const p = line.trim().split(/\t+/); 
+                
+                // Il formato dei dati è: [Partita] [T.Tot] [T.Eff] [%] [Falli]
+                // Questo richiede almeno 5 colonne. Se non ci sono 5 colonne, la riga viene ignorata.
                 if (p.length < 5) return null;
+                
+                const matchName = p[0].trim();
                 const tSec = parseTimeStr(p[1]);
                 const eSec = parseTimeStr(p[2]);
-                const ratioVal = parseItalianFloat(p[3]);
+                
+                // Conversione robusta della percentuale e dei falli
+                const ratioVal = parseItalianFloat(p[3]); 
+                const fouls = parseInt(p[4]) || 0; 
+                
+                // Le colonne per Gialli, Rossi e Rigori non sono presenti nel formato 5-colonne
+                const yellows = p.length > 5 ? (parseInt(p[5]) || 0) : 0;
+                const reds = p.length > 6 ? (parseInt(p[6]) || 0) : 0;
+                const pens = p.length > 7 ? (parseItalianFloat(p[7]) || 0) : 0;
+
                 return { 
-                    match: p[0], totalTimeSec: tSec, effectiveTimeSec: eSec,
-                    fouls: parseInt(p[4]) || 0, yellows: p[5] ? (parseInt(p[5]) || 0) : 0,
-                    reds: p[6] ? (parseInt(p[6]) || 0) : 0, pens: p[7] ? (parseItalianFloat(p[7]) || 0) : 0,
+                    match: matchName, totalTimeSec: tSec, effectiveTimeSec: eSec,
+                    fouls: fouls, yellows: yellows, reds: reds, pens: pens,
                     ratio: ratioVal, season: season, rawTotal: p[1], rawEff: p[2]
                 };
             }).filter(x => x);
@@ -1879,6 +1927,10 @@ Manganiello	97,11`;
 
         function parsePlayingTimeDB(dbString, season) {
              if(!dbString) return [];
+             
+             // Ritorna lista vuota se la stringa è vuota
+             if (dbString.trim() === '') return [];
+             
              return dbString.trim().split('\n').map(line => {
                  const p = line.split('\t');
                  if (p.length < 2) return null;
@@ -1935,28 +1987,23 @@ Manganiello	97,11`;
 
         function processPlayingTimeViewData() {
             let statsMap = new Map();
+            // L'analisi del tempo effettivo si basa sui dati in PLAYING_TIME_DB e MATCHES_DB.
+            
+            // 1. Raccogli tutti i match data rilevanti (usato per l'abbinamento)
+            let allMatchData = [];
+            activeSeasons.forEach(s => {
+                let db = null;
+                if(s === '2025-26') db = MATCHES_DB_2526 + EXTRA_MATCHES_2526; 
+                else if(s === '2024-25') db = MATCHES_DB_2425;
+                if(db) allMatchData = allMatchData.concat(parseMatchesDB(db, s));
+            });
+
+            // 2. Processa le righe di presenza (refData)
             activeSeasons.forEach(season => {
                 const refData = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
                 
-                // UNISCI I DATI MANUALI SE E' 25/26
-                let dbString2526 = MATCHES_DB_2526;
-                if (season === '2025-26') {
-                    dbString2526 += EXTRA_MATCHES_2526;
-                }
-                
-                const matchData = parseMatchesDB(season === '2025-26' ? dbString2526 : MATCHES_DB_2425, season);
-                
-                const matchByEffTime = new Map();
-                // Store ND matches separately for greedy matching
-                const availableNDMatches = [];
-
-                matchData.forEach(m => {
-                     if(!isNaN(m.effectiveTimeSec)) {
-                        matchByEffTime.set(m.effectiveTimeSec, m);
-                     } else {
-                        availableNDMatches.push(m);
-                     }
-                });
+                // Set per tracciare le partite già assegnate (per evitare duplicati)
+                const assignedMatches = new Set();
                 
                 refData.forEach(entry => {
                     if (!statsMap.has(entry.referee)) {
@@ -1982,26 +2029,45 @@ Manganiello	97,11`;
                     if(season === '2025-26') r.has2526 = true;
                     
                     let match = null;
+                    const TOLERANCE = 2; // Tolerance for time matching (in seconds)
 
-                    // 1. Try to find match by Effective Time
+                    // --- LOGICA DI ABBINAMENTO MIGLIORATA (GREEDY) ---
+
+                    // Filtra matchData per escludere partite già assegnate E PER STAGIONE
+                    const unassignedMatchesSeason = allMatchData.filter(m => !assignedMatches.has(m.match) && m.season === season);
+
+                    // 1. Primo tentativo: Match esatto su Tempo Effettivo (se valido)
                     if (!isNaN(entry.effectiveTimeSec)) {
-                        match = matchByEffTime.get(entry.effectiveTimeSec);
+                         match = unassignedMatchesSeason.find(m => Math.abs(m.effectiveTimeSec - entry.effectiveTimeSec) < 1);
                     } 
-                    // 2. If Effective Time is ND, try to find in available ND matches (Greedy Approach)
-                    else {
-                        if (availableNDMatches.length > 0) {
-                            match = availableNDMatches.shift(); // Take one and remove it
-                        }
+                    
+                    // 2. Secondo tentativo: Match su Tempo Totale (Fallback)
+                    if (!match && !isNaN(entry.totalTimeSec)) {
+                         const entryHasND = isNaN(entry.effectiveTimeSec);
+                         
+                         // Trova candidati con lo stesso Tempo Totale (tolleranza 2 secondi)
+                         const candidates = unassignedMatchesSeason.filter(m => Math.abs(m.totalTimeSec - entry.totalTimeSec) < TOLERANCE);
+                         
+                         if (candidates.length > 0) {
+                             if (entryHasND) {
+                                 // Se l'arbitro ha ND, dai priorità ASSOLUTA a partite che hanno ND nel tempo effettivo
+                                 match = candidates.find(m => isNaN(m.effectiveTimeSec));
+                             }
+                             // Se non c'è match ND o se l'arbitro aveva tempo effettivo valido ma non trovato, prendi il miglior candidato per tempo totale
+                             if (!match) match = candidates[0];
+                         }
                     }
                     
                     if(match) {
-                         r.matchList.push(match);
+                         r.matchList.push(match); // <-- Se trova la partita, la aggiunge alla lista dell'arbitro
+                         assignedMatches.add(match.match); // Marca la partita come assegnata
+                         
                          if(!isNaN(match.totalTimeSec)) {
                              r.totalTotalSec += match.totalTimeSec;
                              r.validTotMatches++;
                          }
                     } else {
-                        // Fallback logic
+                        // Fallback logic for unmatched referee presence row
                         let manualTotal = !isNaN(entry.totalTimeSec) ? entry.totalTimeSec : NaN;
                         if(!isNaN(manualTotal)) {
                             r.totalTotalSec += manualTotal;
@@ -2012,7 +2078,8 @@ Manganiello	97,11`;
                             match: "Dettaglio non disp.",
                             season: season,
                             effectiveTimeSec: entry.effectiveTimeSec,
-                            totalTimeSec: manualTotal
+                            totalTimeSec: manualTotal,
+                            fouls: 0, yellows: 0, reds: 0, pens: 0, ratio: NaN // Dati fittizi per mantenere la struttura
                         });
                     }
                 });
@@ -2031,34 +2098,41 @@ Manganiello	97,11`;
             activeSeasons.forEach(s => {
                 let db = null;
                 if(s === '2025-26') {
-                    // Combine standard DB + Extra ND matches
-                    db = MATCHES_DB_2526 + EXTRA_MATCHES_2526;
+                    db = MATCHES_DB_2526 + EXTRA_MATCHES_2526; 
                 }
                 else if(s === '2024-25') db = MATCHES_DB_2425;
+                
+                // Chiama parseMatchesDB che è uniforme per entrambe le stagioni
                 if(db) all = all.concat(parseMatchesDB(db, s));
             });
             return all;
         }
-
+        
+        // FUNZIONE UNICA DI AGGREGAZIONE E ROUTER
         function aggregateData() {
             let result = [];
+            
+            // 1. Reset UI States
             document.getElementById('stats-controls').classList.add('hidden');
             document.getElementById('playing-time-title').classList.add('hidden');
             document.getElementById('matches-title').classList.add('hidden');
             document.getElementById('disclaimer-2526').classList.add('hidden');
             document.getElementById('update-alert-2526').classList.add('hidden');
             document.getElementById('empty-state-msg').classList.add('hidden');
-            document.getElementById('historical-data-msg').classList.add('hidden');
             document.getElementById('mainTable').classList.remove('hidden');
 
             const is2526Active = activeSeasons.includes('2025-26');
+            const is2425Active = activeSeasons.includes('2024-25');
             const historicalSeasons = ['2020-21', '2021-22', '2022-23', '2023-24'];
             const isOnlyHistorical = activeSeasons.every(s => historicalSeasons.includes(s)) && activeSeasons.length > 0;
 
+            // 2. Data Processing based on View
             if (currentView === 'stats') {
                 document.getElementById('stats-controls').classList.remove('hidden');
                 if(is2526Active) document.getElementById('update-alert-2526').classList.remove('hidden');
                 result = processStatsData();
+                
+                // Dynamic Filter Update (only for Stats)
                 if(result.length > 0) {
                     const maxMatches = Math.max(...result.map(r => r.matches));
                     const slider = document.getElementById('minMatches');
@@ -2070,6 +2144,8 @@ Manganiello	97,11`;
                         document.getElementById('minMatchesValue').innerText = 0;
                     }
                 }
+                
+                // FILTRI PER STATS (APPLICATI SOLO QUI)
                 result = result.filter(r => r.matches >= minMatchesFilter);
                 if(hideInactive) result = result.filter(r => !r.isInactive);
             } 
@@ -2080,12 +2156,13 @@ Manganiello	97,11`;
                     document.getElementById('mainTable').classList.add('hidden');
                     document.getElementById('historical-data-msg').classList.remove('hidden');
                     document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    result = [];
-                } else {
-                    result = processPlayingTimeViewData();
-                }
+                    renderTable([]); // Reset table
+                    return;
+                } 
+                
+                result = processPlayingTimeViewData();
             }
-            else {
+            else if (currentView === 'matches') {
                 document.getElementById('matches-title').classList.remove('hidden');
                 if(is2526Active) {
                      document.getElementById('disclaimer-2526').classList.remove('hidden');
@@ -2095,12 +2172,14 @@ Manganiello	97,11`;
                     document.getElementById('mainTable').classList.add('hidden');
                     document.getElementById('historical-data-msg').classList.remove('hidden');
                     document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in arrivo`;
-                    result = [];
-                } else {
-                    result = processMatchesViewData();
-                }
+                    renderTable([]); // Reset table
+                    return;
+                } 
+                
+                result = processMatchesViewData();
             }
 
+            // 3. Search Filter Logic (APPLICATO A TUTTE LE VISTE SUL CAMPO PERTINENTE)
             const searchInput = document.getElementById('searchInput');
             if(currentView === 'matches') searchInput.placeholder = "es. inter-milan";
             else searchInput.placeholder = "Cerca...";
@@ -2111,6 +2190,7 @@ Manganiello	97,11`;
                 else result = result.filter(r => r.name.toLowerCase().includes(q));
             }
 
+            // 4. Sorting
             if (result.length > 0) {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
@@ -2119,6 +2199,7 @@ Manganiello	97,11`;
                 });
             }
 
+            // 5. Render
             renderTable(result);
             if(currentView === 'stats') renderStatsInsights(result);
             else if(currentView === 'matches') renderMatchesInsights(result);
@@ -2130,19 +2211,29 @@ Manganiello	97,11`;
             const thead = document.getElementById('tableHeader');
             const tbody = document.getElementById('tableBody');
             const tfoot = document.getElementById('tableFooter');
+            
+            // RESET COMPLETO DELLA TABELLA PRIMA DI OGNI NUOVO RENDERING
             thead.innerHTML = ''; tbody.innerHTML = ''; tfoot.innerHTML = '';
             
-            if(data.length === 0) return;
+            if(data.length === 0) {
+                document.getElementById('empty-state-msg').classList.remove('hidden');
+                document.getElementById('mainTable').classList.add('hidden');
+                return;
+            }
+            document.getElementById('empty-state-msg').classList.add('hidden');
+            document.getElementById('mainTable').classList.remove('hidden');
+
 
             if (currentView === 'stats') {
+                // STATS VIEW RENDERING
                 thead.innerHTML = `<tr>
                     <th class="p-2 sm:p-4 sticky-col-head cursor-pointer hover:text-white" onclick="handleSort('name')">Arbitro</th>
                     <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white text-lime-400 font-bold" onclick="handleSort('matches')">Presenze</th>
                     <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-400 text-red-400" onclick="handleSort('avgFouls')">Falli/P</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-400 text-yellow-500/80" onclick="handleSort('yellows')">Gialli Tot</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-400 text-yellow-500/80" onclick="handleSort('avgYellows')">Gialli/P</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-400 text-red-500/80" onclick="handleSort('reds')">Rossi Tot</th>
-                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-400 text-red-500/80" onclick="handleSort('avgReds')">Rossi/P</th>
+                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-400 text-yellow-400" onclick="handleSort('yellows')">Gialli Tot</th>
+                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-yellow-600 text-yellow-600" onclick="handleSort('avgYellows')">Gialli/P</th>
+                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-500 text-red-500" onclick="handleSort('reds')">Rossi Tot</th>
+                    <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-red-700 text-red-700" onclick="handleSort('avgReds')">Rossi/P</th>
                     <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white" onclick="handleSort('avgPens')">Rigori/P</th>
                 </tr>`;
                 
@@ -2165,10 +2256,10 @@ Manganiello	97,11`;
                         </td>
                         <td class="p-2 sm:p-4 text-center font-mono text-lime-400 font-bold">${r.matches}</td>
                         <td class="p-2 sm:p-4 text-center font-mono font-medium text-red-300">${r.avgFouls.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-600">${r.yellows}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-400 font-bold">${r.yellows}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-yellow-600">${r.avgYellows.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-600">${r.reds}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-600">${r.avgReds.toFixed(2)}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${r.reds}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-red-700">${r.avgReds.toFixed(2)}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-slate-500">${r.avgPens.toFixed(2)}</td>
                     `;
                     tbody.appendChild(row);
@@ -2180,30 +2271,40 @@ Manganiello	97,11`;
                 const globalAvgPens = totalPens / (totMatches || 1);
 
                 tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800">
+                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
                         <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Totali / Medie</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-lime-400 font-bold">${totMatches}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-white">${globalAvgFouls.toFixed(2)}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-500 font-bold">${totYellows}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-500">${globalAvgYellows.toFixed(2)}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-400 font-bold">${totYellows}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-yellow-600">${globalAvgYellows.toFixed(2)}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-red-500 font-bold">${totReds}</td>
-                        <td class="p-2 sm:p-4 text-center font-mono text-red-500">${globalAvgReds.toFixed(2)}</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-red-700">${globalAvgReds.toFixed(2)}</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-slate-400">${globalAvgPens.toFixed(2)}</td>
                     </tr>
                 `;
             }
             else if (currentView === 'playingTime') {
+                // PLAYING TIME VIEW RENDERING
                 const showTotalTime = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
                 
                 thead.innerHTML = `<tr>
                     <th class="p-2 sm:p-4 sticky-col-head w-1/4 cursor-pointer hover:text-white" onclick="handleSort('name')">Arbitro</th>
                     <th class="p-2 sm:p-4 text-center w-24 cursor-pointer hover:text-white" onclick="handleSort('matches')">Partite</th>
-                    <th class="p-2 sm:p-4 text-right cursor-pointer hover:text-white" onclick="handleSort('avgEffSec')">Media T.E.</th>
-                    ${showTotalTime ? `<th class="p-2 sm:p-4 text-right text-blue-300 cursor-pointer hover:text-white" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
+                    <th class="p-2 sm:p-4 text-right cursor-pointer hover:text-white text-green-400" onclick="handleSort('avgEffSec')">Media T.E.</th>
+                    ${showTotalTime ? `<th class="p-2 sm:p-4 text-right text-blue-400 cursor-pointer hover:text-white" onclick="handleSort('avgTotSec')">Media T. Tot</th>` : ''}
                     <th class="p-2 sm:p-4 text-center w-8 sm:w-10"></th>
                 </tr>`;
                 
+                let sumMatches = 0, sumEffSec = 0, sumTotSec = 0;
+                let validEffCount = 0, validTotCount = 0;
+
                 data.forEach((r, i) => {
+                    sumMatches += r.matches;
+                    sumEffSec += r.totalEffectiveSec;
+                    sumTotSec += r.totalTotalSec;
+                    validEffCount += r.validEffMatches;
+                    validTotCount += r.validTotMatches;
+
                     const tr = document.createElement('tr');
                     tr.className = "border-b border-white/5 cursor-pointer hover:bg-white/5 group";
                     tr.onclick = () => toggleDetails(i);
@@ -2248,8 +2349,22 @@ Manganiello	97,11`;
                     `;
                     tbody.appendChild(detailsTr);
                 });
+                
+                const globalAvgEffSec = validEffCount > 0 ? (sumEffSec / validEffCount) : 0;
+                const globalAvgTotSec = validTotCount > 0 ? (sumTotSec / validTotCount) : 0;
+
+                tfoot.innerHTML = `
+                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
+                        <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Totali / Medie</td>
+                        <td class="p-2 sm:p-4 text-center font-mono text-white">${sumMatches}</td>
+                        <td class="p-2 sm:p-4 text-right font-mono text-green-300">${formatSecondsToTime(globalAvgEffSec)}</td>
+                        ${showTotalTime ? `<td class="p-2 sm:p-4 text-right font-mono text-blue-300">${formatSecondsToTime(globalAvgTotSec)}</td>` : ''}
+                        <td class="p-2 sm:p-4 text-center font-mono text-white"></td>
+                    </tr>
+                `;
+
             }
-            else { // Matches View
+            else { // Matches View RENDERING
                 thead.innerHTML = `<tr>
                     <th class="p-2 sm:p-4 sticky-col-head cursor-pointer hover:text-white" onclick="handleSort('match')">Partita</th>
                     <th class="p-2 sm:p-4 text-center cursor-pointer hover:text-white" onclick="handleSort('season')">Stagione</th>
@@ -2271,7 +2386,7 @@ Manganiello	97,11`;
                     const displayEff = formatSecondsToTime(r.effectiveTimeSec);
                     const displayTot = formatSecondsToTime(r.totalTimeSec);
                     
-                    // FIX: Center ND values
+                    // FIX: Center ND values in T. Effettivo
                     const effClass = displayEff === 'ND' 
                         ? "text-center text-slate-500" 
                         : "text-right text-green-400 font-medium";
@@ -2295,7 +2410,7 @@ Manganiello	97,11`;
                 const avgEffSec = validEffCount > 0 ? (sumEffSec/validEffCount) : 0;
 
                 tfoot.innerHTML = `
-                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800">
+                    <tr class="text-[9px] sm:text-xs uppercase tracking-widest bg-slate-800 border-t-2 border-white/20">
                         <td class="p-2 sm:p-4 font-bold text-white sticky-col-body">Medie Partite Visibili</td>
                         <td class="p-2 sm:p-4 text-center font-mono text-white">-</td>
                         <td class="p-2 sm:p-4 text-right font-mono text-blue-300">${formatSecondsToTime(avgTotSec)}</td>
@@ -2331,9 +2446,13 @@ Manganiello	97,11`;
             if(view === 'stats') document.getElementById('nav-stats').classList.add('active');
             if(view === 'playingTime') document.getElementById('nav-time').classList.add('active');
             if(view === 'matches') document.getElementById('nav-matches').classList.add('active');
+            
+            // Imposta l'ordinamento iniziale per la nuova vista (NON AGGREGA QUI)
             if(view === 'stats') { sortColumn = 'matches'; sortDirection = 'desc'; }
-            if(view === 'playingTime') { sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
-            if(view === 'matches') { sortColumn = 'match'; sortDirection = 'asc'; }
+            else if(view === 'playingTime') { sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
+            else if(view === 'matches') { sortColumn = 'match'; sortDirection = 'asc'; }
+            
+            // Ricarica i dati per la nuova vista (chiamata pulita ad aggregateData)
             aggregateData();
         }
 
