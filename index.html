@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -41,11 +41,16 @@
                     },
                     animation: {
                         'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'bounce-slight': 'bounceSlight 2s infinite',
                     },
                     keyframes: {
                         fadeInUp: {
                             '0%': { opacity: '0', transform: 'translateY(10px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
                         }
                     }
                 }
@@ -168,6 +173,14 @@
         
         /* Bar Graph for Fouls (Red/Orange) */
         .mini-bar-fill.danger { background: #ef4444; }
+        
+        /* Scroll to Top Button */
+        #scroll-to-top { 
+            opacity: 0; pointer-events: none; transition: all 0.3s ease; transform: translateY(20px); 
+        }
+        #scroll-to-top.visible { 
+            opacity: 1; pointer-events: auto; transform: translateY(0); 
+        }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pulse-light { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -175,6 +188,11 @@
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-yellow-500/30 selection:text-yellow-200 text-slate-300">
+
+    <!-- Scroll To Top Button -->
+    <button id="scroll-to-top" onclick="scrollToTop()" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-yellow-500 text-slate-900 shadow-lg flex items-center justify-center hover:bg-yellow-400 hover:scale-110 transition-all border-2 border-slate-900/50">
+        <i class="fa-solid fa-arrow-up font-bold"></i>
+    </button>
 
     <!-- Designations Modal (Mobile only) -->
     <div id="designations-modal" class="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-xl lg:hidden">
@@ -209,8 +227,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-green-500/20">
-                            <div class="text-slate-900 font-bold bg-green-500/90 text-center py-1 tracking-wider">ROMA - NAPOLI</div>
+                        <div class="match-card overflow-hidden rounded-xl hover:bg-white/5 transition-colors border border-slate-700/50">
+                            <div class="text-slate-200 font-bold bg-slate-800/50 text-center py-1 tracking-wider">ROMA - NAPOLI</div>
                             <div class="p-3 bg-gradient-to-b from-transparent to-black/20">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-slate-400">Arbitro</span>
@@ -441,7 +459,7 @@
                     <!-- Alert Banner -->
                     <div id="update-alert-2526" class="hidden w-full bg-blue-500/5 border-b border-blue-500/10 p-2 text-center flex items-center justify-center gap-2">
                          <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-                        <p class="text-[10px] sm:text-xs text-blue-200 font-mono tracking-wide">Dati aggiornati alla 12ª giornata del campionato 2025/26</p>
+                        <p class="text-[10px] sm:text-xs text-blue-200 font-mono tracking-wide">Dati aggiornati alla 12ª giornata</p>
                     </div>
 
                     <!-- Main Table -->
@@ -449,7 +467,7 @@
                         <table class="w-full text-left text-slate-300" id="mainTable">
                             <thead class="text-[10px] sm:text-xs text-slate-400 uppercase bg-slate-900/95 border-b border-white/5 sticky top-0 z-40 backdrop-blur-xl shadow-lg" id="tableHeader"></thead>
                             <tbody id="tableBody" class="divide-y divide-white/5 font-mono text-[11px] sm:text-xs md:text-sm"></tbody>
-                            <tfoot class="bg-slate-800/90 border-t-2 border-white/10 font-medium text-white backdrop-blur-md sticky bottom-0 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.3)]" id="tableFooter"></tfoot>
+                            <tfoot class="bg-slate-900/90 border-t-2 border-white/10 font-bold text-white backdrop-blur-md sticky bottom-0 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.3)] text-xs sm:text-sm font-extrabold" id="tableFooter"></tfoot>
                         </table>
 
                         <!-- Empty State -->
@@ -521,7 +539,6 @@
 
     <script>
         // --- DATA SECTION ---
-
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
 Parma-Fiorentina	97,04	48,46	49,9%	24
 Empoli-Monza	100,37	44,43	44,3%	35
@@ -1903,7 +1920,6 @@ Di Marco	98,18`;
                 { name: "Francesco Meraviglia", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 }
             ],
         };
-
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
 
         // -----------------------
@@ -2113,22 +2129,26 @@ Di Marco	98,18`;
         }
 
         function aggregateData() {
+            // FIX BUG #2: Reset aggressivo di tutti gli stati di visualizzazione prima di ricalcolare
+            const msgHistorical = document.getElementById('historical-data-msg');
+            const msgEmpty = document.getElementById('empty-state-msg');
+            const table = document.getElementById('mainTable');
+            
+            if(msgHistorical) msgHistorical.classList.add('hidden');
+            if(msgEmpty) msgEmpty.classList.add('hidden');
+            if(table) table.classList.add('hidden');
+
             let result = [];
-            // Reset UI
+            
+            // Reset UI other elements
             const elementsToReset = [
                 'stats-controls', 'playing-time-title', 'matches-title', 'disclaimer-2526', 
-                'update-alert-2526', 'empty-state-msg', 'historical-data-msg', 'mainTable'
+                'update-alert-2526'
             ];
 
             elementsToReset.forEach(id => {
                 const element = document.getElementById(id);
-                if (element) {
-                    if (id === 'mainTable' || id === 'empty-state-msg' || id === 'historical-data-msg') {
-                        // Special handling for elements where we need to toggle 'hidden' based on state
-                    } else {
-                        element.classList.add('hidden');
-                    }
-                }
+                if (element) element.classList.add('hidden');
             });
 
             // Specific reset for display titles
@@ -2140,7 +2160,7 @@ Di Marco	98,18`;
 
             const is2526Active = activeSeasons.includes('2025-26');
             
-            // FIX #1: Check if ONLY historical seasons are active for playingTime or matches views
+            // Check if ONLY historical seasons are active
             const isOnlyHistoricalActive = activeSeasons.length > 0 && activeSeasons.every(s => HISTORICAL_SEASONS.includes(s));
 
             if (currentView === 'stats') {
@@ -2179,19 +2199,6 @@ Di Marco	98,18`;
                 }
                 
                 result = processPlayingTimeViewData();
-                
-                // Historical Data Logic - Only if NO data found
-                if (result.length === 0 && isOnlyHistoricalActive) {
-                    const mainTable = document.getElementById('mainTable');
-                    if (mainTable) mainTable.classList.add('hidden');
-                    const historicalDataMsg = document.getElementById('historical-data-msg');
-                    if (historicalDataMsg) historicalDataMsg.classList.remove('hidden');
-                    const historicalMsgTitle = document.getElementById('historical-msg-title');
-                    if (historicalMsgTitle) historicalMsgTitle.innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
-                    renderTable([]); updateKPIDashboard([]); 
-                    updateSeasonButtonsUI();
-                    return;
-                }
             }
             else if (currentView === 'matches') {
                 if (matchesTitle) matchesTitle.classList.remove('hidden');
@@ -2203,19 +2210,6 @@ Di Marco	98,18`;
                 }
                 
                 result = processMatchesViewData();
-                
-                 // Historical Data Logic - Only if NO data found
-                if (result.length === 0 && isOnlyHistoricalActive) {
-                    const mainTable = document.getElementById('mainTable');
-                    if (mainTable) mainTable.classList.add('hidden');
-                    const historicalDataMsg = document.getElementById('historical-data-msg');
-                    if (historicalDataMsg) historicalDataMsg.classList.remove('hidden');
-                    const historicalMsgTitle = document.getElementById('historical-msg-title');
-                    if (historicalMsgTitle) historicalMsgTitle.innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
-                    renderTable([]); updateKPIDashboard([]); 
-                    updateSeasonButtonsUI();
-                    return;
-                }
             }
 
             // FIX #5: Placeholder dinamico
@@ -2243,10 +2237,28 @@ Di Marco	98,18`;
                 });
             }
 
-            renderTable(result);
-            updateKPIDashboard(result);
-            updateSeasonButtonsUI(); // Assicurati che l'UI dei pulsanti sia corretta dopo aver determinato la view.
+            // DECISIONE FINALE VISUALIZZAZIONE
+            if (result.length > 0) {
+                // Abbiamo dati -> Mostra tabella, nascondi messaggi
+                if(table) table.classList.remove('hidden');
+                renderTable(result); // Popola la tabella
+                updateKPIDashboard(result);
+            } else {
+                // Non abbiamo dati -> Decidi quale messaggio mostrare
+                updateKPIDashboard([]);
+                if (isOnlyHistoricalActive) {
+                    // Caso: Solo storici attivi e nessun dato -> Mostra "Caricamento storico"
+                    if(msgHistorical) msgHistorical.classList.remove('hidden');
+                    const historicalMsgTitle = document.getElementById('historical-msg-title');
+                    if (historicalMsgTitle) historicalMsgTitle.innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
+                } else {
+                    // Altri casi (filtri troppo stretti, stagione corrente vuota, ecc) -> "Nessun dato"
+                     if(msgEmpty) msgEmpty.classList.remove('hidden');
+                }
+            }
 
+            updateSeasonButtonsUI();
+            
             // FIX #3: Empty insights container instead of rendering cards
             const insightsContainer = document.getElementById('insights-container');
             if (insightsContainer) insightsContainer.innerHTML = '';
@@ -2262,22 +2274,8 @@ Di Marco	98,18`;
             if (tbody) tbody.innerHTML = '';
             if (tfoot) tfoot.innerHTML = '';
 
-            const mainTable = document.getElementById('mainTable');
-            const emptyStateMsg = document.getElementById('empty-state-msg');
-
-            // Logic already handled in aggregateData for historical
-            if(data.length === 0 && !document.getElementById('historical-data-msg').classList.contains('hidden')) {
-                 return; // Do nothing if historical message is shown
-            }
-
-            if(data.length === 0) {
-                if (emptyStateMsg) emptyStateMsg.classList.remove('hidden');
-                if (mainTable) mainTable.classList.add('hidden');
-                return;
-            }
-            if (emptyStateMsg) emptyStateMsg.classList.add('hidden');
-            if (mainTable) mainTable.classList.remove('hidden');
-
+            // Note: visibility logic moved to aggregateData to fix the bug
+            
             const thClass = "p-3 sm:p-4 text-center cursor-pointer hover:bg-slate-800 transition-colors group";
             const tdClass = "p-3 sm:p-4 text-center border-b border-white/5";
 
@@ -2312,14 +2310,14 @@ Di Marco	98,18`;
                     if (tbody) tbody.appendChild(row);
                 });
                 if (tfoot) tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
-                    <td class="p-4 font-bold sticky-col-body text-left">TOTALE LEGA</td>
-                    <td class="p-4 text-center text-lime-400 font-bold">${totM}</td>
-                    <td class="p-4 text-center">${(totF/totM).toFixed(2)}</td>
-                    <td class="p-4 text-center text-yellow-400 font-bold">${totY}</td>
-                    <td class="p-4 text-center text-yellow-600">${(totY/totM).toFixed(2)}</td>
-                    <td class="p-4 text-center text-red-500 font-bold">${totR}</td>
-                    <td class="p-4 text-center text-red-700">${(totR/totM).toFixed(2)}</td>
-                    <td class="p-4 text-center text-slate-400">${(totP/totM).toFixed(2)}</td>
+                    <td class="p-4 font-bold sticky-col-body text-left text-xs sm:text-sm font-extrabold text-white">TOTALI/MEDIE</td>
+                    <td class="p-4 text-center text-lime-400 font-extrabold text-xs sm:text-sm">${totM}</td>
+                    <td class="p-4 text-center font-bold text-white/90 text-xs sm:text-sm">${(totF/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-yellow-400 font-extrabold text-xs sm:text-sm">${totY}</td>
+                    <td class="p-4 text-center text-yellow-600 font-bold text-xs sm:text-sm">${(totY/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-red-500 font-extrabold text-xs sm:text-sm">${totR}</td>
+                    <td class="p-4 text-center text-red-700 font-bold text-xs sm:text-sm">${(totR/totM).toFixed(2)}</td>
+                    <td class="p-4 text-center text-slate-400 font-bold text-xs sm:text-sm">${(totP/totM).toFixed(2)}</td>
                 </tr>`;
 
             } else if (currentView === 'playingTime') {
@@ -2332,9 +2330,21 @@ Di Marco	98,18`;
                     <th class="p-3 w-10"></th>
                 </tr>`;
 
-                let sumMatches = 0, sumEffSec = 0, sumTotSec = 0, validEffCount = 0, validTotCount = 0;
+                // NEW: Accumulatori per il footer "TOTALI/MEDIE"
+                let grandTotMatches = 0;
+                let grandTotEffSec = 0;
+                let grandCountEff = 0;
+                let grandTotTotSec = 0;
+                let grandCountTot = 0;
+
                 data.forEach((r, i) => {
-                    sumMatches += r.matches; sumEffSec += r.totalEffectiveSec; sumTotSec += r.totalTotalSec; validEffCount += r.validEffMatches; validTotCount += r.validTotMatches;
+                    grandTotMatches += r.matches;
+                    // Somma delle medie moltiplicate per il numero di partite valide per recuperare il totale grezzo
+                    grandTotEffSec += r.totalEffectiveSec; 
+                    grandCountEff += r.validEffMatches;
+                    grandTotTotSec += r.totalTotalSec;
+                    grandCountTot += r.validTotMatches;
+
                     const tr = document.createElement('tr');
                     tr.className = "cursor-pointer group animate-fade-in-up border-b border-white/5";
                     tr.style.animationDelay = `${i * 0.03}s`;
@@ -2370,6 +2380,21 @@ Di Marco	98,18`;
                     </div></td>`;
                     if (tbody) tbody.appendChild(detailsTr);
                 });
+
+                // NEW: Costruzione Footer Playing Time
+                const globalAvgEff = grandCountEff ? grandTotEffSec / grandCountEff : 0;
+                const globalAvgTot = grandCountTot ? grandTotTotSec / grandCountTot : 0;
+
+                if (tfoot) {
+                    tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
+                        <td class="p-4 font-bold sticky-col-body text-left text-xs sm:text-sm font-extrabold text-white">TOTALI/MEDIE</td>
+                        <td class="p-4 text-center text-lime-400 font-extrabold text-xs sm:text-sm">${grandTotMatches}</td>
+                        <td class="p-4 text-right text-green-400 pr-6 font-bold text-xs sm:text-sm">${formatSecondsToTime(globalAvgEff)}</td>
+                        ${showTotalTime ? `<td class="p-4 text-right text-blue-400 pr-6 font-bold text-xs sm:text-sm">${formatSecondsToTime(globalAvgTot)}</td>` : ''}
+                        <td></td>
+                    </tr>`;
+                }
+
             } else { // Matches
                 if (thead) thead.innerHTML = `<tr>
                     <th class="p-3 sm:p-4 sticky-col-head text-left cursor-pointer" onclick="handleSort('match')">Partita</th>
@@ -2382,9 +2407,21 @@ Di Marco	98,18`;
 
                 const maxFouls = data.length > 0 ? Math.max(...data.map(d => d.fouls)) : 1;
 
+                // NEW: Accumulatori per footer
+                let mTotTime = 0, mCountTot = 0;
+                let mEffTime = 0, mCountEff = 0;
+                let mRatio = 0, mCountRatio = 0;
+                let mFouls = 0;
+
                 data.forEach((r,i) => {
                     const displayRatio = isNaN(r.ratio) ? "ND" : `${r.ratio}%`;
                     const foulsPerc = Math.min((r.fouls / maxFouls) * 100, 100);
+
+                    // Accumulo dati per medie
+                    if(!isNaN(r.totalTimeSec)) { mTotTime += r.totalTimeSec; mCountTot++; }
+                    if(!isNaN(r.effectiveTimeSec)) { mEffTime += r.effectiveTimeSec; mCountEff++; }
+                    if(!isNaN(r.ratio)) { mRatio += r.ratio; mCountRatio++; }
+                    mFouls += r.fouls;
 
                     const tr = document.createElement('tr');
                     tr.className = "animate-fade-in-up border-b border-white/5";
@@ -2402,6 +2439,23 @@ Di Marco	98,18`;
                     `;
                     if (tbody) tbody.appendChild(tr);
                 });
+
+                // NEW: Costruzione Footer Matches
+                const avgTotDisplay = mCountTot ? formatSecondsToTime(mTotTime / mCountTot) : "ND";
+                const avgEffDisplay = mCountEff ? formatSecondsToTime(mEffTime / mCountEff) : "ND";
+                const avgRatioDisplay = mCountRatio ? (mRatio / mCountRatio).toFixed(1) + '%' : "ND";
+                const avgFoulsDisplay = data.length ? (mFouls / data.length).toFixed(2) : "0.00";
+
+                if (tfoot) {
+                    tfoot.innerHTML = `<tr class="uppercase tracking-widest text-[10px] sm:text-xs">
+                        <td class="p-4 font-bold sticky-col-body text-left text-xs sm:text-sm font-extrabold text-white">TOTALI/MEDIE</td>
+                        <td></td>
+                        <td class="p-4 text-right text-blue-400 font-bold text-xs sm:text-sm">${avgTotDisplay}</td>
+                        <td class="p-4 text-right text-green-400 font-bold text-xs sm:text-sm">${avgEffDisplay}</td>
+                        <td class="p-4 text-center text-slate-400 font-bold text-xs sm:text-sm">${avgRatioDisplay}</td>
+                        <td class="p-4 text-center text-red-500 font-bold text-xs sm:text-sm">${avgFoulsDisplay}</td>
+                    </tr>`;
+                }
             }
         }
 
@@ -2624,6 +2678,17 @@ Di Marco	98,18`;
             if (shouldOpen) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; } 
             else { modal.classList.remove('open'); document.body.style.overflow = ''; }
         }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scroll Event Listener
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scroll-to-top');
+            if (window.scrollY > 300) btn.classList.add('visible');
+            else btn.classList.remove('visible');
+        });
 
         window.onload = function() {
             updateSeasonButtonsUI();
