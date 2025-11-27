@@ -19,6 +19,9 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
@@ -42,6 +45,7 @@
                     animation: {
                         'fade-in': 'fadeIn 0.4s ease-out forwards',
                         'flash': 'flash 1s infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -59,6 +63,22 @@
     </script>
 
     <style>
+.overlay-quadranti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlay-quadranti .quad {
+  position: absolute;
+  border-radius: 4px;
+}
+
+
         /* Base Reset & Typography */
         html, body { overflow-x: hidden; background-color: #020617; color: #cbd5e1; }
         
@@ -131,6 +151,18 @@
             border-left-color: #EAB308;
             color: #EAB308;
         }
+        
+        /* CORREZIONE 2: Stile per la scritta "SOON" */
+        .coming-soon-label {
+            /* Meno oscurata: uso text-slate-400 anziché text-slate-600 */
+            color: #94a3b8 !important; 
+            /* Rimuovo la classe hidden per gestirne la visibilità solo tramite JS/opacità */
+        }
+        
+        /* Tooltip per SOON */
+        .season-item[title]:hover span.coming-soon-label {
+            opacity: 1; /* Assicura che la label non si oscuri sull'hover */
+        }
 
         /* Table Styling */
         .pro-table th {
@@ -138,7 +170,6 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #64748b;
             font-weight: 600;
             padding: 12px 16px;
             border-bottom: 1px solid #1e293b;
@@ -148,7 +179,6 @@
             padding: 12px 16px;
             border-bottom: 1px solid #1e293b;
             font-size: 0.85rem;
-            color: #e2e8f0;
         }
         .pro-table tr:last-child td { border-bottom: none; }
         .pro-table tr:hover td { background-color: #1e293b; }
@@ -169,6 +199,17 @@
             border-right: 1px solid rgba(255,255,255,0.1);
         }
 
+        /* Average Row Style */
+        .avg-row td {
+            background-color: #1e293b;
+            border-top: 2px solid #64748b;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .avg-row .sticky-col {
+            background-color: #1e293b;
+        }
+
         /* Range Input */
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-thumb { 
@@ -183,7 +224,55 @@
         #designations-modal.open { opacity: 1; visibility: visible; }
         .modal-content { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         #designations-modal.open .modal-content { transform: translateX(0); }
+
+        /* Custom Dropdown for Charts */
+        .chart-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            appearance: none;
+        }
         
+        /* Badge New */
+        .badge-new {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #ef4444;
+            color: white;
+            font-weight: 800;
+            margin-left: 6px;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            animation: pulse-slow 3s infinite;
+        }
+
+        /* Legend Item */
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: #94a3b8; }
+        .legend-color { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* Comparison Chips */
+        .ref-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background-color: rgba(234, 179, 8, 0.1);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            color: #EAB308;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .ref-chip button {
+            color: #EAB308;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .ref-chip button:hover { opacity: 1; }
+
         /* Mobile Optimizations */
         @media (max-width: 640px) {
             .pro-table th, .pro-table td {
@@ -204,6 +293,49 @@
         
         /* Utilities */
         .text-xxs { font-size: 0.65rem; line-height: 1rem; }
+        
+        /* Tooltip Container */
+        .tooltip { position: relative; display: inline-block; cursor: help; }
+        /* Modifica Tooltip Teams: Posizione più bassa e z-index più alto */
+        .tooltip .tooltiptext, .tooltip:focus .tooltiptext, .tooltip:active .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #0f172a;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 200; /* Aumentato per evitare sovrapposizione con l'header sticky */
+            bottom: 110%; /* Abbassato da 125% per evitare sovrapposizione */
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid #334155;
+            font-size: 0.7rem;
+            font-weight: normal;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            text-transform: none;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+        .tooltip:hover .tooltiptext, .tooltip:focus .tooltiptext, .tooltip:active .tooltiptext { visibility: visible; opacity: 1; pointer-events: auto; }
+        
+        /* Contenitore per i quadranti DIV (Nuova Soluzione) */
+        .overlay-quadranti {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1; /* Sotto i dati (zIndex 2) ma sopra il background standard (zIndex 0) */
+        }
+        
+        .quadrant {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            opacity: 0.18;
+            /* I colori sono iniettati via JS */
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -285,7 +417,14 @@
                             <i class="fa-solid fa-stopwatch mr-2"></i>Tempo Effettivo
                         </button>
                         <button onclick="switchView('matches')" id="nav-matches" class="nav-pill">
-                            <i class="fa-solid fa-list mr-2"></i>Database Partite
+                            <i class="fa-solid fa-list mr-2"></i>Database
+                        </button>
+                        <button onclick="switchView('teams')" id="nav-teams" class="nav-pill">
+                            <i class="fa-solid fa-shield-halved mr-2"></i>Squadre
+                        </button>
+                        <!-- GRAFICI moved to end with BADGE -->
+                        <button onclick="switchView('analytics')" id="nav-analytics" class="nav-pill flex items-center">
+                            <i class="fa-solid fa-chart-pie mr-2"></i>Grafici <span class="badge-new">NEW</span>
                         </button>
                     </div>
                 </div>
@@ -297,6 +436,11 @@
                         <button onclick="switchView('stats')" id="mob-nav-stats" class="p-2 rounded text-yellow-500 bg-slate-700"><i class="fa-solid fa-chart-bar"></i></button>
                         <button onclick="switchView('playingTime')" id="mob-nav-time" class="p-2 rounded text-slate-400"><i class="fa-solid fa-stopwatch"></i></button>
                         <button onclick="switchView('matches')" id="mob-nav-matches" class="p-2 rounded text-slate-400"><i class="fa-solid fa-list"></i></button>
+                        <button onclick="switchView('teams')" id="mob-nav-teams" class="p-2 rounded text-slate-400"><i class="fa-solid fa-shield-halved"></i></button>
+                        <button onclick="switchView('analytics')" id="mob-nav-analytics" class="p-2 rounded text-slate-400 relative">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
                     </div>
 
                     <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
@@ -320,7 +464,7 @@
         </div>
     </nav>
 
-    <!-- Main Wrapper (Added PT-24 to fix content behind fixed navbar) -->
+    <!-- Main Wrapper -->
     <main class="flex-grow w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
         
         <!-- Page Header / Breadcrumb -->
@@ -343,11 +487,11 @@
             
             <!-- LEFT SIDEBAR: Filters & Controls -->
             <aside class="lg:col-span-3 space-y-6">
-                <!-- Search Module -->
-                <div class="pro-card rounded-lg p-1">
+                <!-- Search Module (Only shown if view requires global search) -->
+                <div id="global-search-container" class="pro-card rounded-lg p-1">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
-                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cerca arbitro..." class="w-full bg-slate-900 text-sm text-white pl-10 pr-4 py-2.5 rounded border border-transparent focus:border-yellow-500 focus:ring-0 outline-none transition-colors placeholder-slate-600">
+                        <input type="text" id="searchInput" oninput="debounceAggregate()" placeholder="Cerca arbitro..." class="w-full bg-slate-900 text-sm text-white pl-10 pr-4 py-2.5 rounded border border-transparent focus:border-yellow-500 focus:ring-0 outline-none transition-colors placeholder-slate-600">
                     </div>
                 </div>
 
@@ -381,24 +525,28 @@
                                     <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                                 </button>
                                 
-                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
+                                <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
                                     <span class="font-mono">2023-24</span>
-                                    <span class="text-[9px] bg-slate-800 text-slate-600 px-1.5 rounded coming-soon-label hidden">SOON</span>
+                                    <!-- CORREZIONE 2: Tolta hidden, visibilità gestita da JS -->
+                                    <span class="text-[9px] bg-slate-800 px-1.5 rounded coming-soon-label">SOON</span>
                                     <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                                 </button>
-                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
+                                <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
                                     <span class="font-mono">2022-23</span>
-                                    <span class="text-[9px] bg-slate-800 text-slate-600 px-1.5 rounded coming-soon-label hidden">SOON</span>
+                                    <!-- CORREZIONE 2: Tolta hidden, visibilità gestita da JS -->
+                                    <span class="text-[9px] bg-slate-800 px-1.5 rounded coming-soon-label">SOON</span>
                                     <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                                 </button>
-                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
+                                <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
                                     <span class="font-mono">2021-22</span>
-                                    <span class="text-[9px] bg-slate-800 text-slate-600 px-1.5 rounded coming-soon-label hidden">SOON</span>
+                                    <!-- CORREZIONE 2: Tolta hidden, visibilità gestita da JS -->
+                                    <span class="text-[9px] bg-slate-800 px-1.5 rounded coming-soon-label">SOON</span>
                                     <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                                 </button>
-                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
+                                <button onclick="toggleSeason('2020-21')" id="btn-2020-21" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
                                     <span class="font-mono">2020-21</span>
-                                    <span class="text-[9px] bg-slate-800 text-slate-600 px-1.5 rounded coming-soon-label hidden">SOON</span>
+                                    <!-- CORREZIONE 2: Tolta hidden, visibilità gestita da JS -->
+                                    <span class="text-[9px] bg-slate-800 px-1.5 rounded coming-soon-label">SOON</span>
                                     <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                                 </button>
                             </div>
@@ -410,7 +558,7 @@
                 <div id="stats-controls" class="pro-card rounded-lg p-4 space-y-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">Filtri Dati</h3>
                     
-                    <!-- Min Matches Filter (STATS ONLY) -->
+                    <!-- Min Matches Filter (STATS) -->
                     <div id="min-matches-container">
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-slate-400">Min. Presenze</label>
@@ -423,39 +571,39 @@
                         <input type="range" id="minMatches_mobile" class="hidden" oninput="updateMinMatches(this.value)">
                     </div>
 
-                    <!-- Compact Active Filter (STATS ONLY) -->
+                    <!-- Compact Active Filter (STATS) -->
                     <div id="active-filter-container" class="flex items-center justify-between pt-1 border-t border-slate-800 mt-2">
-                        <span class="text-xs text-slate-400">Solo attivi (Serie A)</span>
+                        <span class="text-xs text-slate-400">Solo arbitri attivi</span>
                         <label class="relative inline-flex items-center cursor-pointer scale-75 origin-right">
                             <input type="checkbox" id="toggleInactive" onclick="toggleInactiveRefs()" class="sr-only peer">
                             <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-600 peer-checked:after:bg-white"></div>
                         </label>
                     </div>
 
-                    <!-- MATCH FILTERS (NEW - MATCHES ONLY) -->
+                    <!-- MATCH FILTERS (MATCHES ONLY) -->
                     <div id="matches-filters-container" class="hidden space-y-4 pt-2">
                         <!-- Total Time -->
                         <div class="space-y-1">
-                            <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tempo Totale</label>
+                            <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tempo Totale (min)</label>
                             <div class="flex gap-2">
-                                <input type="number" id="filterMinTot" min="90" oninput="aggregateData()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
-                                <input type="number" id="filterMaxTot" oninput="aggregateData()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                <input type="number" id="filterMinTot" min="90" oninput="debounceAggregate()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                <input type="number" id="filterMaxTot" oninput="debounceAggregate()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
                             </div>
                         </div>
                         <!-- Effective Time -->
                         <div class="space-y-1">
-                            <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tempo Effettivo</label>
+                            <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tempo Effettivo (min)</label>
                             <div class="flex gap-2">
-                                 <input type="number" id="filterMinEff" oninput="aggregateData()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
-                                 <input type="number" id="filterMaxEff" oninput="aggregateData()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                 <input type="number" id="filterMinEff" oninput="debounceAggregate()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                 <input type="number" id="filterMaxEff" oninput="debounceAggregate()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
                             </div>
                         </div>
                         <!-- Fouls -->
                         <div class="space-y-1">
                             <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Falli</label>
                             <div class="flex gap-2">
-                                 <input type="number" id="filterMinFls" oninput="aggregateData()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
-                                 <input type="number" id="filterMaxFls" oninput="aggregateData()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                 <input type="number" id="filterMinFls" oninput="debounceAggregate()" placeholder="Min" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
+                                 <input type="number" id="filterMaxFls" oninput="debounceAggregate()" placeholder="Max" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white focus:border-yellow-500 outline-none">
                             </div>
                         </div>
                     </div>
@@ -475,8 +623,8 @@
             <!-- CENTER/RIGHT: Data Visualization -->
             <div class="lg:col-span-9 flex flex-col gap-6">
 
-                <!-- KPI DASHBOARD -->
-                <div id="kpi-dashboard" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- KPI DASHBOARD (Hidden for Analytics view) -->
+                <div id="kpi-dashboard" class="grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-300">
                     <div class="pro-card rounded-lg p-4 border-l-2 border-slate-600">
                         <span class="text-xxs font-bold text-slate-500 uppercase tracking-wider block mb-1" id="kpi-label-1">Record Totali</span>
                         <div class="flex items-baseline gap-2">
@@ -510,8 +658,98 @@
                 <div id="matches-title" class="hidden"></div>
                 <div id="insights-container" class="hidden"></div>
 
+                <!-- NEW: ANALYTICS VISUAL CONTAINER (RENAMED TO GRAFICI) -->
+                <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
+                    <!-- Row 1: Scatter Plot (Severity Index) -->
+                    <div class="pro-card rounded-lg p-4">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
+                            <span><i class="fa-solid fa-crosshairs text-yellow-500 mr-2"></i> Indice di Severità (Falli vs Cartellini)</span>
+                            <div class="relative w-1/3 min-w-[150px]">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                <input type="text" id="analyticsSearchSeverity" oninput="debounceRenderAnalytics()" placeholder="Filtra per arbitro..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
+                            </div>
+                        </h3>
+                        <!-- NUOVO FILTRO MIN PRESENZE ARBITRO -->
+                        <div id="analytics-min-matches-container" class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center">
+                                <label class="text-xs text-slate-400">Min. Presenze Arbitro</label>
+                                <span id="analyticsMinMatchesValue" class="text-xs font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
+                            </div>
+                            <input type="range" id="analyticsMinMatches" min="0" max="10" value="0" step="1" oninput="updateAnalyticsMinMatches(this.value)" class="w-full">
+                        </div>
+                        <div id="chart-scatter" class="w-full h-[350px] relative">
+                             <!-- L'overlay DIV per i quadranti verrà iniettato qui -->
+                        </div>
+                        <!-- EXTERNAL LEGEND -->
+                        <div class="flex flex-wrap justify-center gap-4 mt-3 pb-2 border-t border-slate-800/50 pt-3">
+                            <div class="legend-item"><div class="legend-color bg-slate-500/80"></div><span class="font-bold">Inglesi</span> (Pochi Falli/Cart.)</div>
+                            <div class="legend-item"><div class="legend-color bg-yellow-500/80"></div><span class="font-bold">Chirurgici</span> (Pochi Falli, Molti Cart.)</div>
+                            <div class="legend-item"><div class="legend-color bg-blue-500/80"></div><span class="font-bold">Gestori</span> (Molti Falli, Pochi Cart.)</div>
+                            <div class="legend-item"><div class="legend-color bg-red-500/80"></div><span class="font-bold">Rigidi</span> (Molti Falli/Cart.)</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Grid Layout -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Radar Chart (Referee Profile) -->
+                        <div class="pro-card rounded-lg p-4">
+                            <div class="flex flex-col gap-2 mb-4 border-b border-slate-800 pb-2">
+                                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center justify-between">
+                                    <span><i class="fa-solid fa-fingerprint text-blue-500"></i> Profilo Arbitro</span>
+                                </h3>
+                                <!-- Comparison Selectors -->
+                                <div class="flex flex-col gap-2 w-full">
+                                    <div class="flex gap-2">
+                                        <select id="radar-ref-select" class="chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded pl-3 pr-8 py-1.5 focus:border-yellow-500 outline-none cursor-pointer flex-grow">
+                                            <option value="">Seleziona arbitro da aggiungere...</option>
+                                        </select>
+                                        <button onclick="addRefereeToRadar()" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold text-xs px-3 py-1.5 rounded transition-colors">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div id="radar-chips-container" class="flex flex-wrap gap-2 min-h-[28px]">
+                                        <!-- Chips will be injected here -->
+                                        <span class="text-[10px] text-slate-500 italic py-1">Aggiungi fino a 10 arbitri per il confronto...</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 italic mt-2">
+                                        Clicca sul nome dell'arbitro nella legenda per nasconderne/mostrarne il grafico.
+                                    </p>
+                                    <div class="flex justify-between items-center mt-1 pt-2 border-t border-slate-800">
+                                        <button onclick="resetRadar()" class="text-[10px] text-slate-400 hover:text-white underline">Reset Confronto</button>
+                                        <span id="radar-count" class="text-[10px] text-slate-500">0/10</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="chart-radar" class="w-full h-[400px] flex items-center justify-center">
+                                <p class="text-xs text-slate-500">Seleziona un arbitro per vedere il profilo.</p>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Scatter Match Correlation (Ritmo vs Interruzioni) -->
+                        <div class="pro-card rounded-lg p-4">
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
+                                <span><i class="fa-solid fa-scale-balanced text-green-500 mr-2"></i> Ritmo vs Interruzioni</span>
+                                <div class="relative w-1/3 min-w-[150px]">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                    <input type="text" id="analyticsSearchRitmo" oninput="debounceRenderAnalytics()" placeholder="Filtra per squadra..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
+                                </div>
+                            </h3>
+                            <div id="chart-match-scatter" class="w-full h-[350px] relative">
+                                <!-- L'overlay DIV per i quadranti verrà iniettato qui -->
+                            </div>
+                            <!-- EXTERNAL LEGEND -->
+                            <div class="flex flex-wrap justify-center gap-4 mt-3 pb-2 border-t border-slate-800/50 pt-3">
+                                <div class="legend-item"><div class="legend-color bg-green-500/80"></div><span class="font-bold">Fluidità</span> (Alto T.E., Pochi Falli)</div>
+                                <div class="legend-item"><div class="legend-color bg-blue-500/80"></div><span class="font-bold">Intenso</span> (Alto T.E., Molti Falli)</div>
+                                <div class="legend-item"><div class="legend-color bg-slate-500/80"></div><span class="font-bold">Lento</span> (Basso T.E., Pochi Falli)</div>
+                                <div class="legend-item"><div class="legend-color bg-red-500/80"></div><span class="font-bold">Spezzettato</span> (Basso T.E., Molti Falli)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- DATA TABLE CONTAINER -->
-                <div class="pro-card rounded-lg overflow-hidden flex flex-col min-h-[600px] relative">
+                <div id="table-view" class="pro-card rounded-lg overflow-hidden flex flex-col min-h-[600px] relative">
                     
                     <!-- Loading / Empty States -->
                     <div id="empty-state-msg" class="hidden absolute inset-0 z-30 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-start pt-20">
@@ -531,8 +769,8 @@
                     <!-- Table Wrapper -->
                     <div class="overflow-x-auto flex-grow">
                         <table class="w-full text-left pro-table" id="mainTable">
-                            <thead id="tableHeader" class="sticky-head"></thead>
-                            <tbody id="tableBody" class="font-mono text-sm"></tbody>
+                            <thead id="tableHeader" class="sticky-head text-slate-500"></thead>
+                            <tbody id="tableBody" class="font-mono text-sm text-slate-200"></tbody>
                             <tfoot id="tableFooter" class="sticky bottom-0 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)]"></tfoot>
                         </table>
                     </div>
@@ -2064,7 +2302,7 @@ Di Marco	98,18`;
         };
 
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
-        const SOON_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
+        const SOON_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21']; // Re-added
 
         // --- LOGIC SECTION ---
         let currentView = 'stats';
@@ -2072,13 +2310,40 @@ Di Marco	98,18`;
         let sortColumn = 'matches';
         let sortDirection = 'desc';
         let minMatchesFilter = 0;
+        let analyticsMinMatchesFilter = 0; // NUOVA VARIABILE PER IL FILTRO ANALYTICS
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
+        let debounceTimer; // Timer for debounce optimization
+        
+        // Paging variables for 'matches' view
+        let matchesDataAll = [];
+        let matchesCurrentPage = 1;
+        const MATCHES_PER_PAGE = 50;
+
+
+        // Chart Instances
+        let chartScatter = null;
+        let chartRadar = null;
+        let chartMatchCorrelation = null;
+        let currentAnalyticsData = [];
+        let currentMatchData = [];
+        let selectedRadarReferees = [];
 
         const REFEREES_2425 = ["Feliciani", "Ayroldi", "Fabbri", "Maresca", "Caputi", "Marchetti", "Marinelli", "Tremolada", "Massa", "Marcenaro", "Sacchi", "Doveri", "Di Marco", "Mariani", "Rapuano", "Sozza", "Pairetto", "Zufferli", "Di Bello", "Giua", "Colombo", "Guida", "Prontera", "Piccinini", "La Penna", "Abisso", "Aureliano", "Manganiello", "Fourneau", "Chiffi", "Dionisi", "Collu", "Massimi", "Bonacina", "Cosso", "Perenzoni", "Ghersini", "Monaldi", "Rutella"];
         const REFEREES_2526 = ["Massa", "Ayroldi", "Collu", "Zufferli", "Sozza", "Manganiello", "Arena", "Marcenaro", "Tremolada", "La Penna", "Guida", "Marinelli", "Doveri", "Mariani", "Bonacina", "Chiffi", "Abisso", "Marchetti", "Crezzini", "Fourneau", "Colombo", "Piccinini", "Rapuano", "Feliciani", "Fabbri", "Dionisi", "Di Bello", "Pairetto", "Sacchi", "Pezzuto", "Di Marco", "Galipò", "Perenzoni", "Ghersini", "Rutella", "Camplone", "Monaldi", "Cosso", "Santoro", "Scatena"];
         const ACTIVE_EXCEPTIONS = ["Maresca", "Caputi", "Ferrieri Caputi"];
         const HISTORICAL_SURNAMES = ["Irrati", "Orsato", "Valeri", "Pasqua", "Calvarese", "Giacomelli"];
+
+        // --- DEBOUNCE FUNCTION ---
+        function debounce(func, timeout = 300) {
+          return (...args) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => { func.apply(this, args); }, timeout);
+          };
+        }
+        const debounceAggregate = debounce(aggregateData);
+        // Nuova funzione debounce per i grafici
+        const debounceRenderAnalytics = debounce(renderAnalyticsWithFilters);
 
         // Helper Functions
         function parseTimeStr(str) {
@@ -2135,11 +2400,45 @@ Di Marco	98,18`;
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
-            // MODIFICATO: Nasconde il nome su mobile (hidden sm:inline) per risparmiare spazio
             return `<div class="flex items-center truncate">
                         <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline">${firstname.toLowerCase()}</span> 
                         <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm">${surname}</span>
                     </div>`;
+        }
+        
+        function getRefereeSurname(fullName) {
+            const upperName = fullName.toUpperCase();
+            const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
+            const matches = allSurnames.filter(s => upperName.includes(s.toUpperCase()));
+            return matches.length > 0 ? matches.sort((a, b) => b.length - a.length)[0] : fullName.split(' ').pop();
+        }
+
+        /**
+         * Calcola il colore in base al valore.
+         * @param {number} value Il valore da colorare.
+         * @param {number} min Il valore minimo del range.
+         * @param {number} max Il valore massimo del range.
+         * @param {boolean} reverse Se TRUE, Verde=Basso, Rosso=Alto. Utile per Tempo Totale.
+         * @returns {string} La stringa CSS hsl() per il colore.
+         */
+        function getColorForValue(value, min, max, reverse = false) {
+            if (isNaN(value) || value === null) return 'inherit';
+            const range = max - min;
+            if (range === 0) return 'hsl(120, 80%, 50%)'; // Verde fisso se il range è nullo
+            
+            let percent = Math.min(1, Math.max(0, (value - min) / range));
+            
+            // Hue from 0 (red) to 120 (green)
+            let hue;
+            if (reverse) {
+                // Rosso (0) per alto, Verde (120) per basso
+                hue = (1 - percent) * 120;
+            } else {
+                // Rosso (0) per basso, Verde (120) per alto
+                hue = percent * 120;
+            }
+            
+            return `hsl(${hue}, 80%, 50%)`;
         }
 
         function parseMatchesDB(dbString, season) {
@@ -2165,26 +2464,48 @@ Di Marco	98,18`;
              }).filter(x => x);
         }
 
-        // Logic Processing
         function processStatsData() {
             let statsMap = new Map();
             const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB; 
             activeSeasons.forEach(season => {
+                // Filtra solo le stagioni con dati disponibili (db[season].length > 0)
                 if (sourceDB[season] && sourceDB[season].length > 0) {
                     sourceDB[season].forEach(m => {
-                        if (!statsMap.has(m.name)) statsMap.set(m.name, { name: m.name, matches: 0, fouls: 0, yellows: 0, reds: 0, pens: 0, w_avgFouls: 0, w_avgYellows: 0, w_avgReds: 0, w_avgPens: 0 });
+                        if (!statsMap.has(m.name)) statsMap.set(m.name, { name: m.name, matches: 0, fouls: 0, yellows: 0, reds: 0, pens: 0, w_avgFouls: 0, w_avgYellows: 0, w_avgReds: 0, w_avgPens: 0, w_effMin: 0 });
                         let r = statsMap.get(m.name);
                         r.matches += m.matches; r.yellows += m.yellows; r.reds += m.reds;
                         r.w_avgFouls += m.fouls_avg * m.matches; r.w_avgYellows += m.yellows_ap * m.matches;
                         r.w_avgReds += m.reds_ap * m.matches; r.w_avgPens += m.penalties_ap * m.matches;
+                        // Uso eff_min per i dati dummy, altrimenti viene sovrascritto da ptData
+                        r.w_effMin += (m.eff_min || 0) * m.matches; 
                     });
                 }
             });
             return Array.from(statsMap.values()).map(r => {
                 r.avgFouls = r.matches ? (r.w_avgFouls / r.matches) : 0; r.avgYellows = r.matches ? (r.w_avgYellows / r.matches) : 0;
                 r.avgReds = r.matches ? (r.w_avgReds / r.matches) : 0; r.avgPens = r.matches ? (r.w_avgPens / r.matches) : 0;
+                // Pre-popolo avgEffSec con i dati dummy, se presenti
+                r.avgEffSec = r.matches ? (r.w_effMin / r.matches) * 60 : 0; 
                 r.isInactive = !isRefereeActive(r.name);
                 return r;
+            });
+        }
+        
+        function processCombinedStats() {
+            const stats = processStatsData();
+            const pt = processPlayingTimeViewData();
+            
+            // IMPROVED MERGE: Match by Surname to solve "0 data" issues
+            return stats.map(s => {
+                const surnameS = getRefereeSurname(s.name);
+                const ptData = pt.find(p => getRefereeSurname(p.name) === surnameS);
+                // Se ci sono dati in ptData, sovrascrivi l'avgEffSec calcolato prima
+                s.avgEffSec = ptData ? ptData.avgEffSec : s.avgEffSec; 
+                return {
+                    ...s,
+                    // avgEffSec: ptData ? ptData.avgEffSec : 0, // Rimossa, usiamo s.avgEffSec già aggiornato
+                    avgTotSec: ptData ? ptData.avgTotSec : 0
+                };
             });
         }
 
@@ -2221,20 +2542,106 @@ Di Marco	98,18`;
         function processMatchesViewData() {
             let all = [];
             activeSeasons.forEach(s => {
-                let db = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
-                if(db) all = all.concat(parseMatchesDB(db, s));
+                let dbData = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
+                if(dbData) all = all.concat(parseMatchesDB(dbData, s));
             });
             return all;
         }
 
+        function processTeamsData() {
+            let teamsMap = new Map();
+            const matches = processMatchesViewData();
+
+            matches.forEach(m => {
+                if(!m.match.includes('-')) return;
+                const parts = m.match.split('-').map(s => s.trim());
+                if(parts.length !== 2) return;
+                const home = parts[0];
+                const away = parts[1];
+
+                [home, away].forEach((team, idx) => {
+                    if(!teamsMap.has(team)) teamsMap.set(team, { 
+                        name: team, matches: 0, 
+                        totalFoulsInGames: 0, homeFoulsInGames: 0, awayFoulsInGames: 0,
+                        homeGames: 0, awayGames: 0,
+                        totalEffSec: 0, homeEffSec: 0, awayEffSec: 0,
+                        validHomeEff: 0, validAwayEff: 0, validTotalEff: 0
+                    });
+                    
+                    const t = teamsMap.get(team);
+                    t.matches++;
+                    t.totalFoulsInGames += m.fouls;
+                    
+                    if (!isNaN(m.effectiveTimeSec)) {
+                        t.totalEffSec += m.effectiveTimeSec;
+                        t.validTotalEff++;
+                        if(idx === 0) { // Home
+                            t.homeEffSec += m.effectiveTimeSec;
+                            t.validHomeEff++;
+                        } else { // Away
+                            t.awayEffSec += m.effectiveTimeSec;
+                            t.validAwayEff++;
+                        }
+                    }
+
+                    if(idx === 0) { // Home
+                        t.homeGames++;
+                        t.homeFoulsInGames += m.fouls;
+                    } else { // Away
+                        t.awayGames++;
+                        t.awayFoulsInGames += m.fouls;
+                    }
+                });
+            });
+
+            return Array.from(teamsMap.values()).map(t => {
+                const avgFoulsHome = t.homeGames ? t.homeFoulsInGames/t.homeGames : 0;
+                const avgFoulsAway = t.awayGames ? t.awayFoulsInGames/t.awayGames : 0;
+                return {
+                    name: t.name,
+                    matches: t.matches,
+                    avgFouls: t.matches ? t.totalFoulsInGames/t.matches : 0,
+                    avgFoulsHome: avgFoulsHome,
+                    avgFoulsAway: avgFoulsAway,
+                    avgEff: t.validTotalEff ? t.totalEffSec/t.validTotalEff : 0,
+                    avgEffHome: t.validHomeEff ? t.homeEffSec/t.validHomeEff : 0,
+                    avgEffAway: t.validAwayEff ? t.awayEffSec/t.validAwayEff : 0
+                };
+            });
+        }
+
         // --- Aggregation & UI Update ---
         function aggregateData() {
+            // Nasconde i messaggi di stato
             ['historical-data-msg', 'empty-state-msg'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
             
             let result = [];
+            let matchResult = [];
             
+            // Gestione della visibilità della ricerca globale e dei filtri laterali
+            const globalSearchContainer = document.getElementById('global-search-container');
+            const statsControls = document.getElementById('stats-controls');
+            const minMatchesContainer = document.getElementById('min-matches-container');
+            const activeFilterContainer = document.getElementById('active-filter-container');
+            const matchesFiltersContainer = document.getElementById('matches-filters-container');
+
+            // Nascondo tutti i filtri specifici per riabilitare solo quelli necessari
+            if (globalSearchContainer) globalSearchContainer.classList.add('hidden');
+            if (statsControls) statsControls.classList.add('hidden');
+            if (matchesFiltersContainer) matchesFiltersContainer.classList.add('hidden');
+            if (minMatchesContainer) minMatchesContainer.classList.add('hidden');
+            if (activeFilterContainer) activeFilterContainer.classList.add('hidden');
+
+
             if (currentView === 'stats') {
-                result = processStatsData();
+                if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+                if (statsControls) statsControls.classList.remove('hidden');
+                if (minMatchesContainer) minMatchesContainer.classList.remove('hidden');
+                if (activeFilterContainer) activeFilterContainer.classList.remove('hidden');
+
+                matchesCurrentPage = 1; 
+                result = processCombinedStats(); 
+                
                 if(result.length > 0) {
                     const maxMatches = Math.max(...result.map(r => r.matches));
                     document.getElementById('minMatches').max = maxMatches;
@@ -2242,68 +2649,122 @@ Di Marco	98,18`;
                 }
                 result = result.filter(r => r.matches >= minMatchesFilter);
                 if(hideInactive) result = result.filter(r => !r.isInactive);
-            } else if (currentView === 'playingTime') {
-                result = processPlayingTimeViewData();
-            } else if (currentView === 'matches') {
+            } 
+            else if (currentView === 'playingTime') {
+                 if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+                 matchesCurrentPage = 1; 
+                 result = processPlayingTimeViewData();
+            }
+            else if (currentView === 'matches') {
+                if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+                if (statsControls) statsControls.classList.remove('hidden');
+                if (matchesFiltersContainer) matchesFiltersContainer.classList.remove('hidden');
+                
                 result = processMatchesViewData();
-                // Apply New Match Filters
                 const minTot = parseInt(document.getElementById('filterMinTot').value) * 60 || 0;
                 const maxTot = (parseInt(document.getElementById('filterMaxTot').value) * 60) || 999999;
                 const minEff = parseInt(document.getElementById('filterMinEff').value) * 60 || 0;
                 const maxEff = (parseInt(document.getElementById('filterMaxEff').value) * 60) || 999999;
                 const minFls = parseInt(document.getElementById('filterMinFls').value) || 0;
                 const maxFls = parseInt(document.getElementById('filterMaxFls').value) || 999999;
-
+                
                 result = result.filter(r => {
-                    const tot = r.totalTimeSec || 0;
-                    const eff = r.effectiveTimeSec || 0;
-                    const fls = r.fouls || 0;
-                    // Handle ND/Missing values logic if needed, usually ignore or treat as 0
-                    // Here we include if present. If r.totalTimeSec is NaN, it fails >= minTot usually.
-                    return tot >= minTot && tot <= maxTot && 
-                           eff >= minEff && eff <= maxEff &&
-                           fls >= minFls && fls <= maxFls;
+                    const tot = r.totalTimeSec || 0; const eff = r.effectiveTimeSec || 0; const fls = r.fouls || 0;
+                    return tot >= minTot && tot <= maxTot && eff >= minEff && eff <= maxEff && fls >= minFls && fls <= maxFls;
                 });
+                
+                matchesDataAll = result; 
+                result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
+            }
+            else if (currentView === 'teams') {
+                 if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+                 matchesCurrentPage = 1;
+                 result = processTeamsData();
+            }
+            else if (currentView === 'analytics') {
+                 // NESSUNA RICERCA/FILTRO GLOBALE PER I GRAFICI (solo filtri interni)
+                 matchesCurrentPage = 1;
+                 result = processCombinedStats(); 
+                 matchResult = processMatchesViewData();
+
+                 // Imposta il massimo per il filtro min presenze dell'analytics
+                 if(result.length > 0) {
+                     const maxMatches = Math.max(...result.map(r => r.matches));
+                     const analyticsMinMatchesEl = document.getElementById('analyticsMinMatches');
+                     if(analyticsMinMatchesEl) analyticsMinMatchesEl.max = maxMatches;
+                 }
+
+                 // Il filtro per presenze minime in analytics viene applicato in renderAnalyticsWithFilters
+                 if(hideInactive) result = result.filter(r => !r.isInactive);
             }
 
-            // Search
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            if(q && result.length) {
+
+            // Search (applied globally where applicable)
+            const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+            if(q && result.length && currentView !== 'analytics') {
                 if(currentView === 'matches') result = result.filter(r => r.match.toLowerCase().includes(q));
                 else result = result.filter(r => r.name.toLowerCase().includes(q));
             }
 
-            // Sort
-            if (result.length) {
+            // Sort (applied before paging if matches view)
+            if (matchesDataAll.length && currentView === 'matches') {
+                 matchesDataAll.sort((a, b) => { 
+                    let va = a[sortColumn], vb = b[sortColumn];
+                    const isInvalid = (v) => (typeof v === 'number' && isNaN(v)) || v === null || v === undefined;
+                    if (isInvalid(va) && isInvalid(vb)) return 0;
+                    if (isInvalid(va)) return 1; 
+                    if (isInvalid(vb)) return -1; 
+                    if (typeof va === 'string') return sortDirection === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+                    return sortDirection === 'desc' ? vb - va : va - vb;
+                 });
+                 result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
+            } else if (result.length && currentView !== 'analytics') {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
-                    
+                    if (currentView === 'teams' && ['avgFouls', 'avgEff', 'avgFoulsHome', 'avgFoulsAway'].includes(sortColumn)) { 
+                        const isInvalid = (v) => (typeof v === 'number' && isNaN(v)) || v === null || v === undefined || v === 0;
+                        if (isInvalid(va) && isInvalid(vb)) return 0;
+                        if (isInvalid(va)) return 1; 
+                        if (isInvalid(vb)) return -1; 
+                    }
                     const isInvalid = (v) => (typeof v === 'number' && isNaN(v)) || v === null || v === undefined;
-                    const isVaInvalid = isInvalid(va);
-                    const isVbInvalid = isInvalid(vb);
-
-                    if (isVaInvalid && isVbInvalid) return 0;
-                    if (isVaInvalid) return 1; 
-                    if (isVbInvalid) return -1; 
-
+                    if (isInvalid(va) && isInvalid(vb)) return 0;
+                    if (isInvalid(va)) return 1; 
+                    if (isInvalid(vb)) return -1; 
                     if (typeof va === 'string') return sortDirection === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
                     return sortDirection === 'desc' ? vb - va : va - vb;
                 });
             }
 
             // Render
-            if (result.length > 0) {
-                renderTable(result);
+            if (result.length > 0 || (currentView === 'analytics' && matchResult.length > 0)) {
+                if (currentView === 'analytics') {
+                    currentAnalyticsData = result;
+                    currentMatchData = matchResult.filter(m => !isNaN(m.effectiveTimeSec) && m.effectiveTimeSec > 0 && m.fouls > 0); 
+                    renderAnalyticsWithFilters(); // Render with local filters
+                } else {
+                    renderTable(result);
+                }
                 updateKPIDashboard(result);
             } else {
                 updateKPIDashboard([]);
-                const isOnlyHistorical = activeSeasons.every(s => SOON_SEASONS.includes(s));
-                if (isOnlyHistorical && activeSeasons.length > 0) {
+                
+                const viewsWithHistorical = ['playingTime', 'matches', 'teams'];
+                const isHistoricalView = viewsWithHistorical.includes(currentView);
+                const selectedHistorical = activeSeasons.filter(s => SOON_SEASONS.includes(s));
+                
+                // Controlla se ci sono dati per le stagioni 2024-25 e 2025-26
+                const currentDataAvailable = db['2025-26'].length > 0 || db['2024-25'].length > 0;
+                
+                // Il messaggio storico appare se una vista storica è selezionata E ci sono solo stagioni senza dati (SOON) selezionate
+                const onlySoonSelected = activeSeasons.every(s => SOON_SEASONS.includes(s));
+                const showHistoricalMessage = isHistoricalView && onlySoonSelected && !currentDataAvailable;
+
+                if (showHistoricalMessage) {
                     const msgDiv = document.getElementById('historical-data-msg');
                     msgDiv.classList.remove('hidden');
-                    document.getElementById('historical-msg-title').innerText = `Dati Stagione ${activeSeasons.join(', ')} in fase di caricamento...`;
-                }
-                else {
+                    document.getElementById('historical-msg-title').innerText = `Dati Stagione ${selectedHistorical.join(', ')} in fase di caricamento...`;
+                } else {
                     document.getElementById('empty-state-msg').classList.remove('hidden');
                 }
             }
@@ -2311,13 +2772,518 @@ Di Marco	98,18`;
             updateSeasonButtonsUI();
             updatePageTitleUI();
         }
+        
+        // --- PAGINATION / LAZY LOADING FUNCTIONS ---
+        
+        function resetMatchesPaging() {
+            matchesCurrentPage = 1;
+        }
+
+        function loadMoreMatches() {
+            matchesCurrentPage++;
+            const startIndex = (matchesCurrentPage - 1) * MATCHES_PER_PAGE;
+            const endIndex = matchesCurrentPage * MATCHES_PER_PAGE;
+            
+            const newMatches = matchesDataAll.slice(startIndex, endIndex);
+            
+            if (newMatches.length > 0) {
+                renderMatchesRows(newMatches, false);
+            }
+            
+            updateLoadMoreButton();
+        }
+
+        function updateLoadMoreButton() {
+            const btnContainer = document.getElementById('loadMoreContainer');
+            if(!btnContainer) return;
+
+            const totalLoaded = matchesCurrentPage * MATCHES_PER_PAGE;
+            const totalAvailable = matchesDataAll.length;
+            
+            if (currentView === 'matches' && totalLoaded < totalAvailable) {
+                btnContainer.classList.remove('hidden');
+                btnContainer.innerHTML = `<button onclick="loadMoreMatches()" class="w-full bg-slate-800 hover:bg-slate-700 text-yellow-500 font-bold py-2 px-4 rounded transition-colors text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-down-to-line"></i> Carica altre ${Math.min(MATCHES_PER_PAGE, totalAvailable - totalLoaded)} partite (${totalAvailable - totalLoaded} rimanenti)
+                </button>`;
+            } else {
+                btnContainer.classList.add('hidden');
+                if (currentView === 'matches' && totalAvailable > 0) {
+                    const tfoot = document.getElementById('tableFooter');
+                    // Rimuove messaggi precedenti prima di aggiungere il nuovo
+                    const existingMsg = tfoot.querySelector('.final-message');
+                    if (existingMsg) existingMsg.remove();
+                    // Aggiungo un messaggio finale solo se non ci sono più match da caricare
+                    const msgRow = document.createElement('tr');
+                    msgRow.innerHTML = `<td colspan="6" class="text-center p-3 text-slate-500 text-xs border-t border-slate-700/50 final-message">Tutte le ${totalAvailable} partite visualizzate.</td>`;
+                    tfoot.appendChild(msgRow);
+                }
+            }
+        }
+        
+        // --- APEX CHARTS LOGIC ---
+        
+        // NUOVA FUNZIONE PER AGGIORNARE IL FILTRO MIN MATCHES DELL'ANALYTICS
+        function updateAnalyticsMinMatches(val) {
+            analyticsMinMatchesFilter = parseInt(val);
+            document.getElementById('analyticsMinMatchesValue').innerText = val;
+            debounceRenderAnalytics(); 
+        }
+
+        /**
+         * Soluzione Definitiva Quadranti: Iniezione di DIV/HTML (Overlay)
+         * Si basa sul ricalcolo manuale della plot area di ApexCharts e l'iniezione
+         * di 4 DIV posizionati assolutamente.
+         * @param {object} chartContext Il contesto del grafico ApexCharts.
+         * @param {number} midXVal Valore medio dell'asse X.
+         * @param {number} midYVal Valore medio dell'asse Y.
+         * @param {boolean} isSeverityChart TRUE se è il grafico di Severità.
+         */
+        function injectQuadrantDIVOverlay(chartContext, midXVal, midYVal, isSeverityChart = true) {
+            const chart = chartContext.w.globals;
+            const containerEl = chart.dom.baseEl;
+            
+            // Trova l'area di plotting (dove i dati sono disegnati)
+            const plotArea = containerEl.querySelector('.apexcharts-plot-area');
+            if (!plotArea) return;
+
+            // Rimuove vecchi overlay
+            let quadrantLayer = containerEl.querySelector('.overlay-quadranti');
+            if (quadrantLayer) {
+                quadrantLayer.remove();
+            }
+
+            // Aggiunge un nuovo layer di overlay come primo figlio (sotto SVG/Canvas)
+            quadrantLayer = document.createElement('div');
+            quadrantLayer.className = 'overlay-quadranti';
+            containerEl.prepend(quadrantLayer);
+
+            // Calcola le dimensioni e la posizione del plot area rispetto al container
+            const containerRect = containerEl.getBoundingClientRect();
+            const plotRect = plotArea.getBoundingClientRect();
+
+            const plotTop = plotRect.top - containerRect.top;
+            const plotLeft = plotRect.left - containerRect.left;
+            const plotWidth = plotRect.width;
+            const plotHeight = plotRect.height;
+
+            // Applica le dimensioni e la posizione all'overlay
+            quadrantLayer.style.top = `${plotTop}px`;
+            quadrantLayer.style.left = `${plotLeft}px`;
+            quadrantLayer.style.width = `${plotWidth}px`;
+            quadrantLayer.style.height = `${plotHeight}px`;
+
+            // Calcola le coordinate in pixel della linea mediana
+            const xRange = chart.maxX - chart.minX;
+            const yRange = chart.maxY - chart.minY;
+            
+            const xPercent = (midXVal - chart.minX) / xRange;
+            const yPercent = (midYVal - chart.minY) / yRange;
+
+            // La coordinata X (orizzontale) cresce da sinistra a destra
+            let midXPixel = xPercent * plotWidth;
+            
+            // La coordinata Y (verticale) cresce dall'alto al basso (0% top, 100% bottom)
+            // L'asse Y di ApexCharts è invertito (Y=min è in basso, Y=max è in alto)
+            let midYPixel = plotHeight * (1 - yPercent);
+
+            // Correzione per valori fuori scala (midXPixel/midYPixel potrebbe essere < 0 o > plotWidth/plotHeight)
+            midXPixel = Math.max(0, Math.min(plotWidth, midXPixel));
+            midYPixel = Math.max(0, Math.min(plotHeight, midYPixel));
+
+            // Colori: [Top-Left, Top-Right, Bottom-Left, Bottom-Right]
+            const SEVERITY_COLORS = {
+                // Low F, High Y (Chirurgici)
+                TL: '#eab308',
+                // High F, High Y (Rigidi)
+                TR: '#ef4444', 
+                // Low F, Low Y (Inglesi)
+                BL: '#64748b', 
+                // High F, Low Y (Gestori)
+                BR: '#3b82f6'
+            };
+
+            const RITMO_COLORS = {
+                // Low F, High TE (Fluidità)
+                TL: '#22c55e', 
+                // High F, High TE (Intenso)
+                TR: '#3b82f6', 
+                // Low F, Low TE (Lento)
+                BL: '#64748b', 
+                // High F, Low TE (Spezzettato)
+                BR: '#ef4444' 
+            };
+
+            const colors = isSeverityChart ? SEVERITY_COLORS : RITMO_COLORS;
+            
+            // Aggiungi i 4 quadranti come DIV (posizionati relativamente all'overlay)
+            quadrantLayer.innerHTML = `
+                <!-- Top Left (Low X, High Y) -->
+                <div class="quadrant" style="top: 0; left: 0; width: ${midXPixel}px; height: ${midYPixel}px; background-color: ${colors.TL}"></div>
+                <!-- Top Right (High X, High Y) -->
+                <div class="quadrant" style="top: 0; left: ${midXPixel}px; width: ${plotWidth - midXPixel}px; height: ${midYPixel}px; background-color: ${colors.TR}"></div>
+                <!-- Bottom Left (Low X, Low Y) -->
+                <div class="quadrant" style="top: ${midYPixel}px; left: 0; width: ${midXPixel}px; height: ${plotHeight - midYPixel}px; background-color: ${colors.BL}"></div>
+                <!-- Bottom Right (High X, Low Y) -->
+                <div class="quadrant" style="top: ${midYPixel}px; left: ${midXPixel}px; width: ${plotWidth - midXPixel}px; height: ${plotHeight - midYPixel}px; background-color: ${colors.BR}"></div>
+            `;
+            
+            // Aggiungi le linee divisorie nel DIV overlay per evitare sovrapposizioni delle etichette
+            quadrantLayer.innerHTML += `
+                <!-- Linea Orizzontale -->
+                <div style="position: absolute; top: ${midYPixel}px; left: 0; width: 100%; height: 1px; background: none; border-top: 1px dashed #475569; pointer-events: none; z-index: 2;"></div>
+                <!-- Linea Verticale -->
+                <div style="position: absolute; top: 0; left: ${midXPixel}px; width: 1px; height: 100%; background: none; border-left: 1px dashed #475569; pointer-events: none; z-index: 2;"></div>
+            `;
+        }
+
+        function renderAnalyticsWithFilters() {
+            // 1. Applica filtri locali ai dati globali
+            const qSeverity = document.getElementById('analyticsSearchSeverity')?.value?.toLowerCase() || '';
+            const qRitmo = document.getElementById('analyticsSearchRitmo')?.value?.toLowerCase() || '';
+
+            // --- APPLICAZIONE NUOVO FILTRO MIN MATCHES (Feature 1) ---
+            const minMatches = analyticsMinMatchesFilter;
+            let filteredRefData = currentAnalyticsData.filter(r => 
+                getRefereeSurname(r.name).toLowerCase().includes(qSeverity) &&
+                r.matches >= minMatches // Filter applied here
+            );
+            
+            const filteredMatchData = currentMatchData.filter(m => 
+                m.match.toLowerCase().includes(qRitmo)
+            );
+
+            // Popola il dropdown del Radar
+            const populateSelect = (id) => {
+                const select = document.getElementById(id);
+                // Salva lo stato del dropdown e ricarica solo le opzioni
+                const currentValue = select.value; 
+                select.innerHTML = '<option value="">Seleziona arbitro da aggiungere...</option>';
+                const sortedRefs = [...currentAnalyticsData].sort((a, b) => getRefereeSurname(a.name).localeCompare(getRefereeSurname(b.name)));
+                sortedRefs.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.name;
+                    opt.text = getRefereeSurname(r.name);
+                    select.appendChild(opt);
+                });
+                select.value = currentValue; // Ripristina il valore selezionato
+            }
+            populateSelect('radar-ref-select');
+            renderRadarChips();
+
+            // 2. Renderizza i grafici con i dati filtrati
+            renderSeverityScatter(filteredRefData);
+            renderRitmoScatter(filteredMatchData);
+            updateRadarChart();
+        }
+
+        function renderSeverityScatter(refData) {
+            const scatterData = refData.filter(r => r.avgFouls > 0 && r.avgYellows > 0).map(r => ({
+                x: parseFloat(r.avgFouls.toFixed(2)),
+                y: parseFloat(r.avgYellows.toFixed(2)),
+                name: getRefereeSurname(r.name)
+            }));
+            
+            const xVals = scatterData.map(d => d.x);
+            const yVals = scatterData.map(d => d.y);
+            const xMinData = xVals.length ? Math.min(...xVals) : 20;
+            const xMaxData = xVals.length ? Math.max(...xVals) : 30;
+            const yMinData = yVals.length ? Math.min(...yVals) : 3;
+            const yMaxData = yVals.length ? Math.max(...yVals) : 6;
+
+            const xMin = Math.floor(xMinData - 1);
+            const xMax = Math.ceil(xMaxData + 3);
+            const yMin = Math.floor(yMinData - 0.5);
+            const yMax = Math.ceil(yMaxData + 1.5);
+
+            const midFouls = 24.5, midYellows = 4.5;
+
+            const scatterOptions = {
+                series: [{ name: "Arbitri", data: scatterData }],
+                chart: { 
+                    type: 'scatter', height: 350, background: 'transparent', 
+                    toolbar: { show: false }, zoom: { enabled: false },
+                    events: {
+                        // Eventi per disegnare l'overlay DIV
+                        mounted: (chartContext) => injectQuadrantDIVOverlay(chartContext, midFouls, midYellows, true),
+                        updated: (chartContext) => injectQuadrantDIVOverlay(chartContext, midFouls, midYellows, true)
+                    }
+                },
+                // Marker size ripristinata
+                markers: { size: 4 }, 
+                colors: ['#EAB308'],
+                xaxis: { 
+                    title: { text: 'Media Falli', style: { color: '#94a3b8' } }, 
+                    tickAmount: 5, 
+                    min: xMin, max: xMax, 
+                    labels: { style: { colors: '#cbd5e1' } }, 
+                    axisBorder: { color: '#334155' }, 
+                    axisTicks: { color: '#334155' } 
+                },
+                yaxis: { 
+                    title: { text: 'Media Gialli', style: { color: '#94a3b8' } }, 
+                    tickAmount: 5, 
+                    min: yMin, max: yMax, 
+                    labels: { style: { colors: '#cbd5e1' } } 
+                },
+                // Linee di annotazione mantenute per le etichette
+                annotations: {
+                    shapes: [], 
+                    xaxis: [{ 
+                        x: midFouls, borderColor: '#475569', strokeDashArray: 5, 
+                        label: { 
+                            borderColor: '#475569', 
+                            style: { color: '#cbd5e1', background: '#334155' }, 
+                            text: 'Media Falli',
+                            offsetY: 10, 
+                        } 
+                    }],
+                    yaxis: [{ 
+                        y: midYellows, borderColor: '#475569', strokeDashArray: 5, 
+                        label: { 
+                            borderColor: '#475569', 
+                            style: { color: '#cbd5e1', background: '#334155' }, 
+                            text: 'Media Gialli',
+                            offsetX: -15, 
+                        } 
+                    }]
+                },
+                grid: { borderColor: '#334155', strokeDashArray: 4 },
+                theme: { mode: 'dark' },
+                tooltip: { custom: ({ series, seriesIndex, dataPointIndex, w }) => { const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex]; return `<div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg"><div class="font-bold text-white text-xs mb-1">${d.name}</div><div class="text-[10px] text-slate-300">Falli: ${d.x} - Gialli: ${d.y}</div></div>`; } }
+            };
+
+            if(chartScatter) chartScatter.destroy();
+            chartScatter = new ApexCharts(document.querySelector("#chart-scatter"), scatterOptions);
+            chartScatter.render();
+        }
+
+        function renderRitmoScatter(matchData) {
+            const s2526 = matchData.filter(m => m.season === '2025-26').map(m => ({ x: m.fouls, y: parseFloat((m.effectiveTimeSec / 60).toFixed(1)), matchName: m.match }));
+            const s2425 = matchData.filter(m => m.season === '2024-25').map(m => ({ x: m.fouls, y: parseFloat((m.effectiveTimeSec / 60).toFixed(1)), matchName: m.match }));
+            
+            const allMatchData = [...s2526, ...s2425];
+            const maxFouls = allMatchData.length ? Math.max(...allMatchData.map(d => d.x)) : 40;
+            const maxEff = allMatchData.length ? Math.max(...allMatchData.map(d => d.y)) : 65;
+            
+            const mXMin = 15;
+            const mXMax = Math.ceil(maxFouls + 3); 
+            const mYMin = 38;
+            const mYMax = Math.ceil(maxEff + 3); 
+            const mMidF = 26;
+            const mMidE = 52.5;
+
+            const matchChartOptions = {
+                series: [{ name: '2025-26', data: s2526 }, { name: '2024-25', data: s2425 }],
+                chart: { 
+                    type: 'scatter', height: 350, background: 'transparent', 
+                    toolbar: { show: false }, zoom: { enabled: false },
+                    events: {
+                        // Eventi per disegnare l'overlay DIV
+                        mounted: (chartContext) => injectQuadrantDIVOverlay(chartContext, mMidF, mMidE, false),
+                        updated: (chartContext) => injectQuadrantDIVOverlay(chartContext, mMidF, mMidE, false)
+                    }
+                },
+                markers: { size: 4 },
+                colors: ['#d946ef', '#eab308'],
+                xaxis: { 
+                    title: { text: 'Falli Totali', style: { color: '#94a3b8' } }, 
+                    tickAmount: 6, 
+                    min: mXMin, max: mXMax, 
+                    labels: { style: { colors: '#cbd5e1' } }, 
+                    axisBorder: { color: '#334155' }, 
+                    axisTicks: { color: '#334155' } 
+                },
+                yaxis: { 
+                    title: { text: 'Tempo Effettivo (min)', style: { color: '#94a3b8' } }, 
+                    min: mYMin, max: mYMax, 
+                    labels: { style: { colors: '#cbd5e1' } } 
+                },
+                 // Linee di annotazione mantenute per le etichette
+                annotations: {
+                    shapes: [], 
+                    xaxis: [{ 
+                        x: mMidF, borderColor: '#475569', strokeDashArray: 5, 
+                        label: { 
+                            borderColor: '#475569', 
+                            style: { color: '#cbd5e1', background: '#334155' }, 
+                            text: 'Media Falli',
+                            offsetY: 10, 
+                        } 
+                    }],
+                    yaxis: [{ 
+                        y: mMidE, borderColor: '#475569', strokeDashArray: 5, 
+                        label: { 
+                            borderColor: '#475569', 
+                            style: { color: '#cbd5e1', background: '#334155' }, 
+                            text: 'Media T.E.',
+                            offsetX: -15, 
+                        } 
+                    }]
+                },
+                grid: { borderColor: '#334155', strokeDashArray: 4 },
+                theme: { mode: 'dark' },
+                tooltip: { custom: ({ series, seriesIndex, dataPointIndex, w }) => { const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex]; return `<div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg"><div class="font-bold text-white text-xs mb-1">${d.matchName}</div><div class="text-[10px] text-slate-300">Falli: ${d.x} - T.Eff: ${d.y}'</div></div>`; } },
+                legend: { position: 'top', labels: { colors: '#cbd5e1' } }
+            };
+            
+            if(chartMatchCorrelation) chartMatchCorrelation.destroy();
+            chartMatchCorrelation = new ApexCharts(document.querySelector("#chart-match-scatter"), matchChartOptions);
+            chartMatchCorrelation.render();
+        }
+
+        function addRefereeToRadar() {
+            const select = document.getElementById('radar-ref-select');
+            const name = select.value;
+            if (name && !selectedRadarReferees.includes(name)) {
+                if (selectedRadarReferees.length >= 10) {
+                    console.error("Massimo 10 arbitri raggiunti per il confronto.");
+                    return;
+                }
+                selectedRadarReferees.push(name);
+                renderRadarChips();
+                updateRadarChart();
+            }
+            select.value = "";
+        }
+
+        function removeRefereeFromRadar(name) {
+            selectedRadarReferees = selectedRadarReferees.filter(n => n !== name);
+            renderRadarChips();
+            updateRadarChart();
+        }
+
+        function resetRadar() {
+            selectedRadarReferees = [];
+            renderRadarChips();
+            updateRadarChart();
+        }
+
+        function renderRadarChips() {
+            const container = document.getElementById('radar-chips-container');
+            const count = document.getElementById('radar-count');
+            container.innerHTML = '';
+            if (selectedRadarReferees.length === 0) {
+                 container.innerHTML = '<span class="text-[10px] text-slate-500 italic py-1">Aggiungi fino a 10 arbitri per il confronto...</span>';
+            } else {
+                selectedRadarReferees.forEach(name => {
+                    const surname = getRefereeSurname(name);
+                    const div = document.createElement('div');
+                    div.className = 'ref-chip';
+                    div.innerHTML = `<span>${surname}</span><button onclick="removeRefereeFromRadar('${name}')"><i class="fa-solid fa-times"></i></button>`;
+                    container.appendChild(div);
+                });
+            }
+            count.innerText = `${selectedRadarReferees.length}/10`;
+        }
+
+        function updateRadarChart() {
+            const data = currentAnalyticsData;
+            
+            // AGGIORNAMENTO SCALA PER MIGLIORE DISTRIBUZIONE DEI DATI (Bug 1 Fix)
+            const SCALE = { 
+                FOULS: { min: 10, max: 40 }, 
+                YELLOWS: { min: 2, max: 7 },
+                REDS: { min: 0, max: 0.8 },
+                PENS: { min: 0, max: 0.6 }, 
+                EFF: { min: 40, max: 65 } 
+            };
+            
+            // Calcola la media (i conteggi e le somme sono corretti qui)
+            let tF=0, tY=0, tR=0, tP=0, tEff=0, count=0, effCount=0;
+            data.forEach(r => { 
+                tF+=r.avgFouls; 
+                tY+=r.avgYellows; 
+                tR+=r.avgReds; 
+                tP+=r.avgPens; 
+                if(r.avgEffSec > 0) { 
+                    tEff+=r.avgEffSec; 
+                    effCount++; 
+                } 
+                count++; 
+            });
+
+            const avgF = count ? tF/count : 0; 
+            const avgY = count ? tY/count : 0; 
+            const avgR = count ? tR/count : 0; 
+            const avgP = count ? tP/count : 0; 
+            const avgEff = effCount ? (tEff/effCount)/60 : 0;
+
+            const normalize = (val, min, max) => Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
+
+            let seriesData = [{ 
+                name: 'Media', 
+                data: [normalize(avgF, SCALE.FOULS.min, SCALE.FOULS.max), normalize(avgY, SCALE.YELLOWS.min, SCALE.YELLOWS.max), normalize(avgR, SCALE.REDS.min, SCALE.REDS.max), normalize(avgP, SCALE.PENS.min, SCALE.PENS.max), normalize(avgEff, SCALE.EFF.min, SCALE.EFF.max)], 
+                raw: [avgF.toFixed(1), avgY.toFixed(1), avgR.toFixed(2), avgP.toFixed(2), avgEff.toFixed(1)] 
+            }];
+            
+            const addSeries = (name) => {
+                const r = data.find(x => x.name === name);
+                if (r) {
+                    const eff = r.avgEffSec > 0 ? (r.avgEffSec/60) : 0;
+                    seriesData.push({ 
+                        name: getRefereeSurname(r.name), 
+                        data: [normalize(r.avgFouls, SCALE.FOULS.min, SCALE.FOULS.max), normalize(r.avgYellows, SCALE.YELLOWS.min, SCALE.YELLOWS.max), normalize(r.avgReds, SCALE.REDS.min, SCALE.REDS.max), normalize(r.avgPens, SCALE.PENS.min, SCALE.PENS.max), normalize(eff, SCALE.EFF.min, SCALE.EFF.max)], 
+                        raw: [r.avgFouls.toFixed(1), r.avgYellows.toFixed(1), r.avgReds.toFixed(2), r.avgPens.toFixed(2), eff.toFixed(1)] 
+                    });
+                }
+            };
+
+            selectedRadarReferees.forEach(name => addSeries(name));
+
+            const radarOptions = {
+                series: seriesData,
+                chart: { 
+                    type: 'radar', 
+                    height: 400, 
+                    background: 'transparent', 
+                    toolbar: { show: false },
+                    // Non è necessario un listener personalizzato per l'onclick sulla legenda, ApexCharts lo gestisce di default.
+                    // Rimuovendo l'evento personalizzato si evita l'errore di accesso all'array.
+                },
+                labels: ['Falli', 'Gialli', 'Rossi', 'Rigori', 'Tempo Eff.'],
+                stroke: { width: 2 }, 
+                fill: { opacity: 0.25 }, 
+                markers: { size: 3, strokeWidth: 1 }, 
+                yaxis: { show: false, max: 100 },
+                xaxis: { labels: { style: { colors: ['#cbd5e1', '#cbd5e1', '#cbd5e1', '#cbd5e1', '#cbd5e1'], fontSize: '11px', fontFamily: 'JetBrains Mono' } } },
+                theme: { mode: 'dark', palette: 'palette1' }, 
+                legend: { position: 'bottom', labels: { colors: '#cbd5e1' } },
+                tooltip: { 
+                    theme: 'dark', 
+                    y: { 
+                        formatter: (val, { seriesIndex, dataPointIndex, w }) => {
+                            // Fix: Aggiungo un controllo di sicurezza per la serie
+                            const series = w.config.series[seriesIndex];
+                            if (series && series.raw && series.raw[dataPointIndex] !== undefined) {
+                                return series.raw[dataPointIndex] + (dataPointIndex === 4 ? " min" : "");
+                            }
+                            return val.toFixed(1); // Fallback sicuro
+                        }
+                    } 
+                }
+            };
+            
+            if(chartRadar) chartRadar.destroy();
+            
+            if (selectedRadarReferees.length === 0) {
+                 document.getElementById('chart-radar').innerHTML = '<p class="text-xs text-slate-500">Seleziona un arbitro per vedere il profilo.</p>';
+            } else {
+                 chartRadar = new ApexCharts(document.querySelector("#chart-radar"), radarOptions);
+                 chartRadar.render();
+            }
+        }
+        
+        // Ricalcola e riposiziona l'overlay ad ogni ridimensionamento
+        window.addEventListener('resize', debounceRenderAnalytics);
 
         // --- UI RENDER FUNCTIONS ---
         function updatePageTitleUI() {
             const el = document.getElementById('breadcrumb-current');
             const title = document.getElementById('page-title');
             if(currentView === 'stats') { el.innerText = "Overview"; title.innerText = "Statistiche Arbitrali"; }
+            else if(currentView === 'analytics') { el.innerText = "Visual"; title.innerText = "Analytics & Grafici"; }
             else if(currentView === 'playingTime') { el.innerText = "Performance"; title.innerText = "Tempo Effettivo"; }
+            else if(currentView === 'teams') { el.innerText = "Ranking"; title.innerText = "Classifiche Squadre"; }
             else { el.innerText = "Database"; title.innerText = "Archivio Partite"; }
         }
 
@@ -2329,172 +3295,186 @@ Di Marco	98,18`;
             thead.innerHTML = ''; tbody.innerHTML = ''; tfoot.innerHTML = '';
             
             const getSortIcon = (col) => sortColumn === col ? (sortDirection === 'asc' ? '<i class="fa-solid fa-sort-up ml-1 text-yellow-500"></i>' : '<i class="fa-solid fa-sort-down ml-1 text-yellow-500"></i>') : '';
-            const th = (lbl, col, cls='') => `<th class="cursor-pointer select-none hover:text-white transition-colors ${cls}" onclick="handleSort('${col}')">${lbl}${getSortIcon(col)}</th>`;
+            
+            // Tooltip mapping for Teams view
+            const tooltipMap = {
+                'matches': 'Partite giocate dalla squadra nella stagione selezionata.',
+                'avgFouls': 'Media falli fischiati nella partita (a favore/contro la squadra) per partita.',
+                'avgFoulsHome': 'Media falli a partita, considerando solo le partite in casa.',
+                'avgFoulsAway': 'Media falli a partita, considerando solo le partite in trasferta.',
+                'avgEffHome': 'Tempo effettivo medio delle partite casalinghe (in minuti e secondi).',
+                'avgEffAway': 'Tempo effettivo medio delle partite in trasferta (in minuti e secondi).',
+                'avgEff': 'Tempo effettivo medio totale (in minuti e secondi).'
+            };
+            
+            const th = (lbl, col, cls='', tooltip='') => {
+                const titleAttr = tooltip ? `title="${tooltip}"` : '';
+                return `<th class="cursor-pointer select-none hover:text-white transition-colors ${cls}" onclick="handleSort('${col}')" ${titleAttr}>
+                    <span class="flex items-center justify-center ${cls.includes('sticky-col') ? 'justify-start' : 'justify-center'}">
+                        ${lbl}${getSortIcon(col)}
+                    </span>
+                </th>`;
+            }
 
             if (currentView === 'stats') {
-                thead.innerHTML = `<tr>
-                    ${th('Arbitro', 'name', 'sticky-col')}
-                    ${th('Presenze', 'matches', 'text-center')}
-                    ${th('Falli/P', 'avgFouls', 'text-right')}
-                    ${th('Gialli Tot', 'yellows', 'text-center')}
-                    ${th('Gialli/P', 'avgYellows', 'text-right')}
-                    ${th('Rossi Tot', 'reds', 'text-center')}
-                    ${th('Rossi/P', 'avgReds', 'text-right')}
-                    ${th('Rigori/P', 'avgPens', 'text-right')}
-                </tr>`;
-
+                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Presenze', 'matches', 'text-center')}${th('Falli/P', 'avgFouls', 'text-right')}${th('Gialli Tot', 'yellows', 'text-center !text-yellow-500 font-bold')}${th('Gialli/P', 'avgYellows', 'text-right !text-yellow-500')}${th('Rossi Tot', 'reds', 'text-center !text-red-500 font-bold')}${th('Rossi/P', 'avgReds', 'text-right !text-red-500')}${th('Rigori/P', 'avgPens', 'text-right')}</tr>`;
                 let tM=0, tF=0, tY=0, tR=0, tP=0;
-                data.forEach((r, i) => {
-                    tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches;
-                    const row = document.createElement('tr');
-                    if(r.isInactive) row.classList.add('opacity-50', 'grayscale');
-                    row.innerHTML = `
-                        <td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td>
-                        <td class="text-center font-bold text-white text-base">${r.matches}</td>
-                        <td class="text-right text-slate-300">${r.avgFouls.toFixed(2)}</td>
-                        <td class="text-center text-yellow-500 font-bold">${r.yellows}</td>
-                        <td class="text-right text-yellow-500">${r.avgYellows.toFixed(2)}</td>
-                        <td class="text-center text-red-500 font-bold">${r.reds}</td>
-                        <td class="text-right text-red-500">${r.avgReds.toFixed(2)}</td>
-                        <td class="text-right text-slate-400">${r.avgPens.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                tfoot.innerHTML = `<tr>
-                    <td class="sticky-col p-3 border-t border-slate-700">TOTALE</td>
-                    <td class="text-center p-3 text-white">${tM}</td>
-                    <td class="text-right p-3">${(tF/tM).toFixed(2)}</td>
-                    <td class="text-center p-3 text-yellow-500">${tY}</td>
-                    <td class="text-right p-3 text-yellow-500">${(tY/tM).toFixed(2)}</td>
-                    <td class="text-center p-3 text-red-500">${tR}</td>
-                    <td class="text-right p-3 text-red-500">${(tR/tM).toFixed(2)}</td>
-                    <td class="text-right p-3">${(tP/tM).toFixed(2)}</td>
-                </tr>`;
+                data.forEach((r) => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches; tbody.innerHTML += `<tr class="${r.isInactive?'opacity-50 grayscale':''}"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center font-bold text-white text-base">${r.matches}</td><td class="text-right text-slate-300">${r.avgFouls.toFixed(2)}</td><td class="text-center !text-yellow-500 font-bold">${r.yellows}</td><td class="text-right !text-yellow-500">${r.avgYellows.toFixed(2)}</td><td class="text-center !text-red-500 font-bold">${r.reds}</td><td class="text-right !text-red-500">${r.avgReds.toFixed(2)}</td><td class="text-right text-slate-400">${r.avgPens.toFixed(2)}</td></tr>`; });
+                tfoot.innerHTML = `<tr><td class="sticky-col p-3 border-t border-slate-700">TOTALE</td><td class="text-center p-3 text-white">${tM}</td><td class="text-right p-3">${(tF/tM).toFixed(2)}</td><td class="text-center p-3 text-yellow-500 font-bold">${tY}</td><td class="text-right p-3 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-3 text-red-500 font-bold">${tR}</td><td class="text-right p-3 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-right p-3">${(tP/tM).toFixed(2)}</td></tr>`;
             } 
             else if (currentView === 'playingTime') {
                 const showTot = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
-                thead.innerHTML = `<tr>
-                    ${th('Arbitro', 'name', 'sticky-col')}
-                    ${th('Match', 'matches', 'text-center')}
-                    ${th('Media T.E.', 'avgEffSec', 'text-right text-green-400')}
-                    ${showTot ? th('Media T.Tot', 'avgTotSec', 'text-right text-blue-400') : ''}
-                    <th class="w-10"></th>
-                </tr>`;
-                
-                let gM=0, gEff=0, cEff=0, gTot=0, cTot=0;
-                data.forEach((r, i) => {
-                    gM+=r.matches; gEff+=r.totalEffectiveSec; cEff+=r.validEffMatches; gTot+=r.totalTotalSec; cTot+=r.validTotMatches;
-                    const row = document.createElement('tr');
-                    row.className = 'cursor-pointer group';
-                    row.onclick = () => toggleDetails(i);
-                    row.innerHTML = `
-                        <td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td>
-                        <td class="text-center text-white">${r.matches}</td>
-                        <td class="text-right font-bold text-green-400 font-mono text-base">${formatSecondsToTime(r.avgEffSec)}</td>
-                        ${showTot ? `<td class="text-right font-medium text-blue-400 font-mono">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}
-                        <td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td>
-                    `;
-                    tbody.appendChild(row);
-                    const dRow = document.createElement('tr');
-                    dRow.id = `details-${i}`; dRow.className = 'hidden bg-slate-900/50';
-                    const colSpan = showTot ? 5 : 4;
-                    const matchesHtml = r.matchList.map(m => `
-                        <div class="flex justify-between items-center py-2 px-4 border-b border-slate-800/50 text-xs hover:bg-slate-800">
-                            <span class="text-white font-bold w-1/3">${m.match}</span>
-                            <span class="text-slate-500 font-mono">${m.season}</span>
-                            <span class="font-mono ${m.effectiveTimeSec ? 'text-green-400' : 'text-slate-600'}">${formatSecondsToTime(m.effectiveTimeSec)}</span>
-                            ${showTot ? `<span class="font-mono text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span>` : ''}
-                        </div>
-                    `).join('');
-                    dRow.innerHTML = `<td colspan="${colSpan}" class="p-0 border-b border-slate-800"><div class="py-2 bg-[#0b1120] shadow-inner">${matchesHtml}</div></td>`;
-                    tbody.appendChild(dRow);
+                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Media T.E.', 'avgEffSec', 'text-right text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-right text-blue-400') : ''}<th class="w-10"></th></tr>`;
+                data.forEach((r, i) => { 
+                    tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center text-white">${r.matches}</td><td class="text-right font-bold text-green-400 font-mono text-base">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-right font-medium text-blue-400 font-mono">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
+                    const matchesHtml = r.matchList.map(m => `<div class="flex justify-between items-center py-2 px-4 border-b border-slate-800/50 text-xs hover:bg-slate-800"><span class="text-white font-bold w-1/3">${m.match}</span><span class="text-slate-500 font-mono">${m.season}</span><span class="font-mono ${m.effectiveTimeSec ? 'text-green-400' : 'text-slate-600'}">${formatSecondsToTime(m.effectiveTimeSec)}</span>${showTot ? `<span class="font-mono text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span>` : ''}</div>`).join('');
+                    tbody.innerHTML += `<tr id="details-${i}" class="hidden bg-slate-900/50"><td colspan="${showTot ? 5 : 4}" class="p-0 border-b border-slate-800"><div class="py-2 bg-[#0b1120] shadow-inner">${matchesHtml}</div></td></tr>`;
                 });
-                const avgGEff = cEff ? gEff/cEff : 0; const avgGTot = cTot ? gTot/cTot : 0;
-                tfoot.innerHTML = `<tr><td class="sticky-col p-3 border-t border-slate-700">MEDIA LEGA</td><td class="text-center p-3">${gM}</td><td class="text-right p-3 text-green-400">${formatSecondsToTime(avgGEff)}</td>${showTot ? `<td class="text-right p-3 text-blue-400">${formatSecondsToTime(avgGTot)}</td>` : ''}<td></td></tr>`;
-            } else { // Matches
+            } else if (currentView === 'matches') {
+                // Separated rendering logic for paging
+                renderMatchesHeader(thead, th, getSortIcon);
+                renderMatchesRows(data, true); // Pass true to clear tbody first
+                renderMatchesFooter(tfoot, data.length);
+                updateLoadMoreButton();
+            } else if (currentView === 'teams') {
+                // Squadra, Partite, Falli Tot, Falli Casa, Falli Trasf, T.Eff. Casa, T.Eff. Trasf, T.Eff. Medio.
+                
                 thead.innerHTML = `<tr>
-                    ${th('Partita', 'match', 'sticky-col')}
-                    ${th('Stagione', 'season', 'text-center')}
-                    ${th('Tempo Tot', 'totalTimeSec', 'text-right text-blue-400')}
-                    ${th('Tempo Eff', 'effectiveTimeSec', 'text-right text-green-400')}
-                    ${th('% Eff', 'ratio', 'text-center')}
-                    ${th('Falli', 'fouls', 'text-center text-red-400')}
-                </tr>`;
+                    ${th('Squadra', 'name', 'sticky-col')}
+                    ${th('Partite', 'matches', 'text-center', tooltipMap.matches)}
+                    ${th('Falli Tot', 'avgFouls', 'text-right text-red-400', tooltipMap.avgFouls)}
+                    ${th('Falli Casa', 'avgFoulsHome', 'text-right text-slate-400', tooltipMap.avgFoulsHome)}
+                    ${th('Falli Trasf', 'avgFoulsAway', 'text-right text-slate-400', tooltipMap.avgFoulsAway)}
+                    ${th('T.Eff. Casa', 'avgEffHome', 'text-right text-green-400', tooltipMap.avgEffHome)}
+                    ${th('T.Eff. Trasf', 'avgEffAway', 'text-right text-green-400', tooltipMap.avgEffAway)}
+                    ${th('T.Eff. Medio', 'avgEff', 'text-right text-green-400 font-bold', tooltipMap.avgEff)}
+                    </tr>`;
                 
-                let tF=0, cnt=0, tTot=0, tEff=0, tRat=0, cTot=0, cEff=0, cRat=0;
-                data.forEach((r, i) => {
-                    tF+=r.fouls; cnt++;
-                    if (r.totalTimeSec) { tTot += r.totalTimeSec; cTot++; }
-                    if (r.effectiveTimeSec) { tEff += r.effectiveTimeSec; cEff++; }
-                    if (r.ratio) { tRat += r.ratio; cRat++; }
-
-                    const row = document.createElement('tr');
-                    const ratioColor = r.ratio > 60 ? 'text-green-400' : (r.ratio < 50 ? 'text-red-400' : 'text-yellow-500');
-                    row.innerHTML = `
-                        <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none" title="${r.match}">${r.match}</td>
-                        <td class="text-center text-slate-500 text-xs">${r.season}</td>
-                        <td class="text-right text-blue-400 font-mono">${formatSecondsToTime(r.totalTimeSec)}</td>
-                        <td class="text-right text-green-400 font-mono font-bold">${formatSecondsToTime(r.effectiveTimeSec)}</td>
-                        <td class="text-center font-mono font-bold ${ratioColor}">${r.ratio ? r.ratio + '%' : '-'}</td>
-                        <td class="text-center font-bold text-white bg-slate-800/30 rounded">${r.fouls}</td>
-                    `;
-                    tbody.appendChild(row);
+                data.forEach(t => {
+                    tbody.innerHTML += `<tr>
+                        <td class="sticky-col border-b border-slate-800 font-bold text-white">${t.name}</td>
+                        <td class="text-center text-slate-400">${t.matches}</td>
+                        <td class="text-right font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
+                        <td class="text-right text-slate-400">${t.avgFoulsHome.toFixed(1)}</td>
+                        <td class="text-right text-slate-400">${t.avgFoulsAway.toFixed(1)}</td>
+                        <td class="text-right font-mono text-green-400">${formatSecondsToTime(t.avgEffHome)}</td>
+                        <td class="text-right font-mono text-green-400">${formatSecondsToTime(t.avgEffAway)}</td>
+                        <td class="text-right font-mono font-bold text-green-400">${formatSecondsToTime(t.avgEff)}</td>
+                    </tr>`;
                 });
-                
-                const avgTot = cTot ? formatSecondsToTime(tTot/cTot) : '-';
-                const avgEff = cEff ? formatSecondsToTime(tEff/cEff) : '-';
-                const avgRat = cRat ? (tRat/cRat).toFixed(1) + '%' : '-';
-                const avgFouls = cnt ? (tF/cnt).toFixed(1) : 0;
-
-                tfoot.innerHTML = `<tr>
-                    <td class="sticky-col p-3 border-t border-slate-700">MEDIA (${cnt})</td>
-                    <td></td>
-                    <td class="text-right p-3 text-blue-300">${avgTot}</td>
-                    <td class="text-right p-3 text-green-300">${avgEff}</td>
-                    <td class="text-center p-3 text-slate-300">${avgRat}</td>
-                    <td class="text-center p-3 text-white">${avgFouls}</td>
-                </tr>`;
             }
+        }
+        
+        function renderMatchesHeader(thead, th, getSortIcon) {
+             thead.innerHTML = `<tr>${th('Partita', 'match', 'sticky-col')}${th('Stagione', 'season', 'text-center')}${th('Tempo Tot', 'totalTimeSec', 'text-right text-blue-400')}${th('Tempo Eff', 'effectiveTimeSec', 'text-right text-green-400')}${th('% Eff', 'ratio', 'text-center')}${th('Falli', 'fouls', 'text-center text-red-400')}</tr>`;
+        }
+
+        function renderMatchesRows(data, clearTbody = true) {
+            const tbody = document.getElementById('tableBody');
+            if (clearTbody) tbody.innerHTML = '';
+            
+            // Per il calcolo dei colori, usiamo tutti i dati filtrati (matchesDataAll)
+            const validTots = matchesDataAll.map(d=>d.totalTimeSec).filter(v=>!isNaN(v));
+            const validEffs = matchesDataAll.map(d=>d.effectiveTimeSec).filter(v=>!isNaN(v));
+            const validRatios = matchesDataAll.map(d=>d.ratio).filter(v=>!isNaN(v));
+            
+            const minTot = Math.min(...validTots); const maxTot = Math.max(...validTots);
+            const minEff = Math.min(...validEffs); const maxEff = Math.max(...validEffs);
+            const minRat = Math.min(...validRatios); const maxRat = Math.max(...validRatios);
+
+            let rowsHtml = '';
+            data.forEach((r) => { 
+                const colTot = getColorForValue(r.totalTimeSec, minTot, maxTot, true);
+                const colEff = getColorForValue(r.effectiveTimeSec, minEff, maxEff);
+                const colRat = getColorForValue(r.ratio, minRat, maxRat);
+
+                rowsHtml += `<tr>
+                    <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none" title="${r.match}">${r.match}</td>
+                    <td class="text-center text-slate-500 text-xs">${r.season}</td>
+                    <td class="text-right font-mono" style="color: ${colTot}">${formatSecondsToTime(r.totalTimeSec)}</td>
+                    <td class="text-right font-mono font-bold" style="color: ${colEff}">${formatSecondsToTime(r.effectiveTimeSec)}</td>
+                    <td class="text-center font-mono font-bold" style="color: ${colRat}">${r.ratio ? r.ratio.toFixed(1) + '%' : '-'}</td>
+                    <td class="text-center font-bold text-white bg-slate-800/30 rounded">${r.fouls}</td>
+                </tr>`;
+            });
+            tbody.innerHTML += rowsHtml;
+        }
+
+        function renderMatchesFooter(tfoot, dataLength) {
+            tfoot.innerHTML = '';
+            
+            const dataToCalculate = matchesDataAll;
+            let sumTot=0, countTot=0, sumEff=0, countEff=0, sumRat=0, countRat=0, sumFouls=0, countFouls=0, countMatches=dataToCalculate.length;
+
+            dataToCalculate.forEach((r) => { 
+                if(!isNaN(r.totalTimeSec)) { sumTot+=r.totalTimeSec; countTot++; }
+                if(!isNaN(r.effectiveTimeSec)) { sumEff+=r.effectiveTimeSec; countEff++; }
+                if(!isNaN(r.ratio)) { sumRat+=r.ratio; countRat++; }
+                if(!isNaN(r.fouls)) { sumFouls+=r.fouls; countFouls++; }
+            });
+
+            if(countMatches > 0) {
+                 const avgTot = countTot > 0 ? sumTot / countTot : 0;
+                 const avgEff = countEff > 0 ? sumEff / countEff : 0;
+                 const avgRat = countRat > 0 ? sumRat / countRat : 0;
+                 const avgFouls = countFouls > 0 ? sumFouls / countFouls : 0;
+                
+                 // Container per il pulsante "Carica altro" PRIMA della riga medie
+                 const loadMoreRow = document.createElement('tr');
+                 loadMoreRow.innerHTML = `<td colspan="6" class="p-3 text-center" id="loadMoreContainer"></td>`;
+                 tfoot.appendChild(loadMoreRow);
+
+                 tfoot.innerHTML += `<tr class="avg-row">
+                    <td class="sticky-col">MEDIE (${countMatches} partite)</td>
+                    <td class="text-center">-</td>
+                    <td class="text-right font-mono text-blue-300">${formatSecondsToTime(avgTot)}</td>
+                    <td class="text-right font-mono text-green-300">${formatSecondsToTime(avgEff)}</td>
+                    <td class="text-center font-mono text-yellow-300">${avgRat.toFixed(1)}%</td>
+                    <td class="text-center text-white">${avgFouls.toFixed(1)}</td>
+                 </tr>`;
+            } else {
+                 // Container per il pulsante "Carica altro"
+                tfoot.innerHTML += `<tr><td colspan="6" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
+            }
+
         }
 
         function updateKPIDashboard(data) {
-            const v1 = document.getElementById('kpi-value-1');
-            const v2 = document.getElementById('kpi-value-2');
-            const v3 = document.getElementById('kpi-value-3');
-            const v4 = document.getElementById('kpi-value-4');
-            const l1 = document.getElementById('kpi-label-1');
-            const l2 = document.getElementById('kpi-label-2');
-            const l3 = document.getElementById('kpi-label-3');
-            const l4 = document.getElementById('kpi-label-4');
+            const container = document.getElementById('kpi-dashboard');
+            
+            if (currentView === 'teams' || currentView === 'analytics') {
+                container.classList.add('opacity-0', 'h-0', 'overflow-hidden');
+                container.classList.remove('h-auto', 'opacity-100');
+                return;
+            } else {
+                container.classList.remove('opacity-0', 'h-0', 'overflow-hidden');
+                container.classList.add('h-auto', 'opacity-100');
+            }
 
-            if(!v1) return;
-            const count = data.length;
+            const v1 = document.getElementById('kpi-value-1'); const v2 = document.getElementById('kpi-value-2'); const v3 = document.getElementById('kpi-value-3'); const v4 = document.getElementById('kpi-value-4');
+            const l1 = document.getElementById('kpi-label-1'); const l2 = document.getElementById('kpi-label-2'); const l3 = document.getElementById('kpi-label-3'); const l4 = document.getElementById('kpi-label-4');
+            if(!v1) return; const count = data.length;
 
             if (currentView === 'stats') {
-                let tM=0, tF=0, tY=0, tR=0;
-                data.forEach(r => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; });
-                l1.innerText = "Arbitri"; v1.innerText = count;
-                l2.innerText = "Falli P/P"; v2.innerText = tM ? (tF/tM).toFixed(2) : '-';
-                l3.innerText = "Gialli / P"; v3.innerText = tM ? (tY/tM).toFixed(2) : '-';
-                l4.innerText = "Rossi / P"; v4.innerText = tM ? (tR/tM).toFixed(2) : '-';
+                let tM=0, tF=0, tY=0, tR=0; data.forEach(r => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; });
+                l1.innerText = "Arbitri"; v1.innerText = count; l2.innerText = "Falli P/P"; v2.innerText = tM ? (tF/tM).toFixed(2) : '-'; l3.innerText = "Gialli / P"; v3.innerText = tM ? (tY/tM).toFixed(2) : '-'; l4.innerText = "Rossi / P"; v4.innerText = tM ? (tR/tM).toFixed(2) : '-';
             } else if (currentView === 'playingTime') {
-                let tEff=0, cEff=0, tTot=0, cTot=0;
-                data.forEach(r => { if(r.avgEffSec){ tEff+=r.avgEffSec; cEff++; } if(r.avgTotSec){ tTot+=r.avgTotSec; cTot++; } });
-                l1.innerText = "Arbitri"; v1.innerText = count;
-                l2.innerText = "Partite"; v2.innerText = data.reduce((a,b)=>a+b.matches,0);
-                l3.innerText = "Media T.E."; v3.innerText = cEff ? formatSecondsToTime(tEff/cEff) : '-';
-                l4.innerText = "Media Tot"; v4.innerText = cTot ? formatSecondsToTime(tTot/cTot) : '-';
-            } else {
-                let tF=0, tE=0, cE=0, tTot=0, cTot=0;
-                data.forEach(r => { 
-                    tF+=r.fouls; 
-                    if(r.effectiveTimeSec){ tE+=r.effectiveTimeSec; cE++; }
-                    if(r.totalTimeSec){ tTot+=r.totalTimeSec; cTot++; }
+                let tEff=0, cEff=0, tTot=0, cTot=0; data.forEach(r => { if(r.avgEffSec){ tEff+=r.avgEffSec; cEff++; } if(r.avgTotSec){ tTot+=r.avgTotSec; cTot++; } });
+                l1.innerText = "Arbitri"; v1.innerText = count; l2.innerText = "Partite"; v2.innerText = data.reduce((a,b)=>a+b.matches,0); l3.innerText = "Media T.E."; v3.innerText = cEff ? formatSecondsToTime(tEff/cEff) : '-'; l4.innerText = "Media Tot"; v4.innerText = cTot ? formatSecondsToTime(tTot/cTot) : '-';
+            } else if (currentView === 'matches') {
+                const matchData = matchesDataAll;
+                let tM=matchData.length, sumTot=0, countTot=0, sumEff=0, countEff=0, sumFouls=0;
+                matchData.forEach(r => { 
+                    if (!isNaN(r.totalTimeSec)) { sumTot += r.totalTimeSec; countTot++; }
+                    if (!isNaN(r.effectiveTimeSec)) { sumEff += r.effectiveTimeSec; countEff++; }
+                    sumFouls += r.fouls; 
                 });
-                l1.innerText = "Partite Vis."; v1.innerText = count;
-                l2.innerText = "Media T. Tot"; v2.innerText = cTot ? formatSecondsToTime(tTot/cTot) : '-';
-                l3.innerText = "Media T. Eff"; v3.innerText = cE ? formatSecondsToTime(tE/cE) : '-';
-                l4.innerText = "Falli / P"; v4.innerText = count ? (tF/count).toFixed(2) : '-';
+                
+                // Card order: Partite -> Tempo Tot -> Tempo Eff -> Falli/P
+                l1.innerText = "Partite Tot"; v1.innerText = tM;
+                l2.innerText = "Tempo Tot Medio"; v2.innerText = countTot ? formatSecondsToTime(sumTot/countTot) : '-';
+                l3.innerText = "Tempo Eff Medio"; v3.innerText = countEff ? formatSecondsToTime(sumEff/countEff) : '-';
+                l4.innerText = "Falli / P"; v4.innerText = tM ? (sumFouls/tM).toFixed(2) : '-';
             }
         }
 
@@ -2506,23 +3486,44 @@ Di Marco	98,18`;
         }
 
         function handleSort(col) {
+            if (currentView === 'matches') resetMatchesPaging();
+
             if (sortColumn === col) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
             else { sortColumn = col; sortDirection = 'desc'; }
+
+            // Nuovi default di ordinamento per la scheda teams dopo la rimozione di contactIndex
+            if(currentView === 'teams' && col === 'name') sortDirection = 'asc';
+            if(currentView === 'teams' && col === 'matches') sortDirection = 'desc';
+
             aggregateData();
         }
 
         function switchView(view) {
+            // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
+            if (currentView !== view) {
+                activeSeasons = ['2025-26'];
+                // Reset analytics filter to avoid confusing behavior on switch
+                analyticsMinMatchesFilter = 0;
+                const analyticsMinMatchesEl = document.getElementById('analyticsMinMatches');
+                if(analyticsMinMatchesEl) analyticsMinMatchesEl.value = 0;
+                const analyticsMinMatchesValueEl = document.getElementById('analyticsMinMatchesValue');
+                if(analyticsMinMatchesValueEl) analyticsMinMatchesValueEl.innerText = 0;
+            }
+            
             currentView = view;
             
-            ['nav-stats', 'nav-time', 'nav-matches'].forEach(id => {
+            resetMatchesPaging(); 
+
+            // Update Active State (Desktop)
+            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     if(id === `nav-${view === 'playingTime' ? 'time' : view}`) el.classList.add('active');
                     else el.classList.remove('active');
                 }
             });
-            
-             ['mob-nav-stats', 'mob-nav-time', 'mob-nav-matches'].forEach(id => {
+            // Mobile State
+             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
                      if(id === `mob-nav-${view === 'playingTime' ? 'time' : view}`) {
@@ -2533,43 +3534,49 @@ Di Marco	98,18`;
                  }
             });
 
-            // Update Search Placeholder & Filter Visibility Logic
             const searchInput = document.getElementById('searchInput');
-            const statsControls = document.getElementById('stats-controls');
-            const minMatchesContainer = document.getElementById('min-matches-container');
-            const activeFilterContainer = document.getElementById('active-filter-container');
-            const matchesFiltersContainer = document.getElementById('matches-filters-container');
+            const tableView = document.getElementById('table-view');
+            const analyticsView = document.getElementById('analytics-view');
 
-            if(view === 'playingTime') {
-                statsControls.classList.add('hidden');
-                searchInput.placeholder = 'Cerca arbitro...';
+            if (view === 'analytics') {
+                if(tableView) tableView.classList.add('hidden');
+                if(analyticsView) analyticsView.classList.remove('hidden');
             } else {
-                statsControls.classList.remove('hidden');
-                
-                if(view === 'matches') {
-                    searchInput.placeholder = 'Cerca squadra o partita...';
-                    minMatchesContainer.classList.add('hidden');
-                    activeFilterContainer.classList.add('hidden');
-                    matchesFiltersContainer.classList.remove('hidden');
-                } else if(view === 'stats') {
-                    searchInput.placeholder = 'Cerca arbitro...';
-                    minMatchesContainer.classList.remove('hidden');
-                    activeFilterContainer.classList.remove('hidden');
-                    matchesFiltersContainer.classList.add('hidden');
-                }
+                if(tableView) tableView.classList.remove('hidden');
+                if(analyticsView) analyticsView.classList.add('hidden');
             }
-            searchInput.value = '';
-            
-            // Set Default Sorts
-            if(view === 'stats') { sortColumn = 'matches'; sortDirection = 'desc'; }
+
+            // Update search placeholder based on view
+            if(searchInput) {
+                 if(view === 'teams') searchInput.placeholder = 'Cerca squadra...';
+                 else if(view === 'matches') searchInput.placeholder = 'Cerca squadra o partita...';
+                 else searchInput.placeholder = 'Cerca arbitro...';
+                 searchInput.value = '';
+            }
+
+            // Set default sort columns
+            if(view === 'stats' || view === 'analytics') { sortColumn = 'matches'; sortDirection = 'desc'; }
             if(view === 'playingTime') { sortColumn = 'avgEffSec'; sortDirection = 'desc'; }
             if(view === 'matches') { sortColumn = 'match'; sortDirection = 'asc'; }
+            if(view === 'teams') { sortColumn = 'matches'; sortDirection = 'desc'; } // Nuovo default per squadre
 
             updateSeasonButtonsUI(); 
-            aggregateData();
+            aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
         }
 
         function toggleSeason(s) {
+            resetMatchesPaging();
+
+            // Blocco le stagioni SOON solo se la vista attuale è una di quelle con il blocco attivo
+            const viewsToBlockSoon = ['playingTime', 'matches', 'teams']; 
+            const isBlockedView = viewsToBlockSoon.includes(currentView);
+            const isSoonSeason = SOON_SEASONS.includes(s);
+
+            if (isBlockedView && isSoonSeason && s !== '2024-25' && !activeSeasons.includes(s)) {
+                // Previene la selezione di stagioni SOON che non sono 2024-25 in viste bloccate
+                return;
+            }
+
             if(activeSeasons.includes(s)) activeSeasons = activeSeasons.filter(x => x !== s);
             else activeSeasons.push(s);
             updateSeasonButtonsUI();
@@ -2577,6 +3584,8 @@ Di Marco	98,18`;
         }
 
         function toggleAllSeasons() {
+            resetMatchesPaging();
+            
             const all = ['2025-26', '2024-25']; 
             activeSeasons = activeSeasons.length === all.length ? [] : [...all];
             updateSeasonButtonsUI();
@@ -2585,26 +3594,62 @@ Di Marco	98,18`;
 
         function updateSeasonButtonsUI() {
             const allSeasons = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
+            // Viste in cui i dati storici sono "SOON" e quindi disabilitati (a meno che non siano stats/analytics)
+            const viewsToBlockSoon = ['playingTime', 'matches', 'teams']; 
+            const isBlockedView = viewsToBlockSoon.includes(currentView);
+
             allSeasons.forEach(s => {
                 const btn = document.getElementById(`btn-${s}`);
                 if(!btn) return;
                 const icon = btn.querySelector('.check-icon');
                 const soonLabel = btn.querySelector('.coming-soon-label');
                 const isSoonSeason = SOON_SEASONS.includes(s);
-                if (isSoonSeason && (currentView === 'playingTime' || currentView === 'matches')) {
-                     if (soonLabel) soonLabel.classList.remove('hidden');
+                const is2425 = s === '2024-25';
+                const isSelected = activeSeasons.includes(s); 
+
+                // Gestione Visibilità SOON
+                if (isSoonSeason && soonLabel) {
+                    if (isBlockedView) {
+                         // CORREZIONE 2: Rende la label visibile con opacità ridotta, ma non 'hidden'
+                         soonLabel.style.display = 'inline-block';
+                         soonLabel.style.opacity = '0.9';
+                    } else {
+                         soonLabel.style.display = 'none';
+                    }
                 } else {
-                     if (soonLabel) soonLabel.classList.add('hidden');
+                    if (soonLabel) soonLabel.style.display = 'none'; 
+                }
+                
+                // Gestione Disabilitazione / Opacità
+                const shouldBeBlocked = isBlockedView && isSoonSeason && !is2425;
+
+                if (shouldBeBlocked) {
+                    btn.disabled = true;
+                    // Rimuovo l'opacità dal pulsante stesso per non oscurare troppo la label SOON
+                    btn.classList.add('cursor-not-allowed', 'text-slate-500'); 
+                    btn.classList.remove('opacity-40', 'text-slate-400', 'text-white', 'text-yellow-500');
+                    if(icon) icon.classList.add('opacity-0');
+                } else {
+                    // SBLOCCA: Rimuovi disabilitazione e opacità
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-40', 'cursor-not-allowed', 'text-slate-500');
                 }
 
-                if(activeSeasons.includes(s)) {
+                // Gestione Active State e Spunta Gialla
+                if(isSelected) {
                     btn.classList.add('active');
-                    if(icon) icon.classList.remove('opacity-0');
-                    if(icon) icon.classList.add('opacity-100');
+                    // La spunta deve essere visibile solo se selezionata
+                    if(icon) {
+                        icon.classList.remove('opacity-0');
+                        icon.classList.add('opacity-100');
+                    }
                 } else {
                     btn.classList.remove('active');
-                    if(icon) icon.classList.remove('opacity-100');
-                    if(icon) icon.classList.add('opacity-0');
+                    // La spunta deve essere invisibile se non selezionata
+                    if(icon) {
+                        icon.classList.remove('opacity-100');
+                        icon.classList.add('opacity-0');
+                    }
                 }
             });
         }
@@ -2620,7 +3665,7 @@ Di Marco	98,18`;
             minMatchesFilter = parseInt(val);
             document.getElementById('minMatchesValue').innerText = val;
             document.getElementById('minMatches').value = val;
-            aggregateData();
+            debounceAggregate(); // Usa debounce
         }
 
         function toggleInactiveRefs() {
@@ -2628,7 +3673,7 @@ Di Marco	98,18`;
             aggregateData();
         }
         
-        function handleSearch() { aggregateData(); }
+        function handleSearch() { debounceAggregate(); }
         function renderStatsInsights(data) {}
         function renderMatchesInsights(data) {}
         function toggleDesignationsModal(shouldOpen) {
