@@ -184,6 +184,24 @@
         .modal-content { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         #designations-modal.open .modal-content { transform: translateX(0); }
         
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            .pro-table th, .pro-table td {
+                padding: 10px 8px; /* Reduced Padding for Mobile */
+                font-size: 0.75rem; /* Smaller Font for Mobile */
+            }
+            .pro-table th {
+                font-size: 0.65rem;
+            }
+            .pro-card {
+                padding: 12px; /* Less padding in cards */
+            }
+            main {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        
         /* Utilities */
         .text-xxs { font-size: 0.65rem; line-height: 1rem; }
     </style>
@@ -313,7 +331,7 @@
                     <span class="mx-2">/</span>
                     <span class="text-slate-300 font-medium" id="breadcrumb-current">Overview</span>
                 </nav>
-                <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight" id="page-title">Statistiche Arbitrali</h1>
+                <h1 class="text-xl sm:text-3xl font-bold text-white tracking-tight" id="page-title">Statistiche Arbitrali</h1>
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded border border-slate-800">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -462,25 +480,25 @@
                     <div class="pro-card rounded-lg p-4 border-l-2 border-slate-600">
                         <span class="text-xxs font-bold text-slate-500 uppercase tracking-wider block mb-1" id="kpi-label-1">Record Totali</span>
                         <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-mono font-bold text-white" id="kpi-value-1">-</span>
+                            <span class="text-xl sm:text-2xl font-mono font-bold text-white" id="kpi-value-1">-</span>
                         </div>
                     </div>
                     <div class="pro-card rounded-lg p-4 border-l-2 border-yellow-500">
                         <span class="text-xxs font-bold text-slate-500 uppercase tracking-wider block mb-1" id="kpi-label-2">Media Falli</span>
                         <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-mono font-bold text-white" id="kpi-value-2">-</span>
+                            <span class="text-xl sm:text-2xl font-mono font-bold text-white" id="kpi-value-2">-</span>
                         </div>
                     </div>
                     <div class="pro-card rounded-lg p-4 border-l-2 border-green-500">
                         <span class="text-xxs font-bold text-slate-500 uppercase tracking-wider block mb-1" id="kpi-label-3">Gialli / P</span>
                         <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-mono font-bold text-white" id="kpi-value-3">-</span>
+                            <span class="text-xl sm:text-2xl font-mono font-bold text-white" id="kpi-value-3">-</span>
                         </div>
                     </div>
                     <div class="pro-card rounded-lg p-4 border-l-2 border-blue-500">
                         <span class="text-xxs font-bold text-slate-500 uppercase tracking-wider block mb-1" id="kpi-label-4">Rossi / P</span>
                         <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-mono font-bold text-white" id="kpi-value-4">-</span>
+                            <span class="text-xl sm:text-2xl font-mono font-bold text-white" id="kpi-value-4">-</span>
                         </div>
                     </div>
                 </div>
@@ -2117,9 +2135,10 @@ Di Marco	98,18`;
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
+            // MODIFICATO: Nasconde il nome su mobile (hidden sm:inline) per risparmiare spazio
             return `<div class="flex items-center truncate">
-                        <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs">${firstname.toLowerCase()}</span> 
-                        <span class="text-white font-bold uppercase tracking-wide text-sm">${surname}</span>
+                        <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline">${firstname.toLowerCase()}</span> 
+                        <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm">${surname}</span>
                     </div>`;
         }
 
