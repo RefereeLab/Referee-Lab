@@ -63,22 +63,6 @@
     </script>
 
     <style>
-.overlay-quadranti {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.overlay-quadranti .quad {
-  position: absolute;
-  border-radius: 4px;
-}
-
-
         /* Base Reset & Typography */
         html, body { overflow-x: hidden; background-color: #020617; color: #cbd5e1; }
         
@@ -361,7 +345,7 @@
                  <div class="pro-card rounded-lg p-4 border-l-4 border-yellow-500">
                     <div class="flex justify-between items-start mb-3">
                         <div>
-                            <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Turno Corrente</span>
+                            <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Giornata in corso</span>
                             <span class="text-lg font-bold text-white">13ª Giornata</span>
                         </div>
                         <span class="bg-red-500/10 text-red-500 text-[10px] px-2 py-0.5 rounded border border-red-500/20 font-bold uppercase animate-flash">Live</span>
@@ -371,21 +355,33 @@
                         <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
                             <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
                                 <span>MILAN - JUVENTUS</span>
-                                <span class="text-slate-500">SAB 18:00</span>
+                                <span class="text-slate-500">VEN 20:45</span>
                             </div>
                             <div class="flex justify-between items-center text-xs mb-1">
                                 <span class="text-slate-500 uppercase w-8">Arb</span>
-                                <span class="text-green-400 font-mono font-bold">CHIFFI</span>
+                                <span class="text-green-400 font-mono font-bold">MARCHETTI</span>
                             </div>
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-500 uppercase w-8">Var</span>
-                                <span class="text-slate-300 font-mono">MAZZOLENI</span>
+                                <span class="text-slate-300 font-mono">GHERSINI</span>
                             </div>
                         </div>
                         
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50 opacity-60">
-                             <div class="text-center text-xs text-slate-500 py-2 italic">Caricamento altre partite...</div>
+                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
+                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
+                                <span>MILAN - JUVENTUS</span>
+                                <span class="text-slate-500">VEN 20:45</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="text-slate-500 uppercase w-8">Arb</span>
+                                <span class="text-green-400 font-mono font-bold">MARCHETTI</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-500 uppercase w-8">Var</span>
+                                <span class="text-slate-300 font-mono">GHERSINI</span>
+                            </div>
                         </div>
+
                     </div>
                  </div>
             </div>
@@ -555,13 +551,13 @@
                 </div>
 
                 <!-- Filters Module -->
-                <div id="stats-controls" class="pro-card rounded-lg p-4 space-y-4">
+                <div id="stats-controls" class="pro-card rounded-lg p-4 space-y-2">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">Filtri Dati</h3>
                     
                     <!-- Min Matches Filter (STATS) -->
                     <div id="min-matches-container">
                         <div class="flex justify-between items-center mb-2">
-                            <label class="text-xs text-slate-400">Min. Presenze</label>
+                            <label class="text-xs text-slate-400">Presenze minime</label>
                             <span id="minMatchesValue" class="text-xs font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
                             <!-- Mobile mirror -->
                             <span id="minMatchesValue_mobile" class="hidden">0</span>
@@ -809,104 +805,111 @@
                         
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>COMO - SASSUOLO</span>
+                                <span class="text-[10px] text-slate-500">ven 20:45</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                            <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
-                            </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Marchetti</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Ghersini</span>
                             </div>
                         </div>
 
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>GENOA - VERONA</span>
+                                <span class="text-[10px] text-slate-500">sab 15:00</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
-                            </div>
-                        </div>
-                        <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                            <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
-                            </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Fabbri</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Mazzoleni</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>PARMA - UDINESE</span>
+                                <span class="text-[10px] text-slate-500">sab 15:00</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Piccinini</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Prontera</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>JUVENTUS - CAGLIARI</span>
+                                <span class="text-[10px] text-slate-500">sab 18:00</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Crezzini</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Di Bello</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>MILAN - LAZIO</span>
+                                <span class="text-[10px] text-slate-500">sab 20:45</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Collu</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Di Paolo</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>LECCE - TORINO</span>
+                                <span class="text-[10px] text-slate-500">dom 12:30</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Mariani</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Marini</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>PISA - INTER</span>
+                                <span class="text-[10px] text-slate-500">dom 15:00</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Guida</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Paterna</span>
                             </div>
                         </div>
+
                         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
                             <div class="flex justify-between text-white font-bold text-xs mb-1">
-                                <span>MILAN - JUVE</span>
-                                <span class="text-[10px] text-slate-500">18:00</span>
+                                <span>ATALANTA - FIORENTINA</span>
+                                <span class="text-[10px] text-slate-500">dom 18:00</span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-slate-400">
-                                <span>CHIFFI</span>
-                                <span class="group-hover:text-yellow-500 transition-colors">VAR: MAZZOLENI</span>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Marcenaro</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Camplone</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
+                            <div class="flex justify-between text-white font-bold text-xs mb-1">
+                                <span>ROMA - NAPOLI</span>
+                                <span class="text-[10px] text-slate-500">dom 20:45</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Massa</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Aureliano</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
+                            <div class="flex justify-between text-white font-bold text-xs mb-1">
+                                <span>BOLOGNA - CREMONESE</span>
+                                <span class="text-[10px] text-slate-500">lun 20:45</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-green-400">
+                                <span>ARBITRO: Feliciani</span>
+                                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Gariglio</span>
                             </div>
                         </div>
 
@@ -1040,7 +1043,7 @@ Roma-Bologna	98,55	49,51	50,2%	37
 Monza-Lazio	97,01	56,45	58,2%	23
 Inter-Napoli	95,15	56,03	58,9%	27
 Verona-Inter	93,00	65,30	70,2%	19
-Milan-Juvenrus	95,40	59,45	62,3%	21
+Milan-Juventus	95,40	59,45	62,3%	21
 Parma-Atalanta	95,40	66,25	69,4%	14
 Genoa-Cagliari	98,00	53,26	54,3%	18
 Como-Fiorentina	97,00	55,23	56,9%	26
@@ -1418,7 +1421,7 @@ Napoli-Atalanta	96,16	56,23	58,5%	23
 Verona-Parma	98,17	54,51	55,5%	30
 Cremonese-Roma	100,43	53,23	53,0%	28
 Lazio-Lecce	98,36	59,36	60,4%	21
-Inter-MIlan	98,01	60,11	61,3%	16
+Inter-Milan	98,01	60,11	61,3%	16
 Torino-Como	96,52	53,33	55,3%	15
 Sassuolo-Pisa	98,18	54,38	55,6%	20`;
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
@@ -2309,7 +2312,8 @@ Di Marco	98,18`;
         let activeSeasons = ['2025-26'];
         let sortColumn = 'matches';
         let sortDirection = 'desc';
-        let minMatchesFilter = 0;
+        let minMatchesFilterStats = 0;
+	let minMatchesFilterPT = 0;
         let analyticsMinMatchesFilter = 0; // NUOVA VARIABILE PER IL FILTRO ANALYTICS
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
@@ -2647,14 +2651,30 @@ Di Marco	98,18`;
                     document.getElementById('minMatches').max = maxMatches;
                     document.getElementById('minMatches_mobile').max = maxMatches;
                 }
-                result = result.filter(r => r.matches >= minMatchesFilter);
+                result = result.filter(r => r.matches >= minMatchesFilterStats);
                 if(hideInactive) result = result.filter(r => !r.isInactive);
             } 
-            else if (currentView === 'playingTime') {
-                 if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
-                 matchesCurrentPage = 1; 
-                 result = processPlayingTimeViewData();
-            }
+
+else if (currentView === 'playingTime') {
+    if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+    if (statsControls) statsControls.classList.remove('hidden');
+    if (minMatchesContainer) minMatchesContainer.classList.remove('hidden');
+
+    matchesCurrentPage = 1;
+
+    result = processPlayingTimeViewData();
+
+    // ⭐ AGGIORNA IL MASSIMO DEL FILTRO (NUOVO)
+    if (result.length > 0) {
+        const maxMatchesPT = Math.max(...result.map(r => r.matches));
+        document.getElementById('minMatches').max = maxMatchesPT;
+        document.getElementById('minMatches_mobile').max = maxMatchesPT;
+    }
+
+    // ⭐ APPLICA IL FILTRO DI PLAYING TIME
+    result = result.filter(r => r.matches >= minMatchesFilterPT);
+}
+
             else if (currentView === 'matches') {
                 if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
                 if (statsControls) statsControls.classList.remove('hidden');
@@ -3337,17 +3357,17 @@ Di Marco	98,18`;
                 renderMatchesFooter(tfoot, data.length);
                 updateLoadMoreButton();
             } else if (currentView === 'teams') {
-                // Squadra, Partite, Falli Tot, Falli Casa, Falli Trasf, T.Eff. Casa, T.Eff. Trasf, T.Eff. Medio.
+                // Squadra, Partite, Falli Tot, Falli Casa, Falli Trasf, T.Eff. Medio, T.Eff. Casa, T.Eff. Trasf.
                 
                 thead.innerHTML = `<tr>
                     ${th('Squadra', 'name', 'sticky-col')}
                     ${th('Partite', 'matches', 'text-center', tooltipMap.matches)}
                     ${th('Falli Tot', 'avgFouls', 'text-right text-red-400', tooltipMap.avgFouls)}
-                    ${th('Falli Casa', 'avgFoulsHome', 'text-right text-slate-400', tooltipMap.avgFoulsHome)}
-                    ${th('Falli Trasf', 'avgFoulsAway', 'text-right text-slate-400', tooltipMap.avgFoulsAway)}
-                    ${th('T.Eff. Casa', 'avgEffHome', 'text-right text-green-400', tooltipMap.avgEffHome)}
-                    ${th('T.Eff. Trasf', 'avgEffAway', 'text-right text-green-400', tooltipMap.avgEffAway)}
+                    ${th('Falli Casa', 'avgFoulsHome', 'text-right text-red-400/70', tooltipMap.avgFoulsHome)}
+                    ${th('Falli Trasf', 'avgFoulsAway', 'text-right text-red-400/70', tooltipMap.avgFoulsAway)}
                     ${th('T.Eff. Medio', 'avgEff', 'text-right text-green-400 font-bold', tooltipMap.avgEff)}
+                    ${th('T.Eff. Casa', 'avgEffHome', 'text-right text-green-400/70', tooltipMap.avgEffHome)}
+                    ${th('T.Eff. Trasf', 'avgEffAway', 'text-right text-green-400/70', tooltipMap.avgEffAway)}
                     </tr>`;
                 
                 data.forEach(t => {
@@ -3355,11 +3375,11 @@ Di Marco	98,18`;
                         <td class="sticky-col border-b border-slate-800 font-bold text-white">${t.name}</td>
                         <td class="text-center text-slate-400">${t.matches}</td>
                         <td class="text-right font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
-                        <td class="text-right text-slate-400">${t.avgFoulsHome.toFixed(1)}</td>
-                        <td class="text-right text-slate-400">${t.avgFoulsAway.toFixed(1)}</td>
-                        <td class="text-right font-mono text-green-400">${formatSecondsToTime(t.avgEffHome)}</td>
-                        <td class="text-right font-mono text-green-400">${formatSecondsToTime(t.avgEffAway)}</td>
+                        <td class="text-right text-red-400/70">${t.avgFoulsHome.toFixed(1)}</td>
+                        <td class="text-right text-red-400/70">${t.avgFoulsAway.toFixed(1)}</td>
                         <td class="text-right font-mono font-bold text-green-400">${formatSecondsToTime(t.avgEff)}</td>
+                        <td class="text-right font-mono text-green-400/70">${formatSecondsToTime(t.avgEffHome)}</td>
+                        <td class="text-right font-mono text-green-400/70">${formatSecondsToTime(t.avgEffAway)}</td>
                     </tr>`;
                 });
             }
@@ -3512,6 +3532,19 @@ Di Marco	98,18`;
             
             currentView = view;
             
+
+    // ⭐⭐⭐ RESET DEI FILTRI PRESENZE QUANDO CAMBIO SCHEDA
+    minMatchesFilterStats = 0;
+    minMatchesFilterPT = 0;
+
+    if (document.getElementById('minMatches')) {
+        document.getElementById('minMatches').value = 0;
+    }
+    if (document.getElementById('minMatchesValue')) {
+        document.getElementById('minMatchesValue').innerText = 0;
+    }
+    // ⭐⭐⭐ FINE RESET
+
             resetMatchesPaging(); 
 
             // Update Active State (Desktop)
@@ -3661,12 +3694,18 @@ Di Marco	98,18`;
             else { c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; }
         }
 
-        function updateMinMatches(val) {
-            minMatchesFilter = parseInt(val);
-            document.getElementById('minMatchesValue').innerText = val;
-            document.getElementById('minMatches').value = val;
-            debounceAggregate(); // Usa debounce
-        }
+function updateMinMatches(val) {
+    if (currentView === 'stats') {
+        minMatchesFilterStats = parseInt(val);
+    } else if (currentView === 'playingTime') {
+        minMatchesFilterPT = parseInt(val);
+    }
+
+    document.getElementById('minMatchesValue').innerText = val;
+    document.getElementById('minMatches').value = val;
+
+    debounceAggregate();
+}
 
         function toggleInactiveRefs() {
             hideInactive = document.getElementById('toggleInactive').checked;
