@@ -66,8 +66,11 @@
 
     <style>
         /* Base Reset & Typography */
-        html, body { overflow-x: hidden; background-color: #020617; color: #cbd5e1; }
-        
+html, body { 
+    overflow-x: clip; /* 'clip' è meglio di 'hidden' per sticky */
+    background-color: #020617; 
+    color: #cbd5e1; 
+}        
         /* Background Texture */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -90,6 +93,17 @@
             border-bottom: 1px solid #1e293b;
         }
 
+/* Sidebar sticky SEMPRE (su desktop) */
+@media (min-width: 1024px) {
+    #sidebar-filters {
+        position: sticky;
+        top: 6rem;          /* distanza dal top (regola in base all'altezza della navbar) */
+        align-self: flex-start; /* Fondamentale: impedisce alla sidebar di allungarsi */
+        z-index: 30;        /* Assicura che stia sopra al contenuto ma sotto ai modali */
+        max-height: calc(100vh - 7rem); /* Opzionale: se la sidebar è molto lunga, permette lo scroll interno */
+        overflow-y: auto;   /* Opzionale: abilita lo scroll se il contenuto è troppo lungo */
+    }
+}
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
@@ -654,9 +668,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- LEFT SIDEBAR: Filters & Controls -->
-            <aside class="lg:col-span-3 space-y-6">
-                <!-- Search Module (Only shown if view requires global search) -->
+<!-- LEFT SIDEBAR: Filters & Controls -->
+<aside id="sidebar-filters" class="lg:col-span-3 space-y-6 lg:self-start">                <!-- Search Module (Only shown if view requires global search) -->
                 <div id="global-search-container" class="pro-card rounded-lg p-1">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
@@ -3279,7 +3292,7 @@ else if (currentView === 'playingTime') {
 
             // 2. Renderizza i grafici con i dati filtrati
             renderSeverityScatter(filteredRefData);
-            renderRitmoScatter(filteredMatchData);
+            renderRitmoScatter(filteredMatchData, currentMatchData);
             updateRadarChart();
         }
 
@@ -3354,7 +3367,26 @@ else if (currentView === 'playingTime') {
                         } 
                     }]
                 },
-                grid: { borderColor: '#334155', strokeDashArray: 4 },
+grid: {
+    show: true,
+    strokeDashArray: 0,
+    borderColor: 'rgba(255,255,255,0.04)',
+
+    xaxis: {
+        lines: {
+            show: true,
+            color: 'rgba(255,255,255,0.10)'   // linee verticali leggere
+        }
+    },
+
+    yaxis: {
+        lines: {
+            show: true,
+            color: 'rgba(255,255,255,0.18)'   // linee orizzontali un po' più visibili
+        }
+    }
+},
+
                 theme: { mode: 'dark' },
                 tooltip: { custom: ({ series, seriesIndex, dataPointIndex, w }) => { const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex]; return `<div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg"><div class="font-bold text-white text-xs mb-1">${d.name}</div><div class="text-[10px] text-slate-300">Falli: ${d.x} - Gialli: ${d.y}</div></div>`; } }
             };
@@ -3364,79 +3396,211 @@ else if (currentView === 'playingTime') {
             chartScatter.render();
         }
 
-        function renderRitmoScatter(matchData) {
-            const s2526 = matchData.filter(m => m.season === '2025-26').map(m => ({ x: m.fouls, y: parseFloat((m.effectiveTimeSec / 60).toFixed(1)), matchName: m.match }));
-            const s2425 = matchData.filter(m => m.season === '2024-25').map(m => ({ x: m.fouls, y: parseFloat((m.effectiveTimeSec / 60).toFixed(1)), matchName: m.match }));
-            
-            const allMatchData = [...s2526, ...s2425];
-            const maxFouls = allMatchData.length ? Math.max(...allMatchData.map(d => d.x)) : 40;
-            const maxEff = allMatchData.length ? Math.max(...allMatchData.map(d => d.y)) : 65;
-            
-            const mXMin = 15;
-            const mXMax = Math.ceil(maxFouls + 3); 
-            const mYMin = 38;
-            const mYMax = Math.ceil(maxEff + 3); 
-            const mMidF = 26;
-            const mMidE = 52.5;
+function renderRitmoScatter(matchData, fullMatchData) {
+    // 🔹 Dati per le MEDIE: tutte le partite delle stagioni selezionate
+    const base = (fullMatchData || matchData).filter(m => 
+        activeSeasons.includes(m.season)
+    );
 
-            const matchChartOptions = {
-                series: [{ name: '2025-26', data: s2526 }, { name: '2024-25', data: s2425 }],
-                chart: { 
-                    type: 'scatter', height: 350, background: 'transparent', 
-                    toolbar: { show: false }, zoom: { enabled: false },
-                    events: {
-                        // Eventi per disegnare l'overlay DIV
-                        mounted: (chartContext) => injectQuadrantDIVOverlay(chartContext, mMidF, mMidE, false),
-                        updated: (chartContext) => injectQuadrantDIVOverlay(chartContext, mMidF, mMidE, false)
+    // 🔹 Dati mostrati nel grafico: filtrati da ricerca + stagioni
+    const filtered = matchData.filter(m => 
+        activeSeasons.includes(m.season)
+    );
+
+    // Se NON ci sono punti da mostrare (es. filtro squadra troppo stretto) → grafico "vuoto"
+    if (!filtered.length) {
+        if (chartMatchCorrelation) chartMatchCorrelation.destroy();
+
+        chartMatchCorrelation = new ApexCharts(
+            document.querySelector("#chart-match-scatter"),
+            {
+                series: [],
+                chart: {
+                    type: 'scatter',
+                    height: 350,
+                    background: 'transparent',
+                    toolbar: { show: false }
+                },
+                noData: {
+                    text: 'Nessun dato per il filtro selezionato',
+                    align: 'center',
+                    style: {
+                        color: '#cbd5e1',
+                        fontSize: '12px'
                     }
                 },
-                markers: { size: 4 },
-                colors: ['#d946ef', '#eab308'],
-                xaxis: { 
-                    title: { text: 'Falli Totali', style: { color: '#94a3b8' } }, 
-                    tickAmount: 6, 
-                    min: mXMin, max: mXMax, 
-                    labels: { style: { colors: '#cbd5e1' } }, 
-                    axisBorder: { color: '#334155' }, 
-                    axisTicks: { color: '#334155' } 
+                xaxis: {
+                    labels: { style: { colors: '#cbd5e1' } }
                 },
-                yaxis: { 
-                    title: { text: 'Tempo Effettivo (min)', style: { color: '#94a3b8' } }, 
-                    min: mYMin, max: mYMax, 
-                    labels: { style: { colors: '#cbd5e1' } } 
-                },
-                 // Linee di annotazione mantenute per le etichette
-                annotations: {
-                    shapes: [], 
-                    xaxis: [{ 
-                        x: mMidF, borderColor: '#475569', strokeDashArray: 5, 
-                        label: { 
-                            borderColor: '#475569', 
-                            style: { color: '#cbd5e1', background: '#334155' }, 
-                            text: 'Media Falli',
-                            offsetY: 10, 
-                        } 
-                    }],
-                    yaxis: [{ 
-                        y: mMidE, borderColor: '#475569', strokeDashArray: 5, 
-                        label: { 
-                            borderColor: '#475569', 
-                            style: { color: '#cbd5e1', background: '#334155' }, 
-                            text: 'Media T.E.',
-                            offsetX: -15, 
-                        } 
-                    }]
-                },
-                grid: { borderColor: '#334155', strokeDashArray: 4 },
-                theme: { mode: 'dark' },
-                tooltip: { custom: ({ series, seriesIndex, dataPointIndex, w }) => { const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex]; return `<div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg"><div class="font-bold text-white text-xs mb-1">${d.matchName}</div><div class="text-[10px] text-slate-300">Falli: ${d.x} - T.Eff: ${d.y}'</div></div>`; } },
-                legend: { position: 'top', labels: { colors: '#cbd5e1' } }
-            };
-            
-            if(chartMatchCorrelation) chartMatchCorrelation.destroy();
-            chartMatchCorrelation = new ApexCharts(document.querySelector("#chart-match-scatter"), matchChartOptions);
-            chartMatchCorrelation.render();
+                yaxis: {
+                    labels: { style: { colors: '#cbd5e1' } }
+                }
+            }
+        );
+
+        chartMatchCorrelation.render();
+        return;
+    }
+
+    // 🔹 Serie del grafico (solo dati FILTRATI -> i pallini che vedi)
+    const series = activeSeasons.map(season => ({
+        name: season,
+        data: filtered
+            .filter(m => m.season === season)
+            .map(m => ({
+                x: m.fouls,
+                y: +(m.effectiveTimeSec / 60).toFixed(2), // minuti
+                matchName: m.match
+            }))
+    }));
+
+    // 🔹 MEDIE calcolate SOLO sui dati base (tutte le partite delle stagioni attive)
+    const totalSeconds = base.reduce((sum, m) => sum + m.effectiveTimeSec, 0);
+    const avgEffSec = totalSeconds / base.length;
+    const avgEff = +(avgEffSec / 60).toFixed(2);
+
+    const avgFouls = base.reduce((s, m) => s + m.fouls, 0) / base.length;
+
+    // 🔹 Assi fissi
+    const mXMin = 10;
+    const mXMax = 48;
+    const mYMin = 40;
+    const mYMax = 70;
+
+    const matchChartOptions = {
+        series: series,
+
+        chart: {
+            type: 'scatter',
+            height: 350,
+            background: 'transparent',
+            toolbar: { show: false },
+            zoom: { enabled: false },
+            events: {
+                mounted: (ctx) => injectQuadrantDIVOverlay(ctx, avgFouls, avgEff, false),
+                updated: (ctx) => injectQuadrantDIVOverlay(ctx, avgFouls, avgEff, false)
+            }
+        },
+
+// --- INIZIO MODIFICA: Aggiungi questo blocco RESPONSIVE ---
+        responsive: [
+            {
+                breakpoint: 640, // Si attiva su schermi < 640px (cellulari)
+                options: {
+                    xaxis: {
+                        tickAmount: 8, // Consiglio: riduci il numero di etichette mostrate su mobile (da 19 a 8)
+                        labels: {
+                            rotate: -45, // Consiglio: ruota leggermente i numeri per evitare sovrapposizioni
+                            style: {
+                                fontSize: '9px', // QUI riduci la dimensione del font (default è circa 12px)
+                            },
+                            hideOverlappingLabels: true // Nasconde i numeri se si accavallano
+                        }
+                    }
+                }
+            }
+        ],
+        // --- FINE MODIFICA ---
+
+        markers: { size: 4 },
+
+        // Legenda: solo se >1 stagione
+        legend: {
+            show: activeSeasons.length > 1,
+            position: "top",
+            horizontalAlign: "left",
+            labels: { colors: "#cbd5e1" },
+            fontSize: "11px"
+        },
+
+        colors: ['#3b82f6', '#22c55e', '#eab308', '#f97316'],
+
+xaxis: {
+    title: { text: 'Falli Totali', style: { color: '#94a3b8' } },
+    min: 10,
+    max: 48,
+    tickAmount: 19,
+    labels: {
+        style: { colors: '#cbd5e1' },
+        formatter: (val) => val
+    },
+    axisBorder: { color: 'rgba(255,255,255,0.15)' },  // più trasparente
+    axisTicks:  { color: 'rgba(255,255,255,0.15)' }    // più trasparente
+},
+
+yaxis: {
+    title: { text: 'Tempo Effettivo (min)', style: { color: '#94a3b8' } },
+    min: mYMin,
+    max: mYMax,
+    tickAmount: 6,
+    labels: {
+        style: { colors: '#cbd5e1' },
+        formatter: (val) => val.toFixed(0)
+    },
+    axisBorder: { show: true, color: 'rgba(255,255,255,0.15)' },
+    axisTicks:  { show: true, color: 'rgba(255,255,255,0.15)' }
+},
+
+grid: {
+    borderColor: 'rgba(255,255,255,0.04)',  // linee più morbide
+    xaxis: { lines: { show: true } },        // mostra linee verticali
+    yaxis: { lines: { show: true } }         // mostra linee orizzontali
+},
+
+        // 🔹 Etichette delle medie – SOLO TESTO, posizionate fuori dai pallini
+        annotations: {
+            xaxis: [{
+                x: avgFouls,
+                borderColor: "#475569",
+                strokeDashArray: 5,
+                label: {
+                    borderColor: '#475569',
+                    style: { color: '#cbd5e1', background: '#334155' },
+                    text: 'Media Falli',
+                    offsetY: -20,
+                    offsetX: -10
+                }
+            }],
+            yaxis: [{
+                y: avgEff,
+                borderColor: "#475569",
+                strokeDashArray: 5,
+                label: {
+                    borderColor: '#475569',
+                    style: { color: '#cbd5e1', background: '#334155' },
+                    text: 'Media T.E.',
+                    offsetX: -40,
+                    offsetY: 20
+                }
+            }]
+        },
+
+        tooltip: {
+            custom: ({ seriesIndex, dataPointIndex, w }) => {
+                const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                if (!d) return '';
+                return `
+                    <div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg">
+                        <div class="font-bold text-white text-xs mb-1">${d.matchName}</div>
+                        <div class="text-[10px] text-slate-300">
+                            Falli: ${d.x} – T.E.: ${d.y.toFixed(2)} min
+                        </div>
+                    </div>`;
+            }
         }
+    };
+
+    if (chartMatchCorrelation) chartMatchCorrelation.destroy();
+    chartMatchCorrelation = new ApexCharts(
+        document.querySelector("#chart-match-scatter"),
+        matchChartOptions
+    );
+    chartMatchCorrelation.render();
+}
+
+
+
+
 
         function addRefereeToRadar() {
             const select = document.getElementById('radar-ref-select');
@@ -3854,7 +4018,7 @@ chartRadar.render();
             }
             
             currentView = view;
-            
+
 
     // ⭐⭐⭐ RESET DEI FILTRI PRESENZE QUANDO CAMBIO SCHEDA
     minMatchesFilterStats = 0;
