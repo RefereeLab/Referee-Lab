@@ -3488,11 +3488,10 @@ function renderRitmoScatter(matchData, fullMatchData) {
                 breakpoint: 640, // Si attiva su schermi < 640px (cellulari)
                 options: {
                     xaxis: {
-                        tickAmount: 8, // Consiglio: riduci il numero di etichette mostrate su mobile (da 19 a 8)
                         labels: {
                             rotate: -45, // Consiglio: ruota leggermente i numeri per evitare sovrapposizioni
                             style: {
-                                fontSize: '9px', // QUI riduci la dimensione del font (default è circa 12px)
+                                fontSize: '8px', // QUI riduci la dimensione del font (default è circa 12px)
                             },
                             hideOverlappingLabels: true // Nasconde i numeri se si accavallano
                         }
