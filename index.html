@@ -437,7 +437,7 @@ html, body {
 
 /* Rimuove compressione forzata */
 .heatmap-wrapper > div {
-    min-width: 900px; /* <= regolabile: 38 colonne * ~24px */
+    min-width: 600px; /* <= regolabile: 38 colonne * ~24px */
 }
 
 /* Mantiene leggibili le squadre */
@@ -4215,7 +4215,7 @@ function renderTeamHeatmap() {
 chart: {
     type: "heatmap",
     height: 600,
-    width: 1200,      // 👈 forza larghezza minima!
+    width: 900,      // 👈 forza larghezza minima!
     background: "transparent",
     toolbar: { show: false }
 },
