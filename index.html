@@ -462,8 +462,33 @@ html, body {
 }
 </style>
 
+<style>
 
-    </style>
+/* SCROLL ORIZZONTALE MOBILE */
+.heatmap-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* forza larghezza del grafico */
+#chart-team-heatmap {
+    min-width: 1200px;  /* = stessa larghezza settata in ApexCharts */
+}
+
+/* Mantiene leggibili le squadre (fisso a sinistra) */
+.apexcharts-yaxis text {
+    position: sticky;
+    left: 0;
+    background: #0f172a;
+    padding-right: 6px;
+    z-index: 10;
+}
+
+</style>
+
+
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -4187,12 +4212,13 @@ function renderTeamHeatmap() {
 
     const options = {
         series: series,
-        chart: {
-            type: "heatmap",
-            height: 600,
-            background: "transparent",
-            toolbar: { show: false }
-        },
+chart: {
+    type: "heatmap",
+    height: 600,
+    width: 1200,      // 👈 forza larghezza minima!
+    background: "transparent",
+    toolbar: { show: false }
+},
 plotOptions: {
     heatmap: {
         enableShades: false,      // 🔥 niente gradienti interni
