@@ -1025,67 +1025,65 @@ html, body {
 
         <div class="lg:col-span-9">
             <div class="pro-card rounded-lg overflow-hidden">
+                <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/70">
+                    <h3 class="text-lg font-extrabold text-white flex items-center gap-3">
+                        <span>Giocatori</span>
+                        <span class="text-[10px] uppercase tracking-[0.2em] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-full border border-yellow-500/30">Passaggi &amp; Tiri inclusi</span>
+                    </h3>
+                </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-slate-300 pro-table players-table text-center" id="players-table">
+                    <table class="w-full text-[11px] text-slate-300 pro-table players-table text-center" id="players-table">
                         <thead class="bg-slate-800 text-slate-300">
                             <tr>
-                                <th class="p-2 w-12">#</th>
-                                <th class="p-2 cursor-pointer select-none w-48" data-sort-col="name" onclick="handlePlayersSort('name')">
+                                <th class="p-2 w-10">#</th>
+                                <th class="p-2 cursor-pointer select-none text-left whitespace-nowrap" data-sort-col="name" onclick="handlePlayersSort('name')">
                                     Giocatore <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="role" onclick="handlePlayersSort('role')">
-                                    Ruolo <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="team" onclick="handlePlayersSort('team')">
+                                    Sq. <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="team" onclick="handlePlayersSort('team')">
-                                    Squadra <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="n90" onclick="handlePlayersSort('n90')">
+                                    90' <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="n90" onclick="handlePlayersSort('n90')">
-                                    Partite (90s) <span class="players-sort-icon text-yellow-400"></span>
-                                </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="yellow" onclick="handlePlayersSort('yellow')">
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="yellow" onclick="handlePlayersSort('yellow')">
                                     Gialli <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="fouls" onclick="handlePlayersSort('fouls')">
-                                    Falli Commessi <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouls" onclick="handlePlayersSort('fouls')">
+                                    Falli C. <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="fouled" onclick="handlePlayersSort('fouled')">
-                                    Falli Subiti <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouled" onclick="handlePlayersSort('fouled')">
+                                    Falli S. <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none" data-sort-col="crosses" onclick="handlePlayersSort('crosses')">
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="crosses" onclick="handlePlayersSort('crosses')">
                                     Cross <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passCompleted" onclick="handlePlayersSort('passCompleted')">
+                                    PassC <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passAttempted" onclick="handlePlayersSort('passAttempted')">
+                                    PassT <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passPct" onclick="handlePlayersSort('passPct')">
+                                    % Pass <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsTotal" onclick="handlePlayersSort('shotsTotal')">
+                                    Tiri <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTarget" onclick="handlePlayersSort('shotsOnTarget')">
+                                    Tiri P. <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsPer90" onclick="handlePlayersSort('shotsPer90')">
+                                    Tiri/90 <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTargetPer90" onclick="handlePlayersSort('shotsOnTargetPer90')">
+                                    TiriP/90 <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="avgShotDistance" onclick="handlePlayersSort('avgShotDistance')">
+                                    Dist. Tiri <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody id="players-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="pro-card rounded-lg overflow-hidden mt-6">
-                <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/70">
-                    <div>
-                        <p class="text-[10px] uppercase text-slate-500 font-bold tracking-[0.2em]">Nuovi dati</p>
-                        <h3 class="text-lg font-extrabold text-white">Passaggi & Tiri Giocatori</h3>
-                    </div>
-                    <i class="fa-solid fa-arrow-trend-up text-yellow-400 text-xl"></i>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-slate-300 pro-table text-center" id="players-passing-table">
-                        <thead class="bg-slate-800 text-slate-300">
-                            <tr>
-                                <th class="p-2 w-12">#</th>
-                                <th class="p-2 text-left">Giocatore</th>
-                                <th class="p-2">Pass. completati</th>
-                                <th class="p-2">Pass. tentati</th>
-                                <th class="p-2">% completati</th>
-                                <th class="p-2">Tiri tot</th>
-                                <th class="p-2">Tiri in porta</th>
-                                <th class="p-2">Tiri /90</th>
-                                <th class="p-2">Tiri porta /90</th>
-                                <th class="p-2">Dist. media tiri</th>
-                            </tr>
-                        </thead>
-                        <tbody id="players-passing-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -2439,6 +2437,7 @@ Faris Pemi Moumbagna 0,00 10,00 0,0% 1 0 6,00 0,00 11,70
 
 let playersData = [];
 let playersPassingData = [];
+let playersPassingIndex = new Map();
 let playersMinMatches = 0;
 let playersSortColumn = 'name';
 let playersSortDirection = 'asc';
@@ -5920,8 +5919,8 @@ const seasonCard    = document.getElementById('season-selector-card');
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
-    renderPlayersPassingTable();
 } else {
+
     // stats, matches, playingTime, teams
     if (tableView)     tableView.classList.remove('hidden');
     if (analyticsView) analyticsView.classList.add('hidden');
@@ -6135,16 +6134,27 @@ function renderPlayersTable() {
 
     sorted.forEach((p, index) => {
         const tr = document.createElement("tr");
+        const passPct = Number.isFinite(p.passPct)
+            ? `${p.passPct.toFixed(1).replace('.', ',')}%`
+            : '-';
+
         tr.innerHTML = `
             <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
-            <td class="p-2 text-left">${formatPlayerName(p.name)}</td>
-            <td class="p-2">${p.role || '-'}</td>
-            <td class="p-2">${p.team || '-'}</td>
-            <td class="p-2">${p.n90}</td>
-            <td class="p-2">${p.yellow}</td>
-            <td class="p-2">${p.fouls}</td>
-            <td class="p-2">${p.fouled}</td>
-            <td class="p-2">${p.crosses}</td>
+            <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}</td>
+            <td class="p-2 whitespace-nowrap">${p.team || '-'}</td>
+            <td class="p-2 whitespace-nowrap">${p.n90}</td>
+            <td class="p-2 whitespace-nowrap">${p.yellow}</td>
+            <td class="p-2 whitespace-nowrap">${p.fouls}</td>
+            <td class="p-2 whitespace-nowrap">${p.fouled}</td>
+            <td class="p-2 whitespace-nowrap">${p.crosses}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.passCompleted)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.passAttempted)}</td>
+            <td class="p-2 whitespace-nowrap">${passPct}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsTotal)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsOnTarget)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsPer90)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsOnTargetPer90)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.avgShotDistance)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -6170,6 +6180,22 @@ function getPlayersSortValue(player, column) {
             return player.fouled || 0;
         case 'crosses':
             return player.crosses || 0;
+        case 'passCompleted':
+            return Number.isFinite(player.passCompleted) ? player.passCompleted : 0;
+        case 'passAttempted':
+            return Number.isFinite(player.passAttempted) ? player.passAttempted : 0;
+        case 'passPct':
+            return Number.isFinite(player.passPct) ? player.passPct : 0;
+        case 'shotsTotal':
+            return Number.isFinite(player.shotsTotal) ? player.shotsTotal : 0;
+        case 'shotsOnTarget':
+            return Number.isFinite(player.shotsOnTarget) ? player.shotsOnTarget : 0;
+        case 'shotsPer90':
+            return Number.isFinite(player.shotsPer90) ? player.shotsPer90 : 0;
+        case 'shotsOnTargetPer90':
+            return Number.isFinite(player.shotsOnTargetPer90) ? player.shotsOnTargetPer90 : 0;
+        case 'avgShotDistance':
+            return Number.isFinite(player.avgShotDistance) ? player.avgShotDistance : 0;
         default:
             return 0;
     }
@@ -6199,6 +6225,15 @@ function updatePlayersSortUI() {
         else icon.textContent = '';
     });
 }
+function normalizePlayerKey(name) {
+    return (name || '')
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 // Converte la stringa TSV dei giocatori in un array di oggetti
 function parsePlayersDB(raw) {
     if (!raw) return [];
@@ -6298,11 +6333,34 @@ function parsePlayersPassing(raw) {
         .filter(Boolean);
 }
 
+function buildPlayersPassingIndex() {
+    playersPassingIndex = new Map(
+        playersPassingData.map((p) => [normalizePlayerKey(p.name), p])
+    );
+
+    playersData = playersData.map((player) => {
+        const passing = playersPassingIndex.get(normalizePlayerKey(player.name)) || {};
+        const toNullableNumber = (val) => (Number.isFinite(val) ? val : null);
+
+        return {
+            ...player,
+            passCompleted: toNullableNumber(passing.passesCompleted),
+            passAttempted: toNullableNumber(passing.passesAttempted),
+            passPct: toNullableNumber(passing.passPct),
+            shotsTotal: toNullableNumber(passing.shotsTotal),
+            shotsOnTarget: toNullableNumber(passing.shotsOnTarget),
+            shotsPer90: toNullableNumber(passing.shotsPer90),
+            shotsOnTargetPer90: toNullableNumber(passing.shotsOnTargetPer90),
+            avgShotDistance: toNullableNumber(passing.avgShotDistance),
+        };
+    });
+}
+
 // Sovrascriviamo playersData con l’array parsato
 playersData = parsePlayersDB(playersRawData);
 playersPassingData = parsePlayersPassing(playersPassingRawData);
+buildPlayersPassingIndex();
 initPlayersFilters();
-
 function extractSurname(fullName) {
     const parts = (fullName || '').trim().split(/\s+/);
     return parts.length ? parts[parts.length - 1].toLowerCase() : '';
@@ -6479,4 +6537,3 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
-
