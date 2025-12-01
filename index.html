@@ -3532,10 +3532,11 @@ function getTeamLogo(teamName) {
              }).filter(x => x);
         }
 
-        function processStatsData(seasons = activeSeasons) {
+        function processStatsData(seasons) {
+            const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
             let statsMap = new Map();
-            const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB; 
-            activeSeasons.forEach(season => {
+            const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB;
+            seasonsToUse.forEach(season => {
                 // Filtra solo le stagioni con dati disponibili (db[season].length > 0)
                 if (sourceDB[season] && sourceDB[season].length > 0) {
                     sourceDB[season].forEach(m => {
@@ -3558,11 +3559,11 @@ function getTeamLogo(teamName) {
                 return r;
             });
         }
-        
-        function processCombinedStats(seasons = activeSeasons) {
-            const stats = processStatsData(seasons);
-            const pt = processPlayingTimeViewData(seasons);
 
+        function processCombinedStats(seasons) {
+            const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
+            const stats = processStatsData(seasonsToUse);
+            const pt = processPlayingTimeViewData(seasonsToUse);
             
             // IMPROVED MERGE: Match by Surname to solve "0 data" issues
             return stats.map(s => {
@@ -3578,14 +3579,15 @@ function getTeamLogo(teamName) {
             });
         }
 
-        function processPlayingTimeViewData() {
+        function processPlayingTimeViewData(seasons) {
+            const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
             let statsMap = new Map();
             let allMatchData = [];
-            activeSeasons.forEach(s => {
+            seasonsToUse.forEach(s => {
                 let db = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
                 if(db) allMatchData = allMatchData.concat(parseMatchesDB(db, s));
             });
-            activeSeasons.forEach(season => {
+            seasonsToUse.forEach(season => {
                 const refData = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
                 const assignedMatches = new Set();
                 refData.forEach(entry => {
@@ -3608,12 +3610,14 @@ function getTeamLogo(teamName) {
             });
         }
 
-        function processMatchesViewData() {
+        function processMatchesViewData(seasons) {
+            const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
             let all = [];
-            activeSeasons.forEach(s => {
+            seasonsToUse.forEach(s => {
                 let dbData = (s === '2025-26') ? MATCHES_DB_2526 + EXTRA_MATCHES_2526 : (s === '2024-25' ? MATCHES_DB_2425 : null);
                 if(dbData) all = all.concat(parseMatchesDB(dbData, s));
             });
+
             return all;
         }
 
