@@ -933,20 +933,35 @@ html, body {
         <table class="w-full text-sm text-slate-300" id="players-table">
             <thead class="bg-slate-800 text-slate-300">
                 <tr>
-                    <th class="p-2">Giocatore</th>
-                    <th class="p-2">Ruolo</th>
-                    <th class="p-2">Squadra</th>
-                    <th class="p-2">Partite (90s)</th>
-                    <th class="p-2">Gialli</th>
-                    <th class="p-2">Falli Commessi</th>
-                    <th class="p-2">Falli Subiti</th>
-                    <th class="p-2">Cross</th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="name" onclick="handlePlayersSort('name')">
+                        Giocatore <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="role" onclick="handlePlayersSort('role')">
+                        Ruolo <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="team" onclick="handlePlayersSort('team')">
+                        Squadra <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="n90" onclick="handlePlayersSort('n90')">
+                        Partite (90s) <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="yellow" onclick="handlePlayersSort('yellow')">
+                        Gialli <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="fouls" onclick="handlePlayersSort('fouls')">
+                        Falli Commessi <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="fouled" onclick="handlePlayersSort('fouled')">
+                        Falli Subiti <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
+                    <th class="p-2 cursor-pointer select-none" data-sort-col="crosses" onclick="handlePlayersSort('crosses')">
+                        Cross <span class="players-sort-icon text-yellow-400"></span>
+                    </th>
                 </tr>
             </thead>
             <tbody id="players-table-body"></tbody>
         </table>
     </div>
-
 </div>
 
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
@@ -1773,6 +1788,8 @@ Piotr ZielińskiCCInter3,000,000,000,671,00
 
 let playersData = [];
 let playersMinMatches = 0;
+let playersSortColumn = 'name';
+let playersSortDirection = 'asc';
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -5327,15 +5344,22 @@ function renderPlayersTable() {
 
     const filtered = playersData
         .filter(p => p.name.toLowerCase().includes(q))
-        .filter(p => p.n90 >= playersMinMatches)
-        .sort((a, b) => {
-            const sA = extractSurname(a.name);
-            const sB = extractSurname(b.name);
-            if (sA === sB) return a.name.localeCompare(b.name);
-            return sA.localeCompare(sB);
-        });
+        .filter(p => p.n90 >= playersMinMatches);
 
-    filtered.forEach(p => {
+    const sorted = [...filtered].sort((a, b) => {
+        const valA = getPlayersSortValue(a, playersSortColumn);
+        const valB = getPlayersSortValue(b, playersSortColumn);
+
+        if (typeof valA === 'string' || typeof valB === 'string') {
+            const comparison = String(valA).localeCompare(String(valB), 'it', { sensitivity: 'base' });
+            return playersSortDirection === 'asc' ? comparison : -comparison;
+        }
+
+        const comparison = valA - valB;
+        return playersSortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    sorted.forEach(p => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td class="p-2">${p.name}</td>
@@ -5349,8 +5373,57 @@ function renderPlayersTable() {
         `;
         tbody.appendChild(tr);
     });
+
+    updatePlayersSortUI();
 }
 
+function getPlayersSortValue(player, column) {
+    switch (column) {
+        case 'name':
+            return extractSurname(player.name) || '';
+        case 'role':
+            return (player.role || '').toLowerCase();
+        case 'team':
+            return (player.team || '').toLowerCase();
+        case 'n90':
+            return player.n90 || 0;
+        case 'yellow':
+            return player.yellow || 0;
+        case 'fouls':
+            return player.fouls || 0;
+        case 'fouled':
+            return player.fouled || 0;
+        case 'crosses':
+            return player.crosses || 0;
+        default:
+            return 0;
+    }
+}
+
+function handlePlayersSort(column) {
+    if (playersSortColumn === column) {
+        playersSortDirection = playersSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        playersSortColumn = column;
+        playersSortDirection = column === 'name' ? 'asc' : 'desc';
+    }
+
+    renderPlayersTable();
+}
+
+function updatePlayersSortUI() {
+    document.querySelectorAll('#players-table thead th[data-sort-col]').forEach(th => {
+        const icon = th.querySelector('.players-sort-icon');
+        const isActive = th.dataset.sortCol === playersSortColumn;
+
+        th.classList.toggle('text-yellow-400', isActive);
+
+        if (!icon) return;
+
+        if (isActive) icon.textContent = playersSortDirection === 'asc' ? '↑' : '↓';
+        else icon.textContent = '';
+    });
+}
 // Converte la stringa TSV dei giocatori in un array di oggetti
 function parsePlayersDB(raw) {
     if (!raw) return [];
@@ -5362,7 +5435,7 @@ function parsePlayersDB(raw) {
     };
 
     const parseLine = (line) => {
-        const tabParts = line.split('\t').filter(Boolean);
+        const tabParts = line.split('\t');
 
         let name = '';
         let role = '';
@@ -5373,13 +5446,19 @@ function parsePlayersDB(raw) {
             [name, role, team, ...statsTokens] = tabParts.slice(0, 8);
         } else {
             const trimmed = line.trim();
-            const match = trimmed.match(/^(?<name>.+?)(?<role>[A-Z,]+)(?<team>[A-Za-zÀ-ÿ'\.\s-]+?)(?<n1>\d+,\d+)\s*(?<n2>\d+,\d+)\s*(?<n3>\d+,\d+)\s*(?<n4>\d+,\d+)\s*(?<n5>\d+,\d+)$/);
-            if (!match || !match.groups) return null;
+            const statsMatch = trimmed.match(/(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)$/);
 
-            name = (match.groups.name || '').trim();
-            role = (match.groups.role || '').trim();
-            team = (match.groups.team || '').trim();
-            statsTokens = [match.groups.n1, match.groups.n2, match.groups.n3, match.groups.n4, match.groups.n5];
+            if (!statsMatch) return null;
+
+            statsTokens = statsMatch.slice(1);
+            const prefix = trimmed.slice(0, statsMatch.index).trim();
+
+            const nameRoleTeamMatch = prefix.match(/^(?<name>.+?)(?<role>[A-Z]{2,3}(?:,[A-Z]{2,3})*)(?<team>[A-Za-zÀ-ÿ'\.\s-]+)$/);
+            if (!nameRoleTeamMatch || !nameRoleTeamMatch.groups) return null;
+
+            name = (nameRoleTeamMatch.groups.name || '').trim();
+            role = (nameRoleTeamMatch.groups.role || '').trim();
+            team = (nameRoleTeamMatch.groups.team || '').trim();
         }
 
         if (statsTokens.length < 5) return null;
@@ -5395,7 +5474,6 @@ function parsePlayersDB(raw) {
             crosses: toNumber(statsTokens[4])
         };
     };
-
     return raw
         .trim()
         .split('\n')
