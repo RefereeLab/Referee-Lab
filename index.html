@@ -1060,6 +1060,35 @@ html, body {
                     </table>
                 </div>
             </div>
+
+            <div class="pro-card rounded-lg overflow-hidden mt-6">
+                <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/70">
+                    <div>
+                        <p class="text-[10px] uppercase text-slate-500 font-bold tracking-[0.2em]">Nuovi dati</p>
+                        <h3 class="text-lg font-extrabold text-white">Passaggi & Tiri Giocatori</h3>
+                    </div>
+                    <i class="fa-solid fa-arrow-trend-up text-yellow-400 text-xl"></i>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-slate-300 pro-table text-center" id="players-passing-table">
+                        <thead class="bg-slate-800 text-slate-300">
+                            <tr>
+                                <th class="p-2 w-12">#</th>
+                                <th class="p-2 text-left">Giocatore</th>
+                                <th class="p-2">Pass. completati</th>
+                                <th class="p-2">Pass. tentati</th>
+                                <th class="p-2">% completati</th>
+                                <th class="p-2">Tiri tot</th>
+                                <th class="p-2">Tiri in porta</th>
+                                <th class="p-2">Tiri /90</th>
+                                <th class="p-2">Tiri porta /90</th>
+                                <th class="p-2">Dist. media tiri</th>
+                            </tr>
+                        </thead>
+                        <tbody id="players-passing-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -1917,7 +1946,503 @@ Stefan de VrijDFInter2,000,000,000,000,00
 Piotr ZielińskiCCInter3,000,000,000,671,00
 `;
 
+const playersPassingRawData = `
+Player pass completati pass tentati % pass completati tiri tot tiri in porta tiri tot /90 tiri porta /90 distanza media tiri
+Patric 130,00 170,00 76,5% 0 0 0,00 0,00 0,00
+Calvin Stengs 130,00 180,00 72,2% 2 1 13,85 6,92 23,70
+Luca Marianucci 100,00 102,00 98,0% 1 0 1,00 0,00 30,80
+Ardon Jashari 95,00 100,00 95,0% 1 0 5,29 0,00 27,80
+Amir Richardson 90,00 120,00 75,0% 1 0 7,50 0,00 17,50
+Nicolò Rovella 90,00 99,10 90,8% 1 0 0,45 0,00 30,20
+Fabio Miretti 86,00 98,00 87,8% 1 0 1,96 0,00 16,00
+Benjamin Pavard 82,00 86,00 95,3% 1 1 1,00 1,00 14,00
+Hakan Çalhanoğlu 74,90 86,50 86,6% 26 6 2,72 0,63 28,10
+Juan Jesus 71,70 77,60 92,4% 2 0 0,29 0,00 7,30
+Manuel Locatelli 70,60 80,30 87,9% 15 4 1,44 0,38 22,90
+Alessandro Bastoni 69,60 81,70 85,2% 11 3 0,95 0,26 13,30
+Manuel Akanji 68,50 75,40 90,8% 7 0 0,64 0,00 18,30
+Billy Gilmour 68,30 77,00 88,7% 5 1 1,09 0,22 20,10
+Amir Rrahmani 67,00 73,20 91,5% 3 0 0,53 0,00 11,70
+Sergi Roberto 65,00 72,00 90,3% 5 1 2,45 0,49 19,30
+Luka Modrić 64,60 74,20 87,1% 8 4 0,63 0,31 24,80
+Sam Beukema 63,70 68,30 93,3% 4 2 0,67 0,33 13,20
+Máximo Perrone 63,50 69,50 91,4% 4 2 0,38 0,19 11,60
+Lewis Ferguson 62,50 70,20 89,0% 4 1 0,67 0,17 20,10
+Stefan de Vrij 62,50 66,50 94,0% 1 0 0,50 0,00 9,50
+Yann Aurel Bisseck 62,40 67,90 91,9% 5 2 1,54 0,61 10,40
+Jacobo Ramón 62,00 67,80 91,4% 13 2 1,30 0,20 14,90
+Francesco Acerbi 60,30 63,50 95,0% 3 1 0,35 0,12 8,00
+Niccolò Pisilli 60,00 68,30 87,8% 1 1 1,80 1,80 7,00
+Éderson 59,90 66,00 90,8% 8 3 1,10 0,41 17,60
+Giorgio Scalvini 59,40 69,10 86,0% 2 1 0,62 0,31 12,40
+Stanislav Lobotka 59,40 64,60 92,0% 0 0 0,00 0,00 0,00
+Pierre Kalulu 59,20 68,40 86,5% 7 1 0,54 0,08 13,10
+Marten de Roon 58,80 67,00 87,8% 10 3 1,24 0,37 20,70
+Jhon Lucumí 58,60 65,60 89,3% 3 1 0,35 0,12 7,20
+Diego Carlos 58,10 62,80 92,5% 1 0 0,11 0,00 36,20
+Matías Vecino 57,70 62,30 92,6% 2 0 0,77 0,00 23,70
+Lorenzo Venturino 57,50 80,00 71,9% 1 1 2,25 2,25 31,20
+Maxence Caqueret 57,20 65,90 86,8% 5 1 0,86 0,17 21,30
+Nicolò Barella 57,10 69,60 82,0% 14 1 1,24 0,09 19,30
+Alessio Romagnoli 57,10 61,30 93,1% 1 0 0,10 0,00 11,90
+Mario Pašalić 56,40 63,70 88,5% 9 4 0,84 0,37 14,20
+Nikola Moro 56,20 66,90 84,0% 4 1 0,69 0,17 27,60
+Mario Gila 56,20 62,40 90,1% 7 2 0,56 0,16 10,00
+Lloyd Kelly 56,00 63,00 88,9% 7 2 0,64 0,18 18,10
+Lucas Da Cunha 55,70 63,30 88,0% 10 5 1,15 0,57 24,10
+Nuno Tavares 55,60 68,50 81,2% 6 0 1,16 0,00 23,40
+Marc-Oliver Kempf 55,40 62,20 89,1% 6 3 0,87 0,43 11,60
+Almoatasem Al Musrati 55,00 63,30 86,9% 1 0 0,81 0,00 20,40
+Berat Djimsiti 54,50 61,60 88,5% 6 0 0,56 0,00 9,10
+Kevin De Bruyne 54,30 65,90 82,4% 13 4 2,07 0,64 25,60
+Daniele Rugani 54,20 59,60 90,9% 0 0 0,00 0,00 0,00
+Fikayo Tomori 53,40 60,90 87,7% 5 1 0,52 0,10 16,30
+Giovanni Di Lorenzo 53,20 64,30 82,7% 12 6 0,92 0,46 11,10
+Oumar Solet 53,20 60,90 87,4% 11 1 0,87 0,08 22,50
+Raúl Albiol 53,10 60,00 88,5% 0 0 0,00 0,00 0,00
+Teun Koopmeiners 53,00 60,60 87,5% 13 3 1,51 0,35 21,20
+Strahinja Pavlović 53,00 59,20 89,5% 7 3 0,57 0,25 9,70
+Leo Skiri Østigård 52,40 59,10 88,7% 11 6 1,05 0,57 9,10
+Oliver Nielsen 52,30 56,80 92,1% 0 0 0,00 0,00 0,00
+Obite N'Dicka 52,20 57,70 90,5% 9 0 0,73 0,00 11,40
+Lorenzo Bernasconi 52,10 65,00 80,2% 4 0 1,41 0,00 19,80
+Alessandro Buongiorno 52,00 57,70 90,1% 3 1 0,36 0,12 6,80
+Odilon Kossounou 52,00 56,00 92,9% 3 1 0,43 0,14 21,00
+Adam Marušić 51,80 59,70 86,8% 4 2 0,38 0,19 18,00
+Andy Diouf 51,70 61,70 83,8% 1 1 1,55 1,55 28,40
+Alberto Moreno 51,50 60,00 85,8% 4 2 1,46 0,73 19,20
+Edon Zhegrova 51,40 78,60 65,4% 4 1 5,90 1,48 22,70
+Isak Hien 51,10 56,30 90,8% 3 0 0,27 0,00 8,30
+Stefan Posch 51,10 65,60 77,9% 3 2 1,11 0,74 17,20
+Andrea Cambiaso 51,00 59,90 85,1% 7 3 0,72 0,31 17,10
+Mario Hermoso 50,40 59,50 84,7% 6 3 0,72 0,36 12,50
+Koni De Winter 50,30 59,50 84,5% 2 0 0,52 0,00 19,10
+Federico Gatti 50,30 55,60 90,5% 10 4 1,16 0,46 12,90
+Nicolò Fagioli 50,20 58,00 86,6% 2 0 0,30 0,00 27,90
+Abdelhamid Sabiri 50,00 76,70 65,2% 1 0 3,33 0,00 32,80
+Emirhan İlkhan 50,00 55,00 90,9% 0 0 0,00 0,00 0,00
+Ibrahim Sulemana 50,00 60,00 83,3% 0 0 0,00 0,00 0,00
+Gabriele Zappa 49,80 59,50 83,7% 2 0 0,23 0,00 17,00
+Zé Pedro Figueiredo 49,70 56,90 87,3% 0 0 0,00 0,00 0,00
+Khéphren Thuram 49,10 55,80 88,0% 17 6 1,86 0,66 18,20
+Álex Valle 49,00 58,60 83,6% 5 0 0,53 0,00 16,90
+Bryan Cristante 49,00 60,70 80,7% 21 5 1,75 0,42 13,90
+Johan Vásquez 48,80 57,50 84,9% 15 3 1,15 0,23 17,90
+Mathías Olivera 48,60 56,20 86,5% 3 1 0,60 0,20 5,90
+Marin Pongračić 48,50 54,30 89,3% 5 0 0,42 0,00 15,20
+Piotr Zieliński 48,30 55,00 87,8% 6 2 2,01 0,67 22,70
+Filippo Terracciano 48,20 58,50 82,4% 6 2 0,55 0,18 11,20
+Filippo Romagna 47,30 54,50 86,8% 1 0 0,45 0,00 24,90
+Nemanja Matić 47,20 56,60 83,4% 5 4 0,42 0,34 20,10
+Ivan Smolčić 46,80 55,60 84,2% 4 0 0,55 0,00 11,70
+Remo Freuler 46,60 55,30 84,3% 2 0 0,26 0,00 25,70
+Charalampos Lykogiannis 46,20 63,80 72,4% 4 1 1,02 0,25 21,90
+Luca Pellegrini 46,10 59,20 77,9% 4 2 0,79 0,40 18,60
+Matteo Gabbia 46,00 49,80 92,4% 8 1 0,62 0,08 9,30
+Álex Jiménez 46,00 50,00 92,0% 0 0 0,00 0,00 0,00
+Sandi Lovrić 45,80 58,30 78,6% 1 0 0,87 0,00 14,90
+Honest Ahanor 45,80 50,70 90,3% 5 0 0,87 0,00 9,30
+Juan Miranda 45,20 61,60 73,4% 4 2 0,50 0,25 17,70
+Lorran 45,00 60,00 75,0% 1 1 4,09 4,09 7,20
+Daniel Oyegoke 45,00 75,00 60,0% 1 0 4,74 0,00 18,90
+Manu Koné 44,80 49,20 91,1% 8 1 0,62 0,08 20,10
+Thomas Kristensen 44,80 51,00 87,8% 3 1 0,60 0,20 14,10
+Luis Henrique 44,80 51,00 87,8% 4 0 1,28 0,00 19,80
+Carlos Augusto 44,70 53,60 83,4% 8 3 1,51 0,57 12,90
+Gianluca Mancini 44,60 52,00 85,8% 8 3 0,62 0,23 13,30
+Miguel Gutiérrez 44,50 53,90 82,6% 3 1 0,92 0,31 21,40
+Gleison Bremer 44,50 52,10 85,4% 4 1 1,04 0,26 15,30
+Davide Zappacosta 44,40 53,40 83,1% 16 3 1,86 0,35 19,90
+Matteo Bianchetti 44,20 53,80 82,2% 3 0 0,28 0,00 10,50
+Henrikh Mkhitaryan 44,10 53,00 83,2% 11 2 2,05 0,37 18,80
+Zeki Çelik 43,80 54,50 80,4% 12 2 1,19 0,20 18,60
+Tarik Muharemovic 43,80 52,40 83,6% 6 1 0,60 0,10 18,40
+Joseph Liteta 43,60 52,70 82,7% 0 0 0,00 0,00 0,00
+Abdoulaye Niakhate Ndiaye 43,60 53,10 82,1% 4 0 0,73 0,00 20,30
+Enzo Ebosse 43,30 50,00 86,6% 0 0 0,00 0,00 0,00
+Torbjørn Heggem 43,20 47,50 90,9% 4 1 0,40 0,10 10,30
+Martin Vitík 43,00 51,80 83,0% 2 0 0,50 0,00 7,10
+Luca Mazzitelli 42,90 55,70 77,0% 0 0 0,00 0,00 0,00
+Mattéo Guendouzi 42,90 48,80 87,9% 12 6 1,10 0,55 21,50
+Luca Ranieri 42,70 52,50 81,3% 7 2 0,64 0,18 13,80
+Angeliño 42,60 56,70 75,1% 4 2 0,93 0,47 13,10
+Petar Sucic 42,50 49,60 85,7% 9 3 1,20 0,40 20,40
+Pablo Marí 42,50 46,50 91,4% 1 0 0,13 0,00 19,40
+Nadir Zortea 42,40 53,50 79,3% 5 0 1,03 0,00 27,30
+Mariano Troilo 42,30 48,60 87,0% 0 0 0,00 0,00 0,00
+Neil El Aynaoui 42,20 47,60 88,7% 3 2 0,73 0,48 26,00
+Kristjan Asllani 42,00 53,10 79,1% 13 1 1,48 0,11 29,70
+Filip Kostić 41,80 56,80 73,6% 4 3 1,05 0,79 22,10
+Michel Aebischer 41,30 48,50 85,2% 5 0 0,46 0,00 25,60
+Yerry Mina 41,30 46,70 88,4% 4 2 0,45 0,22 14,40
+Pervis Estupiñán 41,20 49,40 83,4% 5 0 1,02 0,00 23,40
+Jamil Siebert 41,10 42,20 97,4% 0 0 0,00 0,00 0,00
+Leonardo Spinazzola 40,70 53,40 76,2% 7 4 1,18 0,67 24,30
+Adrien Rabiot 40,50 46,30 87,5% 6 0 1,00 0,00 19,50
+Lazar Samardzic 40,20 52,70 76,3% 8 3 1,53 0,57 20,80
+Andre-Frank Zambo Anguissa 40,20 48,60 82,7% 19 8 1,83 0,77 13,50
+Pedro 40,20 48,30 83,2% 8 1 1,96 0,24 22,40
+Jean Onana 40,00 70,00 57,1% 0 0 0,00 0,00 0,00
+Luca Lipani 40,00 51,50 77,7% 0 0 0,00 0,00 0,00
+Zachary Athekame 40,00 50,80 78,7% 2 1 1,61 0,80 27,70
+Samuel Chukwueze 40,00 53,30 75,0% 0 0 0,00 0,00 0,00
+Yellu Santiago 40,00 70,00 57,1% 2 1 30,00 15,00 32,70
+Federico Dimarco 39,80 54,30 73,3% 21 7 1,98 0,66 19,10
+Toma Bašić 39,60 46,80 84,6% 15 7 2,01 0,94 26,40
+Wesley 39,60 50,40 78,6% 13 7 1,16 0,62 17,90
+Federico Baschirotto 39,60 45,50 87,0% 7 4 0,58 0,33 11,30
+Alessandro Circati 39,60 46,70 84,8% 1 1 0,11 0,11 7,70
+Hans Nicolussi Caviglia 39,50 51,70 76,4% 4 1 0,63 0,16 26,50
+Mërgim Vojvoda 39,50 48,90 80,8% 10 5 1,53 0,76 17,80
+Federico Ravaglia 39,50 53,50 73,8% 0 0 0,00 0,00 0,00
+Danilo Cataldi 39,40 49,40 79,8% 8 1 0,89 0,11 27,20
+Adam Obert 39,30 48,40 81,2% 1 0 0,10 0,00 15,30
+Alexis Saelemaekers 39,20 48,60 80,7% 20 6 1,60 0,48 17,80
+Fabiano Parisi 39,20 46,30 84,7% 3 0 1,23 0,00 22,30
+Sebastiano Luperto 39,10 43,70 89,5% 3 2 0,30 0,20 11,80
+Samuele Ricci 39,10 43,00 90,9% 9 4 1,57 0,70 21,80
+Edoardo Iannoni 38,90 46,70 83,3% 2 1 2,25 1,13 7,80
+Raoul Bellanova 38,70 47,50 81,5% 9 2 0,97 0,22 16,50
+Vasilije Adžić 38,60 50,00 77,2% 5 4 3,57 2,86 26,30
+Ruslan Malinovskyi 38,50 47,70 80,7% 18 4 2,09 0,46 26,60
+Sebastian Walukiewicz 38,50 46,30 83,2% 1 0 0,09 0,00 29,30
+Aarón Martín 38,30 54,00 70,9% 4 3 0,42 0,32 26,50
+Tiago Gabriel 38,30 42,70 89,7% 9 2 0,74 0,16 10,90
+Ignace Van Der Brempt 38,20 44,50 85,8% 0 0 0,00 0,00 0,00
+Jay Idzes 38,20 42,00 91,0% 1 0 0,08 0,00 28,20
+Elseid Hysaj 38,20 48,80 78,3% 0 0 0,00 0,00 0,00
+Emil Holm 38,10 49,80 76,5% 2 1 0,42 0,21 11,30
+Alberto Grassi 38,10 45,30 84,1% 1 1 0,23 0,23 21,60
+Manuel Lazzari 37,90 46,50 81,5% 0 0 0,00 0,00 0,00
+Marco Brescianini 37,80 46,10 82,0% 2 1 1,13 0,57 17,40
+Nicolás Paz 37,70 48,00 78,5% 45 19 3,52 1,49 24,60
+Woyo Coulibaly 37,60 42,70 88,1% 2 1 0,61 0,31 20,70
+Federico Bernardeschi 37,60 46,20 81,4% 11 4 2,65 0,96 21,00
+Jan Ziółkowski 37,50 50,80 73,8% 0 0 0,00 0,00 0,00
+Mattia Viti 37,50 45,50 82,4% 0 0 0,00 0,00 0,00
+Corrie Ndaba 37,50 41,30 90,8% 0 0 0,00 0,00 0,00
+Pietro Comuzzo 37,40 42,80 87,4% 3 0 0,69 0,00 17,00
+Nicolò Bertola 37,40 46,30 80,8% 2 1 0,30 0,15 17,00
+Martin Baturina 37,40 45,30 82,6% 2 1 1,06 0,53 17,40
+Lorenzo Pellegrini 37,20 53,10 70,1% 13 6 2,23 1,03 19,60
+Stephan El Shaarawy 37,00 47,00 78,7% 6 3 2,95 1,48 20,70
+Roberto Gagliardini 37,00 48,70 76,0% 3 1 0,36 0,12 10,30
+João Mário Lopes 37,00 48,50 76,3% 2 0 0,75 0,00 17,30
+Ivan Ilić 36,80 44,30 83,1% 0 0 0,00 0,00 0,00
+Saúl Coco 36,80 41,50 88,7% 8 3 0,67 0,25 12,40
+Balthazar Pierret 36,70 53,30 68,9% 0 0 0,00 0,00 0,00
+Łukasz Skorupski 36,70 46,50 78,9% 0 0 0,00 0,00 0,00
+Weston McKennie 36,20 44,00 82,3% 13 3 1,58 0,37 12,30
+Simone Scuffet 36,00 45,00 80,0% 0 0 0,00 0,00 0,00
+Ylber Ramadani 35,90 44,60 80,5% 8 1 0,63 0,08 26,30
+Simon Sohm 35,80 40,80 87,7% 3 0 0,48 0,00 21,10
+Davide Bartesaghi 35,80 44,90 79,7% 6 2 0,81 0,27 24,30
+Daniel Boloca 35,30 38,00 92,9% 2 0 1,33 0,00 21,80
+Unai Núñez 34,90 45,00 77,6% 5 0 0,60 0,00 12,20
+Adrian Bernabe 34,80 44,40 78,4% 23 6 2,01 0,52 22,90
+Paulo Dybala 34,70 47,00 73,8% 16 7 3,01 1,32 21,40
+Hassane Kamara 34,60 45,30 76,4% 11 3 1,44 0,39 24,30
+Jari Vandeputte 34,50 48,30 71,4% 9 4 1,01 0,45 20,80
+Charles De Ketelaere 34,40 44,30 77,7% 16 7 1,98 0,86 16,90
+Jeremy Sarmiento 34,40 38,80 88,7% 2 2 1,27 1,27 31,30
+Gianluca Gaetano 34,30 46,50 73,8% 13 5 2,85 1,09 24,10
+Josh Doig 34,30 43,60 78,7% 3 2 0,32 0,21 25,70
+Kostas Tsimikas 34,20 49,50 69,1% 1 0 0,53 0,00 21,20
+Alessandro Deiola 33,90 41,40 81,9% 3 2 0,45 0,30 13,10
+Matìas Soulé 33,90 43,40 78,1% 25 9 2,42 0,87 21,50
+Brooke Norton-Cuffy 33,80 43,50 77,7% 4 0 0,33 0,00 13,50
+Valentino Lazaro 33,80 43,70 77,3% 1 0 0,11 0,00 17,30
+Kialonda 33,80 39,80 84,9% 8 0 0,62 0,00 8,60
+Fisayo Dele-Bashiru 33,80 36,50 92,6% 1 0 0,38 0,00 16,70
+Antonino Gallo 33,70 50,20 67,1% 2 1 0,16 0,08 12,20
+Matteo Palma 33,60 41,80 80,4% 0 0 0,00 0,00 0,00
+Ardian Ismajli 33,60 40,90 82,2% 1 0 0,18 0,00 16,10
+Warren Bondo 33,40 37,40 89,3% 3 0 0,32 0,00 26,80
+Riyad Idrissi 33,40 46,30 72,1% 2 2 0,57 0,57 9,90
+Christian Pulisic 33,20 39,10 84,9% 11 8 2,35 1,71 16,00
+Jean Butez 33,10 39,60 83,6% 0 0 0,00 0,00 0,00
+Edoardo Corvi 33,00 41,50 79,5% 0 0 0,00 0,00 0,00
+Yunus Musah 32,90 41,40 79,5% 1 0 1,50 0,00 4,40
+Yunus Musah 32,90 41,40 79,5% 1 0 1,50 0,00 4,40
+Guillermo Maripán 32,90 38,20 86,1% 9 5 0,80 0,45 11,70
+Christ-Owen Kouassi 32,80 42,80 76,6% 0 0 0,00 0,00 0,00
+Francisco Conceição 32,70 40,10 81,5% 22 6 2,96 0,81 17,30
+Medon Berisha 32,60 44,10 73,9% 21 4 2,41 0,46 28,20
+Federico Ceccherini 32,50 39,20 82,9% 0 0 0,00 0,00 0,00
+Adrien Tameze 32,50 41,60 78,1% 2 0 0,30 0,00 10,60
+Reda Belahyane 32,40 37,10 87,3% 0 0 0,00 0,00 0,00
+Danilo Veiga 32,40 43,50 74,5% 2 1 0,19 0,10 9,60
+Stefano Sabelli 32,40 49,30 65,7% 0 0 0,00 0,00 0,00
+Yann Sommer 32,40 37,30 86,9% 0 0 0,00 0,00 0,00
+Saba Goglichidze 32,30 40,00 80,8% 3 1 0,64 0,21 7,70
+Noa Lang 32,10 46,40 69,2% 4 3 1,21 0,91 16,00
+Youssef Maleh 32,00 44,00 72,7% 0 0 0,00 0,00 0,00
+Kristian Thorstvedt 32,00 41,10 77,9% 15 3 1,99 0,40 13,80
+Alessandro Marcandalli 32,00 39,80 80,4% 2 1 0,36 0,18 9,60
+Kenan Yıldız 31,90 40,50 78,8% 28 12 2,54 1,09 19,80
+Nicola Zalewski 31,70 48,10 65,9% 7 1 1,33 0,19 20,70
+Adam Masina 31,60 38,00 83,2% 0 0 0,00 0,00 0,00
+Nicolae Stanciu 31,60 46,30 68,3% 4 0 2,09 0,00 18,10
+Fali Candé 31,40 39,80 78,9% 3 0 0,72 0,00 23,20
+Juan Cuadrado 31,40 41,70 75,3% 5 1 1,38 0,28 26,80
+Enrico Del Prato 31,40 38,40 81,8% 12 7 0,92 0,54 10,00
+Niccolò Fortini 31,30 40,00 78,3% 4 1 1,01 0,25 25,50
+Cristiano Biraghi 31,00 43,90 70,6% 2 0 0,39 0,00 21,10
+Mikayil Ngor Faye 30,90 40,40 76,5% 2 0 0,89 0,00 20,30
+Álex Sala 30,80 35,80 86,0% 3 1 2,48 0,83 23,20
+Antonio Caracciolo 30,70 37,20 82,5% 9 2 0,69 0,15 15,80
+Matteo Politano 30,70 43,40 70,7% 24 4 2,70 0,45 19,50
+Jesper Karlström 30,70 39,10 78,5% 10 2 0,78 0,16 18,00
+Devyne Rensch 30,70 46,70 65,7% 1 1 0,68 0,68 5,70
+Oier Zarraga 30,50 36,00 84,7% 1 0 0,49 0,00 27,50
+Ismaël Koné 30,10 33,50 89,9% 6 1 0,63 0,10 22,10
+Emil Audero 30,10 46,90 64,2% 0 0 0,00 0,00 0,00
+Daniele Ghilardi 30,00 30,00 100,0% 0 0 0,00 0,00 0,00
+Armel Bella Kotchap 30,00 37,10 80,9% 1 0 0,18 0,00 14,90
+Ali Dembélé 30,00 70,00 42,9% 1 0 6,92 0,00 12,40
+Alessandro Di Pardo 30,00 40,00 75,0% 1 0 1,70 0,00 8,40
+Rolando Mandragora 29,80 39,90 74,7% 19 6 1,79 0,57 22,60
+Ruben Loftus-Cheek 29,80 35,70 83,5% 13 2 2,97 0,46 10,20
+Arturo Calabresi 29,80 37,60 79,3% 2 1 0,49 0,24 21,40
+Mateus Lusuardi 29,50 36,40 81,0% 4 0 1,82 0,00 13,60
+Simone Canestrelli 29,30 36,70 79,8% 4 1 0,31 0,08 8,90
+Malthe Hojholt 29,20 35,80 81,6% 0 0 0,00 0,00 0,00
+Dodô 29,20 40,80 71,6% 14 1 1,16 0,08 18,20
+Vanja Milinković-Savić 29,20 42,70 68,4% 0 0 0,00 0,00 0,00
+Mike Maignan 29,20 38,20 76,4% 0 0 0,00 0,00 0,00
+Tommaso Baldanzi 29,10 35,20 82,7% 8 3 2,41 0,90 18,40
+Lorenzo De Silvestri 29,10 37,70 77,2% 0 0 0,00 0,00 0,00
+Youssouf Fofana 29,00 34,30 84,5% 22 8 1,90 0,69 19,20
+Patrizio Masini 28,90 39,60 73,0% 10 2 1,05 0,21 18,30
+Nicolò Casale 28,80 38,20 75,4% 0 0 0,00 0,00 0,00
+Franco Vázquez 28,80 39,40 73,1% 11 4 2,24 0,81 20,20
+Alessandro Zanoli 28,80 37,10 77,6% 0 0 0,00 0,00 0,00
+Arthur Atta 28,80 37,10 77,6% 25 9 2,04 0,73 21,50
+Juan David Cabal 28,60 35,70 80,1% 2 1 2,86 1,43 18,70
+Cristian Volpato 28,60 38,90 73,5% 6 1 1,74 0,29 15,40
+Martin Frese 28,50 43,20 66,0% 11 4 1,09 0,40 19,70
+Mile Svilar 28,40 38,10 74,5% 0 0 0,00 0,00 0,00
+Elif Elmas 28,20 35,40 79,7% 8 3 2,05 0,77 17,80
+Marco Carnesecchi 28,20 37,20 75,8% 0 0 0,00 0,00 0,00
+Jordan Zemura 28,00 40,90 68,5% 2 0 0,37 0,00 24,00
+Matteo Prati 28,00 36,10 77,6% 13 0 1,28 0,00 24,10
+Lautaro Valenti 28,00 41,80 67,0% 5 2 0,59 0,23 30,30
+Tijjani Noslin 27,80 33,30 83,5% 3 3 3,21 3,21 12,30
+Cheikh Niasse 27,70 35,40 78,2% 1 0 0,39 0,00 13,40
+Mattia Zaccagni 27,70 35,60 77,8% 19 7 1,64 0,61 12,40
+Valentin Carboni 27,50 36,30 75,8% 6 2 1,51 0,50 17,80
+Francesco Folino 27,50 37,50 73,3% 1 1 2,81 2,81 8,00
+Nikola Vlašić 27,50 34,00 80,9% 10 3 1,00 0,30 20,50
+Josep Martinez 27,50 35,50 77,5% 0 0 0,00 0,00 0,00
+Niels Nkounkou 27,30 37,00 73,8% 2 0 0,67 0,00 18,80
+Cesare Casadei 27,10 35,00 77,4% 18 6 1,51 0,50 15,30
+Mandela Keita 27,10 31,80 85,2% 5 1 0,48 0,10 28,70
+Morten Frendrup 26,90 33,30 80,8% 3 1 0,26 0,09 17,20
+David Neres 26,70 36,10 74,0% 13 4 2,02 0,62 22,10
+Tariq Lamptey 26,70 36,70 72,8% 0 0 0,00 0,00 0,00
+Michele Collocolo 26,60 33,10 80,4% 1 1 0,32 0,32 32,70
+Marcus Pedersen 26,50 37,90 69,9% 4 2 0,48 0,24 12,30
+Zion Suzuki 26,40 40,60 65,0% 0 0 0,00 0,00 0,00
+Aster Vranckx 26,30 32,40 81,2% 2 0 0,40 0,00 27,00
+Mohamed Kaba 26,30 36,80 71,5% 4 2 2,08 1,04 16,60
+Jonathan Rowe 26,30 32,00 82,2% 9 2 3,03 0,67 20,70
+Ivan Provedel 26,10 35,60 73,3% 0 0 0,00 0,00 0,00
+Denzel Dumfries 26,00 35,30 73,7% 9 3 1,13 0,38 11,80
+Christian Kabasele 26,00 29,60 87,8% 2 1 0,27 0,14 8,60
+Robin Gosens 25,90 37,40 69,3% 6 1 0,75 0,12 7,80
+Maduka Okoye 25,90 38,30 67,6% 0 0 0,00 0,00 0,00
+Victor Nelsson 25,80 30,30 85,1% 1 0 0,08 0,00 10,60
+Michele Di Gregorio 25,70 31,50 81,6% 0 0 0,00 0,00 0,00
+Rafik Belghali 25,60 34,00 75,3% 8 3 0,78 0,29 14,50
+Jakub Piotrowski 25,50 31,00 82,3% 10 2 1,71 0,34 19,60
+Scott McTominay 25,50 30,30 84,2% 28 13 2,54 1,18 18,20
+Marco Palestra 25,10 32,60 77,0% 4 1 0,36 0,09 19,70
+Michel Ndary Adopo 25,10 30,80 81,5% 7 3 0,66 0,28 15,10
+Grigoris Kastanos 25,00 55,00 45,5% 1 0 4,50 0,00 16,50
+Assane Diao 25,00 34,60 72,3% 2 0 0,77 0,00 29,20
+Cher Ndour 25,00 35,00 71,4% 1 0 0,28 0,00 22,80
+Domenico Berardi 24,50 33,10 74,0% 16 8 1,61 0,81 20,00
+Alessio Zerbin 24,50 33,80 72,5% 6 2 1,04 0,35 16,80
+Alex Meret 24,50 27,50 89,1% 0 0 0,00 0,00 0,00
+Nahuel Estévez 24,30 38,50 63,1% 5 0 1,26 0,00 18,00
+Marco Silvestri 24,30 39,30 61,8% 0 0 0,00 0,00 0,00
+Ebenezer Akinsanmiro 24,10 28,80 83,7% 10 3 1,20 0,36 24,20
+Leon Bailey 24,10 34,70 69,5% 1 0 0,57 0,00 4,60
+Kamaldeen Sulemana 23,90 29,10 82,1% 8 3 1,44 0,54 15,00
+Abdou Harroui 23,80 33,80 70,4% 3 1 1,89 0,63 25,40
+Antoine Bernede 23,80 33,30 71,5% 6 1 0,59 0,10 21,50
+Daniel Maldini 23,80 33,80 70,4% 7 2 3,33 0,95 23,50
+Domagoj Bradarić 23,80 34,20 69,6% 5 3 0,50 0,30 16,10
+Arijanet Muric 23,80 35,40 67,2% 0 0 0,00 0,00 0,00
+Kingsley Ehizibue 23,70 33,70 70,3% 1 0 0,17 0,00 13,70
+Daniel Denoon 23,60 28,60 82,5% 0 0 0,00 0,00 0,00
+Pietro Terracciano 23,60 25,70 91,8% 0 0 0,00 0,00 0,00
+Albert Guðmundsson 23,50 27,40 85,8% 3 0 0,43 0,00 23,00
+Fallou Cham 23,30 36,30 64,2% 5 2 2,10 0,84 14,20
+David de Gea 23,20 33,70 68,8% 0 0 0,00 0,00 0,00
+Elia Caprile 23,10 33,10 69,8% 0 0 0,00 0,00 0,00
+Eddy Kouadio 22,90 30,00 76,3% 0 0 0,00 0,00 0,00
+Mehdi Léris 22,90 33,40 68,6% 7 1 1,08 0,15 13,70
+Mathias Løvik 22,90 31,30 73,2% 3 0 0,57 0,00 17,80
+Franco Israel 22,90 36,00 63,6% 0 0 0,00 0,00 0,00
+Edin Džeko 22,80 31,20 73,1% 4 1 1,62 0,41 11,30
+Federico Bonazzoli 22,60 28,90 78,2% 16 8 2,57 1,29 18,20
+Giovanni Bonfanti 22,50 37,20 60,5% 5 1 1,39 0,28 14,50
+Armand Lauriente 22,50 28,60 78,7% 21 6 2,61 0,74 21,40
+Razvan Sava 22,50 28,70 78,4% 0 0 0,00 0,00 0,00
+Gustav Isaksen 22,20 28,70 77,4% 16 6 2,56 0,96 17,70
+Tete Morente 22,20 32,20 68,9% 14 2 1,58 0,23 18,70
+Alberto Paleari 22,20 33,60 66,1% 0 0 0,00 0,00 0,00
+Massimo Pessina 22,20 35,60 62,4% 0 0 0,00 0,00 0,00
+Jacopo Fazzini 22,10 29,50 74,9% 7 1 1,64 0,23 23,00
+Ademola Lookman 22,10 28,70 77,0% 19 5 2,84 0,75 16,80
+Nicolas-Gerrit Kühn 22,00 30,30 72,6% 4 2 1,00 0,50 13,60
+Martín Payero 21,80 30,50 71,5% 5 0 0,81 0,00 28,00
+Suat Serdar 21,80 31,10 70,1% 17 5 2,02 0,59 18,30
+Adrian Šemper 21,60 33,90 63,7% 0 0 0,00 0,00 0,00
+Tommaso Barbieri 21,50 32,00 67,2% 6 1 1,09 0,18 19,00
+Faustino Anjorin 21,40 37,10 57,7% 1 0 1,36 0,00 16,50
+Giuseppe Pezzella 21,40 31,20 68,6% 3 0 0,41 0,00 15,90
+Hernani 21,30 32,50 65,5% 1 0 1,23 0,00 21,90
+Nicholas Pierini 21,30 28,80 74,0% 2 0 2,61 0,00 21,50
+Jonathan David 21,30 26,80 79,5% 11 4 1,96 0,71 10,30
+Tommaso Pobega 20,90 26,80 78,0% 7 4 1,49 0,85 19,40
+Oliver Jensen 20,90 26,70 78,3% 8 2 0,91 0,23 18,30
+Christopher Nkunku 20,80 22,80 91,2% 5 2 1,29 0,52 12,20
+Riccardo Sottil 20,80 28,70 72,5% 4 2 1,04 0,52 27,50
+Alieu Fadera 20,60 27,00 76,3% 7 2 1,50 0,43 17,70
+Konan N'dri 20,60 30,00 68,7% 6 3 3,29 1,65 21,50
+Vakoun Bayo 20,60 26,90 76,6% 11 1 3,43 0,31 13,30
+Sascha Britschgi 20,60 29,60 69,6% 6 1 0,73 0,12 21,00
+Emanuele Valeri 20,60 38,00 54,2% 7 0 1,06 0,00 28,10
+Jesus Rodríguez 20,40 29,00 70,3% 15 5 2,21 0,74 16,70
+Lassana Coulibaly 20,10 25,90 77,6% 6 4 0,54 0,36 12,70
+Maxwel Cornet 20,00 35,00 57,1% 2 1 2,40 1,20 15,00
+Junior Messias 20,00 27,30 73,3% 2 0 1,86 0,00 13,10
+Sebastiano Esposito 20,00 30,10 66,4% 16 3 1,67 0,31 19,80
+Gianluca Scamacca 20,00 27,10 73,8% 23 8 5,46 1,90 17,50
+Nicolás González 20,00 45,00 44,4% 2 0 9,47 0,00 17,90
+Pasquale Mazzocchi 20,00 25,00 80,0% 0 0 0,00 0,00 0,00
+Jacob Ondrejka 20,00 28,00 71,4% 3 1 6,00 2,00 15,10
+Matteo Cancellieri 19,80 26,30 75,3% 11 5 2,41 1,10 15,60
+Loïs Openda 19,70 29,40 67,0% 13 2 3,84 0,59 17,00
+Álvaro Morata 19,60 26,10 75,1% 14 4 2,09 0,60 13,90
+Rafael Leão 19,60 25,90 75,7% 18 8 2,58 1,15 20,20
+Nikola Krstović 19,50 25,00 78,0% 29 8 5,18 1,43 14,50
+Mattia Perin 19,50 19,50 100,0% 0 0 0,00 0,00 0,00
+Idrissa Touré 19,30 31,20 61,9% 13 3 1,29 0,30 11,40
+Nicolò Cambiaghi 19,00 24,10 78,8% 13 4 1,88 0,58 16,10
+Marius Marin 18,90 27,10 69,7% 0 0 0,00 0,00 0,00
+Þórir Jóhann Helgason 18,90 23,30 81,1% 1 1 1,10 1,10 21,60
+Gvidas Gineitis 18,70 29,40 63,6% 1 0 0,32 0,00 30,60
+Mattia Felici 18,70 30,00 62,3% 9 6 1,97 1,31 16,30
+Amin Sarr 18,70 26,30 71,1% 6 2 1,56 0,52 16,80
+Thijs Dallinga 18,60 25,50 72,9% 9 2 2,17 0,48 12,70
+Samuele Angori 18,50 30,20 61,3% 1 0 0,15 0,00 33,10
+Gabriele Piccinini 18,40 25,20 73,0% 3 1 1,19 0,40 17,10
+Lautaro Martínez 18,30 24,30 75,3% 42 10 3,90 0,93 12,30
+Romano Floriani 18,30 26,50 69,1% 2 0 0,38 0,00 21,50
+Lameck Banda 18,10 23,60 76,7% 7 4 1,32 0,75 19,30
+Boulaye Dia 18,10 22,20 81,5% 8 4 0,90 0,45 11,00
+Jurgen Ekkelenkamp 18,00 25,70 70,0% 5 3 0,92 0,55 24,70
+Che Adams 18,00 24,20 74,4% 21 8 3,29 1,25 21,30
+Rui Modesto 18,00 24,00 75,0% 0 0 0,00 0,00 0,00
+Walid Cheddira 17,80 25,60 69,5% 6 2 6,84 2,28 16,50
+Giovanni Fabbian 17,70 22,10 80,1% 8 0 1,68 0,00 13,40
+Mikael Ellertsson 17,70 24,70 71,7% 12 5 1,19 0,50 16,80
+İsak Vural 17,60 22,80 77,2% 1 0 0,34 0,00 12,10
+Evan Ferguson 17,60 22,10 79,6% 11 4 2,61 0,95 16,30
+Nicolás Valentini 17,40 26,20 66,4% 3 2 0,63 0,42 18,70
+Nicolò Zaniolo 17,30 24,00 72,1% 24 9 3,10 1,16 21,10
+Benjamín Domínguez 17,30 22,30 77,6% 4 0 1,84 0,00 16,80
+Marcus Thuram 17,20 23,30 73,8% 22 8 3,61 1,31 12,00
+Nicola Leali 17,20 26,20 65,6% 0 0 0,00 0,00 0,00
+Francesco Esposito 16,80 24,60 68,3% 13 4 3,19 0,98 11,10
+Cyril Ngonge 16,70 24,50 68,2% 16 8 1,96 0,98 19,20
+Ange-Yoan Bonny 16,70 21,20 78,8% 9 4 1,85 0,82 12,50
+Dachi Lordkipanidze 16,70 23,30 71,7% 0 0 0,00 0,00 0,00
+Jayden Addai 16,50 24,00 68,8% 11 6 1,94 1,06 17,70
+Santiago Pierotti 16,40 23,20 70,7% 10 3 1,30 0,39 15,20
+Luca Moro 16,00 18,00 88,9% 2 0 4,00 0,00 11,80
+Morten Thorsby 16,00 25,30 63,2% 8 2 1,52 0,38 11,20
+Iker Bravo 15,80 21,60 73,1% 3 1 1,56 0,52 20,80
+Michael Folorunsho 15,80 24,40 64,8% 15 2 1,27 0,17 17,70
+Lorenzo Montipò 15,80 30,00 52,7% 0 0 0,00 0,00 0,00
+Pontus Almqvist 15,40 20,50 75,1% 1 0 0,26 0,00 16,80
+Jean-Daniel Akpa-Akpro 15,30 22,00 69,5% 4 1 0,73 0,18 17,00
+Giovane 15,30 24,90 61,4% 33 18 2,82 1,54 20,00
+Wladimiro Falcone 15,10 30,60 49,3% 0 0 0,00 0,00 0,00
+Riccardo Orsolini 14,60 24,50 59,6% 28 11 3,08 1,21 20,50
+Rasmus Højlund 14,50 18,90 76,7% 7 4 0,95 0,55 14,40
+Leonardo Pavoletti 14,40 27,80 51,8% 2 0 2,14 0,00 9,90
+Vitinha 14,00 23,10 60,6% 16 4 2,37 0,59 17,90
+Albert Grønbaek 14,00 18,00 77,8% 0 0 0,00 0,00 0,00
+Giovanni Simeone 13,90 18,80 73,9% 27 9 3,24 1,08 17,80
+Semih Kılıçsoy 13,80 20,00 69,0% 0 0 0,00 0,00 0,00
+Jens Odgaard 13,60 18,40 73,9% 10 4 1,80 0,72 19,20
+Mattéo Tramoni 13,60 21,80 62,4% 13 3 1,95 0,45 19,70
+Christian Ordoñez 13,50 18,50 73,0% 2 1 0,50 0,25 12,70
+Artem Dovbyk 13,30 18,90 70,4% 9 4 2,48 1,10 9,50
+Ciro Immobile 13,30 30,00 44,3% 0 0 0,00 0,00 0,00
+Duván Zapata 13,20 19,10 69,1% 7 2 3,18 0,91 18,10
+Anastasios Douvikas 13,20 17,10 77,2% 15 8 2,39 1,28 12,80
+Stefano Moreo 13,10 22,60 58,0% 10 3 1,72 0,52 12,80
+Davide Frattesi 13,00 17,80 73,0% 7 3 3,07 1,32 14,90
+Lorenzo Colombo 12,70 19,10 66,5% 22 7 2,80 0,89 15,90
+M'Bala Nzola 12,70 16,30 77,9% 18 3 1,90 0,32 16,70
+Adrian Benedyczak 12,50 22,10 56,6% 4 0 1,66 0,00 12,90
+Keinan Davis 12,40 16,20 76,5% 18 8 2,36 1,05 14,30
+Valentín Castellanos 12,40 20,00 62,0% 13 5 2,56 0,98 16,60
+Lennon Miller 12,20 20,00 61,0% 2 1 2,34 1,17 20,00
+Gaetano Oristanio 12,20 16,70 73,1% 4 0 2,25 0,00 14,30
+Sebastian Otoa 12,00 14,00 85,7% 0 0 0,00 0,00 0,00
+Dennis Johnsen 12,00 28,70 41,8% 1 0 0,67 0,00 31,70
+Patrick Cutrone 12,00 19,70 60,9% 23 7 2,59 0,79 15,50
+Zakaria Aboukhlal 11,70 18,30 63,9% 2 2 1,09 1,09 13,10
+Zito Luvumbo 11,70 15,70 74,5% 7 4 3,01 1,72 18,50
+Dušan Vlahović 11,70 17,20 68,0% 29 10 3,84 1,32 16,30
+Lorenzo Lucca 11,20 14,30 78,3% 12 5 2,83 1,18 14,00
+Caleb Ekuban 11,10 18,30 60,7% 11 3 3,13 0,85 14,60
+Andrea Belotti 11,00 14,80 74,3% 5 3 2,39 1,44 12,20
+Andrea Pinamonti 11,00 16,80 65,5% 32 16 2,68 1,34 14,20
+Nikola Štulić 10,80 16,80 64,3% 11 3 1,27 0,35 18,80
+Antonio Sanabria 10,70 13,00 82,3% 3 1 0,70 0,23 5,70
+Jeff Ekhator 10,60 19,40 54,6% 8 2 2,35 0,59 14,00
+Daniel Mosquera 10,50 18,60 56,5% 5 3 2,34 1,41 13,70
+Gennaro Borrelli 10,50 15,30 68,6% 13 5 1,77 0,68 12,70
+Santiago Giménez 10,30 13,00 79,2% 21 6 3,04 0,87 11,80
+Nicolò Cavuoti 10,00 10,00 100,0% 0 0 0,00 0,00 0,00
+Adam Buksa 10,00 16,90 59,2% 6 3 1,24 0,62 14,30
+Andrea Ghion 10,00 20,00 50,0% 0 0 0,00 0,00 0,00
+Stefano Turati 10,00 26,00 38,5% 0 0 0,00 0,00 0,00
+Santiago Castro 9,61 13,90 69,1% 16 7 2,12 0,93 15,00
+Gift Orban 9,24 15,00 61,6% 35 12 3,81 1,31 18,70
+Mateo Pellegrino 8,69 15,60 55,7% 21 8 1,72 0,65 17,00
+Francesco Camarda 8,41 12,00 70,1% 7 2 1,59 0,45 16,40
+Milan Đurić 8,33 31,70 26,3% 3 0 5,09 0,00 9,00
+Roberto Piccoli 7,29 13,60 53,6% 16 7 2,71 1,19 14,40
+Jamie Vardy 7,16 12,70 56,4% 7 4 1,04 0,60 14,10
+Moise Kean 6,02 8,98 67,0% 47 10 3,97 0,84 15,30
+David Okereke 5,56 10,00 55,6% 0 0 0,00 0,00 0,00
+Idrissa Guèye 5,00 10,00 50,0% 0 0 0,00 0,00 0,00
+Alieu Njie 5,00 15,00 33,3% 1 1 5,29 5,29 11,70
+Manuel De Luca 5,00 25,00 20,0% 1 1 5,63 5,63 31,60
+Henrik Meister 5,00 8,82 56,7% 10 3 1,46 0,44 11,40
+Ben Cremaschi 5,00 5,00 100,0% 0 0 0,00 0,00 0,00
+Matteo Darmian 5,00 20,00 25,0% 0 0 0,00 0,00 0,00
+Giuseppe Ambrosino 2,50 10,00 25,0% 0 0 0,00 0,00 0,00
+Sead Kolašinac 2,00 2,00 100,0% 0 0 0,00 0,00 0,00
+Antonio Vergara 2,00 2,00 100,0% 0 0 0,00 0,00 0,00
+Junior Ajayi 1,00 1,00 100,0% 0 0 0,00 0,00 0,00
+Tjaš Begić 0,00 1,00 0,0% 0 0 0,00 0,00 0,00
+Louis Buffon 0,00 5,00 0,0% 0 0 0,00 0,00 0,00
+Edoardo Goldaniga 0,00 1,00 0,0% 0 0 0,00 0,00 0,00
+Cheveyo Muy 0,00 10,00 0,0% 1 0 18,00 0,00 13,70
+Faris Pemi Moumbagna 0,00 10,00 0,0% 1 0 6,00 0,00 11,70
+`;
+
 let playersData = [];
+let playersPassingData = [];
 let playersMinMatches = 0;
 let playersSortColumn = 'name';
 let playersSortDirection = 'asc';
@@ -5374,20 +5899,20 @@ const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 
-if (view === 'analytics') {
-    if (tableView)     tableView.classList.add('hidden');
-    if (analyticsView) analyticsView.classList.remove('hidden');
-    if (playersView)   playersView.classList.add('hidden');
-    if (sidebar)       sidebar.classList.remove('hidden');
+    if (view === 'analytics') {
+        if (tableView)     tableView.classList.add('hidden');
+        if (analyticsView) analyticsView.classList.remove('hidden');
+        if (playersView)   playersView.classList.add('hidden');
+        if (sidebar)       sidebar.classList.remove('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
     }
-} else if (view === 'players') {
-    if (tableView)     tableView.classList.add('hidden');
-    if (analyticsView) analyticsView.classList.add('hidden');
-    if (playersView)   playersView.classList.remove('hidden');
+    } else if (view === 'players') {
+        if (tableView)     tableView.classList.add('hidden');
+        if (analyticsView) analyticsView.classList.add('hidden');
+        if (playersView)   playersView.classList.remove('hidden');
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
@@ -5399,6 +5924,7 @@ if (view === 'analytics') {
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
+    renderPlayersPassingTable();
 } else {
     // stats, matches, playingTime, teams
     if (tableView)     tableView.classList.remove('hidden');
@@ -5734,8 +6260,51 @@ function parsePlayersDB(raw) {
         .filter(Boolean);
 }
 
+// Parsing per il dataset Passaggi/Tiri giocatori
+function parsePlayersPassing(raw) {
+    if (!raw) return [];
+
+    const toNumber = (val) => {
+        const normalized = String(val || '').replace('%', '').replace(',', '.');
+        const parsed = parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const numberPattern = /(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)%?\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)\s+(\d+(?:[.,]\d+)?)/;
+
+    return raw
+        .trim()
+        .split('\n')
+        .map((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.toLowerCase().startsWith('player pass')) return null;
+
+            const match = trimmed.match(numberPattern);
+            if (!match) return null;
+
+            const name = trimmed.slice(0, match.index).trim();
+            if (!name) return null;
+
+            const [_, passesCompleted, passesAttempted, passPct, shotsTotal, shotsOnTarget, shotsPer90, shotsOnTargetPer90, avgShotDistance] = match;
+
+            return {
+                name,
+                passesCompleted: toNumber(passesCompleted),
+                passesAttempted: toNumber(passesAttempted),
+                passPct: toNumber(passPct),
+                shotsTotal: toNumber(shotsTotal),
+                shotsOnTarget: toNumber(shotsOnTarget),
+                shotsPer90: toNumber(shotsPer90),
+                shotsOnTargetPer90: toNumber(shotsOnTargetPer90),
+                avgShotDistance: toNumber(avgShotDistance)
+            };
+        })
+        .filter(Boolean);
+}
+
 // Sovrascriviamo playersData con l’array parsato
 playersData = parsePlayersDB(playersRawData);
+playersPassingData = parsePlayersPassing(playersPassingRawData);
 initPlayersFilters();
 
 function extractSurname(fullName) {
@@ -5831,6 +6400,40 @@ function formatPlayerName(fullName) {
     const givenNames = parts.slice(0, idx + 1).join(' ');
 
     return `<span class="font-bold">${surnameParts.join(' ')}</span>${givenNames ? ` ${givenNames}` : ''}`;
+}
+
+function formatPassingValue(val, digits = 2) {
+    if (!Number.isFinite(val)) return '-';
+    return val.toFixed(digits).replace('.', ',');
+}
+
+function renderPlayersPassingTable() {
+    const tbody = document.getElementById('players-passing-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    playersPassingData.forEach((p, index) => {
+        const passPct = Number.isFinite(p.passPct)
+            ? `${p.passPct.toFixed(1).replace('.', ',')}%`
+            : '-';
+
+        const row = `
+            <tr>
+                <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
+                <td class="p-2 text-left">${formatPlayerName(p.name)}</td>
+                <td class="p-2">${formatPassingValue(p.passesCompleted)}</td>
+                <td class="p-2">${formatPassingValue(p.passesAttempted)}</td>
+                <td class="p-2">${passPct}</td>
+                <td class="p-2">${formatPassingValue(p.shotsTotal)}</td>
+                <td class="p-2">${formatPassingValue(p.shotsOnTarget)}</td>
+                <td class="p-2">${formatPassingValue(p.shotsPer90)}</td>
+                <td class="p-2">${formatPassingValue(p.shotsOnTargetPer90)}</td>
+                <td class="p-2">${formatPassingValue(p.avgShotDistance)}</td>
+            </tr>`;
+
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
 }
 
         function toggleInactiveRefs() {
