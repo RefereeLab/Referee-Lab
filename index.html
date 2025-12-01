@@ -6316,12 +6316,15 @@ function parsePlayersDB(raw) {
             [name, role, team, ...statsTokens] = tabParts.slice(0, 8);
         } else {
             const trimmed = line.trim();
-            const statsMatch = trimmed.match(/(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)\s*(\d+,\d+)$/);
+            const numberMatches = Array.from(trimmed.matchAll(/(\d+,\d{1,2})/g));
 
-            if (!statsMatch) return null;
+            if (numberMatches.length < 5) return null;
 
-            statsTokens = statsMatch.slice(1);
-            const prefix = trimmed.slice(0, statsMatch.index).trim();
+            const statsMatches = numberMatches.slice(-5);
+            statsTokens = statsMatches.map((m) => m[1]);
+
+            const firstStatIndex = statsMatches[0]?.index ?? trimmed.length;
+            const prefix = trimmed.slice(0, firstStatIndex).trim();
 
             const nameRoleTeamMatch = prefix.match(/^(?<name>.+?)(?<role>[A-Z]{2,3}(?:,[A-Z]{2,3})*)(?<team>[A-ZÀ-ÿ][A-Za-zÀ-ÿ'\.\s-]*)$/);
             if (!nameRoleTeamMatch || !nameRoleTeamMatch.groups) return null;
