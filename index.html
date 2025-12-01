@@ -1006,10 +1006,16 @@ html, body {
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <label for="players-team-filter" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per squadra</label>
-                    <select id="players-team-filter" multiple class="mt-2 w-full bg-slate-900 border border-slate-700 text-sm text-slate-200 rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none" onchange="handlePlayersTeamChange(this)"></select>
-                    <p class="text-[10px] text-slate-500 mt-1">Seleziona una o più squadre (Ctrl/Cmd per selezione multipla).</p>
+                <div class="mt-4 relative" id="players-team-filter-container">
+                    <label for="players-team-trigger" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per squadra</label>
+                    <button id="players-team-trigger" type="button" class="mt-2 w-full bg-slate-900 border border-slate-700 text-sm text-slate-200 rounded px-3 py-2 flex items-center justify-between focus:border-yellow-500 focus:ring-0 outline-none" onclick="togglePlayersTeamDropdown()">
+                        <span id="players-team-trigger-label">Tutte le squadre</span>
+                        <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
+                    </button>
+                    <div id="players-team-dropdown" class="absolute mt-1 w-full bg-slate-900 border border-slate-700 rounded shadow-card max-h-64 overflow-y-auto hidden z-20">
+                        <div class="p-2 text-[11px] text-slate-400 border-b border-slate-800">Seleziona una o più squadre</div>
+                        <div id="players-team-options" class="max-h-52 overflow-y-auto"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1072,15 +1078,10 @@ html, body {
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passPct" onclick="handlePlayersSort('passPct')" title="Percentuale di precisione sui passaggi">
                                     <span class="players-col-label">% Pass</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsTotal" onclick="handlePlayersSort('shotsTotal')" title="Tiri totali">
-                                    <span class="players-col-label">Tiri</span> <span class="players-sort-icon text-yellow-400"></span>
-                                </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTarget" onclick="handlePlayersSort('shotsOnTarget')" title="Tiri in porta">
-                                    <span class="players-col-label" data-label-per90="Tiri P." data-label-total="Tiri P.">Tiri P.</span> <span class="players-sort-icon text-yellow-400"></span>
-                                </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsPer90" onclick="handlePlayersSort('shotsPer90')" title="Tiri totali">
                                     <span class="players-col-label" data-label-per90="Tiri/90" data-label-total="Tiri Tot">Tiri/90</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
+
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTargetPer90"onclick="handlePlayersSort('shotsOnTargetPer90')" title="Tiri in porta">
                                     <span class="players-col-label" data-label-per90="TiriP/90" data-label-total="TiriP Tot">TiriP/90</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
@@ -6126,10 +6127,11 @@ function getPlayerStatsForMode(player) {
         fouls: roundTotal(player.fouls),
         fouled: roundTotal(player.fouled),
         crosses: roundTotal(player.crosses),
+        passCompleted: roundTotal(player.passCompleted),
+        passAttempted: roundTotal(player.passAttempted),
         shotsPer90: roundTotal(player.shotsPer90),
         shotsOnTargetPer90: roundTotal(player.shotsOnTargetPer90),
     };
-
     return playersStatMode === 'total' ? totals : per90Stats;
 }
 
@@ -6216,8 +6218,6 @@ function renderPlayersTable() {
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.passCompleted, volumeDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.passAttempted, volumeDigits)}</td>
             <td class="p-2 whitespace-nowrap">${passPct}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsTotal, volumeDigits)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsOnTarget, volumeDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsPer90, rateDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsOnTargetPer90, rateDigits)}</td>
         `;
@@ -6252,10 +6252,6 @@ function getPlayersSortValue(player, column) {
             return Number.isFinite(stats.passAttempted) ? stats.passAttempted : 0;
         case 'passPct':
             return Number.isFinite(stats.passPct) ? stats.passPct : 0;
-        case 'shotsTotal':
-            return Number.isFinite(stats.shotsTotal) ? stats.shotsTotal : 0;
-        case 'shotsOnTarget':
-            return Number.isFinite(stats.shotsOnTarget) ? stats.shotsOnTarget : 0;
         case 'shotsPer90':
             return Number.isFinite(stats.shotsPer90) ? stats.shotsPer90 : 0;
         case 'shotsOnTargetPer90':
@@ -6465,7 +6461,7 @@ function toggleLowPresenceExclusion() {
 function initPlayersFilters() {
     const slider = document.getElementById('playersMinMatches');
     const label = document.getElementById('playersMinMatchesValue');
-    const teamSelect = document.getElementById('players-team-filter');
+    const teamOptionsContainer = document.getElementById('players-team-options');
 
     if (slider) {
         playersMaxMatches = playersData.length ? Math.max(...playersData.map(p => p.n90)) : 0;
@@ -6482,15 +6478,7 @@ function initPlayersFilters() {
         .filter(Boolean)))
         .sort((a, b) => a.localeCompare(b, 'it', { sensitivity: 'base' }));
 
-    if (teamSelect) {
-        const options = ['<option value="all">Tutte le squadre</option>',
-            ...playerTeams.map(team => `<option value="${team.toLowerCase()}">${team}</option>`)
-        ].join('');
-        teamSelect.innerHTML = options;
-        Array.from(teamSelect.options).forEach(opt => {
-            opt.selected = selectedTeams.has(opt.value.toLowerCase());
-        });
-    }
+    if (teamOptionsContainer) renderPlayersTeamOptions();
 
     PLAYER_ROLES.forEach(role => {
         const cb = document.getElementById(`role-filter-${role.toLowerCase()}`);
@@ -6500,21 +6488,97 @@ function initPlayersFilters() {
     updatePlayersModeToggleUI();
 }
 
-function handlePlayersTeamChange(selectEl) {
-    if (!selectEl) return;
-    let selected = Array.from(selectEl.selectedOptions).map(opt => (opt.value || '').toLowerCase());
-    if (selected.includes('all') && selected.length > 1) {
-        selected = selected.filter(v => v !== 'all');
+function renderPlayersTeamOptions() {
+    const container = document.getElementById('players-team-options');
+    if (!container) return;
+
+    const teams = ['all', ...playerTeams];
+    const optionHtml = teams.map((team) => {
+        const value = team === 'all' ? 'all' : team.toLowerCase();
+        const isChecked = selectedTeams.has('all') ? team === 'all' : selectedTeams.has(value);
+        const label = team === 'all' ? 'Tutte le squadre' : team;
+
+        return `
+            <label class="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-slate-800 cursor-pointer">
+                <input type="checkbox" class="rounded border-slate-700 bg-slate-900 text-yellow-400 focus:ring-yellow-400" value="${value}" ${isChecked ? 'checked' : ''} onchange="handlePlayersTeamCheckbox(this)">
+                <span>${label}</span>
+            </label>
+        `;
+    }).join('');
+
+    container.innerHTML = optionHtml;
+    updatePlayersTeamTriggerLabel();
+}
+
+function updatePlayersTeamTriggerLabel() {
+    const triggerLabel = document.getElementById('players-team-trigger-label');
+    if (!triggerLabel) return;
+
+    if (selectedTeams.has('all') || selectedTeams.size === 0) {
+        triggerLabel.textContent = 'Tutte le squadre';
+        return;
     }
 
-    if (selected.length === 0) {
-        selectedTeams = new Set(['all']);
-        Array.from(selectEl.options).forEach(opt => opt.selected = opt.value === 'all');
+    const selectedLabels = playerTeams
+        .filter(team => selectedTeams.has(team.toLowerCase()))
+        .slice(0, 3);
+
+    const moreCount = selectedTeams.size - selectedLabels.length;
+    const baseLabel = selectedLabels.join(', ');
+    triggerLabel.textContent = moreCount > 0
+        ? `${baseLabel} +${moreCount}`
+        : baseLabel || 'Tutte le squadre';
+}
+
+function handlePlayersTeamCheckbox(checkbox) {
+    if (!checkbox) return;
+    const value = (checkbox.value || '').toLowerCase();
+
+    if (value === 'all') {
+        selectedTeams = checkbox.checked ? new Set(['all']) : new Set();
     } else {
-        selectedTeams = new Set(selected);
+        if (checkbox.checked) {
+            selectedTeams.delete('all');
+            selectedTeams.add(value);
+        } else {
+            selectedTeams.delete(value);
+        }
+
+        if (selectedTeams.size === 0) selectedTeams.add('all');
     }
+
+    syncPlayersTeamCheckboxes();
+    updatePlayersTeamTriggerLabel();
     renderPlayersTable();
 }
+
+function syncPlayersTeamCheckboxes() {
+    document.querySelectorAll('#players-team-options input[type="checkbox"]').forEach((input) => {
+        const val = (input.value || '').toLowerCase();
+        input.checked = selectedTeams.has('all') ? val === 'all' : selectedTeams.has(val);
+    });
+}
+
+function togglePlayersTeamDropdown(forceState) {
+    const dropdown = document.getElementById('players-team-dropdown');
+    if (!dropdown) return;
+
+    const shouldOpen = typeof forceState === 'boolean'
+        ? forceState
+        : dropdown.classList.contains('hidden');
+
+    dropdown.classList.toggle('hidden', !shouldOpen);
+}
+
+function closePlayersTeamDropdown() {
+    togglePlayersTeamDropdown(false);
+}
+
+document.addEventListener('click', (event) => {
+    const container = document.getElementById('players-team-filter-container');
+    if (!container) return;
+    if (!container.contains(event.target)) closePlayersTeamDropdown();
+});
 
 function togglePlayerRole(role) {
     if (!PLAYER_ROLES.includes(role)) return;
