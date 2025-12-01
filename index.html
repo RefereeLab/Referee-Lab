@@ -3621,9 +3621,9 @@ function getTeamLogo(teamName) {
             return all;
         }
 
-        function processTeamsData() {
+        function processTeamsData(seasons) {
             let teamsMap = new Map();
-            const matches = processMatchesViewData();
+            const matches = processMatchesViewData(seasons);
 
             matches.forEach(m => {
                 if(!m.match.includes('-')) return;
@@ -3789,8 +3789,10 @@ else if (currentView === 'matches') {
             else if (currentView === 'analytics') {
                  // NESSUNA RICERCA/FILTRO GLOBALE PER I GRAFICI (solo filtri interni)
                  matchesCurrentPage = 1;
-                 result = processCombinedStats(); 
-                 matchResult = processMatchesViewData();
+
+                 // Carica sempre tutte le stagioni disponibili per i grafici, poi i filtri locali gestiscono la selezione
+                 result = processCombinedStats(ANALYTICS_SEASON_OPTIONS);
+                 matchResult = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
 
                  // Imposta il massimo per il filtro min presenze dell'analytics
                  if(result.length > 0) {
@@ -4061,22 +4063,48 @@ if(q && result.length && currentView !== 'analytics') {
             const qSeverity = document.getElementById('analyticsSearchSeverity')?.value?.toLowerCase() || '';
             const qRitmo = document.getElementById('analyticsSearchRitmo')?.value?.toLowerCase() || '';
 
+            const severitySeasons = analyticsSeasonFilters.severity || ANALYTICS_SEASON_OPTIONS;
+            const radarSeasons = analyticsSeasonFilters.refRadar || ANALYTICS_SEASON_OPTIONS;
+            const ritmoSeasons = analyticsSeasonFilters.ritmo || ANALYTICS_SEASON_OPTIONS;
+            const effSeasons = analyticsSeasonFilters.eff || ANALYTICS_SEASON_OPTIONS;
+            const teamRadarSeasons = analyticsSeasonFilters.teamRadar || ANALYTICS_SEASON_OPTIONS;
+
             // --- APPLICAZIONE NUOVO FILTRO MIN MATCHES (Feature 1) ---
             const minMatches = analyticsMinMatchesFilter;
-            let filteredRefData = currentAnalyticsData.filter(r => 
+
+            let filteredRefData = processCombinedStats(severitySeasons).filter(r =>
                 getRefereeSurname(r.name).toLowerCase().includes(qSeverity) &&
-                r.matches >= minMatches // Filter applied here
+                r.matches >= minMatches
             );
-            
-            const filteredMatchData = currentMatchData.filter(m => 
+
+            let radarData = processCombinedStats(radarSeasons).filter(r => r.matches >= minMatches);
+            if (hideInactive) {
+                filteredRefData = filteredRefData.filter(r => !r.isInactive);
+                radarData = radarData.filter(r => !r.isInactive);
+            }
+
+            radarData = radarData.filter(r => getRefereeSurname(r.name).toLowerCase().includes(qSeverity));
+
+            const ritmoMatches = processMatchesViewData(ritmoSeasons);
+            const filteredMatchData = ritmoMatches.filter(m =>
                 m.match.toLowerCase().includes(qRitmo)
             );
+
+            const effMatches = processMatchesViewData(effSeasons);
+
+            // Aggiorna i dataset globali usati dai grafici radar e scatter
+            currentAnalyticsData = radarData;
+            currentMatchData = ritmoMatches;
+            refereeData = radarData;
+
+            // Aggiorna la UI dei chip stagione
+            refreshAllAnalyticsSeasonChips();
 
             // Popola il dropdown del Radar
             const populateSelect = (id) => {
                 const select = document.getElementById(id);
                 // Salva lo stato del dropdown e ricarica solo le opzioni
-                const currentValue = select.value; 
+                const currentValue = select.value;
                 select.innerHTML = '<option value="">Seleziona arbitro da aggiungere...</option>';
                 const sortedRefs = [...currentAnalyticsData].sort((a, b) => getRefereeSurname(a.name).localeCompare(getRefereeSurname(b.name)));
                 sortedRefs.forEach(r => {
@@ -4092,18 +4120,11 @@ if(q && result.length && currentView !== 'analytics') {
 
             // 2. Renderizza i grafici con i dati filtrati
             renderSeverityScatter(filteredRefData);
-            renderRitmoScatter(filteredMatchData, currentMatchData);
+            renderRitmoScatter(filteredMatchData, ritmoMatches);
             updateRadarChart();
-
-// Renderizza i grafici esistenti
-            renderSeverityScatter(filteredRefData);
-            renderRitmoScatter(filteredMatchData, currentMatchData);
-            updateRadarChart();
-
-            // --- AGGIUNGI QUESTE DUE RIGHE ---
-            renderEffDistributionChart(currentMatchData); // Passiamo i dati delle partite
-            renderTopFlopTeamsChart(); // Questa calcolerà i dati delle squadre internamente
-renderTeamHeatmap();
+            renderEffDistributionChart(effMatches); // Passiamo i dati delle partite
+            renderTopFlopTeamsChart(teamRadarSeasons); // Questa calcolerà i dati delle squadre internamente
+            renderTeamHeatmap();
 
         }
 
@@ -4518,9 +4539,9 @@ min: 0, // <--- CORREZIONE FONDAMENTALE: Forza l'inizio a 0
 
 //NUOVO GRAFICO radar ritmo squadre
 
-function renderTopFlopTeamsChart() {
+function renderTopFlopTeamsChart(seasons) {
     // 1. Dati e Ordinamento
-    let teamsData = processTeamsData();
+    let teamsData = processTeamsData(seasons);
     teamsData = teamsData.filter(t => t.avgEff > 0)
                          .sort((a, b) => b.avgEff - a.avgEff);
 
@@ -5478,10 +5499,43 @@ if (view === 'analytics') {
             });
         }
 
+        function toggleAnalyticsSeason(chartKey, season) {
+            if (!analyticsSeasonFilters[chartKey]) return;
+
+            const current = new Set(analyticsSeasonFilters[chartKey]);
+
+            if (current.has(season) && current.size > 1) {
+                current.delete(season);
+            } else {
+                current.add(season);
+            }
+
+            analyticsSeasonFilters[chartKey] = Array.from(current);
+            updateAnalyticsSeasonChipsUI(chartKey);
+            renderAnalyticsWithFilters();
+        }
+
+        function updateAnalyticsSeasonChipsUI(chartKey) {
+            const activeSet = new Set(analyticsSeasonFilters[chartKey] || []);
+            const container = document.getElementById(`season-toggle-${chartKey}`);
+            if (!container) return;
+
+            container.querySelectorAll('.analytics-season-chip').forEach(btn => {
+                const btnSeason = btn.getAttribute('data-season');
+                if (activeSet.has(btnSeason)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function refreshAllAnalyticsSeasonChips() {
+            Object.keys(analyticsSeasonFilters).forEach(updateAnalyticsSeasonChipsUI);
+        }
+
         function toggleSeasonDropdown() {
             const c = document.getElementById('season-dropdown-content');
             const i = document.getElementById('season-toggle-icon');
             if(c.classList.contains('hidden')) { c.classList.remove('hidden'); i.style.transform = 'rotate(180deg)'; }
+
             else { c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; }
         }
 
@@ -5798,7 +5852,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.onload = function() {
             updateSeasonButtonsUI();
-            switchView('stats'); 
+            refreshAllAnalyticsSeasonChips();
+            switchView('stats');
 updateRadarSelectOptions();
             if (window.innerWidth < 1024) document.getElementById('season-dropdown-content').classList.add('hidden');
         };
