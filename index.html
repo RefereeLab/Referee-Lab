@@ -177,9 +177,35 @@ html, body {
             /* Rimuovo la classe hidden per gestirne la visibilità solo tramite JS/opacità */
         }
         
-        /* Tooltip per SOON */
         .season-item[title]:hover span.coming-soon-label {
             opacity: 1; /* Assicura che la label non si oscuri sull'hover */
+        }
+
+        /* Toggle stagioni per i grafici (scheda Grafici) */
+        .analytics-season-chip {
+            background-color: rgba(15, 23, 42, 0.7);
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analytics-season-chip.active {
+            background-color: rgba(234, 179, 8, 0.15);
+            border-color: rgba(234, 179, 8, 0.6);
+            color: #fefce8;
+            box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.2);
+        }
+
+        .analytics-season-chip:focus-visible {
+            outline: 2px solid #eab308;
+            outline-offset: 2px;
         }
 
 .pro-table th {
@@ -1039,9 +1065,14 @@ html, body {
 </div>
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="pro-card rounded-lg p-4 lg:col-span-2">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
-                    <span><i class="fa-solid fa-scale-balanced text-green-500 mr-2"></i> Ritmo vs Interruzioni</span>
-                    <div class="relative w-1/3 min-w-[150px]">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-green-500"></i> Ritmo vs Interruzioni</span>
+                    <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-ritmo">
+                        <span class="text-slate-400">Stagioni:</span>
+                        <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('ritmo','2025-26', this)">25/26</button>
+                        <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('ritmo','2024-25', this)">24/25</button>
+                    </div>
+                    <div class="relative w-full sm:w-1/3 min-w-[180px]">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
                         <input type="text" id="analyticsSearchRitmo" oninput="debounceRenderAnalytics()" placeholder="Filtra per squadra..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
                     </div>
@@ -1082,8 +1113,13 @@ html, body {
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">              
                 <div class="pro-card rounded-lg p-4">
                     <div class="flex flex-col gap-2 mb-4 border-b border-slate-800 pb-2">
-                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center justify-between">
-                            <span><i class="fa-solid fa-fingerprint text-blue-500"></i> Profilo Arbitro</span>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex flex-wrap gap-2 items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-fingerprint text-blue-500"></i> Profilo Arbitro</span>
+                            <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-refRadar">
+                                <span class="text-slate-400">Stagioni:</span>
+                                <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('refRadar','2025-26', this)">25/26</button>
+                                <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('refRadar','2024-25', this)">24/25</button>
+                            </div>
                         </h3>
                         <div class="flex flex-col gap-2 w-full">
                             <div class="flex gap-2">
@@ -1113,13 +1149,19 @@ html, body {
                 </div>
 
                 <div class="pro-card rounded-lg p-4 relative">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
-                        <span><i class="fa-solid fa-crosshairs text-yellow-500 mr-2"></i> Indice di Severità (Falli vs Cartellini)</span>
-                        <div class="relative w-1/3 min-w-[150px]">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-crosshairs text-yellow-500"></i> Indice di Severità (Falli vs Cartellini)</span>
+                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-severity">
+                            <span class="text-slate-400">Stagioni:</span>
+                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('severity','2025-26', this)">25/26</button>
+                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('severity','2024-25', this)">24/25</button>
+                        </div>
+                        <div class="relative w-full sm:w-1/3 min-w-[180px]">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
                             <input type="text" id="analyticsSearchSeverity" oninput="debounceRenderAnalytics()" placeholder="Filtra per arbitro..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
                         </div>
                     </h3>
+
                     <div id="analytics-min-matches-container" class="space-y-2 mb-4">
                         <div class="flex justify-between items-center">
                             <label class="text-xs text-slate-400">Min. Presenze Arbitro</label>
@@ -1161,9 +1203,17 @@ html, body {
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="pro-card rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
-                        <i class="fa-solid fa-chart-column text-indigo-400 mr-2"></i> Distribuzione Tempo Effettivo
-                    </h3>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-indigo-400"></i> Distribuzione Tempo Effettivo
+                        </h3>
+                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-eff">
+                            <span class="text-slate-400">Stagioni:</span>
+                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('eff','2025-26', this)">25/26</button>
+                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('eff','2024-25', this)">24/25</button>
+                        </div>
+                    </div>
+
                     <div id="chart-eff-distribution" class="w-full h-[350px]"></div>
                     <p class="text-[10px] text-slate-400 mt-2 italic">
                         Indica quante partite rientrano in ogni fascia di minutaggio reale.
@@ -1171,9 +1221,17 @@ html, body {
                 </div>
 
                 <div class="pro-card rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">
-                        <i class="fa-solid fa-bullseye text-pink-500 mr-2"></i> Radar: Ritmo Squadre
-                    </h3>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-pink-500"></i> Radar: Ritmo Squadre
+                        </h3>
+                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-teamRadar">
+                            <span class="text-slate-400">Stagioni:</span>
+                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('teamRadar','2025-26', this)">25/26</button>
+                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('teamRadar','2024-25', this)">24/25</button>
+                        </div>
+                    </div>
+
                     <div id="chart-top-flop" class="w-full h-[350px] flex justify-center items-center"></div>
                     <p class="text-[10px] text-slate-400 mt-2 italic text-center">
                         Confronto volumetrico: Spicchi grandi = Più tempo effettivo.
@@ -3253,6 +3311,14 @@ Di Marco	98,18`;
 
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21']; // Re-added
+        const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25'];
+        let analyticsSeasonFilters = {
+            ritmo: [...ANALYTICS_SEASON_OPTIONS],
+            severity: [...ANALYTICS_SEASON_OPTIONS],
+            refRadar: [...ANALYTICS_SEASON_OPTIONS],
+            eff: [...ANALYTICS_SEASON_OPTIONS],
+            teamRadar: [...ANALYTICS_SEASON_OPTIONS],
+        };
 
         // --- LOGIC SECTION ---
         let currentView = 'stats';
@@ -3466,7 +3532,7 @@ function getTeamLogo(teamName) {
              }).filter(x => x);
         }
 
-        function processStatsData() {
+        function processStatsData(seasons = activeSeasons) {
             let statsMap = new Map();
             const sourceDB = (typeof db !== 'undefined') ? db : STATS_DB; 
             activeSeasons.forEach(season => {
@@ -3493,9 +3559,10 @@ function getTeamLogo(teamName) {
             });
         }
         
-        function processCombinedStats() {
-            const stats = processStatsData();
-            const pt = processPlayingTimeViewData();
+        function processCombinedStats(seasons = activeSeasons) {
+            const stats = processStatsData(seasons);
+            const pt = processPlayingTimeViewData(seasons);
+
             
             // IMPROVED MERGE: Match by Surname to solve "0 data" issues
             return stats.map(s => {
