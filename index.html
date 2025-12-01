@@ -987,20 +987,20 @@ html, body {
                 <div class="mt-4">
                     <p class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per ruolo</p>
                     <div class="grid grid-cols-2 gap-2 mt-2 text-sm text-slate-200">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="role-filter-por" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('POR')" checked>
+                        <label class="flex items-center gap-2 text-orange-400">
+                            <input type="checkbox" id="role-filter-por" class="rounded border-slate-700 bg-slate-900 text-orange-400 focus:ring-orange-400" onchange="togglePlayerRole('POR')" checked>
                             <span>Por</span>
                         </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="role-filter-df" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('DF')" checked>
+                        <label class="flex items-center gap-2 text-green-400">
+                            <input type="checkbox" id="role-filter-df" class="rounded border-slate-700 bg-slate-900 text-green-400 focus:ring-green-400" onchange="togglePlayerRole('DF')" checked>
                             <span>Df</span>
                         </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="role-filter-cc" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('CC')" checked>
+                        <label class="flex items-center gap-2 text-blue-400">
+                            <input type="checkbox" id="role-filter-cc" class="rounded border-slate-700 bg-slate-900 text-blue-400 focus:ring-blue-400" onchange="togglePlayerRole('CC')" checked>
                             <span>Cc</span>
                         </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="role-filter-att" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('ATT')" checked>
+                        <label class="flex items-center gap-2 text-red-400">
+                            <input type="checkbox" id="role-filter-att" class="rounded border-slate-700 bg-slate-900 text-red-400 focus:ring-red-400" onchange="togglePlayerRole('ATT')" checked>
                             <span>Att</span>
                         </label>
                     </div>
@@ -1008,7 +1008,8 @@ html, body {
 
                 <div class="mt-4">
                     <label for="players-team-filter" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per squadra</label>
-                    <select id="players-team-filter" class="mt-2 w-full bg-slate-900 border border-slate-700 text-sm text-slate-200 rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none" onchange="handlePlayersTeamChange(this.value)"></select>
+                    <select id="players-team-filter" multiple class="mt-2 w-full bg-slate-900 border border-slate-700 text-sm text-slate-200 rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none" onchange="handlePlayersTeamChange(this)"></select>
+                    <p class="text-[10px] text-slate-500 mt-1">Seleziona una o più squadre (Ctrl/Cmd per selezione multipla).</p>
                 </div>
             </div>
 
@@ -1024,12 +1025,20 @@ html, body {
             </div>
         </div>
 
-        <div class="lg:col-span-9">
+                <div class="lg:col-span-9">
             <div class="pro-card rounded-lg overflow-hidden">
                 <div class="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700/70">
                     <h3 class="text-lg font-extrabold text-white flex items-center gap-3">
                         <span>Giocatori</span>
                     </h3>
+                    <div class="flex items-center gap-2 text-xs">
+                        <button type="button" class="px-3 py-1 rounded border border-slate-600 text-slate-300 hover:border-yellow-500 hover:text-yellow-400 transition" data-mode="per90" onclick="setPlayersStatMode('per90')">
+                            Medie 90'
+                        </button>
+                        <button type="button" class="px-3 py-1 rounded border border-slate-600 text-slate-300 hover:border-yellow-500 hover:text-yellow-400 transition" data-mode="total" onclick="setPlayersStatMode('total')">
+                            Valori totali
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-[11px] text-slate-300 pro-table players-table text-center" id="players-table">
@@ -1037,46 +1046,43 @@ html, body {
                             <tr>
                                 <th class="p-2 w-10" title="Posizione in classifica dinamica rispetto all'ordinamento scelto">#</th>
                                 <th class="p-2 cursor-pointer select-none text-left whitespace-nowrap" data-sort-col="name" onclick="handlePlayersSort('name')" title="Cognome in evidenza e nome completo del giocatore">
-                                    Giocatore <span class="players-sort-icon text-yellow-400"></span>
+                                    <span class="players-col-label">Giocatore</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="n90" onclick="handlePlayersSort('n90')" title="Numero di presenze espresse come partite intere da 90 minuti">
-                                    P <span class="players-sort-icon text-yellow-400"></span>
+                                    <span class="players-col-label" data-label-per90="P" data-label-total="P">P</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="yellow" onclick="handlePlayersSort('yellow')" title="Cartellini gialli ricevuti ogni 90 minuti">
-                                    Gialli <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="yellow" onclick="handlePlayersSort('yellow')" title="Cartellini gialli ricevuti">
+                                    <span class="players-col-label" data-label-per90="Gialli" data-label-total="Gialli Tot">Gialli</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouls" onclick="handlePlayersSort('fouls')" title="Falli commessi ogni 90 minuti">
-                                    Falli C. <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouls" onclick="handlePlayersSort('fouls')" title="Falli commessi">
+                                    <span class="players-col-label" data-label-per90="Falli C." data-label-total="Falli C. Tot">Falli C.</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouled" onclick="handlePlayersSort('fouled')" title="Falli subiti ogni 90 minuti">
-                                    Falli S. <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="fouled" onclick="handlePlayersSort('fouled')" title="Falli subiti">
+                                    <span class="players-col-label" data-label-per90="Falli S." data-label-total="Falli S. Tot">Falli S.</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="crosses" onclick="handlePlayersSort('crosses')" title="Cross tentati ogni 90 minuti">
-                                    Cross <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="crosses" onclick="handlePlayersSort('crosses')" title="Cross tentati">
+                                    <span class="players-col-label" data-label-per90="Cross" data-label-total="Cross Tot">Cross</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passCompleted" onclick="handlePlayersSort('passCompleted')" title="Passaggi completati ogni 90 minuti">
-                                    PassC <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passCompleted" onclick="handlePlayersSort('passCompleted')" title="Passaggi completati">
+                                    <span class="players-col-label" data-label-per90="PassC" data-label-total="PassC Tot">PassC</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passAttempted" onclick="handlePlayersSort('passAttempted')" title="Passaggi tentati ogni 90 minuti">
-                                    PassT <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passAttempted" onclick="handlePlayersSort('passAttempted')" title="Passaggi tentati">
+                                    <span class="players-col-label" data-label-per90="PassT" data-label-total="PassT Tot">PassT</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="passPct" onclick="handlePlayersSort('passPct')" title="Percentuale di precisione sui passaggi">
-                                    % Pass <span class="players-sort-icon text-yellow-400"></span>
+                                    <span class="players-col-label">% Pass</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsTotal" onclick="handlePlayersSort('shotsTotal')" title="Tiri totali">
-                                    Tiri <span class="players-sort-icon text-yellow-400"></span>
+                                    <span class="players-col-label">Tiri</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTarget" onclick="handlePlayersSort('shotsOnTarget')" title="Tiri in porta">
-                                    Tiri P. <span class="players-sort-icon text-yellow-400"></span>
+                                    <span class="players-col-label" data-label-per90="Tiri P." data-label-total="Tiri P.">Tiri P.</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsPer90" onclick="handlePlayersSort('shotsPer90')" title="Tiri totali ogni 90 minuti">
-                                    Tiri/90 <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsPer90" onclick="handlePlayersSort('shotsPer90')" title="Tiri totali">
+                                    <span class="players-col-label" data-label-per90="Tiri/90" data-label-total="Tiri Tot">Tiri/90</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTargetPer90"onclick="handlePlayersSort('shotsOnTargetPer90')" title="Tiri in porta ogni 90 minuti">
-                                    TiriP/90 <span class="players-sort-icon text-yellow-400"></span>
-                                </th>
-                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="avgShotDistance" onclick="handlePlayersSort('avgShotDistance')" title="Distanza media da cui vengono effettuati i tiri">
-                                    Dist. Tiri <span class="players-sort-icon text-yellow-400"></span>
+                                <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="shotsOnTargetPer90"onclick="handlePlayersSort('shotsOnTargetPer90')" title="Tiri in porta">
+                                    <span class="players-col-label" data-label-per90="TiriP/90" data-label-total="TiriP Tot">TiriP/90</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                             </tr>
                         </thead>
@@ -2441,7 +2447,8 @@ let playersSortColumn = 'name';
 let playersSortDirection = 'asc';
 const PLAYER_ROLES = ['POR', 'DF', 'CC', 'ATT'];
 let selectedPlayerRoles = new Set(PLAYER_ROLES);
-let selectedTeam = 'all';
+let selectedTeams = new Set(['all']);
+let playersStatMode = 'per90';
 let playerTeams = [];
 let excludeLowPresencePlayers = false;
 
@@ -6094,6 +6101,62 @@ document.getElementById("players-view").classList.add("hidden");
     debounceAggregate();
 }
 
+function getPlayerStatsForMode(player) {
+    const presence = Number.isFinite(player.n90) ? player.n90 : 0;
+    const roundTotal = (val) => Number.isFinite(val) ? Math.round(val * presence) : 0;
+
+    const per90Stats = {
+        n90: presence,
+        yellow: player.yellow ?? 0,
+        fouls: player.fouls ?? 0,
+        fouled: player.fouled ?? 0,
+        crosses: player.crosses ?? 0,
+        passCompleted: player.passCompleted,
+        passAttempted: player.passAttempted,
+        passPct: player.passPct,
+        shotsTotal: player.shotsTotal,
+        shotsOnTarget: player.shotsOnTarget,
+        shotsPer90: player.shotsPer90,
+        shotsOnTargetPer90: player.shotsOnTargetPer90,
+    };
+
+    const totals = {
+        ...per90Stats,
+        yellow: roundTotal(player.yellow),
+        fouls: roundTotal(player.fouls),
+        fouled: roundTotal(player.fouled),
+        crosses: roundTotal(player.crosses),
+        shotsPer90: roundTotal(player.shotsPer90),
+        shotsOnTargetPer90: roundTotal(player.shotsOnTargetPer90),
+    };
+
+    return playersStatMode === 'total' ? totals : per90Stats;
+}
+
+function updatePlayersModeToggleUI() {
+    document.querySelectorAll('[data-mode]').forEach((btn) => {
+        const isActive = btn.getAttribute('data-mode') === playersStatMode;
+        btn.classList.toggle('bg-yellow-500/10', isActive);
+        btn.classList.toggle('border-yellow-500', isActive);
+        btn.classList.toggle('text-yellow-400', isActive);
+    });
+
+    document.querySelectorAll('#players-table thead .players-col-label').forEach((labelEl) => {
+        const per90 = labelEl.getAttribute('data-label-per90');
+        const total = labelEl.getAttribute('data-label-total');
+        if (per90 && total) {
+            labelEl.textContent = playersStatMode === 'total' ? total : per90;
+        }
+    });
+}
+
+function setPlayersStatMode(mode) {
+    if (!['per90', 'total'].includes(mode)) return;
+    playersStatMode = mode;
+    updatePlayersModeToggleUI();
+    renderPlayersTable();
+}
+
 function renderPlayersTable() {
     const q = (document.getElementById("players-search")?.value || "").toLowerCase();
     const tbody = document.getElementById("players-table-body");
@@ -6112,9 +6175,9 @@ function renderPlayersTable() {
             const matchesRole = selectedPlayerRoles.size === 0
                 ? true
                 : playerRoles.some(r => selectedPlayerRoles.has(r));
-            const matchesTeam = selectedTeam === 'all'
+            const matchesTeam = selectedTeams.has('all') || selectedTeams.size === 0
                 ? true
-                : (p.team || '').toLowerCase() === selectedTeam;
+                : selectedTeams.has((p.team || '').toLowerCase());
 
             return matchesRole && matchesTeam;
         });
@@ -6134,27 +6197,29 @@ function renderPlayersTable() {
 
     sorted.forEach((p, index) => {
         const tr = document.createElement("tr");
-        const passPct = Number.isFinite(p.passPct)
-            ? `${p.passPct.toFixed(1).replace('.', ',')}%`
+        const stats = getPlayerStatsForMode(p);
+        const rateDigits = playersStatMode === 'total' ? 0 : 2;
+        const volumeDigits = playersStatMode === 'total' ? 0 : 2;
+        const passPct = Number.isFinite(stats.passPct)
+            ? `${stats.passPct.toFixed(1).replace('.', ',')}%`
             : '-';
 
         tr.title = p.team ? `Squadra: ${p.team}` : 'Squadra non disponibile';
         tr.innerHTML = `
             <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
             <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}</td>
-            <td class="p-2 whitespace-nowrap">${p.n90}</td>
-            <td class="p-2 whitespace-nowrap">${p.yellow}</td>
-            <td class="p-2 whitespace-nowrap">${p.fouls}</td>
-            <td class="p-2 whitespace-nowrap">${p.fouled}</td>
-            <td class="p-2 whitespace-nowrap">${p.crosses}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.passCompleted)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.passAttempted)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.yellow, rateDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouls, rateDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouled, rateDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.crosses, rateDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.passCompleted, volumeDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.passAttempted, volumeDigits)}</td>
             <td class="p-2 whitespace-nowrap">${passPct}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsTotal)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsOnTarget)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsPer90)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.shotsOnTargetPer90)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(p.avgShotDistance)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsTotal, volumeDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsOnTarget, volumeDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsPer90, rateDigits)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.shotsOnTargetPer90, rateDigits)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -6163,6 +6228,7 @@ function renderPlayersTable() {
 }
 
 function getPlayersSortValue(player, column) {
+    const stats = getPlayerStatsForMode(player);
     switch (column) {
         case 'name':
             return extractSurname(player.name) || '';
@@ -6171,31 +6237,29 @@ function getPlayersSortValue(player, column) {
         case 'team':
             return (player.team || '').toLowerCase();
         case 'n90':
-            return player.n90 || 0;
+            return stats.n90 || 0;
         case 'yellow':
-            return player.yellow || 0;
+            return stats.yellow || 0;
         case 'fouls':
-            return player.fouls || 0;
+            return stats.fouls || 0;
         case 'fouled':
-            return player.fouled || 0;
+            return stats.fouled || 0;
         case 'crosses':
-            return player.crosses || 0;
+            return stats.crosses || 0;
         case 'passCompleted':
-            return Number.isFinite(player.passCompleted) ? player.passCompleted : 0;
+            return Number.isFinite(stats.passCompleted) ? stats.passCompleted : 0;
         case 'passAttempted':
-            return Number.isFinite(player.passAttempted) ? player.passAttempted : 0;
+            return Number.isFinite(stats.passAttempted) ? stats.passAttempted : 0;
         case 'passPct':
-            return Number.isFinite(player.passPct) ? player.passPct : 0;
+            return Number.isFinite(stats.passPct) ? stats.passPct : 0;
         case 'shotsTotal':
-            return Number.isFinite(player.shotsTotal) ? player.shotsTotal : 0;
+            return Number.isFinite(stats.shotsTotal) ? stats.shotsTotal : 0;
         case 'shotsOnTarget':
-            return Number.isFinite(player.shotsOnTarget) ? player.shotsOnTarget : 0;
+            return Number.isFinite(stats.shotsOnTarget) ? stats.shotsOnTarget : 0;
         case 'shotsPer90':
-            return Number.isFinite(player.shotsPer90) ? player.shotsPer90 : 0;
+            return Number.isFinite(stats.shotsPer90) ? stats.shotsPer90 : 0;
         case 'shotsOnTargetPer90':
-            return Number.isFinite(player.shotsOnTargetPer90) ? player.shotsOnTargetPer90 : 0;
-        case 'avgShotDistance':
-            return Number.isFinite(player.avgShotDistance) ? player.avgShotDistance : 0;
+            return Number.isFinite(stats.shotsOnTargetPer90) ? stats.shotsOnTargetPer90 : 0;
         default:
             return 0;
     }
@@ -6423,17 +6487,32 @@ function initPlayersFilters() {
             ...playerTeams.map(team => `<option value="${team.toLowerCase()}">${team}</option>`)
         ].join('');
         teamSelect.innerHTML = options;
-        teamSelect.value = selectedTeam;
+        Array.from(teamSelect.options).forEach(opt => {
+            opt.selected = selectedTeams.has(opt.value.toLowerCase());
+        });
     }
 
     PLAYER_ROLES.forEach(role => {
         const cb = document.getElementById(`role-filter-${role.toLowerCase()}`);
         if (cb) cb.checked = selectedPlayerRoles.has(role);
     });
+
+    updatePlayersModeToggleUI();
 }
 
-function handlePlayersTeamChange(value) {
-    selectedTeam = (value || 'all').toLowerCase();
+function handlePlayersTeamChange(selectEl) {
+    if (!selectEl) return;
+    let selected = Array.from(selectEl.selectedOptions).map(opt => (opt.value || '').toLowerCase());
+    if (selected.includes('all') && selected.length > 1) {
+        selected = selected.filter(v => v !== 'all');
+    }
+
+    if (selected.length === 0) {
+        selectedTeams = new Set(['all']);
+        Array.from(selectEl.options).forEach(opt => opt.selected = opt.value === 'all');
+    } else {
+        selectedTeams = new Set(selected);
+    }
     renderPlayersTable();
 }
 
