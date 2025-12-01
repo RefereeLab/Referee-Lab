@@ -1039,15 +1039,27 @@ html, body {
             </div>
 
 
-            <!-- HEATMAP TEMPO EFFETTIVO SQUADRE (STAGIONE 24/25) -->
-            <div class="mt-10 w-full">
-                <h3 class="text-lg font-bold text-slate-200 mb-4">
-                    Heatmap Tempo Effettivo — Stagione 2024/25
-                </h3>
-<div class="heatmap-wrapper">
-    <div id="chart-team-heatmap"></div>
+<!-- HEATMAP SQUADRE (STAGIONE 24/25) -->
+<div class="mt-10 w-full">
+    <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center justify-between gap-4">
+        <span>Heatmap Squadre — Stagione 2024/25</span>
+
+        <!-- Selettore metrica heatmap -->
+        <div class="flex items-center gap-2 text-xs">
+            <label for="heatmap-metric" class="text-slate-400 hidden sm:inline">Metrica:</label>
+            <select id="heatmap-metric"
+                    class="bg-slate-800 border border-slate-700 text-slate-100 text-xs rounded px-2 py-1">
+                <option value="eff" selected>Tempo effettivo</option>
+                <option value="fouls">Falli fischiati</option>
+            </select>
+        </div>
+    </h3>
+
+    <div class="heatmap-wrapper">
+        <div id="chart-team-heatmap"></div>
+    </div>
 </div>
-            </div>
+
         </div>
 
 
@@ -4138,83 +4150,83 @@ function updateRadarChart() {
     chartRadar.render();
 }
 
-// ===============================
-// PARSE MATCHES_DB_2425 (club heatmap)
-// ===============================
+// ===========================================
+// PARSER STAGIONE 24/25 (TEMPO EFFETTIVO + FALLI)
+// ===========================================
 function parseSeasonMatches2425() {
-    const rows = MATCHES_DB_2425.trim().split('\n');
+    const lines = MATCHES_DB_2425.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-    const teams = new Set();
     const matrix = {};
 
-    rows.forEach((row, index) => {
+    const orderedTeams = [
+        "Monza","Venezia","Empoli","Lecce","Parma","Cagliari","Verona","Genoa","Udinese","Torino",
+        "Como","Bologna","Milan","Lazio","Fiorentina","Roma","Juventus","Atalanta","Inter","Napoli"
+    ];
 
-        // divisione robusta (TAB o SPAZI MULTIPLI)
-        const parts = row.trim().split(/\s+/);
+    orderedTeams.forEach(t => {
+        matrix[t] = {};
+    });
 
-        // 1) squadre
-        const teamsRaw = parts[0];
-        const [home, away] = teamsRaw.split('-').map(s => s.trim());
+    let matchIndex = 0;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const parts = line.split(/\s+/);
 
-        teams.add(home);
-        teams.add(away);
+        // 1) Match: "Genoa-Inter"
+        const matchName = parts[0];
+        const [home, away] = matchName.split('-');
 
         // 2) TEMPO EFFETTIVO = TERZA COLONNA (parts[2])
         const effStr = parts[2].replace(',', '.');
         const eff = parseFloat(effStr);
 
-        // 3) giornata
-        const giornata = Math.floor(index / 10) + 1;
+        // 3) FALLI = QUINTA COLONNA (parts[4])
+        const fouls = parseInt(parts[4], 10) || 0;
 
-        // 4) inizializza
+        // 4) Giornata (1–38, 10 partite per giornata)
+        const giornata = Math.floor(matchIndex / 10) + 1;
+        matchIndex++;
+
         if (!matrix[home]) matrix[home] = {};
         if (!matrix[away]) matrix[away] = {};
 
-        // 5) assegna
-        matrix[home][giornata] = { eff, match: `${home}-${away}` };
-        matrix[away][giornata] = { eff, match: `${home}-${away}` };
-    });
+        // Salvo gli stessi valori per entrambe le squadre
+        const cellData = { eff, fouls, match: `${home}-${away}` };
+        matrix[home][giornata] = cellData;
+        matrix[away][giornata] = cellData;
+    }
 
-    return { teams: Array.from(teams).sort(), matrix };
+    const teams = orderedTeams;
+    return { teams, matrix };
 }
 
+let currentHeatmapMetric = 'eff'; // 'eff' oppure 'fouls'
 
 // ===========================================
-// RENDER HEATMAP TEMPO EFFETTIVO (24/25)
+// RENDER HEATMAP SQUADRE (24/25) - METRICA DINAMICA
 // ===========================================
 function renderTeamHeatmap() {
 
-    const { teams, matrix } = parseSeasonMatches2425(); // "teams" non lo usiamo più qui
+    const { teams, matrix } = parseSeasonMatches2425();
 
     const orderedTeams = [
-        "Monza",
-        "Venezia",
-        "Empoli",
-        "Lecce",
-        "Parma",
-        "Cagliari",
-        "Verona",
-        "Genoa",
-        "Udinese",
-        "Torino",
-        "Como",
-        "Bologna",
-        "Milan",
-        "Lazio",
-        "Fiorentina",
-        "Roma",
-        "Juventus",
-        "Atalanta",
-        "Inter",
-        "Napoli"
+        "Monza","Venezia","Empoli","Lecce","Parma","Cagliari","Verona","Genoa","Udinese","Torino",
+        "Como","Bologna","Milan","Lazio","Fiorentina","Roma","Juventus","Atalanta","Inter","Napoli"
     ];
 
-    // Costruisci le serie ApexCharts seguendo *l'ordine desiderato*
+    // --- 1) Costruisco la serie in base alla metrica corrente ---
+    const metric = currentHeatmapMetric; // 'eff' o 'fouls'
+
     const series = orderedTeams.map(team => {
         const data = [];
         for (let g = 1; g <= 38; g++) {
-            const cell = matrix[team] ? matrix[team][g] : null;
-            data.push(cell ? cell.eff : null);
+            const cell = matrix[team][g];
+            if (!cell) {
+                data.push(null);
+            } else {
+                const val = (metric === 'eff') ? cell.eff : cell.fouls;
+                data.push(val);
+            }
         }
         return {
             name: team,
@@ -4222,7 +4234,8 @@ function renderTeamHeatmap() {
         };
     });
 
-    const colorScale = {
+    // --- 2) Color scale diversa per le due metriche ---
+    const effColorScale = {
         ranges: [
             { from: 0,   to: 45,  color: '#e86f5c' },
             { from: 45,  to: 47,  color: '#eba96d' },
@@ -4239,30 +4252,46 @@ function renderTeamHeatmap() {
         ]
     };
 
+    // stima range falli ~ 10–40 (puoi rifinirla più avanti)
+const foulsColorScale = {
+    ranges: [
+        { from: 0,  to: 18, color: '#7ac87d' },   // pochi falli → verde chiaro
+        { from: 18, to: 21, color: '#9ad593' },
+        { from: 21, to: 24, color: '#b9dca1' },
+        { from: 24, to: 27, color: '#d7e5a4' },
+        { from: 27, to: 30, color: '#fae98a' },
+        { from: 30, to: 33, color: '#f6d977' },
+        { from: 33, to: 36, color: '#efc06f' },
+        { from: 36, to: 40, color: '#eba96d' },
+        { from: 40, to: 99, color: '#e86f5c' }   // molti falli → rosso
+    ]
+};
+
+    const colorScale = (metric === 'eff') ? effColorScale : foulsColorScale;
+
     const options = {
         series: series,
-chart: {
-    type: "heatmap",
-    height: 600,
-    width: 700,      // 👈 forza larghezza minima!
-    background: "transparent",
-    toolbar: { show: false }
-},
-plotOptions: {
-    heatmap: {
-        enableShades: false,      // 🔥 niente gradienti interni
-        shadeIntensity: 0,        // opzionale, tanto è ignorato con enableShades:false
-        colorScale: colorScale,
-        radius: 0
-    }
-},
+        chart: {
+            type: "heatmap",
+            height: 600,
+            background: "transparent",
+            toolbar: { show: false }
+        },
+        plotOptions: {
+            heatmap: {
+                enableShades: false,
+                shadeIntensity: 0,
+                colorScale: colorScale,
+                radius: 0
+            }
+        },
         xaxis: {
             categories: Array.from({ length: 38 }, (_, i) => i + 1),
             title: { text: "Giornate", style: { color: '#cbd5e1' } },
             labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
         },
         yaxis: {
-            categories: orderedTeams, // 👈 asse Y allineato all'ordine personalizzato
+            categories: orderedTeams,
             labels: { style: { colors: '#cbd5e1', fontSize: '11px' } }
         },
         dataLabels: { enabled: false },
@@ -4271,9 +4300,7 @@ plotOptions: {
             x: { show: false },
             y: { show: false },
             custom: function({ seriesIndex, dataPointIndex }) {
-                // 👇 PRIMA usavi "teams[seriesIndex]" (ordine alfabetico)
-                const squadra = orderedTeams[seriesIndex];  // 👈 ordine corretto
-
+                const squadra = orderedTeams[seriesIndex];
                 const giornata = dataPointIndex + 1;
                 const row = matrix[squadra];
                 if (!row) return '';
@@ -4282,11 +4309,17 @@ plotOptions: {
                 if (!cell) return '';
 
                 const nomePartita = cell.match;
-                const minuti = cell.eff.toFixed(2);
+
+                let valueLabel;
+                if (metric === 'eff') {
+                    valueLabel = `${cell.eff.toFixed(2)} min`;
+                } else {
+                    valueLabel = `${cell.fouls} falli fischiati`;
+                }
 
                 return `
                     <div class="px-2 py-1 text-xs bg-slate-900 border border-slate-700 rounded shadow-lg text-slate-100">
-                        ${nomePartita} — ${minuti} min
+                        ${nomePartita} — ${valueLabel}
                     </div>
                 `;
             }
@@ -4302,6 +4335,7 @@ plotOptions: {
     container._chart = new ApexCharts(container, options);
     container._chart.render();
 }
+
 
 
 
@@ -4746,6 +4780,22 @@ function updateMinMatches(val) {
             if (window.scrollY > 300) btn.setAttribute('data-visible', 'true');
             else btn.setAttribute('data-visible', 'false');
         });
+
+// --- EVENTO CAMBIO METRICA HEATMAP ---
+document.addEventListener('DOMContentLoaded', () => {
+    const metricSelect = document.getElementById('heatmap-metric');
+    if (!metricSelect) return;
+
+    // valore iniziale
+    currentHeatmapMetric = metricSelect.value || 'eff';
+
+    metricSelect.addEventListener('change', () => {
+        currentHeatmapMetric = metricSelect.value || 'eff';
+        renderTeamHeatmap();
+    });
+});
+
+
 
         window.onload = function() {
             updateSeasonButtonsUI();
