@@ -533,6 +533,11 @@ html, body {
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
+    <!-- Designations Trigger (Mobile Floating) -->
+    <button onclick="toggleDesignationsModal(true)" class="lg:hidden fixed bottom-4 left-4 z-50 w-12 h-12 rounded-full bg-slate-800 border border-slate-700 text-yellow-500 flex items-center justify-center shadow-lg active:scale-95">
+        <i class="fa-regular fa-calendar-check text-base"></i>
+    </button>
+
     <!-- Designations Modal (Mobile) -->
     <div id="designations-modal" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden">
         <div class="modal-content absolute top-0 right-0 w-[85%] max-w-sm h-full bg-[#0f172a] shadow-2xl border-l border-slate-800 flex flex-col">
@@ -766,18 +771,13 @@ html, body {
                             <i class="fa-solid fa-chart-pie"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                         </button>
-<button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
-    <i class="fa-solid fa-user"></i>
-</button>
+                        <button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </button>
 
                     </div>
 
                     <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
-                    
-                    <!-- Designations Mobile Trigger -->␊
-                    <button onclick="toggleDesignationsModal(true)" class="lg:hidden w-10 h-10 rounded-full bg-slate-800 border border-slate-700 text-yellow-500 flex items-center justify-center shadow-lg active:scale-95 fixed bottom-4 left-4 z-50 md:static md:bottom-auto md:left-auto md:right-auto">
-                        <i class="fa-regular fa-calendar-check text-sm"></i>␊
-                    </button>␊
                     
                     <!-- Export Button -->
                     <button class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded border border-transparent hover:border-slate-700 transition-colors" onclick="alert('Export not available in demo')">
