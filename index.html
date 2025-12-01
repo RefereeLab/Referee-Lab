@@ -4120,7 +4120,7 @@ if(q && result.length && currentView !== 'analytics') {
 
             // 2. Renderizza i grafici con i dati filtrati
             renderSeverityScatter(filteredRefData);
-            renderRitmoScatter(filteredMatchData, ritmoMatches);
+            renderRitmoScatter(filteredMatchData, ritmoMatches, ritmoSeasons);
             updateRadarChart();
             renderEffDistributionChart(effMatches); // Passiamo i dati delle partite
             renderTopFlopTeamsChart(teamRadarSeasons); // Questa calcolerà i dati delle squadre internamente
@@ -4228,15 +4228,20 @@ grid: {
             chartScatter.render();
         }
 
-function renderRitmoScatter(matchData, fullMatchData) {
+function renderRitmoScatter(matchData, fullMatchData, seasonsOverride) {
+    // Usa i filtri locali delle stagioni del grafico (fallback ai default analytics)
+    const seasons = (seasonsOverride && seasonsOverride.length)
+        ? seasonsOverride
+        : ANALYTICS_SEASON_OPTIONS;
+
     // 🔹 Dati per le MEDIE: tutte le partite delle stagioni selezionate
-    const base = (fullMatchData || matchData).filter(m => 
-        activeSeasons.includes(m.season)
+    const base = (fullMatchData || matchData).filter(m =>
+        seasons.includes(m.season)
     );
 
     // 🔹 Dati mostrati nel grafico: filtrati da ricerca + stagioni
-    const filtered = matchData.filter(m => 
-        activeSeasons.includes(m.season)
+    const filtered = matchData.filter(m =>
+        seasons.includes(m.season)
     );
 
     // Se NON ci sono punti da mostrare (es. filtro squadra troppo stretto) → grafico "vuoto"
@@ -4275,7 +4280,7 @@ function renderRitmoScatter(matchData, fullMatchData) {
     }
 
     // 🔹 Serie del grafico (solo dati FILTRATI -> i pallini che vedi)
-    const series = activeSeasons.map(season => ({
+    const series = seasons.map(season => ({
         name: season,
         data: filtered
             .filter(m => m.season === season)
@@ -4342,7 +4347,7 @@ strokeWidth: 0,
 
         // Legenda: solo se >1 stagione
         legend: {
-            show: activeSeasons.length > 1,
+            show: seasons.length > 1,
             position: "top",
             horizontalAlign: "left",
             labels: { colors: "#cbd5e1" },
