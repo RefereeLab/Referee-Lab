@@ -911,17 +911,31 @@ html, body {
         Giocatori — Stagione 25/26
     </h2>
 
-    <input id="players-search" 
-           type="text" 
-           placeholder="Cerca giocatore..."
-           oninput="renderPlayersTable()"
-           class="w-full mb-4 px-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
+        <div class="sm:flex-1">
+            <input id="players-search"
+                   type="text"
+                   placeholder="Cerca giocatore..."
+                   oninput="renderPlayersTable()"
+                   class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200">
+        </div>
+
+        <div class="sm:w-1/3 lg:w-1/4 bg-slate-900 border border-slate-700 rounded px-3 py-2 shadow-card">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                <span>Min. presenze (90')</span>
+                <span id="playersMinMatchesValue" class="font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
+            </div>
+            <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
+        </div>
+    </div>
 
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-slate-300" id="players-table">
             <thead class="bg-slate-800 text-slate-300">
                 <tr>
                     <th class="p-2">Giocatore</th>
+                    <th class="p-2">Ruolo</th>
+                    <th class="p-2">Squadra</th>
                     <th class="p-2">Partite (90s)</th>
                     <th class="p-2">Gialli</th>
                     <th class="p-2">Falli Commessi</th>
@@ -1275,19 +1289,490 @@ html, body {
     <script>
 
 const playersRawData = `
- Jean Onana CC Genoa 0,10 0,00 20,00 0,00 0,00
-Nicolò Cavuoti DF Cagliari 0,10 0,00 10,00 0,00 0,00
-Daniele Ghilardi DF Roma 0,10 0,00 10,00 0,00 0,00
-Idrissa Guèye ATT Udinese 0,20 0,00 10,00 0,00 0,00
-Ardon Jashari CC Milan 0,20 0,00 10,00 15,00 0,00
-Alieu Njie ATT Torino 0,20 5,00 10,00 0,00 5,00 
-Patric CC,DF Lazio 0,10 0,00 10,00 0,00 0,00 
-Amir Richardson CC Fiorentina 0,10 0,00 10,00 0,00 0,00 
-Youssef Maleh CC Lecce 0,50 0,00 8,00 2,00 4,00 
- Edoardo Iannoni CC Sassuolo 0,90 2,22 7,78 0,00 0,00
- Luca Lipani CC Sassuolo 1,30 0,00 6,92 0,00 0,77`;
+Manuel De LucaATTCremonese0,200,005,005,000,00
+Enzo EbosseDFHellas Verona0,601,675,000,000,00
+Grigoris KastanosCCHellas Verona0,200,005,005,0010,00
+Ignace Van Der BremptDFComo1,100,914,551,820,00
+Lennon MillerCCUdinese0,901,114,441,113,33
+Leonardo PavolettiATT,CCCagliari0,901,114,440,000,00
+Luca MazzitelliCCCagliari0,702,864,291,431,43
+Almoatasem Al MusratiCCHellas Verona1,200,834,170,000,00
+Fabio MirettiCCJuventus0,502,004,002,004,00
+Luca MoroATTSassuolo0,500,004,006,000,00
+Lorenzo LuccaATTNapoli4,200,243,812,620,00
+Daniel MosqueraATTHellas Verona2,100,483,810,950,95
+Nicolò ZanioloATTUdinese7,700,263,771,824,29
+Maxwel CornetATT,DFGenoa0,800,003,751,257,50
+Alieu FaderaATTSassuolo4,700,213,624,043,19
+Reda BelahyaneCCLazio1,700,593,530,000,00
+Jean-Daniel Akpa-AkproCCHellas Verona5,500,733,450,180,55
+Gennaro BorrelliATTCagliari7,300,273,423,420,14
+Tijjani NoslinATT,CCLazio0,900,003,333,330,00
+Abdelhamid SabiriCCFiorentina0,300,003,333,3313,30
+Álex SalaCCLecce1,200,003,330,832,50
+Jan ZiółkowskiDFRoma1,201,673,333,330,00
+Milan ĐurićATTParma0,600,003,331,670,00
+Cheikh NiasseCCHellas Verona2,600,003,082,310,77
+Martín PayeroCCCremonese6,200,653,062,261,13
+Lameck BandaATTLecce5,300,383,023,023,21
+Mattia VitiDFFiorentina2,001,003,001,000,00
+Adrian BenedyczakCC,ATTParma2,400,002,920,832,08
+Gvidas GineitisCC,ATTTorino3,100,002,903,233,55
+Juan David CabalDFJuventus0,701,432,860,000,00
+Daniel DenoonDFPisa1,400,712,862,140,00
+Santiago PierottiATT,CCLecce7,700,002,860,650,52
+Artem DovbykATTRoma3,600,002,781,110,00
+Valentin CarboniCC,ATTGenoa4,000,502,751,252,00
+Joseph LitetaCCCagliari1,100,002,730,000,00
+Junior MessiasATT,CCGenoa1,100,002,734,550,91
+Francesco EspositoATTInter4,100,242,684,150,00
+Koni De WinterDFMilan3,800,002,630,530,53
+Thijs DallingaATTBologna4,200,242,621,430,71
+Mateo PellegrinoATTParma12,200,252,622,300,33
+Matteo CancellieriATTLazio4,600,002,613,700,22
+Giuseppe AmbrosinoATTNapoli0,400,002,502,500,00
+Zachary AthekameDF,ATTMilan1,201,672,500,834,17
+Fallou ChamDFHellas Verona2,400,002,502,083,75
+Francesco FolinoDFCremonese0,400,002,500,000,00
+Abdou HarrouiCC,ATTHellas Verona1,600,002,500,633,13
+HernaniCC,DFParma0,800,002,503,752,50
+Semih KılıçsoyATTCagliari0,801,252,501,251,25
+Giorgio ScalviniDFAtalanta3,200,002,500,310,00
+Stephan El ShaarawyCC,ATTRoma2,000,502,501,002,50
+Lorenzo VenturinoATT,CCGenoa0,400,002,500,0020,00
+Antoine BernedeCCHellas Verona10,100,102,480,791,29
+Juan JesusDFNapoli7,000,432,430,140,00
+Nicolás PazCCComo12,800,162,421,642,66
+Ebenezer AkinsanmiroCCPisa8,300,122,411,690,84
+İsak VuralCCPisa2,900,692,414,831,38
+Lewis FergusonCCBologna5,900,172,371,691,36
+Marin PongračićDFFiorentina12,000,422,331,080,25
+Cesare CasadeiCCTorino11,900,342,270,590,17
+Morten ThorsbyCCGenoa5,300,192,260,750,75
+Christian OrdoñezCC,DFParma4,001,002,250,751,75
+Aster VranckxCCSassuolo4,900,202,242,860,82
+Zakaria AboukhlalATT,CCTorino1,800,562,223,332,22
+Marco BrescianiniCCAtalanta1,800,562,221,113,33
+Walid CheddiraATTSassuolo0,901,112,224,442,22
+Konan N'driATT,CCLecce1,801,112,223,892,78
+Hans Nicolussi CavigliaCCFiorentina6,300,322,222,224,44
+Gaetano OristanioCC,ATTParma1,800,562,225,562,78
+Jamil SiebertDFLecce0,900,002,220,000,00
+Adam ObertDFCagliari10,000,602,200,500,80
+David NeresATT,CCNapoli6,400,312,190,474,84
+Mattia FeliciATT,DFCagliari4,600,652,171,305,00
+Alessandro BastoniDFInter11,600,092,160,863,10
+Unai NúñezDFHellas Verona8,400,482,140,710,71
+Marcus ThuramATTInter6,100,002,131,971,31
+Álex ValleDFComo9,400,112,131,171,81
+Tommaso BaldanziATT,CCRoma3,300,612,124,241,82
+Woyo CoulibalyDFSassuolo3,300,002,121,211,21
+Santiago CastroATTBologna7,600,132,111,580,13
+Amin SarrATTHellas Verona3,800,002,112,110,53
+Sebastiano EspositoATT,CCCagliari9,600,312,081,563,65
+Jeff EkhatorATTGenoa3,400,592,062,650,88
+Nicolò CambiaghiATTBologna6,900,292,035,073,19
+Lorenzo ColomboATT,CCGenoa7,900,132,032,150,63
+Kingsley EhizibueDFUdinese6,000,172,001,503,00
+Ivan IlićCCTorino4,000,252,000,750,25
+Adam MasinaDFTorino2,500,002,000,800,00
+Yunus MusahDFMilan1,000,002,002,001,00
+Jens OdgaardCCBologna5,500,182,001,640,91
+Sebastian OtoaDFGenoa0,502,002,000,000,00
+Adrien RabiotCCMilan6,000,172,001,501,00
+Sergi RobertoCCComo2,001,002,001,501,00
+Petar SucicCCInter7,500,402,001,201,20
+Oier ZarragaCCUdinese2,000,502,000,502,00
+Teun KoopmeinersCC,DFJuventus8,600,471,980,122,56
+Máximo PerroneCCComo10,600,381,980,660,19
+Khéphren ThuramCCJuventus9,100,001,980,880,55
+Armel Bella KotchapDFHellas Verona5,600,181,961,250,18
+Gianluca GaetanoCC,ATTCagliari4,600,221,961,962,61
+Neil El AynaouiCCRoma4,100,491,950,490,98
+Gianluca ManciniDFRoma12,900,231,941,630,70
+Marius MarinCCPisa7,200,281,941,391,11
+Lautaro MartínezATTInter10,800,191,942,130,83
+Álvaro MorataATTComo6,700,151,942,990,90
+Simon SohmCCFiorentina6,200,321,941,770,32
+Assane DiaoATTComo2,600,001,923,081,92
+Warren BondoCCCremonese9,400,211,911,910,11
+Roberto GagliardiniCCHellas Verona8,400,481,900,830,60
+Suat SerdarCCHellas Verona8,400,241,901,190,83
+Pablo MaríDFFiorentina8,000,381,881,000,00
+Antonio SanabriaATTCremonese4,300,471,861,160,23
+Keinan DavisATTUdinese7,600,391,842,630,13
+Yann Aurel BisseckDFInter3,300,301,820,910,61
+Tommaso BarbieriATT,DFCremonese5,500,181,821,453,27
+Torbjørn HeggemDFBologna9,900,001,820,400,10
+Mateus LusuardiDFPisa2,200,451,820,000,45
+Abdoulaye Niakhate NdiayeDFParma5,500,731,821,270,00
+Matteo PalmaDFUdinese1,100,001,820,000,00
+Alessandro BuongiornoDFNapoli8,300,001,810,960,24
+Charalampos LykogiannisDFBologna3,900,511,790,007,44
+Martin FreseDFHellas Verona10,100,301,780,593,27
+Rasmus HøjlundATTNapoli7,300,141,782,600,14
+Nicolò CasaleDFBologna1,700,001,761,180,00
+Jayden AddaiATTComo5,700,351,751,931,58
+Manuel LocatelliCCJuventus10,400,291,732,120,38
+Nikola ŠtulićATTLecce8,700,111,721,380,00
+Cyril NgongeATT,CCTorino8,200,241,711,591,10
+Leo Skiri ØstigårdDFGenoa10,500,381,710,570,00
+Isak HienDFAtalanta11,200,271,700,980,00
+Rolando MandragoraCCFiorentina10,600,191,702,363,30
+Giovanni Di LorenzoDF,CCNapoli13,000,081,690,771,31
+Mario HermosoDFRoma8,300,361,690,240,60
+Giovanni SimeoneATTTorino8,300,001,692,050,12
+Patrizio MasiniCCGenoa9,500,321,682,740,95
+Giovanni BonfantiDFPisa3,600,001,670,562,50
+Federico CeccheriniDFCremonese1,200,001,671,670,00
+Giovanni FabbianCCBologna4,800,001,672,920,63
+Evan FergusonATTRoma4,200,241,671,430,48
+Malthe HojholtCCPisa1,200,831,670,000,00
+Emil HolmDFBologna4,800,421,672,292,92
+Sandi LovrićCCUdinese1,200,831,670,007,50
+Henrikh MkhitaryanCCInter5,400,371,670,742,41
+Adam BuksaATTUdinese4,900,201,632,450,20
+Morten FrendrupCCGenoa11,700,091,621,030,26
+Henrik MeisterATTPisa6,800,151,621,030,00
+Weston McKennieCC,DFJuventus8,200,241,590,240,98
+Iker BravoATTUdinese1,900,531,580,531,58
+Mohamed KabaCC,ATTLecce1,900,001,583,161,58
+Filip KostićDF,ATTJuventus3,800,001,580,5310,50
+M'Bala NzolaATTPisa9,500,111,581,680,63
+Kostas TsimikasDFRoma1,900,531,581,055,79
+Luca PellegriniDFLazio5,100,201,571,182,55
+Vakoun BayoATTUdinese3,200,001,560,940,00
+Pontus AlmqvistDF,CCParma3,900,001,543,081,03
+Manu KonéCCRoma13,000,001,542,150,00
+Lazar SamardzicCCAtalanta5,200,001,540,195,96
+Nuno TavaresDFLazio5,200,001,542,126,54
+Matías VecinoCCLazio2,600,001,540,380,00
+Michael FolorunshoCC,ATTCagliari11,800,171,532,291,19
+Roberto PiccoliATT,CCFiorentina5,900,001,532,200,34
+Ivan SmolčićDFComo7,200,691,531,671,53
+Alessandro DeiolaCC,DFCagliari6,600,451,521,060,15
+Ruslan MalinovskyiCCGenoa8,600,581,511,281,86
+Bryan CristanteCCRoma12,000,251,500,250,58
+Denzel DumfriesDFInter8,000,131,500,752,75
+Brooke Norton-CuffyDF,ATTGenoa12,000,331,500,753,08
+Martin VitíkDFBologna4,000,251,500,500,25
+Francisco ConceiçãoCC,ATTJuventus7,400,001,492,034,32
+Tommaso PobegaCCBologna4,700,211,490,430,21
+Nicolás ValentiniDFHellas Verona4,700,211,490,431,06
+Jurgen EkkelenkampCCUdinese5,400,001,480,562,22
+João Mário LopesDFJuventus2,700,371,483,701,85
+Alberto MorenoDFComo2,700,371,480,002,96
+Jordan ZemuraDFUdinese5,400,191,480,744,26
+Toma BašićCCLazio7,500,001,471,602,27
+Albert GuðmundssonCC,ATTFiorentina6,900,291,450,871,01
+Lloyd KellyDFJuventus11,000,271,450,550,45
+Kristian ThorstvedtCCSassuolo7,600,391,452,240,66
+Vasilije AdžićCCJuventus1,400,001,430,711,43
+Faustino AnjorinCC,ATTTorino0,700,001,431,430,00
+Andrea BelottiATTCagliari2,100,001,433,330,48
+Federico BernardeschiATT,CCBologna4,200,481,431,434,29
+Ange-Yoan BonnyATTInter4,900,001,432,860,00
+Fali CandéDFSassuolo4,200,241,430,950,48
+Eddy KouadioDFFiorentina0,700,001,431,431,43
+Rafael LeãoATTMilan7,000,141,432,430,57
+Yunus MusahCCAtalanta0,700,001,434,290,00
+Franco VázquezATT,CCCremonese4,900,201,433,063,47
+Cristian VolpatoATT,CCSassuolo3,500,571,430,294,57
+Edon ZhegrovaCCJuventus0,700,001,431,4315,70
+Ylber RamadaniCCLecce12,700,241,421,650,47
+Domenico BerardiATTSassuolo9,900,201,411,722,42
+Pietro ComuzzoDFFiorentina4,300,001,400,230,00
+Federico GattiDFJuventus8,600,351,400,700,12
+Alessandro ZanoliDFUdinese7,200,001,390,422,64
+Michel AebischerCCPisa10,900,181,381,010,64
+Raúl AlbiolDFPisa2,900,341,380,690,34
+Nikola MoroCCBologna5,800,001,381,382,41
+Lorenzo PellegriniCCRoma5,800,171,382,765,34
+Jakub PiotrowskiCCUdinese5,800,341,380,860,86
+Cristiano BiraghiDF,CCTorino5,100,001,371,186,67
+Christian KabaseleDFUdinese7,300,141,370,960,00
+Francesco CamardaATTLecce4,400,231,360,450,23
+Lorenzo De SilvestriDFBologna2,200,451,360,451,36
+Benjamín DomínguezATTBologna2,200,001,362,730,45
+Ruben Loftus-CheekCC,ATTMilan4,400,001,361,140,91
+Marco PalestraDF,ATTCagliari11,000,001,362,823,00
+Mariano TroiloDFParma2,200,911,362,270,45
+Duván ZapataATTTorino2,200,001,360,910,91
+Romano FlorianiDF,ATTCremonese5,200,381,350,582,88
+Mattéo TramoniCC,ATTPisa6,700,151,340,604,03
+WesleyDFRoma11,200,271,342,233,93
+Saúl CocoDFTorino12,000,081,331,420,08
+Yerry MinaDFCagliari9,000,111,331,890,00
+Jonathan RoweATTBologna3,000,331,332,333,33
+Carlos AugustoDFInter5,300,191,320,752,26
+Federico DimarcoDFInter10,600,091,320,6610,20
+Valentino LazaroDF,CCTorino9,100,111,320,334,73
+VitinhaATT,CCGenoa6,800,291,322,794,26
+Zito LuvumboATT,CCCagliari2,300,001,305,221,30
+Gift OrbanATTHellas Verona9,200,331,300,540,43
+Jacobo RamónDFComo10,000,301,300,100,10
+Zeki ÇelikDFRoma10,100,101,290,502,57
+Youssouf FofanaCCMilan11,600,261,290,600,43
+Odilon KossounouDFAtalanta7,000,001,290,430,29
+Obite N'DickaDFRoma12,400,241,291,370,08
+Zé Pedro FigueiredoDFCagliari3,900,001,281,540,00
+Anastasios DouvikasATTComo6,300,001,272,540,00
+Gustav IsaksenATTLazio6,300,001,273,331,90
+Matteo PratiCCCagliari10,200,391,270,291,18
+Medon BerishaCCLecce8,700,001,261,155,98
+Oliver JensenCCParma8,700,231,260,920,57
+Victor NelssonDFHellas Verona12,700,161,260,390,00
+Nahuel EstévezCCParma4,000,251,251,503,00
+Ardian IsmajliDFTorino5,600,361,251,251,25
+Nikola KrstovićATTAtalanta5,600,181,250,890,36
+Tete MorenteATT,CCLecce8,800,111,251,362,73
+Corrie NdabaDF,CCLecce0,800,001,250,001,25
+Nicholas PieriniATTSassuolo0,801,251,253,753,75
+Boulaye DiaATT,CCLazio8,900,001,240,900,00
+ÉdersonCCAtalanta7,300,141,231,640,27
+Armand LaurienteATTSassuolo8,100,001,231,232,84
+Mërgim VojvodaATT,DFComo6,500,311,230,462,77
+Arturo CalabresiDFPisa4,100,241,221,950,98
+Danilo CataldiCCLazio9,000,221,220,671,22
+Maxence CaqueretCC,ATTComo5,800,171,211,902,41
+Alessio ZerbinDF,CCCremonese5,800,171,211,031,03
+GiovaneATTHellas Verona11,700,171,201,112,22
+Mathías OliveraDF,CCNapoli5,000,401,200,600,00
+Moise KeanATTFiorentina11,800,171,192,290,25
+Leon BaileyATT,CCRoma1,700,001,180,597,06
+Diego CarlosDFComo9,400,321,170,210,11
+Aarón MartínDFGenoa9,400,211,171,068,09
+Francesco AcerbiDFInter8,600,231,160,930,12
+Marc-Oliver KempfDFComo6,900,141,160,720,00
+Antonio CaraccioloDFPisa13,000,231,150,380,00
+Lucas Da CunhaCCComo8,700,111,150,692,87
+Caleb EkubanATTGenoa3,500,001,143,431,14
+Danilo VeigaDFLecce10,500,291,141,242,67
+Andrea CambiasoDF,ATTJuventus9,700,101,130,414,95
+Michel Ndary AdopoCCCagliari10,600,001,130,570,47
+Marten de RoonCCAtalanta8,000,501,130,250,50
+Juan CuadradoDF,CCPisa3,600,561,112,225,00
+Charles De KetelaereCC,ATTAtalanta8,100,251,111,603,21
+Stefan PoschDFComo2,700,001,111,481,85
+Mattéo GuendouziCCLazio10,900,371,101,190,73
+Luca RanieriDFFiorentina10,900,371,101,281,56
+Nikola VlašićCC,ATTTorino10,000,201,101,401,40
+Billy GilmourCCNapoli4,600,221,091,300,43
+Federico BaschirottoDFCremonese12,000,081,080,170,17
+Lassana CoulibalyCCLecce11,100,271,081,260,36
+Jay IdzesDFSassuolo12,000,001,080,500,00
+Giuseppe PezzellaDFCremonese7,400,271,080,683,24
+Guillermo MaripánDFTorino11,200,091,070,000,27
+Marcus PedersenDFTorino8,400,121,070,244,88
+Kamaldeen SulemanaCCAtalanta5,600,361,071,430,89
+Nicolò FagioliCCFiorentina6,600,301,061,213,03
+Saba GoglichidzeDFUdinese4,700,431,060,850,43
+Remo FreulerCCBologna7,600,261,051,050,53
+Amir RrahmaniDFNapoli5,700,001,051,050,18
+Hakan ÇalhanoğluCCInter9,600,211,040,635,10
+Ismaël KonéCCSassuolo9,600,311,041,770,10
+Fikayo TomoriDFMilan9,600,311,040,310,63
+Jamie VardyATTCremonese6,700,301,040,900,60
+Christopher NkunkuATTMilan3,900,001,031,790,26
+Mario PašalićCCAtalanta10,700,091,030,280,28
+Riccardo SottilATTLecce3,900,001,033,084,10
+Gabriele ZappaDFCagliari8,700,231,030,571,26
+Pervis EstupiñánDFMilan4,900,201,021,020,82
+Oumar SoletDFUdinese12,700,001,021,100,31
+Santiago GiménezATTMilan6,900,141,011,450,14
+Jari VandeputteCCCremonese8,900,111,011,245,51
+Sebastian WalukiewiczDFSassuolo10,900,181,010,281,83
+Sam BeukemaDFNapoli6,000,171,000,330,17
+Mikael EllertssonDF,ATTGenoa10,000,101,001,300,70
+Niccolò FortiniDF,CCFiorentina4,000,001,002,754,75
+Albert GrønbaekATT,CCGenoa1,001,001,001,001,00
+Sebastiano LupertoDFCagliari10,000,101,000,700,00
+Luca MarianucciDFNapoli1,000,001,000,000,00
+Scott McTominayCCNapoli11,000,001,002,730,27
+Benjamin PavardDFInter1,000,001,000,000,00
+Riccardo OrsoliniATTBologna9,100,110,991,651,76
+Idrissa TouréDFPisa10,100,000,991,392,77
+Rafik BelghaliDF,ATTHellas Verona10,300,390,970,392,72
+Mandela KeitaCCParma10,400,100,961,540,10
+Andre-Frank Zambo AnguissaCCNapoli10,400,100,961,151,44
+Josh DoigDFSassuolo9,500,420,951,051,68
+Daniel MaldiniCCAtalanta2,100,480,951,901,90
+Gianluca ScamaccaATTAtalanta4,200,240,952,140,00
+Mattia ZaccagniATTLazio11,600,260,954,142,07
+Matteo BianchettiDFCremonese10,600,090,940,750,38
+Adam MarušićDFLazio10,600,090,940,570,66
+AngeliñoDF,CCRoma4,300,230,930,473,26
+Jacopo FazziniCC,ATTFiorentina4,300,000,932,331,16
+Pierre KaluluDFJuventus13,000,000,920,462,23
+Mehdi LérisDF,CCPisa6,500,000,921,385,23
+Dušan VlahovićATTJuventus7,600,000,921,970,39
+Miguel GutiérrezDF,CCNapoli3,300,000,911,823,03
+Nicolò RovellaCCLazio2,200,450,912,733,18
+Ademola LookmanATT,CCAtalanta6,700,000,900,752,39
+Tarik MuharemovicDFSassuolo10,000,300,901,100,20
+Adrien TamezeDF,CCTorino6,700,150,900,751,19
+Alessandro MarcandalliDFGenoa5,600,360,890,360,00
+Nicolò BertolaDFUdinese6,800,290,880,740,15
+Robin GosensDFFiorentina8,000,130,881,132,13
+Davide FrattesiCC,ATTInter2,300,000,872,170,00
+Stefano MoreoATT,CCPisa5,800,000,861,031,03
+Tiago GabrielDFLecce12,100,080,830,990,08
+Cher NdourCCFiorentina3,600,000,831,391,94
+Daniele RuganiDFJuventus2,400,000,830,000,00
+Manuel AkanjiDFInter11,000,090,820,450,27
+Lautaro ValentiDFParma8,500,240,820,591,29
+Kenan YıldızCC,ATTJuventus11,000,000,821,734,00
+Nadir ZorteaDFBologna4,900,000,821,022,24
+Arthur AttaCCUdinese12,300,160,811,542,76
+Davide BartesaghiDF,ATTMilan7,400,140,810,544,73
+Federico BonazzoliATTCremonese6,200,000,812,580,32
+Jhon LucumíDFBologna8,600,230,810,930,12
+Davide ZappacostaDFAtalanta8,600,230,810,703,37
+Kristjan AsllaniCCTorino8,800,340,801,024,20
+Nicolò BarellaCCInter11,300,090,800,804,34
+Edin DžekoATTFiorentina2,500,400,802,000,40
+Gabriele PiccininiCCPisa2,500,800,801,602,00
+Kevin De BruyneCCNapoli6,300,160,790,323,97
+Matteo PolitanoCC,ATTNapoli8,900,110,791,577,30
+Valentín CastellanosATTLazio5,100,390,781,961,18
+Elif ElmasCC,ATTNapoli3,900,260,770,262,56
+Matteo GabbiaDFMilan13,000,150,770,310,08
+Johan VásquezDFGenoa13,000,080,770,770,15
+Paulo DybalaATT,CCRoma5,300,000,751,707,92
+Nicolas-Gerrit KühnATTComo4,000,000,750,501,75
+Alessandro CircatiDFParma9,400,000,740,640,00
+Juan MirandaDFBologna8,100,250,741,235,43
+Strahinja PavlovićDFMilan12,200,080,740,570,57
+Jesus RodríguezATTComo6,800,000,741,322,06
+Sascha BritschgiDFParma8,200,240,731,101,46
+Lorenzo BernasconiDFAtalanta2,800,000,710,007,86
+Jonathan DavidATTJuventus5,600,000,711,430,36
+Honest AhanorDFAtalanta5,700,000,701,930,18
+Alberto GrassiCCCremonese4,300,470,701,630,00
+Jesper KarlströmCCUdinese12,800,160,701,090,39
+Dennis JohnsenATT,CCCremonese1,500,000,670,003,33
+Devyne RenschDFRoma1,500,000,672,671,33
+Hassane KamaraDFUdinese7,600,260,660,794,21
+Oliver NielsenDFLazio3,100,000,650,650,32
+Stanislav LobotkaCCNapoli7,800,130,642,050,13
+Che AdamsATT,CCTorino6,400,000,630,941,09
+Michele CollocoloCCCremonese3,200,310,630,631,56
+Simone CanestrelliDFPisa13,000,080,620,310,31
+KialondaDFLecce13,000,310,621,080,08
+Noa LangATT,CCNapoli3,300,610,611,526,06
+Thomas KristensenDFUdinese5,000,000,600,600,20
+Manuel LazzariDFLazio3,400,290,592,351,76
+Nemanja MatićCCSassuolo11,900,080,591,260,67
+Loïs OpendaATT,CCJuventus3,400,000,593,532,06
+DodôDFFiorentina12,100,170,581,903,97
+Mathias LøvikDFParma5,200,000,580,382,88
+Alessio RomagnoliDFLazio10,300,190,580,580,00
+Riyad IdrissiDFCagliari3,500,290,570,294,00
+Nicola ZalewskiDFAtalanta5,300,000,572,088,11
+Patrick CutroneATTParma8,900,000,561,571,35
+Berat DjimsitiDFAtalanta10,700,090,560,090,19
+Alexis SaelemaekersDF,ATTMilan12,500,080,562,082,32
+Enrico Del PratoDFParma13,000,230,540,380,38
+Adrian BernabeCCParma11,400,000,532,113,07
+Gleison BremerDFJuventus3,800,000,530,790,26
+Nicolae StanciuCC,ATTGenoa1,900,000,531,054,74
+Leonardo SpinazzolaDF,CCNapoli5,900,170,510,174,24
+Domagoj BradarićDF,ATTHellas Verona10,000,100,500,504,10
+PedroATTLazio4,100,240,493,413,41
+Mario GilaDFLazio12,500,080,480,960,08
+Luka ModrićCCMilan12,700,160,471,023,94
+Samuele AngoriDFPisa6,600,000,451,675,15
+Mikayil Ngor FayeDF,ATTCremonese2,300,430,431,301,74
+Christian PulisicATT,CCMilan4,700,000,431,492,55
+Fabiano ParisiDF,ATTFiorentina2,400,830,422,921,67
+Christ-Owen KouassiDFLecce2,500,000,401,200,80
+Fisayo Dele-BashiruCCLazio2,600,000,380,000,00
+Filippo TerraccianoDFCremonese10,900,180,371,011,19
+Samuele RicciCCMilan5,700,180,351,750,35
+Andrea PinamontiATTSassuolo11,900,080,341,180,59
+Stefano SabelliDFGenoa2,900,000,341,721,03
+Emanuele ValeriDFParma6,600,000,301,069,09
+Matìas SouléCC,ATTRoma10,300,000,292,144,08
+Antonino GalloDFLecce12,300,080,240,493,50
+Raoul BellanovaDFAtalanta9,300,000,110,656,13
+Vanja Milinković-SavićPORNapoli9,000,000,110,110,00
+Marco CarnesecchiPORAtalanta13,000,000,080,150,00
+Nicola LealiPORGenoa13,000,080,080,150,00
+Junior AjayiATTHellas Verona0,000,000,000,000,00
+Emil AuderoPORCremonese8,000,000,000,380,00
+Martin BaturinaATT,CCComo1,900,000,002,114,74
+Tjaš BegićDFParma0,000,000,000,000,00
+Daniel BolocaCCSassuolo1,500,000,000,670,67
+Louis BuffonATTPisa0,200,000,005,000,00
+Jean ButezPORComo13,000,000,000,380,00
+Elia CaprilePORCagliari13,000,080,000,460,00
+Samuel ChukwuezeATTMilan0,300,000,0010,0010,00
+Edoardo CorviPORParma2,000,000,000,500,00
+Ben CremaschiCCParma0,200,000,000,000,00
+Matteo DarmianDFInter0,200,000,000,005,00
+Ali DembéléDFTorino0,100,000,000,000,00
+Michele Di GregorioPORJuventus11,000,090,000,270,00
+Alessandro Di PardoDFCagliari0,600,000,000,000,00
+Andy DioufCC,DFInter0,600,000,001,673,33
+Wladimiro FalconePORLecce13,000,080,000,150,00
+David de GeaPORFiorentina13,000,000,000,230,00
+Andrea GhionATT,CCSassuolo0,100,000,000,0010,00
+Edoardo GoldanigaDFComo0,000,000,000,000,00
+Nicolás GonzálezCC,DFJuventus0,200,000,0015,000,00
+Luis HenriqueDFInter3,100,000,000,001,29
+Elseid HysajDFLazio1,700,000,000,591,18
+Emirhan İlkhanCCTorino0,600,000,003,330,00
+Ciro ImmobileATTBologna0,300,000,000,000,00
+Franco IsraelPORTorino8,000,130,000,380,00
+Álex JiménezDFMilan0,502,000,002,002,00
+Þórir Jóhann HelgasonCCLecce0,900,000,000,003,33
+Sead KolašinacDFAtalanta0,000,000,000,000,00
+Tariq LampteyCC,DFFiorentina0,300,000,000,003,33
+Dachi LordkipanidzeCCCremonese0,300,000,000,000,00
+LorranCC,DFPisa0,200,000,000,005,00
+Mike MaignanPORMilan11,600,000,000,170,00
+Josep MartinezPORInter2,000,000,000,000,00
+Pasquale MazzocchiCCNapoli0,200,000,000,000,00
+Alex MeretPORNapoli4,000,000,000,250,00
+Rui ModestoCC,DFUdinese0,500,000,000,004,00
+Lorenzo MontipòPORHellas Verona13,000,000,000,150,00
+Arijanet MuricPORSassuolo12,000,170,000,170,00
+Cheveyo MuyATTMilan0,100,000,000,000,00
+Niels NkounkouDF,CCTorino3,000,330,000,674,33
+David OkerekeATTCremonese0,900,000,000,000,00
+Maduka OkoyePORUdinese7,000,000,000,000,00
+Jacob OndrejkaCC,ATTParma0,500,000,000,004,00
+Daniel OyegokeCC,DFHellas Verona0,200,000,000,005,00
+Alberto PaleariPORTorino5,000,000,000,000,00
+Faris Pemi MoumbagnaATTCremonese0,200,000,000,000,00
+Mattia PerinPORJuventus2,000,000,000,000,00
+Massimo PessinaPORBologna0,900,000,000,000,00
+Balthazar PierretCCLecce0,300,000,006,670,00
+Niccolò PisilliCCRoma0,600,000,000,001,67
+Ivan ProvedelPORLazio13,000,000,000,150,00
+Federico RavagliaPORBologna2,000,000,000,500,00
+Filippo RomagnaDFSassuolo2,200,000,000,450,00
+Yellu SantiagoCCHellas Verona0,100,000,0010,000,00
+Jeremy SarmientoCC,ATTCremonese1,600,000,000,631,25
+Razvan SavaPORUdinese6,000,170,000,000,00
+Simone ScuffetPORPisa1,000,000,000,000,00
+Adrian ŠemperPORPisa12,000,000,000,080,00
+Marco SilvestriPORCremonese4,000,000,000,000,00
+Łukasz SkorupskiPORBologna9,100,110,000,330,00
+Yann SommerPORInter11,000,000,000,090,00
+Calvin StengsCCPisa0,100,000,0020,0030,00
+Ibrahim SulemanaCCBologna0,100,000,000,000,00
+Zion SuzukiPORParma11,000,090,000,180,00
+Mile SvilarPORRoma13,000,000,000,230,00
+Pietro TerraccianoPORMilan1,400,000,000,000,00
+Stefano TuratiPORSassuolo1,000,000,000,000,00
+Antonio VergaraCCNapoli0,000,000,000,000,00
+Stefan de VrijDFInter2,000,000,000,000,00
+Piotr ZielińskiCCInter3,000,000,000,671,00
+`;
 
 let playersData = [];
+let playersMinMatches = 0;
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -4694,6 +5179,7 @@ if (view === 'analytics') {
     if (playersView)   playersView.classList.remove('hidden');
 
     // renderizza / aggiorna la tabella giocatori
+    initPlayersFilters();
     renderPlayersTable();
 } else {
     // stats, matches, playingTime, teams
@@ -4834,24 +5320,35 @@ document.getElementById("players-view").classList.add("hidden");
 }
 
 function renderPlayersTable() {
-    const q = document.getElementById("players-search").value.toLowerCase();
+    const q = (document.getElementById("players-search")?.value || "").toLowerCase();
     const tbody = document.getElementById("players-table-body");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
-    playersData
+    const filtered = playersData
         .filter(p => p.name.toLowerCase().includes(q))
-        .forEach(p => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td class="p-2">${p.name}</td>
-                <td class="p-2">${p.n90}</td>
-                <td class="p-2">${p.yellow}</td>
-                <td class="p-2">${p.fouls}</td>
-                <td class="p-2">${p.fouled}</td>
-                <td class="p-2">${p.crosses}</td>
-            `;
-            tbody.appendChild(tr);
+        .filter(p => p.n90 >= playersMinMatches)
+        .sort((a, b) => {
+            const sA = extractSurname(a.name);
+            const sB = extractSurname(b.name);
+            if (sA === sB) return a.name.localeCompare(b.name);
+            return sA.localeCompare(sB);
         });
+
+    filtered.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-2">${p.name}</td>
+            <td class="p-2">${p.role || '-'}</td>
+            <td class="p-2">${p.team || '-'}</td>
+            <td class="p-2">${p.n90}</td>
+            <td class="p-2">${p.yellow}</td>
+            <td class="p-2">${p.fouls}</td>
+            <td class="p-2">${p.fouled}</td>
+            <td class="p-2">${p.crosses}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 // Converte la stringa TSV dei giocatori in un array di oggetti
@@ -4864,30 +5361,78 @@ function parsePlayersDB(raw) {
         return Number.isFinite(parsed) ? parsed : 0;
     };
 
+    const parseLine = (line) => {
+        const tabParts = line.split('\t').filter(Boolean);
+
+        let name = '';
+        let role = '';
+        let team = '';
+        let statsTokens = [];
+
+        if (tabParts.length >= 8) {
+            [name, role, team, ...statsTokens] = tabParts.slice(0, 8);
+        } else {
+            const trimmed = line.trim();
+            const match = trimmed.match(/^(?<name>.+?)(?<role>[A-Z,]+)(?<team>[A-Za-zÀ-ÿ'\.\s-]+?)(?<n1>\d+,\d+)\s*(?<n2>\d+,\d+)\s*(?<n3>\d+,\d+)\s*(?<n4>\d+,\d+)\s*(?<n5>\d+,\d+)$/);
+            if (!match || !match.groups) return null;
+
+            name = (match.groups.name || '').trim();
+            role = (match.groups.role || '').trim();
+            team = (match.groups.team || '').trim();
+            statsTokens = [match.groups.n1, match.groups.n2, match.groups.n3, match.groups.n4, match.groups.n5];
+        }
+
+        if (statsTokens.length < 5) return null;
+
+        return {
+            name,
+            role,
+            team,
+            n90:     toNumber(statsTokens[0]),
+            yellow:  toNumber(statsTokens[1]),
+            fouls:   toNumber(statsTokens[2]),
+            fouled:  toNumber(statsTokens[3]),
+            crosses: toNumber(statsTokens[4])
+        };
+    };
+
     return raw
         .trim()
         .split('\n')
-        .map(line => {
-            const tokens = line.trim().split(/\s+/);
-            if (tokens.length < 6) return null;
-
-            const statsTokens = tokens.slice(-5);
-            const name = tokens.slice(0, tokens.length - 5).join(' ');
-
-            return {
-                name,
-                n90:     toNumber(statsTokens[0]),
-                yellow:  toNumber(statsTokens[1]),
-                fouls:   toNumber(statsTokens[2]),
-                fouled:  toNumber(statsTokens[3]),
-                crosses: toNumber(statsTokens[4])
-            };
-        })
+        .map(parseLine)
         .filter(Boolean);
 }
 
 // Sovrascriviamo playersData con l’array parsato
 playersData = parsePlayersDB(playersRawData);
+initPlayersFilters();
+
+function extractSurname(fullName) {
+    const parts = (fullName || '').trim().split(/\s+/);
+    return parts.length ? parts[parts.length - 1].toLowerCase() : '';
+}
+
+function updatePlayersMinMatches(val) {
+    const parsed = parseFloat(val);
+    playersMinMatches = Number.isFinite(parsed) ? parsed : 0;
+
+    const label = document.getElementById('playersMinMatchesValue');
+    if (label) label.innerText = playersMinMatches;
+
+    renderPlayersTable();
+}
+
+function initPlayersFilters() {
+    const slider = document.getElementById('playersMinMatches');
+    const label = document.getElementById('playersMinMatchesValue');
+
+    if (!slider) return;
+
+    const maxMatches = playersData.length ? Math.max(...playersData.map(p => p.n90)) : 0;
+    slider.max = Math.max(10, Math.ceil(maxMatches));
+    slider.value = playersMinMatches;
+    if (label) label.innerText = playersMinMatches;
+}
 
 
 
@@ -4937,4 +5482,3 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
-
