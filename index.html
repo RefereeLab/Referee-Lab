@@ -711,6 +711,10 @@ html, body {
                         <button onclick="switchView('analytics')" id="nav-analytics" class="nav-pill flex items-center">
                             <i class="fa-solid fa-chart-pie mr-2"></i>Grafici <span class="badge-new">NEW</span>
                         </button>
+			<button onclick="switchView('players')" id="nav-players" class="nav-pill">
+    			    <i class="fa-solid fa-user mr-2"></i>Giocatori 25/26
+			</button>
+
                     </div>
                 </div>
 
@@ -726,6 +730,10 @@ html, body {
                             <i class="fa-solid fa-chart-pie"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                         </button>
+<button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
+    <i class="fa-solid fa-user"></i>
+</button>
+
                     </div>
 
                     <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
@@ -893,8 +901,41 @@ html, body {
         <div id="matches-title" class="hidden"></div>
         <div id="insights-container" class="hidden"></div>
 
+
+<!-- ===============================
+     PLAYERS VIEW (GIOCATORI 25/26)
+=============================== -->
+<div id="players-view" class="hidden space-y-6 animate-fade-in">
+
+    <h2 class="text-xl font-bold text-slate-200 mb-4">
+        Giocatori — Stagione 25/26
+    </h2>
+
+    <input id="players-search" 
+           type="text" 
+           placeholder="Cerca giocatore..."
+           oninput="renderPlayersTable()"
+           class="w-full mb-4 px-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200">
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-300" id="players-table">
+            <thead class="bg-slate-800 text-slate-300">
+                <tr>
+                    <th class="p-2">Giocatore</th>
+                    <th class="p-2">Partite (90s)</th>
+                    <th class="p-2">Gialli</th>
+                    <th class="p-2">Falli Commessi</th>
+                    <th class="p-2">Falli Subiti</th>
+                    <th class="p-2">Cross</th>
+                </tr>
+            </thead>
+            <tbody id="players-table-body"></tbody>
+        </table>
+    </div>
+
+</div>
+
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
-            
             <div class="pro-card rounded-lg p-4 lg:col-span-2">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
                     <span><i class="fa-solid fa-scale-balanced text-green-500 mr-2"></i> Ritmo vs Interruzioni</span>
@@ -1059,6 +1100,8 @@ html, body {
         <div id="chart-team-heatmap"></div>
     </div>
 </div>
+          
+
 
         </div>
 
@@ -1230,6 +1273,20 @@ html, body {
     </main>
 
     <script>
+
+const playersData = `
+Jean Onana CC Genoa 0,10 0,00 20,00 0,00 0,00 
+Nicolò Cavuoti DF Cagliari 0,10 0,00 10,00 0,00 0,00 
+Daniele Ghilardi DF Roma 0,10 0,00 10,00 0,00 0,00 
+Idrissa Guèye ATT Udinese 0,20 0,00 10,00 0,00 0,00 
+Ardon Jashari CC Milan 0,20 0,00 10,00 15,00 0,00 
+Alieu Njie ATT Torino 0,20 5,00 10,00 0,00 5,00 
+Patric CC,DF Lazio 0,10 0,00 10,00 0,00 0,00 
+Amir Richardson CC Fiorentina 0,10 0,00 10,00 0,00 0,00 
+Youssef Maleh CC Lecce 0,50 0,00 8,00 2,00 4,00 
+Edoardo Iannoni CC Sassuolo 0,90 2,22 7,78 0,00 0,00 
+Luca Lipani CC Sassuolo 1,30 0,00 6,92 0,00 0,77`;
+
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
 Parma-Fiorentina	97,04	48,46	49,9%	24
@@ -4601,7 +4658,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             resetMatchesPaging(); 
 
             // Update Active State (Desktop)
-            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams'].forEach(id => {
+            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     if(id === `nav-${view === 'playingTime' ? 'time' : view}`) el.classList.add('active');
@@ -4609,7 +4666,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 }
             });
             // Mobile State
-             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams'].forEach(id => {
+             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
                      if(id === `mob-nav-${view === 'playingTime' ? 'time' : view}`) {
@@ -4620,17 +4677,29 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                  }
             });
 
-            const searchInput = document.getElementById('searchInput');
-            const tableView = document.getElementById('table-view');
-            const analyticsView = document.getElementById('analytics-view');
+const searchInput   = document.getElementById('searchInput');
+const tableView     = document.getElementById('table-view');
+const analyticsView = document.getElementById('analytics-view');
+const playersView   = document.getElementById('players-view');
 
-            if (view === 'analytics') {
-                if(tableView) tableView.classList.add('hidden');
-                if(analyticsView) analyticsView.classList.remove('hidden');
-            } else {
-                if(tableView) tableView.classList.remove('hidden');
-                if(analyticsView) analyticsView.classList.add('hidden');
-            }
+if (view === 'analytics') {
+    if (tableView)     tableView.classList.add('hidden');
+    if (analyticsView) analyticsView.classList.remove('hidden');
+    if (playersView)   playersView.classList.add('hidden');
+} else if (view === 'players') {
+    if (tableView)     tableView.classList.add('hidden');
+    if (analyticsView) analyticsView.classList.add('hidden');
+    if (playersView)   playersView.classList.remove('hidden');
+
+    // renderizza / aggiorna la tabella giocatori
+    renderPlayersTable();
+} else {
+    // stats, matches, playingTime, teams
+    if (tableView)     tableView.classList.remove('hidden');
+    if (analyticsView) analyticsView.classList.add('hidden');
+    if (playersView)   playersView.classList.add('hidden');
+}
+
 
             // Update search placeholder based on view
             if(searchInput) {
@@ -4756,9 +4825,56 @@ function updateMinMatches(val) {
 
     document.getElementById('minMatchesValue').innerText = val;
     document.getElementById('minMatches').value = val;
+document.getElementById("players-view").classList.add("hidden");
+
 
     debounceAggregate();
 }
+
+function renderPlayersTable() {
+    const q = document.getElementById("players-search").value.toLowerCase();
+    const tbody = document.getElementById("players-table-body");
+    tbody.innerHTML = "";
+
+    playersData
+        .filter(p => p.name.toLowerCase().includes(q))
+        .forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td class="p-2">${p.name}</td>
+                <td class="p-2">${p.n90}</td>
+                <td class="p-2">${p.yellow}</td>
+                <td class="p-2">${p.fouls}</td>
+                <td class="p-2">${p.fouled}</td>
+                <td class="p-2">${p.crosses}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+}
+
+// Converte la stringa TSV dei giocatori in un array di oggetti
+function parsePlayersDB(raw) {
+    if (!raw) return [];
+    return raw
+        .trim()
+        .split('\n')
+        .map(line => {
+            const parts = line.split('\t'); // nome \t n90 \t gialli \t falli \t subiti \t cross
+            return {
+                name:    (parts[0] || '').trim(),
+                n90:     parts[1] ? parseInt(parts[1], 10) : 0,
+                yellow:  parts[2] ? parseInt(parts[2], 10) : 0,
+                fouls:   parts[3] ? parseInt(parts[3], 10) : 0,
+                fouled:  parts[4] ? parseInt(parts[4], 10) : 0,
+                crosses: parts[5] ? parseInt(parts[5], 10) : 0
+            };
+        });
+}
+
+// Sovrascriviamo playersData con l’array parsato
+playersData = parsePlayersDB(playersData);
+
+
 
         function toggleInactiveRefs() {
             hideInactive = document.getElementById('toggleInactive').checked;
