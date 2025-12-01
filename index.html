@@ -848,7 +848,7 @@ html, body {
             </div>
         </div>
 
-        <div class="pro-card rounded-lg overflow-hidden">
+        <div id="season-selector-card" class="pro-card rounded-lg overflow-hidden">
             <div class="p-3 bg-slate-800/50 border-b border-slate-800 flex justify-between items-center">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Stagione</h3>
                 <button onclick="toggleAllSeasons()" class="text-xs text-yellow-500 hover:text-yellow-400 font-medium">Reset</button>
@@ -4244,8 +4244,12 @@ function renderRitmoScatter(matchData, fullMatchData, seasonsOverride) {
         seasons.includes(m.season)
     );
 
+    // 🔹 Escludiamo i dati senza Tempo Effettivo o Falli validi
+    const validBase = base.filter(m => !isNaN(m.effectiveTimeSec) && !isNaN(m.fouls));
+    const validFiltered = filtered.filter(m => !isNaN(m.effectiveTimeSec) && !isNaN(m.fouls));
+
     // Se NON ci sono punti da mostrare (es. filtro squadra troppo stretto) → grafico "vuoto"
-    if (!filtered.length) {
+    if (!validFiltered.length) {
         if (chartMatchCorrelation) chartMatchCorrelation.destroy();
 
         chartMatchCorrelation = new ApexCharts(
@@ -4282,7 +4286,7 @@ function renderRitmoScatter(matchData, fullMatchData, seasonsOverride) {
     // 🔹 Serie del grafico (solo dati FILTRATI -> i pallini che vedi)
     const series = seasons.map(season => ({
         name: season,
-        data: filtered
+        data: validFiltered
             .filter(m => m.season === season)
             .map(m => ({
                 x: m.fouls,
@@ -4291,18 +4295,19 @@ function renderRitmoScatter(matchData, fullMatchData, seasonsOverride) {
             }))
     }));
 
-    // 🔹 MEDIE calcolate SOLO sui dati base (tutte le partite delle stagioni attive)
-    const totalSeconds = base.reduce((sum, m) => sum + m.effectiveTimeSec, 0);
-    const avgEffSec = totalSeconds / base.length;
-    const avgEff = +(avgEffSec / 60).toFixed(2);
-
-    const avgFouls = base.reduce((s, m) => s + m.fouls, 0) / base.length;
-
     // 🔹 Assi fissi
     const mXMin = 10;
     const mXMax = 48;
     const mYMin = 40;
     const mYMax = 70;
+
+    // 🔹 MEDIE calcolate SOLO sui dati base (tutte le partite delle stagioni attive)
+    const totalSeconds = validBase.reduce((sum, m) => sum + m.effectiveTimeSec, 0);
+    const avgEffSec = validBase.length ? (totalSeconds / validBase.length) : NaN;
+    const avgEff = isNaN(avgEffSec) ? ((mYMin + mYMax) / 2) : +(avgEffSec / 60).toFixed(2);
+
+    const avgFouls = validBase.length ? (validBase.reduce((s, m) => s + m.fouls, 0) / validBase.length) : ((mXMin + mXMax) / 2);
+
 
     const matchChartOptions = {
         series: series,
@@ -5361,12 +5366,14 @@ const analyticsView = document.getElementById('analytics-view');
 const playersView   = document.getElementById('players-view');
 const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
+const seasonCard    = document.getElementById('season-selector-card');
 
 if (view === 'analytics') {
     if (tableView)     tableView.classList.add('hidden');
     if (analyticsView) analyticsView.classList.remove('hidden');
     if (playersView)   playersView.classList.add('hidden');
     if (sidebar)       sidebar.classList.remove('hidden');
+    if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
@@ -5376,10 +5383,12 @@ if (view === 'analytics') {
     if (analyticsView) analyticsView.classList.add('hidden');
     if (playersView)   playersView.classList.remove('hidden');
     if (sidebar)       sidebar.classList.add('hidden');
+    if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-9');
         mainContent.classList.add('lg:col-span-12');
     }
+
 
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
@@ -5390,12 +5399,12 @@ if (view === 'analytics') {
     if (analyticsView) analyticsView.classList.add('hidden');
     if (playersView)   playersView.classList.add('hidden');
     if (sidebar)       sidebar.classList.remove('hidden');
+    if (seasonCard)    seasonCard.classList.remove('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
     }
 }
-
             // Update search placeholder based on view
             if(searchInput) {
                  if(view === 'teams') searchInput.placeholder = 'Cerca squadra...';
