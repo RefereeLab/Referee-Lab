@@ -774,10 +774,10 @@ html, body {
 
                     <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
                     
-                    <!-- Designations Mobile Trigger -->
-                    <button onclick="toggleDesignationsModal(true)" class="lg:hidden w-9 h-9 rounded-full bg-slate-800 border border-slate-700 text-yellow-500 flex items-center justify-center shadow-lg active:scale-95">
-                        <i class="fa-regular fa-calendar-check text-sm"></i>
-                    </button>
+                    <!-- Designations Mobile Trigger -->␊
+                    <button onclick="toggleDesignationsModal(true)" class="lg:hidden w-10 h-10 rounded-full bg-slate-800 border border-slate-700 text-yellow-500 flex items-center justify-center shadow-lg active:scale-95 fixed bottom-4 left-4 z-50 md:static md:bottom-auto md:left-auto md:right-auto">
+                        <i class="fa-regular fa-calendar-check text-sm"></i>␊
+                    </button>␊
                     
                     <!-- Export Button -->
                     <button class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded border border-transparent hover:border-slate-700 transition-colors" onclick="alert('Export not available in demo')">
@@ -5269,6 +5269,11 @@ if (view === 'analytics') {
     if (tableView)     tableView.classList.add('hidden');
     if (analyticsView) analyticsView.classList.remove('hidden');
     if (playersView)   playersView.classList.add('hidden');
+    if (sidebar)       sidebar.classList.remove('hidden');
+    if (mainContent) {
+        mainContent.classList.remove('lg:col-span-12');
+        mainContent.classList.add('lg:col-span-9');
+    }
 } else if (view === 'players') {
     if (tableView)     tableView.classList.add('hidden');
     if (analyticsView) analyticsView.classList.add('hidden');
