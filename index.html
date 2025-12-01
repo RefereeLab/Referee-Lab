@@ -4142,12 +4142,18 @@ if(q && result.length && currentView !== 'analytics') {
             const yMinData = yVals.length ? Math.min(...yVals) : 3;
             const yMaxData = yVals.length ? Math.max(...yVals) : 6;
 
-            const xMin = Math.floor(xMinData - 1);
-            const xMax = Math.ceil(xMaxData + 3);
+            // Allinea le tacche dei falli a step fissi di 4 unità
+            const FOUL_TICK_STEP = 4;
+            const xMin = Math.floor((xMinData - 1) / FOUL_TICK_STEP) * FOUL_TICK_STEP;
+            const xMax = Math.ceil((xMaxData + 3) / FOUL_TICK_STEP) * FOUL_TICK_STEP;
+            const xTickAmount = Math.max(Math.round((xMax - xMin) / FOUL_TICK_STEP), 1);
+
             const yMin = Math.floor(yMinData - 0.5);
             const yMax = Math.ceil(yMaxData + 1.5);
 
-            const midFouls = 24.5, midYellows = 4.5;
+            // Calcola le medie reali dei punti mostrati
+            const midFouls = xVals.length ? parseFloat((xVals.reduce((sum, val) => sum + val, 0) / xVals.length).toFixed(2)) : 24.5;
+            const midYellows = yVals.length ? parseFloat((yVals.reduce((sum, val) => sum + val, 0) / yVals.length).toFixed(2)) : 4.5;
 
             const scatterOptions = {
                 series: [{ name: "Arbitri", data: scatterData }],
@@ -4165,10 +4171,10 @@ if(q && result.length && currentView !== 'analytics') {
                 colors: ['#EAB308'],
                 xaxis: { 
                     title: { text: 'Media Falli', style: { color: '#94a3b8' } }, 
-                    tickAmount: 5, 
-                    min: xMin, max: xMax, 
-                    labels: { style: { colors: '#cbd5e1' } }, 
-                    axisBorder: { color: '#334155' }, 
+                    tickAmount: xTickAmount,
+                    min: xMin, max: xMax,
+                    labels: { style: { colors: '#cbd5e1' } },
+                    axisBorder: { color: '#334155' },
                     axisTicks: { color: '#334155' } 
                 },
                 yaxis: { 
