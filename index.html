@@ -182,7 +182,6 @@ html, body {
             opacity: 1; /* Assicura che la label non si oscuri sull'hover */
         }
 
-        /* Table Styling */
 .pro-table th {
     background-color: #111827;
     font-size: 0.7rem;
@@ -198,7 +197,13 @@ html, body {
     border-bottom: 1px solid #1e293b;
     font-size: 0.85rem;
 }        .pro-table tr:last-child td { border-bottom: none; }
+        /* Table Styling */
         .pro-table tr:hover td { background-color: #1e293b; }
+
+        /* Players table separators */
+#players-table tbody tr:not(:last-child) td {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
         
         .sticky-head { position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .sticky-col { position: sticky; left: 0; z-index: 10; background-color: #0f172a; border-right: 1px solid #1e293b; }
@@ -912,7 +917,7 @@ html, body {
     </h2>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-3 space-y-4">
             <div class="pro-card rounded-lg p-4">
                 <label for="players-search" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Ricerca giocatore</label>
                 <div class="relative mt-2">
@@ -924,19 +929,17 @@ html, body {
                            class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none">
                 </div>
             </div>
+
+            <div class="pro-card rounded-lg p-4">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                    <span>Min. presenze (90')</span>
+                    <span id="playersMinMatchesValue" class="font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
+                </div>
+                <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
+            </div>
         </div>
 
-        <div class="lg:col-span-9 space-y-4">
-            <div class="flex justify-end">
-                <div class="w-full sm:w-1/2 lg:w-1/3 bg-slate-900 border border-slate-700 rounded px-3 py-2 shadow-card">
-                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                        <span>Min. presenze (90')</span>
-                        <span id="playersMinMatchesValue" class="font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
-                    </div>
-                    <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
-                </div>
-            </div>
-
+        <div class="lg:col-span-9">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-slate-300" id="players-table">
                     <thead class="bg-slate-800 text-slate-300">
