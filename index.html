@@ -207,7 +207,21 @@ html, body {
 
 .players-table td:first-child,
 .players-table th:first-child {
+    min-width: 3rem;
+    width: 3rem;
+}
+
+.players-table td:nth-child(2),
+.players-table th:nth-child(2) {
     min-width: 11rem;
+}
+
+.players-table th {
+    font-size: 0.65rem;
+}
+
+.players-table td {
+    font-size: 0.8rem;
 }
 
         /* Players table separators */
@@ -793,7 +807,7 @@ html, body {
 
 <div id="layout-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    <aside id="sidebar-filters" class="lg:col-span-3 space-y-6 lg:self-start">␊
+    <aside id="sidebar-filters" class="lg:col-span-3 space-y-6 lg:self-start">
         <div id="global-search-container" class="pro-card rounded-lg p-1">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
@@ -982,6 +996,7 @@ html, body {
                     <table class="w-full text-sm text-slate-300 pro-table players-table text-center" id="players-table">
                         <thead class="bg-slate-800 text-slate-300">
                             <tr>
+                                <th class="p-2 w-12">#</th>
                                 <th class="p-2 cursor-pointer select-none w-48" data-sort-col="name" onclick="handlePlayersSort('name')">
                                     Giocatore <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
@@ -5439,10 +5454,11 @@ function renderPlayersTable() {
         return playersSortDirection === 'asc' ? comparison : -comparison;
     });
 
-    sorted.forEach(p => {
+    sorted.forEach((p, index) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="p-2">${p.name}</td>
+            <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
+            <td class="p-2 text-left">${formatPlayerName(p.name)}</td>
             <td class="p-2">${p.role || '-'}</td>
             <td class="p-2">${p.team || '-'}</td>
             <td class="p-2">${p.n90}</td>
@@ -5633,9 +5649,9 @@ function formatPlayerName(fullName) {
     const surname = parts.pop();
     const givenNames = parts.join(' ');
 
-    if (!givenNames) return `<span class="font-semibold">${surname}</span>`;
+    if (!surname) return fullName || '';
 
-    return `${givenNames} <span class="font-semibold">${surname}</span>`;
+    return `<span class="font-bold">${surname}</span>${givenNames ? ` ${givenNames}` : ''}`;
 }
 
         function toggleInactiveRefs() {
