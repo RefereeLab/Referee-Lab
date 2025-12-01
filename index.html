@@ -3023,27 +3023,43 @@ else if (currentView === 'playingTime') {
     result = result.filter(r => r.matches >= minMatchesFilterPT);
 }
 
-            else if (currentView === 'matches') {
-                if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
-                if (statsControls) statsControls.classList.remove('hidden');
-                if (matchesFiltersContainer) matchesFiltersContainer.classList.remove('hidden');
-                
-                result = processMatchesViewData();
-                const minTot = parseInt(document.getElementById('filterMinTot').value) * 60 || 0;
-                const maxTot = (parseInt(document.getElementById('filterMaxTot').value) * 60) || 999999;
-                const minEff = parseInt(document.getElementById('filterMinEff').value) * 60 || 0;
-                const maxEff = (parseInt(document.getElementById('filterMaxEff').value) * 60) || 999999;
-                const minFls = parseInt(document.getElementById('filterMinFls').value) || 0;
-                const maxFls = parseInt(document.getElementById('filterMaxFls').value) || 999999;
-                
-                result = result.filter(r => {
-                    const tot = r.totalTimeSec || 0; const eff = r.effectiveTimeSec || 0; const fls = r.fouls || 0;
-                    return tot >= minTot && tot <= maxTot && eff >= minEff && eff <= maxEff && fls >= minFls && fls <= maxFls;
-                });
-                
-                matchesDataAll = result; 
-                result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
-            }
+else if (currentView === 'matches') {
+    if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
+    if (statsControls) statsControls.classList.remove('hidden');
+    if (matchesFiltersContainer) matchesFiltersContainer.classList.remove('hidden');
+    
+    result = processMatchesViewData();
+    const minTot = parseInt(document.getElementById('filterMinTot').value) * 60 || 0;
+    const maxTot = (parseInt(document.getElementById('filterMaxTot').value) * 60) || 999999;
+    const minEff = parseInt(document.getElementById('filterMinEff').value) * 60 || 0;
+    const maxEff = (parseInt(document.getElementById('filterMaxEff').value) * 60) || 999999;
+    const minFls = parseInt(document.getElementById('filterMinFls').value) || 0;
+    const maxFls = parseInt(document.getElementById('filterMaxFls').value) || 999999;
+    
+    // 🔢 filtro per minuti / falli
+    result = result.filter(r => {
+        const tot = r.totalTimeSec || 0; 
+        const eff = r.effectiveTimeSec || 0; 
+        const fls = r.fouls || 0;
+        return (
+            tot >= minTot && tot <= maxTot &&
+            eff >= minEff && eff <= maxEff &&
+            fls >= minFls && fls <= maxFls
+        );
+    });
+
+    // 🔍 filtro di ricerca SOLO per la vista "Database / Partite"
+    const qMatches = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+    if (qMatches) {
+        result = result.filter(r =>
+            (r.match || '').toLowerCase().includes(qMatches)
+        );
+    }
+    
+    matchesDataAll = result; 
+    result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
+}
+
             else if (currentView === 'teams') {
                  if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
                  matchesCurrentPage = 1;
@@ -3067,12 +3083,25 @@ else if (currentView === 'playingTime') {
             }
 
 
-            // Search (applied globally where applicable)
-            const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
-            if(q && result.length && currentView !== 'analytics') {
-                if(currentView === 'matches') result = result.filter(r => r.match.toLowerCase().includes(q));
-                else result = result.filter(r => r.name.toLowerCase().includes(q));
-            }
+// Search (applied globally where applicable)
+const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+
+if(q && result.length && currentView !== 'analytics') {
+
+    if(currentView === 'matches') {
+        result = result.filter(r =>
+            (r.match || `${r.homeTeam}-${r.awayTeam}`)
+                .toLowerCase()
+                .includes(q)
+        );
+    }
+
+    else {
+        result = result.filter(r =>
+            (r.name || '').toLowerCase().includes(q)
+        );
+    }
+}
 
             // Sort (applied before paging if matches view)
             if (matchesDataAll.length && currentView === 'matches') {
@@ -4727,4 +4756,3 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
-
