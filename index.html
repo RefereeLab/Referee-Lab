@@ -200,6 +200,16 @@ html, body {
         /* Table Styling */
         .pro-table tr:hover td { background-color: #1e293b; }
 
+.players-table th,
+.players-table td {
+    text-align: center;
+}
+
+.players-table td:first-child,
+.players-table th:first-child {
+    min-width: 11rem;
+}
+
         /* Players table separators */
 #players-table tbody tr:not(:last-child) td {
     border-bottom: 1px solid rgba(148, 163, 184, 0.35);
@@ -928,6 +938,33 @@ html, body {
                            oninput="renderPlayersTable()"
                            class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none">
                 </div>
+
+                <div class="mt-4">
+                    <p class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per ruolo</p>
+                    <div class="grid grid-cols-2 gap-2 mt-2 text-sm text-slate-200">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="role-filter-por" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('POR')" checked>
+                            <span>Por</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="role-filter-df" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('DF')" checked>
+                            <span>Df</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="role-filter-cc" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('CC')" checked>
+                            <span>Cc</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="role-filter-att" class="rounded border-slate-700 bg-slate-900 text-yellow-500 focus:ring-yellow-500" onchange="togglePlayerRole('ATT')" checked>
+                            <span>Att</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label for="players-team-filter" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per squadra</label>
+                    <select id="players-team-filter" class="mt-2 w-full bg-slate-900 border border-slate-700 text-sm text-slate-200 rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none" onchange="handlePlayersTeamChange(this.value)"></select>
+                </div>
             </div>
 
             <div class="pro-card rounded-lg p-4">
@@ -940,38 +977,40 @@ html, body {
         </div>
 
         <div class="lg:col-span-9">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-slate-300" id="players-table">
-                    <thead class="bg-slate-800 text-slate-300">
-                        <tr>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="name" onclick="handlePlayersSort('name')">
-                                Giocatore <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="role" onclick="handlePlayersSort('role')">
-                                Ruolo <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="team" onclick="handlePlayersSort('team')">
-                                Squadra <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="n90" onclick="handlePlayersSort('n90')">
-                                Partite (90s) <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="yellow" onclick="handlePlayersSort('yellow')">
-                                Gialli <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="fouls" onclick="handlePlayersSort('fouls')">
-                                Falli Commessi <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="fouled" onclick="handlePlayersSort('fouled')">
-                                Falli Subiti <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                            <th class="p-2 cursor-pointer select-none" data-sort-col="crosses" onclick="handlePlayersSort('crosses')">
-                                Cross <span class="players-sort-icon text-yellow-400"></span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="players-table-body"></tbody>
-                </table>
+            <div class="pro-card rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-slate-300 pro-table players-table text-center" id="players-table">
+                        <thead class="bg-slate-800 text-slate-300">
+                            <tr>
+                                <th class="p-2 cursor-pointer select-none w-48" data-sort-col="name" onclick="handlePlayersSort('name')">
+                                    Giocatore <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="role" onclick="handlePlayersSort('role')">
+                                    Ruolo <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="team" onclick="handlePlayersSort('team')">
+                                    Squadra <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="n90" onclick="handlePlayersSort('n90')">
+                                    Partite (90s) <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="yellow" onclick="handlePlayersSort('yellow')">
+                                    Gialli <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="fouls" onclick="handlePlayersSort('fouls')">
+                                    Falli Commessi <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="fouled" onclick="handlePlayersSort('fouled')">
+                                    Falli Subiti <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                                <th class="p-2 cursor-pointer select-none" data-sort-col="crosses" onclick="handlePlayersSort('crosses')">
+                                    Cross <span class="players-sort-icon text-yellow-400"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="players-table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -1802,6 +1841,10 @@ let playersData = [];
 let playersMinMatches = 0;
 let playersSortColumn = 'name';
 let playersSortDirection = 'asc';
+const PLAYER_ROLES = ['POR', 'DF', 'CC', 'ATT'];
+let selectedPlayerRoles = new Set(PLAYER_ROLES);
+let selectedTeam = 'all';
+let playerTeams = [];
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -5367,7 +5410,21 @@ function renderPlayersTable() {
 
     const filtered = playersData
         .filter(p => p.name.toLowerCase().includes(q))
-        .filter(p => p.n90 >= playersMinMatches);
+        .filter(p => p.n90 >= playersMinMatches)
+        .filter(p => {
+            const playerRoles = (p.role || '')
+                .split(',')
+                .map(r => r.trim())
+                .filter(Boolean);
+            const matchesRole = selectedPlayerRoles.size === 0
+                ? true
+                : playerRoles.some(r => selectedPlayerRoles.has(r));
+            const matchesTeam = selectedTeam === 'all'
+                ? true
+                : (p.team || '').toLowerCase() === selectedTeam;
+
+            return matchesRole && matchesTeam;
+        });
 
     const sorted = [...filtered].sort((a, b) => {
         const valA = getPlayersSortValue(a, playersSortColumn);
@@ -5526,15 +5583,34 @@ function updatePlayersMinMatches(val) {
 function initPlayersFilters() {
     const slider = document.getElementById('playersMinMatches');
     const label = document.getElementById('playersMinMatchesValue');
+    const teamSelect = document.getElementById('players-team-filter');
 
-    if (!slider) return;
+    if (slider) {
+        const maxMatches = playersData.length ? Math.max(...playersData.map(p => p.n90)) : 0;
+        slider.max = Math.max(10, Math.ceil(maxMatches));
+        slider.value = playersMinMatches;
+    }
 
-    const maxMatches = playersData.length ? Math.max(...playersData.map(p => p.n90)) : 0;
-    slider.max = Math.max(10, Math.ceil(maxMatches));
-    slider.value = playersMinMatches;
     if (label) label.innerText = playersMinMatches;
-}
 
+    playerTeams = Array.from(new Set(playersData
+        .map(p => (p.team || '').trim())
+        .filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, 'it', { sensitivity: 'base' }));
+
+    if (teamSelect) {
+        const options = ['<option value="all">Tutte le squadre</option>',
+            ...playerTeams.map(team => `<option value="${team.toLowerCase()}">${team}</option>`)
+        ].join('');
+        teamSelect.innerHTML = options;
+        teamSelect.value = selectedTeam;
+    }
+
+    PLAYER_ROLES.forEach(role => {
+        const cb = document.getElementById(`role-filter-${role.toLowerCase()}`);
+        if (cb) cb.checked = selectedPlayerRoles.has(role);
+    });
+}
 
 
         function toggleInactiveRefs() {
