@@ -1274,18 +1274,20 @@ html, body {
 
     <script>
 
-const playersData = `
-Jean Onana CC Genoa 0,10 0,00 20,00 0,00 0,00 
-Nicolò Cavuoti DF Cagliari 0,10 0,00 10,00 0,00 0,00 
-Daniele Ghilardi DF Roma 0,10 0,00 10,00 0,00 0,00 
-Idrissa Guèye ATT Udinese 0,20 0,00 10,00 0,00 0,00 
-Ardon Jashari CC Milan 0,20 0,00 10,00 15,00 0,00 
+const playersRawData = `
+ Jean Onana CC Genoa 0,10 0,00 20,00 0,00 0,00
+Nicolò Cavuoti DF Cagliari 0,10 0,00 10,00 0,00 0,00
+Daniele Ghilardi DF Roma 0,10 0,00 10,00 0,00 0,00
+Idrissa Guèye ATT Udinese 0,20 0,00 10,00 0,00 0,00
+Ardon Jashari CC Milan 0,20 0,00 10,00 15,00 0,00
 Alieu Njie ATT Torino 0,20 5,00 10,00 0,00 5,00 
 Patric CC,DF Lazio 0,10 0,00 10,00 0,00 0,00 
 Amir Richardson CC Fiorentina 0,10 0,00 10,00 0,00 0,00 
 Youssef Maleh CC Lecce 0,50 0,00 8,00 2,00 4,00 
-Edoardo Iannoni CC Sassuolo 0,90 2,22 7,78 0,00 0,00 
-Luca Lipani CC Sassuolo 1,30 0,00 6,92 0,00 0,77`;
+ Edoardo Iannoni CC Sassuolo 0,90 2,22 7,78 0,00 0,00
+ Luca Lipani CC Sassuolo 1,30 0,00 6,92 0,00 0,77`;
+
+let playersData = [];
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -4855,24 +4857,37 @@ function renderPlayersTable() {
 // Converte la stringa TSV dei giocatori in un array di oggetti
 function parsePlayersDB(raw) {
     if (!raw) return [];
+
+    const toNumber = (val) => {
+        const normalized = (val || '').replace(',', '.');
+        const parsed = parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+    };
+
     return raw
         .trim()
         .split('\n')
         .map(line => {
-            const parts = line.split('\t'); // nome \t n90 \t gialli \t falli \t subiti \t cross
+            const tokens = line.trim().split(/\s+/);
+            if (tokens.length < 6) return null;
+
+            const statsTokens = tokens.slice(-5);
+            const name = tokens.slice(0, tokens.length - 5).join(' ');
+
             return {
-                name:    (parts[0] || '').trim(),
-                n90:     parts[1] ? parseInt(parts[1], 10) : 0,
-                yellow:  parts[2] ? parseInt(parts[2], 10) : 0,
-                fouls:   parts[3] ? parseInt(parts[3], 10) : 0,
-                fouled:  parts[4] ? parseInt(parts[4], 10) : 0,
-                crosses: parts[5] ? parseInt(parts[5], 10) : 0
+                name,
+                n90:     toNumber(statsTokens[0]),
+                yellow:  toNumber(statsTokens[1]),
+                fouls:   toNumber(statsTokens[2]),
+                fouled:  toNumber(statsTokens[3]),
+                crosses: toNumber(statsTokens[4])
             };
-        });
+        })
+        .filter(Boolean);
 }
 
 // Sovrascriviamo playersData con l’array parsato
-playersData = parsePlayersDB(playersData);
+playersData = parsePlayersDB(playersRawData);
 
 
 
@@ -4922,3 +4937,4 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
+
