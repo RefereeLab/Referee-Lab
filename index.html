@@ -1359,7 +1359,7 @@ html, body {
 
                     <div id="chart-player-scatter" class="w-full h-[460px] mt-4"></div>
 
-                    <p class="text-[11px] text-slate-400 mt-3">Asse X: tiri totali. Asse Y: tiri in porta totali. Puoi combinare i ruoli tramite i filtri.</p>
+                    <p class="text-[11px] text-slate-400 mt-3">Asse X: tiri/90'. Asse Y: tiri in porta/90'. Puoi combinare i ruoli tramite i filtri.</p>
                 </div>
             </div>
 
@@ -5767,7 +5767,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
 
                     return nonGoalkeeperRoles.some(r => analyticsPlayerRoles.has(r));
                 })
-                .filter(p => Number.isFinite(p.shotsTotal) && Number.isFinite(p.shotsOnTarget));
+                .filter(p => Number.isFinite(p.shotsPer90) && Number.isFinite(p.shotsOnTargetPer90));
 
             const series = Array.from(analyticsPlayerRoles).map((role) => {
                 const roleData = eligiblePlayers
@@ -5833,11 +5833,11 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 return { niceMax, tickAmount };
             };
 
-            const maxShotsTotal = Math.max(...eligiblePlayers.map(p => p.shotsTotal));
-            const maxShotsOnTarget = Math.max(...eligiblePlayers.map(p => p.shotsOnTarget));
+            const maxShotsPer90 = Math.max(...eligiblePlayers.map(p => p.shotsPer90));
+            const maxShotsOnTargetPer90 = Math.max(...eligiblePlayers.map(p => p.shotsOnTargetPer90));
 
-            const { niceMax: maxX, tickAmount: xTicks } = computeAxisParams(maxShotsTotal);
-            const { niceMax: maxY, tickAmount: yTicks } = computeAxisParams(maxShotsOnTarget);
+            const { niceMax: maxX, tickAmount: xTicks } = computeAxisParams(maxShotsPer90);
+            const { niceMax: maxY, tickAmount: yTicks } = computeAxisParams(maxShotsOnTargetPer90);
 
             const scatterOptions = {
                 series,
@@ -5846,11 +5846,35 @@ window.addEventListener('resize', debounceRenderAnalytics);
                     height: 460,
                     background: 'transparent',
                     toolbar: { show: false },
-                    zoom: { enabled: false }
+                    zoom: { enabled: false },
+                    events: {
+                        dataPointMouseEnter: (event, chartContext, config) => {
+                            const d = config.w.config.series?.[config.seriesIndex]?.data?.[config.dataPointIndex];
+                            if (!d) return;
+
+                            chartContext?.updateOptions({
+                                annotations: {
+                                    xaxis: [{
+                                        x: d.x,
+                                        strokeDashArray: 5,
+                                        borderColor: 'rgba(255,255,255,0.4)'
+                                    }],
+                                    yaxis: [{
+                                        y: d.y,
+                                        strokeDashArray: 5,
+                                        borderColor: 'rgba(255,255,255,0.4)'
+                                    }]
+                                }
+                            }, false, false);
+                        },
+                        dataPointMouseLeave: (event, chartContext) => {
+                            chartContext?.updateOptions({ annotations: { xaxis: [], yaxis: [] } }, false, false);
+                        }
+                    }
                 },
                 colors: series.map(s => s.color),
                 dataLabels: { enabled: false },
-                markers: { size: 4, strokeWidth: 0 },
+                markers: { size: 3, strokeWidth: 0 },
                 grid: {
                     borderColor: 'rgba(255,255,255,0.08)',
                     strokeDashArray: 0,
@@ -5858,7 +5882,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
                     yaxis: { lines: { show: true } }
                 },
                 xaxis: {
-                    title: { text: 'Tiri totali', style: { color: '#cbd5e1', fontWeight: 600 } },
+                    title: { text: 'Tiri/90', style: { color: '#cbd5e1', fontWeight: 600 } },
                     labels: { style: { colors: '#cbd5e1' } },
                     min: 0,
                     max: maxX,
@@ -5870,7 +5894,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
                     }
                 },
                 yaxis: {
-                    title: { text: 'Tiri in porta totali', style: { color: '#cbd5e1', fontWeight: 600 } },
+                    title: { text: 'Tiri in porta/90', style: { color: '#cbd5e1', fontWeight: 600 } },
                     labels: { style: { colors: '#cbd5e1' } },
                     min: 0,
                     max: maxY,
@@ -5896,13 +5920,17 @@ window.addEventListener('resize', debounceRenderAnalytics);
                             ? `<span style="background:${PLAYER_SCATTER_ROLE_COLORS[roleKey]};" class="inline-block w-2 h-2 rounded-full mr-2"></span>`
                             : '';
 
+                        const shots = Number.isFinite(d.x) ? d.x.toFixed(2) : d.x;
+                        const shotsOn = Number.isFinite(d.y) ? d.y.toFixed(2) : d.y;
+
                         return `
                             <div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg">
                                 <div class="font-bold text-white text-xs mb-1">${bullet}${d.name}</div>
-                                <div class="text-[10px] text-slate-300">${d.team ? `${d.team} · ` : ''}Tiri: ${d.x} — Tiri in porta: ${d.y}</div>
+                                <div class="text-[10px] text-slate-300">${d.team ? `${d.team} · ` : ''}Tiri/90: ${shots} — Tiri in porta/90: ${shotsOn}</div>
                             </div>`;
                     }
-                }
+                },
+                annotations: { xaxis: [], yaxis: [] }
             };
 
             chartPlayerScatter = new ApexCharts(container, scatterOptions);
