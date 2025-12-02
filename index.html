@@ -4079,6 +4079,15 @@ Colombo	49,56`,
             teamRadar: [...ANALYTICS_SEASON_DEFAULT],
         };
 
+        const VIEW_ROUTE_MAP = {
+            stats: 'stats',
+            analytics: 'analytics',
+            playingTime: 'playing-time',
+            matches: 'matches',
+            teams: 'teams',
+            players: 'players',
+        };
+
         // --- LOGIC SECTION ---
         let currentView = 'stats';
         let activeSeasons = ['2025-26'];
@@ -6539,7 +6548,57 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             section.classList.add('hidden');
         }
 
-        function switchView(view) {
+        function getBasePathForRouting() {
+            const segments = window.location.pathname.split('/').filter(Boolean);
+            const routeSegments = new Set(Object.values(VIEW_ROUTE_MAP));
+
+            if (segments.length && routeSegments.has(segments[segments.length - 1])) segments.pop();
+
+            const basePath = '/' + segments.join('/');
+            return basePath === '//' ? '/' : basePath || '/';
+        }
+
+        function buildUrlForView(view) {
+            const slug = VIEW_ROUTE_MAP[view];
+            if (!slug) return window.location.pathname;
+
+            const basePath = getBasePathForRouting();
+            const prefix = basePath === '/' ? '' : basePath;
+            return `${prefix}/${slug}`;
+        }
+
+        function getViewFromLocation() {
+            const segments = window.location.pathname.split('/').filter(Boolean);
+            const routeViewMap = Object.entries(VIEW_ROUTE_MAP).reduce((acc, [view, slug]) => {
+                acc[slug] = view;
+                return acc;
+            }, {});
+
+            for (let i = segments.length - 1; i >= 0; i -= 1) {
+                const candidate = routeViewMap[segments[i]];
+                if (candidate) return candidate;
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const queryView = params.get('view');
+            if (queryView && VIEW_ROUTE_MAP[queryView]) return queryView;
+
+            return 'stats';
+        }
+
+        function updateHistoryState(view, { replace = false } = {}) {
+            const slug = VIEW_ROUTE_MAP[view];
+            if (!slug) return;
+
+            const newUrl = buildUrlForView(view);
+            const state = { view };
+
+            if (replace) history.replaceState(state, '', newUrl);
+            else history.pushState(state, '', newUrl);
+        }
+
+        function switchView(view, options = {}) {
+            const { updateHistory = true, replaceHistory = false } = options;
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
                 activeSeasons = ['2025-26'];
@@ -6650,8 +6709,10 @@ const seasonCard    = document.getElementById('season-selector-card');
             if(view === 'matches') { sortColumn = 'match'; sortDirection = 'asc'; }
             if(view === 'teams') { sortColumn = 'matches'; sortDirection = 'desc'; } // Nuovo default per squadre
 
-            updateSeasonButtonsUI(); 
+            updateSeasonButtonsUI();
             aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
+
+            if (updateHistory) updateHistoryState(view, { replace: replaceHistory });
         }
 
         function toggleSeason(s) {
@@ -7630,12 +7691,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+        window.addEventListener('popstate', (event) => {
+            const viewFromState = event.state?.view;
+            const fallbackView = getViewFromLocation();
+            const view = viewFromState && VIEW_ROUTE_MAP[viewFromState] ? viewFromState : fallbackView;
+
+            switchView(view, { updateHistory: false });
+        });
+
 
 
         window.onload = function() {
             updateSeasonButtonsUI();
             refreshAllAnalyticsSeasonChips();
-            switchView('stats');
+            const initialView = getViewFromLocation();
+            switchView(initialView, { replaceHistory: true });
 updateRadarSelectOptions();
             if (window.innerWidth < 1024) document.getElementById('season-dropdown-content').classList.add('hidden');
         };
