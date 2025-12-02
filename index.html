@@ -614,6 +614,7 @@ html, body {
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 8px;
+    position: relative;
 }
 
 /* Rimuove compressione forzata */
@@ -656,6 +657,28 @@ html, body {
 /* forza larghezza del grafico */
 #chart-team-heatmap {
     min-width: 700px;  /* = stessa larghezza settata in ApexCharts */
+}
+
+.heatmap-highlight {
+    position: absolute;
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    background: radial-gradient(circle at center, rgba(234, 179, 8, 0.18), rgba(234, 179, 8, 0.06));
+    box-shadow: 0 10px 40px -25px rgba(234, 179, 8, 0.65);
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.heatmap-highlight[data-visible="true"] {
+    opacity: 1;
+    transform: translateZ(0);
+}
+
+.heatmap-highlight-row {
+    pointer-events: none;
+}
+
+.heatmap-highlight-col {
+    pointer-events: none;
 }
 
 /* Mantiene leggibili le squadre (fisso a sinistra) */
@@ -1448,8 +1471,27 @@ html, body {
         </div>
     </h3>
 
-    <div class="heatmap-wrapper">
+    <div class="heatmap-wrapper relative">
+        <div id="heatmap-hover-layer" class="hidden absolute inset-0 pointer-events-none">
+            <div id="heatmap-hover-row" class="heatmap-highlight heatmap-highlight-row"></div>
+            <div id="heatmap-hover-col" class="heatmap-highlight heatmap-highlight-col"></div>
+        </div>
         <div id="chart-team-heatmap"></div>
+    </div>
+
+    <div id="heatmap-focus-card" class="hidden mt-3">
+        <div class="pro-card rounded-lg border border-slate-800 p-3 flex items-start justify-between gap-3">
+            <div>
+                <div class="text-[10px] uppercase tracking-[0.08em] text-slate-400 font-semibold mb-1">Focus cella</div>
+                <div id="heatmap-focus-title" class="text-sm font-semibold text-white">Passa il mouse sulla heatmap</div>
+                <div id="heatmap-focus-subtitle" class="text-[11px] text-slate-400">Hover o clic per vedere match e valore.</div>
+            </div>
+            <div class="text-right text-[11px] space-y-1 min-w-[120px]">
+                <div id="heatmap-focus-team" class="text-slate-200 font-semibold">—</div>
+                <div id="heatmap-focus-match" class="text-slate-400">—</div>
+                <div id="heatmap-focus-value" class="text-yellow-400 font-mono">—</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1484,6 +1526,21 @@ html, body {
                     </div>
 
                     <div id="chart-player-scatter" class="w-full h-[460px] mt-4"></div>
+
+                    <div id="player-scatter-focus" class="hidden mt-3">
+                        <div class="pro-card rounded-lg border border-slate-800 p-3 flex items-start justify-between gap-3">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-[0.08em] text-slate-400 font-semibold mb-1">Focus giocatore</div>
+                                <div id="scatter-focus-name" class="text-sm font-semibold text-white">Passa sopra un punto o clicca</div>
+                                <div id="scatter-focus-team" class="text-[11px] text-slate-400">—</div>
+                            </div>
+                            <div class="text-right text-[11px] space-y-1 min-w-[120px]">
+                                <div id="scatter-focus-role" class="text-slate-300">Ruolo: —</div>
+                                <div id="scatter-focus-shots" class="text-slate-300">Tiri/90: —</div>
+                                <div id="scatter-focus-on-target" class="text-yellow-300 font-mono">Tiri in porta/90: —</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <p class="text-[11px] text-slate-400 mt-3">Asse X: tiri/90'. Asse Y: tiri in porta/90'. Puoi combinare i ruoli tramite i filtri.</p>
                 </div>
@@ -4158,6 +4215,14 @@ let selectedRadarReferees = [];
 
         let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
 
+        // Heatmap hover/focus cache
+        let heatmapMatrixCache = {};
+        let heatmapOrderedTeams = [];
+        let heatmapPinnedCell = null;
+
+        // Player scatter focus cache
+        let scatterPinnedPoint = null;
+
 
 // 🔵 Lista arbitri predefiniti (CAMBIALA OGNI GIORNATA)
 const PRESET_RADAR_REFEREES = [
@@ -5779,6 +5844,95 @@ function parseSeasonMatches2425() {
 
 let currentHeatmapMetric = 'eff'; // 'eff' oppure 'fouls'
 
+function getHeatmapHoverElements() {
+    return {
+        layer: document.getElementById('heatmap-hover-layer'),
+        row: document.getElementById('heatmap-hover-row'),
+        col: document.getElementById('heatmap-hover-col')
+    };
+}
+
+function resetHeatmapFocusCard() {
+    const card = document.getElementById('heatmap-focus-card');
+    if (!card) return;
+    card.classList.remove('hidden');
+    document.getElementById('heatmap-focus-title').textContent = 'Passa il mouse sulla heatmap';
+    document.getElementById('heatmap-focus-subtitle').textContent = 'Hover o clic per vedere match e valore.';
+    document.getElementById('heatmap-focus-team').textContent = '—';
+    document.getElementById('heatmap-focus-match').textContent = '—';
+    document.getElementById('heatmap-focus-value').textContent = '—';
+}
+
+function hideHeatmapHighlight() {
+    const { layer, row, col } = getHeatmapHoverElements();
+    if (!layer || !row || !col) return;
+    row.removeAttribute('data-visible');
+    col.removeAttribute('data-visible');
+    layer.classList.add('hidden');
+}
+
+function updateHeatmapHighlight(seriesIndex, dataPointIndex, chartContext) {
+    const { layer, row, col } = getHeatmapHoverElements();
+    if (!layer || !row || !col) return;
+    const g = chartContext?.w?.globals;
+    if (!g) return;
+
+    const columns = g.series?.[0]?.length || 0;
+    const rows = g.series?.length || 0;
+    if (!columns || !rows) return;
+
+    const cellWidth = g.gridWidth / columns;
+    const cellHeight = g.gridHeight / rows;
+
+    const originX = g.translateX;
+    const originY = g.translateY;
+
+    row.style.left = `${originX}px`;
+    row.style.top = `${originY + seriesIndex * cellHeight}px`;
+    row.style.width = `${g.gridWidth}px`;
+    row.style.height = `${cellHeight}px`;
+    row.dataset.visible = 'true';
+
+    col.style.left = `${originX + dataPointIndex * cellWidth}px`;
+    col.style.top = `${originY}px`;
+    col.style.width = `${cellWidth}px`;
+    col.style.height = `${g.gridHeight}px`;
+    col.dataset.visible = 'true';
+
+    layer.classList.remove('hidden');
+}
+
+function updateHeatmapFocus(seriesIndex, dataPointIndex, sticky = false) {
+    const team = heatmapOrderedTeams[seriesIndex];
+    const giornata = dataPointIndex + 1;
+    const cell = heatmapMatrixCache?.[team]?.[giornata];
+
+    const card = document.getElementById('heatmap-focus-card');
+    if (!card || !team) return;
+
+    card.classList.remove('hidden');
+
+    const title = document.getElementById('heatmap-focus-title');
+    const subtitle = document.getElementById('heatmap-focus-subtitle');
+    const teamEl = document.getElementById('heatmap-focus-team');
+    const matchEl = document.getElementById('heatmap-focus-match');
+    const valueEl = document.getElementById('heatmap-focus-value');
+
+    title.textContent = `${team} • Giornata ${giornata}`;
+    subtitle.textContent = sticky ? 'Cella fissata: clicca altrove per cambiare focus.' : 'Hover o clic per fissare una cella.';
+
+    teamEl.textContent = team;
+    matchEl.textContent = cell?.match || 'Match non disponibile';
+
+    if (cell) {
+        valueEl.textContent = (currentHeatmapMetric === 'eff')
+            ? `${cell.eff.toFixed(2)} min di tempo effettivo`
+            : `${cell.fouls} falli fischiati`;
+    } else {
+        valueEl.textContent = 'Dato mancante';
+    }
+}
+
 // ===========================================
 // RENDER HEATMAP SQUADRE (24/25) - METRICA DINAMICA
 // ===========================================
@@ -5793,6 +5947,12 @@ function renderTeamHeatmap() {
 
     // --- 1) Costruisco la serie in base alla metrica corrente ---
     const metric = currentHeatmapMetric; // 'eff' o 'fouls'
+    heatmapMatrixCache = matrix;
+    heatmapOrderedTeams = orderedTeams;
+    currentHeatmapMetric = metric;
+    heatmapPinnedCell = null;
+    resetHeatmapFocusCard();
+    hideHeatmapHighlight();
 
     const series = orderedTeams.map(team => {
         const data = [];
@@ -5844,20 +6004,43 @@ const foulsColorScale = {
     ]
 };
 
-    const colorScale = (metric === 'eff') ? effColorScale : foulsColorScale;
+        const colorScale = (metric === 'eff') ? effColorScale : foulsColorScale;
 
-    const options = {
-        series: series,
-        chart: {
-            type: "heatmap",
-            height: 600,
-            background: "transparent",
-            toolbar: { show: false }
-        },
-        plotOptions: {
-            heatmap: {
-                enableShades: false,
-                shadeIntensity: 0,
+        const options = {
+            series: series,
+            chart: {
+                type: "heatmap",
+                height: 600,
+                background: "transparent",
+                toolbar: { show: false },
+                animations: { enabled: true, speed: 450 },
+                events: {
+                    dataPointMouseEnter: (event, chartCtx, config) => {
+                        updateHeatmapHighlight(config.seriesIndex, config.dataPointIndex, chartCtx);
+                        if (!heatmapPinnedCell) {
+                            updateHeatmapFocus(config.seriesIndex, config.dataPointIndex);
+                        }
+                    },
+                    dataPointMouseLeave: (event, chartCtx) => {
+                        if (heatmapPinnedCell) {
+                            updateHeatmapHighlight(heatmapPinnedCell.seriesIndex, heatmapPinnedCell.dataPointIndex, chartCtx);
+                            updateHeatmapFocus(heatmapPinnedCell.seriesIndex, heatmapPinnedCell.dataPointIndex, true);
+                        } else {
+                            hideHeatmapHighlight();
+                            resetHeatmapFocusCard();
+                        }
+                    },
+                    dataPointSelection: (event, chartCtx, config) => {
+                        heatmapPinnedCell = { seriesIndex: config.seriesIndex, dataPointIndex: config.dataPointIndex };
+                        updateHeatmapHighlight(config.seriesIndex, config.dataPointIndex, chartCtx);
+                        updateHeatmapFocus(config.seriesIndex, config.dataPointIndex, true);
+                    }
+                }
+            },
+            plotOptions: {
+                heatmap: {
+                    enableShades: false,
+                    shadeIntensity: 0,
                 colorScale: colorScale,
                 radius: 0
             }
@@ -5945,9 +6128,36 @@ window.addEventListener('resize', debounceRenderAnalytics);
             renderPlayerScatterChart();
         }
 
+        function resetScatterFocus() {
+            const card = document.getElementById('player-scatter-focus');
+            if (!card) return;
+
+            card.classList.remove('hidden');
+            document.getElementById('scatter-focus-name').textContent = 'Passa sopra un punto o clicca';
+            document.getElementById('scatter-focus-team').textContent = '—';
+            document.getElementById('scatter-focus-role').textContent = 'Ruolo: —';
+            document.getElementById('scatter-focus-shots').textContent = 'Tiri/90: —';
+            document.getElementById('scatter-focus-on-target').textContent = 'Tiri in porta/90: —';
+            scatterPinnedPoint = null;
+        }
+
+        function updateScatterFocus(point, sticky = false) {
+            const card = document.getElementById('player-scatter-focus');
+            if (!card || !point) return;
+
+            card.classList.remove('hidden');
+            document.getElementById('scatter-focus-name').textContent = point.name || 'Giocatore';
+            document.getElementById('scatter-focus-team').textContent = point.team || 'Squadra non disponibile';
+            document.getElementById('scatter-focus-role').textContent = `Ruolo: ${point.role || '—'}${sticky ? ' (fissato)' : ''}`;
+            document.getElementById('scatter-focus-shots').textContent = `Tiri/90: ${Number(point.x).toFixed(2)}`;
+            document.getElementById('scatter-focus-on-target').textContent = `Tiri in porta/90: ${Number(point.y).toFixed(2)}`;
+        }
+
         function renderPlayerScatterChart() {
             const container = document.querySelector('#chart-player-scatter');
             if (!container) return;
+
+            resetScatterFocus();
 
             const minPresence = playersMaxMatches ? playersMaxMatches * 0.3 : 0;
 
@@ -5973,7 +6183,8 @@ window.addEventListener('resize', debounceRenderAnalytics);
                         x: p.shotsPer90,
                         y: p.shotsOnTargetPer90,
                         name: formatPlayerName(p.name),
-                        team: p.team || ''
+                        team: p.team || '',
+                        role: PLAYER_SCATTER_ROLE_LABELS[role] || role
                     }));
 
                 return {
@@ -6063,15 +6274,40 @@ window.addEventListener('resize', debounceRenderAnalytics);
                                     }]
                                 }
                             }, false, false);
+
+                            if (!scatterPinnedPoint) {
+                                updateScatterFocus(d, false);
+                            }
                         },
                         dataPointMouseLeave: (event, chartContext) => {
                             chartContext?.updateOptions({ annotations: { xaxis: [], yaxis: [] } }, false, false);
+
+                            if (scatterPinnedPoint) {
+                                updateScatterFocus(scatterPinnedPoint, true);
+                            } else {
+                                resetScatterFocus();
+                            }
+                        },
+                        dataPointSelection: (event, chartContext, config) => {
+                            const d = config.w.config.series?.[config.seriesIndex]?.data?.[config.dataPointIndex];
+                            if (!d) return;
+                            scatterPinnedPoint = d;
+                            updateScatterFocus(d, true);
                         }
                     }
                 },
                 colors: series.map(s => s.color),
                 dataLabels: { enabled: false },
-                markers: { size: 2.6, strokeWidth: 0 },
+                markers: {
+                    size: 4,
+                    strokeWidth: 1,
+                    strokeColors: '#0f172a',
+                    hover: { sizeOffset: 3 }
+                },
+                states: {
+                    hover: { filter: { type: 'lighten', value: 0.1 } },
+                    active: { filter: { type: 'none' }, allowMultipleDataPointsSelection: true }
+                },
                 grid: {
                     borderColor: 'rgba(255,255,255,0.08)',
                     strokeDashArray: 0,
@@ -7305,7 +7541,7 @@ function formatPlayerName(fullName) {
 
     const givenNames = parts.slice(0, idx + 1).join(' ');
 
-    return `<span class="font-bold">${surnameParts.join(' ')}</span>${givenNames ? ` ${givenNames}` : ''}`;
+    return `${surnameParts.join(' ')} `;
 }
 
 function formatPassingValue(val, digits = 2) {
