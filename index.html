@@ -110,6 +110,40 @@ html, body {
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; border: 2px solid #020617; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
+        /* Micro interactions */
+        .fade-in-soft {
+            animation: fadeInSoft 0.32s ease-out;
+        }
+
+        @keyframes fadeInSoft {
+            0% { opacity: 0; transform: translateY(8px) scale(0.995); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .interactive-surface {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            will-change: transform;
+        }
+
+        .interactive-surface:active {
+            transform: translateY(1px) scale(0.995);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 9999px;
+            transform: scale(0);
+            animation: ripple 450ms ease-out;
+            background: rgba(234, 179, 8, 0.35);
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to { transform: scale(3); opacity: 0; }
+        }
+
         /* Navigation Pills (Restored Style) */
         .nav-pills-container {
             display: flex;
@@ -5874,7 +5908,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 },
                 colors: series.map(s => s.color),
                 dataLabels: { enabled: false },
-                markers: { size: 2.5, strokeWidth: 0 },
+                markers: { size: 2.6, strokeWidth: 0 },
                 grid: {
                     borderColor: 'rgba(255,255,255,0.08)',
                     strokeDashArray: 0,
@@ -6177,6 +6211,28 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             aggregateData();
         }
 
+        function animateSection(section) {
+            if (!section) return;
+
+            section.classList.remove('fade-in-soft');
+            // force reflow to restart animation
+            void section.offsetWidth;
+            section.classList.add('fade-in-soft');
+        }
+
+        function showSection(section) {
+            if (!section) return;
+
+            section.classList.remove('hidden');
+            animateSection(section);
+        }
+
+        function hideSection(section) {
+            if (!section) return;
+
+            section.classList.add('hidden');
+        }
+
         function switchView(view) {
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
@@ -6235,10 +6291,10 @@ const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 
         if (view === 'analytics') {
-            if (tableView)     tableView.classList.add('hidden');
-            if (analyticsView) analyticsView.classList.remove('hidden');
-            if (playersView)   playersView.classList.add('hidden');
-            if (sidebar)       sidebar.classList.remove('hidden');
+            hideSection(tableView);
+            showSection(analyticsView);
+            hideSection(playersView);
+            showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
@@ -6247,9 +6303,9 @@ const seasonCard    = document.getElementById('season-selector-card');
             if (analyticsActiveTab === 'giocatori') renderPlayerScatterChart();
             else renderAnalyticsWithFilters();
         } else if (view === 'players') {
-            if (tableView)     tableView.classList.add('hidden');
-            if (analyticsView) analyticsView.classList.add('hidden');
-            if (playersView)   playersView.classList.remove('hidden');
+            hideSection(tableView);
+            hideSection(analyticsView);
+            showSection(playersView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
@@ -6264,10 +6320,10 @@ const seasonCard    = document.getElementById('season-selector-card');
 } else {
 
     // stats, matches, playingTime, teams
-    if (tableView)     tableView.classList.remove('hidden');
-    if (analyticsView) analyticsView.classList.add('hidden');
-    if (playersView)   playersView.classList.add('hidden');
-    if (sidebar)       sidebar.classList.remove('hidden');
+    showSection(tableView);
+    hideSection(analyticsView);
+    hideSection(playersView);
+    showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
@@ -6422,8 +6478,13 @@ const seasonCard    = document.getElementById('season-selector-card');
             const arbitriTab = document.getElementById('analytics-tab-arbitri');
             const playersTab = document.getElementById('analytics-tab-giocatori');
 
-            if (arbitriTab) arbitriTab.classList.toggle('hidden', tab !== 'arbitri');
-            if (playersTab) playersTab.classList.toggle('hidden', tab !== 'giocatori');
+            if (tab === 'arbitri') {
+                showSection(arbitriTab);
+                hideSection(playersTab);
+            } else {
+                showSection(playersTab);
+                hideSection(arbitriTab);
+            }
 
             document.querySelectorAll('.analytics-subtab-btn').forEach((btn) => {
                 const isActive = btn.getAttribute('data-tab') === tab;
@@ -7137,6 +7198,33 @@ function renderPlayersPassingTable() {
             const btn = document.getElementById('scroll-to-top');
             if (window.scrollY > 300) btn.setAttribute('data-visible', 'true');
             else btn.setAttribute('data-visible', 'false');
+        });
+
+        function attachRippleEffect(nodes) {
+            nodes.forEach((node) => {
+                if (!node) return;
+
+                node.classList.add('interactive-surface');
+
+                node.addEventListener('click', (event) => {
+                    const rect = node.getBoundingClientRect();
+                    const ripple = document.createElement('span');
+                    const size = Math.max(rect.width, rect.height);
+
+                    ripple.className = 'ripple';
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+                    ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+
+                    node.appendChild(ripple);
+                    ripple.addEventListener('animationend', () => ripple.remove());
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
+            attachRippleEffect(Array.from(interactiveTargets));
         });
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
