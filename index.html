@@ -4427,6 +4427,7 @@ function getTeamLogo(teamName) {
         function processTeamsData(seasons) {
             let teamsMap = new Map();
             const matches = processMatchesViewData(seasons);
+            const teamFoulsFromPlayers = calculateTeamFoulsFromPlayers();
 
             matches.forEach(m => {
                 if(!m.match.includes('-')) return;
@@ -4473,9 +4474,11 @@ function getTeamLogo(teamName) {
             return Array.from(teamsMap.values()).map(t => {
                 const avgFoulsHome = t.homeGames ? t.homeFoulsInGames/t.homeGames : 0;
                 const avgFoulsAway = t.awayGames ? t.awayFoulsInGames/t.awayGames : 0;
+                const teamFoulsAvg = teamFoulsFromPlayers.get(t.name) || 0;
                 return {
                     name: t.name,
                     matches: t.matches,
+                    teamFoulsAvg,
                     avgFouls: t.matches ? t.totalFoulsInGames/t.matches : 0,
                     avgFoulsHome: avgFoulsHome,
                     avgFoulsAway: avgFoulsAway,
@@ -4484,6 +4487,34 @@ function getTeamLogo(teamName) {
                     avgEffAway: t.validAwayEff ? t.awayEffSec/t.validAwayEff : 0
                 };
             });
+        }
+
+        function calculateTeamFoulsFromPlayers() {
+            const teamFouls = new Map();
+
+            playersData.forEach((player) => {
+                const team = (player.team || '').trim();
+                if (!team) return;
+
+                const fouls = Number.isFinite(player.fouls) ? player.fouls : 0;
+                const matches = Number.isFinite(player.n90) ? player.n90 : 0;
+
+                if (!teamFouls.has(team)) {
+                    teamFouls.set(team, { totalFouls: 0, maxMatches: 0 });
+                }
+
+                const entry = teamFouls.get(team);
+                entry.totalFouls += fouls;
+                entry.maxMatches = Math.max(entry.maxMatches, matches);
+            });
+
+            const averages = new Map();
+            teamFouls.forEach((val, team) => {
+                const avg = val.maxMatches ? val.totalFouls / val.maxMatches : 0;
+                averages.set(team, avg);
+            });
+
+            return averages;
         }
 
         // --- Aggregation & UI Update ---
@@ -4644,7 +4675,7 @@ if(q && result.length && currentView !== 'analytics') {
             } else if (result.length && currentView !== 'analytics') {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
-                    if (currentView === 'teams' && ['avgFouls', 'avgEff', 'avgFoulsHome', 'avgFoulsAway'].includes(sortColumn)) { 
+                    if (currentView === 'teams' && ['teamFoulsAvg', 'avgFouls', 'avgEff', 'avgFoulsHome', 'avgFoulsAway'].includes(sortColumn)) {
                         const isInvalid = (v) => (typeof v === 'number' && isNaN(v)) || v === null || v === undefined || v === 0;
                         if (isInvalid(va) && isInvalid(vb)) return 0;
                         if (isInvalid(va)) return 1; 
@@ -6306,6 +6337,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
             // Tooltip mapping for Teams view
             const tooltipMap = {
                 'matches': 'Partite giocate dalla squadra nella stagione selezionata.',
+                'teamFoulsAvg': 'Media falli commessi dalla squadra: somma dei falli dei giocatori diviso le presenze massime.',
                 'avgFouls': 'Media falli fischiati nella partita (a favore/contro la squadra) per partita.',
                 'avgFoulsHome': 'Media falli a partita, considerando solo le partite in casa.',
                 'avgFoulsAway': 'Media falli a partita, considerando solo le partite in trasferta.',
@@ -6361,6 +6393,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 thead.innerHTML = `<tr>
                     ${th('Squadra', 'name', 'sticky-col')}
                     ${th('Partite', 'matches', 'text-center', tooltipMap.matches)}
+                    ${th('Falli Squadra', 'teamFoulsAvg', 'text-center text-red-300 font-semibold', tooltipMap.teamFoulsAvg)}
                     ${th('Falli Tot', 'avgFouls', 'text-center text-red-400', tooltipMap.avgFouls)}
                     ${th('Falli Casa', 'avgFoulsHome', 'text-center text-red-400/70', tooltipMap.avgFoulsHome)}
                     ${th('Falli Trasf', 'avgFoulsAway', 'text-center text-red-400/70', tooltipMap.avgFoulsAway)}
@@ -6373,6 +6406,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     tbody.innerHTML += `<tr>
                         <td class="sticky-col border-b border-slate-800 font-bold text-white">${t.name}</td>
                         <td class="text-center text-slate-400">${t.matches}</td>
+                        <td class="text-center font-bold text-red-300">${t.teamFoulsAvg.toFixed(1)}</td>
                         <td class="text-center font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
                         <td class="text-center text-red-400/70">${t.avgFoulsHome.toFixed(1)}</td>
                         <td class="text-center text-red-400/70">${t.avgFoulsAway.toFixed(1)}</td>
