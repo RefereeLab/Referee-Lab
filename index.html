@@ -5773,8 +5773,8 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 const roleData = eligiblePlayers
                     .filter(p => (p.role || '').toUpperCase().includes(role))
                     .map(p => ({
-                        x: p.shotsTotal,
-                        y: p.shotsOnTarget,
+                        x: p.shotsPer90,
+                        y: p.shotsOnTargetPer90,
                         name: formatPlayerName(p.name),
                         team: p.team || ''
                     }));
