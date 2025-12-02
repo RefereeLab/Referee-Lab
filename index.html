@@ -977,7 +977,7 @@ html, body {
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded border border-slate-800">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                Database aggiornato: <span class="text-white font-mono">12ª Giornata</span>
+                Database aggiornato: <span class="text-white font-mono">13ª Giornata</span>
             </div>
         </div>
 
@@ -3279,7 +3279,18 @@ Cremonese-Roma	100,43	53,23	53,0%	28
 Lazio-Lecce	98,36	59,36	60,4%	21
 Inter-Milan	98,01	60,11	61,3%	16
 Torino-Como	96,52	53,33	55,3%	15
-Sassuolo-Pisa	98,18	54,38	55,6%	20`;
+Sassuolo-Pisa	98,18	54,38	55,6%	20
+Como-Sassuolo	97,44	60,42	62,1%	18
+Genoa-Verona	97,26	50,34	51,9%	28
+Parma-Udinese	97,45	52,09	53,4%	25
+Juventus-Cagliari	97,03	62,32	64,4%	32
+Milan-Lazio	104,56	61,30	58,6%	22
+Lecce-Torino	97,48	48,26	49,5%	38
+Pisa-Inter	96,00	54,31	56,8%	28
+Atalanta-Fiorentina	95,05	58,45	61,8%	25
+Roma-Napoli	97,12	58,40	60,4%	27
+Bologna-Cremonese	101,26	52,25	51,7%	21`;
+
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
         const EXTRA_MATCHES_2526 = ``;
         
@@ -3391,7 +3402,17 @@ Ayroldi	53,23
 Arena	59,36
 Sozza	60,11
 Bonacina	53,33
-Di Marco	54,38'
+Di Marco	54,38
+Marchetti	60,42
+Fabbri	50,34
+Piccinini	52,09
+Crezzini	62,32
+Collu	61,30
+Mariani	48,26
+Guida	54,31
+Marcenaro	58,45
+Massa	58,40
+Feliciani	52,25'
 `,
             "2024-25": `Feliciani	46,39
 Ayroldi	48,46
@@ -3776,126 +3797,6 @@ Colombo	49,56`,
             "2023-24": ``, "2022-23": ``, "2021-22": ``, "2020-21": ``
         };
         
-        const TOTAL_TIME_DB = `Massa	95,47
-Ayroldi	97,20
-Collu	97,21
-Zufferli	96,35
-Sozza	100,54
-Manganiello	95,46
-Arena	96,06
-Marcenaro	96,26
-Tremolada	94,24
-La Penna	91,24
-Guida	98,13
-Marinelli	100,08
-Doveri	96,20
-Mariani	97,06
-Bonacina	97,56
-Collu	96,46
-Chiffi	98,26
-Abisso	94,09
-Marchetti	98,12
-Crezzini	93,02
-Fourneau	101,55
-Colombo	97,19
-Zufferli	99,24
-Ayroldi	102,10
-Manganiello	94,30
-Massa	96,31
-Tremolada	101,17
-Marcenaro	98,03
-Arena	97,02
-Piccinini	99,29
-Zufferli	96,37
-Collu	108,02
-Rapuano	99,52
-Doveri	95,27
-Sozza	100,08
-La Penna	100,26
-Colombo	95,17
-Bonacina	106,39
-Marinelli	98,24
-Crezzini	101,11
-Di Bello	97,54
-Sozza	98,52
-Piccinini	96,35
-Perenzoni	98,39
-Manganiello	98,27
-Feliciani	100,00
-Fourneau	97,51
-Chiffi	99,10
-Collu	98,49
-Ayroldi	96,06
-Fourneau	99,27
-Piccinini	103,57
-Doveri	101,04
-Feliciani	95,20
-Zufferli	95,25
-Arena	97,10
-Abisso	91,03
-Colombo	98,08
-La Penna	96,31
-Guida	94,13
-Crezzini	97,33
-Guida	98,41
-Marcenaro	99,17
-Massa	96,40
-Ayroldi	98,59
-Marchetti	96,32
-Sozza	99,37
-Collu	95,15
-Marinelli	98,13
-Fabbri	94,10
-Zufferli	100,06
-Chiffi	98,03
-Feliciani	96,22
-Mariani	102,58
-Arena	96,00
-Bonacina	97,28
-Manganiello	98,24
-Dionisi	100,04
-La Penna	101,03
-Colombo	96,12
-Collu	99,07
-Doveri	97,51
-Marcenaro	99,03
-Di Bello	102,54
-Crezzini	97,04
-Ayroldi	96,01
-Abisso	100,41
-Sozza	95,10
-Pairetto	100,29
-Massa	95,16
-Fabbri	95,30
-Zufferli	98,23
-Chiffi	99,18
-Doveri	99,00
-Rapuano	97,15
-Arena	97,32
-Bonacina	101,04
-Guida	97,10
-Feliciani	99,04
-Sacchi	95,01
-Marcenaro	96,03
-Pezzuto	99,11
-Abisso	97,28
-Zufferli	99,50
-Di Bello	95,00
-Crezzini	99,06
-Chiffi	99,24
-Guida	97,03
-Collu	98,21
-Manganiello	97,11
-La Penna	96,36
-Sacchi	101,03
-Doveri	101,06
-Di Bello	96,16
-Pairetto	98,17
-Ayroldi	100,43
-Arena	98,36
-Sozza	98,01
-Bonacina	96,52
-Di Marco	98,18`;
 
         // --- STATS DB (IMPORTANTE: INCOLLA QUI IL TUO CODICE con const db = { ... }) ---
         // Il sistema userà questa variabile per le statistiche.
@@ -3903,30 +3804,30 @@ Di Marco	98,18`;
         const db = {
             "2025-26": [
                 { name: "Luca Zufferli", matches: 7, fouls_avg: 26.71, penalties_ap: 0.57, yellows_ap: 3.00, yellows: 21, reds_ap: 0.00, reds: 0 },
-                { name: "Giuseppe Collu", matches: 7, fouls_avg: 23.29, penalties_ap: 0.57, yellows_ap: 4.29, yellows: 30, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Guida", matches: 5, fouls_avg: 26.80, penalties_ap: 1.20, yellows_ap: 5.00, yellows: 25, reds_ap: 0.00, reds: 0 },
+                { name: "Giuseppe Collu", matches: 8, fouls_avg: 23.13, penalties_ap: 0.50, yellows_ap: 4.50, yellows: 36, reds_ap: 0.00, reds: 0 },
+                { name: "Marco Guida", matches: 6, fouls_avg: 27.00, penalties_ap: 1.00, yellows_ap: 4.67, yellows: 28, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Doveri", matches: 6, fouls_avg: 24.33, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 26, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Chiffi", matches: 5, fouls_avg: 23.40, penalties_ap: 0.20, yellows_ap: 2.00, yellows: 10, reds_ap: 0.20, reds: 1 },
                 { name: "Gianluca Manganiello", matches: 5, fouls_avg: 29.40, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 15, reds_ap: 0.00, reds: 0 },
                 { name: "Simone Sozza", matches: 6, fouls_avg: 25.33, penalties_ap: 0.50, yellows_ap: 3.00, yellows: 18, reds_ap: 0.83, reds: 5 },
                 { name: "Giovanni Ayroldi", matches: 6, fouls_avg: 31.17, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 26, reds_ap: 0.17, reds: 1 },
-                { name: "Matteo Marcenaro", matches: 5, fouls_avg: 26.60, penalties_ap: 0.00, yellows_ap: 4.40, yellows: 22, reds_ap: 0.20, reds: 1 },
-                { name: "Valerio Crezzini", matches: 5, fouls_avg: 23.80, penalties_ap: 0.40, yellows_ap: 2.60, yellows: 13, reds_ap: 0.00, reds: 0 },
+                { name: "Matteo Marcenaro", matches: 6, fouls_avg: 26.33, penalties_ap: 0.00, yellows_ap: 4.33, yellows: 26, reds_ap: 0.17, reds: 1 },
+                { name: "Valerio Crezzini", matches: 6, fouls_avg: 25.17, penalties_ap: 0.33, yellows_ap: 3.17, yellows: 19, reds_ap: 0.00, reds: 0 },
                 { name: "Alberto Arena", matches: 6, fouls_avg: 21.17, penalties_ap: 0.17, yellows_ap: 2.83, yellows: 17, reds_ap: 0.00, reds: 0 },
-                { name: "Davide Massa", matches: 4, fouls_avg: 33.00, penalties_ap: 0.00, yellows_ap: 4.75, yellows: 19, reds_ap: 0.00, reds: 0 },
+                { name: "Davide Massa", matches: 5, fouls_avg: 31.80, penalties_ap: 0.00, yellows_ap: 5.20, yellows: 26, reds_ap: 0.00, reds: 0 },
                 { name: "Rosario Abisso", matches: 4, fouls_avg: 29.75, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 14, reds_ap: 0.25, reds: 1 },
                 { name: "Federico La Penna", matches: 5, fouls_avg: 29.20, penalties_ap: 0.40, yellows_ap: 3.20, yellows: 16, reds_ap: 0.40, reds: 2 },
                 { name: "Andrea Colombo", matches: 4, fouls_avg: 28.25, penalties_ap: 0.25, yellows_ap: 3.75, yellows: 15, reds_ap: 0.00, reds: 0 },
-                { name: "Ermanno Feliciani", matches: 4, fouls_avg: 24.25, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 14, reds_ap: 0.00, reds: 0 },
+                { name: "Ermanno Feliciani", matches: 5, fouls_avg: 24.40, penalties_ap: 0.20, yellows_ap: 3.20, yellows: 16, reds_ap: 0.00, reds: 0 },
                 { name: "Kevin Bonacina", matches: 5, fouls_avg: 26.40, penalties_ap: 0.20, yellows_ap: 3.80, yellows: 19, reds_ap: 0.20, reds: 1 },
                 { name: "Marco Di Bello", matches: 4, fouls_avg: 26.25, penalties_ap: 0.75, yellows_ap: 4.25, yellows: 17, reds_ap: 0.25, reds: 1 },
-                { name: "Marco Piccinini", matches: 3, fouls_avg: 30.67, penalties_ap: 0.33, yellows_ap: 4.00, yellows: 12, reds_ap: 0.33, reds: 1 },
+                { name: "Marco Piccinini", matches: 4, fouls_avg: 29.25, penalties_ap: 0.50, yellows_ap: 3.75, yellows: 15, reds_ap: 0.50, reds: 2 },
                 { name: "Livio Marinelli", matches: 3, fouls_avg: 22.33, penalties_ap: 0.33, yellows_ap: 3.33, yellows: 10, reds_ap: 0.00, reds: 0 },
                 { name: "Francesco Fourneau", matches: 3, fouls_avg: 28.33, penalties_ap: 0.67, yellows_ap: 5.00, yellows: 15, reds_ap: 0.00, reds: 0 },
-                { name: "Maurizio Mariani", matches: 2, fouls_avg: 24.00, penalties_ap: 1.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Michael Fabbri", matches: 2, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 5.00, yellows: 10, reds_ap: 0.00, reds: 0 },
+                { name: "Maurizio Mariani", matches: 3, fouls_avg: 28.67, penalties_ap: 1.00, yellows_ap: 4.00, yellows: 12, reds_ap: 0.00, reds: 0 },
+                { name: "Michael Fabbri", matches: 3, fouls_avg: 27.33, penalties_ap: 0.00, yellows_ap: 4.67, yellows: 14, reds_ap: 0.00, reds: 0 },
                 { name: "Antonio Rapuano", matches: 2, fouls_avg: 31.50, penalties_ap: 0.50, yellows_ap: 5.50, yellows: 11, reds_ap: 0.00, reds: 0 },
-                { name: "Matteo Marchetti", matches: 2, fouls_avg: 29.50, penalties_ap: 0.50, yellows_ap: 4.00, yellows: 8, reds_ap: 0.00, reds: 0 },
+                { name: "Matteo Marchetti", matches: 3, fouls_avg: 25.67, penalties_ap: 0.33, yellows_ap: 3.67, yellows: 11, reds_ap: 0.00, reds: 0 },
                 { name: "Paride Tremolada", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 14, reds_ap: 0.00, reds: 0 },
                 { name: "Luca Pairetto", matches: 2, fouls_avg: 35.50, penalties_ap: 0.00, yellows_ap: 7.50, yellows: 15, reds_ap: 0.00, reds: 0 },
                 { name: "Ivano Pezzuto", matches: 1, fouls_avg: 36.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 },
