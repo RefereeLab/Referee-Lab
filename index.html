@@ -4319,7 +4319,7 @@ function getTeamLogo(teamName) {
                     match: p[0].trim(), totalTimeSec: parseTimeStr(p[1]), effectiveTimeSec: parseTimeStr(p[2]),
                     ratio: parseItalianFloat(p[3]), fouls: parseInt(p[4]) || 0, yellows: p.length > 5 ? (parseInt(p[5]) || 0) : 0,
                     reds: p.length > 6 ? (parseInt(p[6]) || 0) : 0, pens: p.length > 7 ? (parseItalianFloat(p[7]) || 0) : 0,
-                    season: season, rawTotal: p[1], rawEff: p[2]
+                    season: season, rawTotal: p[1], rawEff: p[2], referee: null
                 };
             }).filter(x => x);
         }
@@ -4430,7 +4430,32 @@ function getTeamLogo(teamName) {
                 if(dbData) all = all.concat(parseMatchesDB(dbData, s));
             });
 
-            return all;
+            return assignRefereesToMatches(all, seasonsToUse);
+        }
+
+        function assignRefereesToMatches(matches, seasons) {
+            const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
+            const assignedMatches = new Set();
+
+            seasonsToUse.forEach(season => {
+                const refEntries = parsePlayingTimeDB(PLAYING_TIME_DB[season], season);
+                refEntries.forEach(entry => {
+                    const candidates = matches.filter(m => m.season === season && !assignedMatches.has(m));
+
+                    let match = candidates.find(m => Number.isFinite(m.effectiveTimeSec) && Math.abs(m.effectiveTimeSec - entry.effectiveTimeSec) < 1);
+
+                    if (!match && Number.isFinite(entry.totalTimeSec)) {
+                        match = candidates.find(m => Number.isFinite(m.totalTimeSec) && Math.abs(m.totalTimeSec - entry.totalTimeSec) < 2);
+                    }
+
+                    if (match) {
+                        match.referee = entry.referee;
+                        assignedMatches.add(match);
+                    }
+                });
+            });
+
+            return matches;
         }
 
         function processTeamsData(seasons) {
@@ -6394,7 +6419,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         }
         
         function renderMatchesHeader(thead, th, getSortIcon) {
-             thead.innerHTML = `<tr>${th('Partita', 'match', 'sticky-col')}${th('Stagione', 'season', 'text-center')}${th('Tempo Tot', 'totalTimeSec', 'text-center text-blue-400')}${th('Tempo Eff', 'effectiveTimeSec', 'text-center text-green-400')}${th('% Eff', 'ratio', 'text-center')}${th('Falli', 'fouls', 'text-center text-red-400')}</tr>`;
+             thead.innerHTML = `<tr>${th('Partita', 'match', 'sticky-col')}${th('Arbitro', 'referee', 'text-center text-green-400')}${th('Stagione', 'season', 'text-center')}${th('Tempo Tot', 'totalTimeSec', 'text-center text-blue-400')}${th('Tempo Eff', 'effectiveTimeSec', 'text-center text-green-400')}${th('% Eff', 'ratio', 'text-center')}${th('Falli', 'fouls', 'text-center text-red-400')}</tr>`;
         }
 
         function renderMatchesRows(data, clearTbody = true) {
@@ -6418,6 +6443,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
 
                 rowsHtml += `<tr>
                     <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none" title="${r.match}">${r.match}</td>
+                    <td class="text-center text-green-400 bg-slate-800/10 rounded">${r.referee || '-'}</td>
                     <td class="text-center text-slate-500 text-xs">${r.season}</td>
                     <td class="text-center font-mono" style="color: ${colTot}">${formatSecondsToTime(r.totalTimeSec)}</td>
                     <td class="text-center font-mono font-bold" style="color: ${colEff}">${formatSecondsToTime(r.effectiveTimeSec)}</td>
@@ -6449,11 +6475,12 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 
                  // Container per il pulsante "Carica altro" PRIMA della riga medie
                  const loadMoreRow = document.createElement('tr');
-                 loadMoreRow.innerHTML = `<td colspan="6" class="p-3 text-center" id="loadMoreContainer"></td>`;
+                 loadMoreRow.innerHTML = `<td colspan="7" class="p-3 text-center" id="loadMoreContainer"></td>`;
                  tfoot.appendChild(loadMoreRow);
 
                  tfoot.innerHTML += `<tr class="avg-row">
                     <td class="sticky-col">MEDIE (${countMatches} partite)</td>
+                    <td class="text-center">-</td>
                     <td class="text-center">-</td>
                     <td class="text-center font-mono text-blue-300">${formatSecondsToTime(avgTot)}</td>
                     <td class="text-center font-mono text-green-300">${formatSecondsToTime(avgEff)}</td>
@@ -6462,7 +6489,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                  </tr>`;
             } else {
                  // Container per il pulsante "Carica altro"
-                tfoot.innerHTML += `<tr><td colspan="6" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
+                tfoot.innerHTML += `<tr><td colspan="7" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
             }
 
         }
