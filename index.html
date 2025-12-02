@@ -3299,6 +3299,24 @@ Bologna-Cremonese	101,26	52,25	51,7%	21`;
 
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
         const EXTRA_MATCHES_2526 = ``;
+
+        // Associazioni manuali per partite non assegnate automaticamente (per via di valori ND)
+        const MANUAL_REF_ASSIGNMENTS = {
+            "2025-26": {
+                "Como-Cremonese": "Di Bello",
+                "Juventus-Atalanta": "Sozza",
+                "Cagliari-Inter": "Piccinini",
+                "Sassuolo-Udinese": "Perenzoni",
+                "Pisa-Fiorentina": "Manganiello",
+                "Roma-Verona": "Feliciani",
+                "Lecce-Bologna": "Fourneau",
+                "Milan-Napoli": "Collu",
+                "Genoa-Lazio": "Ayroldi",
+                "Parma-Torino": "Collu",
+                "Napoli-Genoa": "La Penna",
+                "Lecce-Sassuolo": "Crezzini"
+            }
+        };
         
         const PLAYING_TIME_DB = {
             "2025-26": `Massa	46,53
@@ -4451,6 +4469,16 @@ function getTeamLogo(teamName) {
                     if (match) {
                         match.referee = entry.referee;
                         assignedMatches.add(match);
+                    }
+                });
+            });
+
+            // Assegna manualmente i match ancora senza arbitro usando la mappa dedicata
+            seasonsToUse.forEach(season => {
+                const manualMap = MANUAL_REF_ASSIGNMENTS[season] || {};
+                matches.forEach(match => {
+                    if (match.season === season && !match.referee && manualMap[match.match]) {
+                        match.referee = manualMap[match.match];
                     }
                 });
             });
