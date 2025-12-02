@@ -478,9 +478,10 @@ html, body {
 
         #feedback-panel {
             position: fixed;
-            bottom: 95px;
-            right: 20px;
-            width: min(380px, calc(100vw - 32px));
+            bottom: 90px;
+            left: 20px;
+            right: auto;
+            width: min(340px, calc(100vw - 40px));
             background: rgba(15, 23, 42, 0.95);
             border: 1px solid rgba(234, 179, 8, 0.25);
             box-shadow: 0 20px 60px -28px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(234, 179, 8, 0.05);
@@ -1667,7 +1668,7 @@ html, body {
             </div>
             <div class="flex-1">
                 <p class="text-white font-semibold leading-tight">Segnala un errore o richiedi una statistica/grafico</p>
-                <p class="text-xs text-slate-400 mt-1">Il messaggio verrà inviato direttamente ai DM della nostra pagina Instagram.</p>
+                <p class="text-xs text-slate-400 mt-1">Il messaggio verrà inviato direttamente via email al team RefereeLab.</p>
             </div>
             <button onclick="toggleFeedbackPanel(false)" class="text-slate-500 hover:text-white">
                 <i class="fa-solid fa-xmark"></i>
@@ -1682,13 +1683,13 @@ html, body {
 
             <div class="flex items-center justify-between text-xs text-slate-500">
                 <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Tempo medio di risposta: 1-2h</span>
-                <a href="https://instagram.com/reflab25" target="_blank" class="flex items-center gap-1 text-pink-400 hover:text-pink-300">
-                    <i class="fa-brands fa-instagram"></i> @reflab25
+                <a href="mailto:ref-lab@referee-lab.com" class="flex items-center gap-1 text-yellow-400 hover:text-yellow-300">
+                    <i class="fa-regular fa-envelope"></i> ref-lab@referee-lab.com
                 </a>
             </div>
 
             <div class="flex items-center gap-3">
-                <button onclick="sendFeedback()" class="flex-1 bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 font-bold py-2.5 rounded-lg shadow-glow hover:brightness-105 transition">Invia su Instagram</button>
+                <button onclick="sendFeedback()" class="flex-1 bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 font-bold py-2.5 rounded-lg shadow-glow hover:brightness-105 transition">Invia email</button>
                 <button onclick="toggleFeedbackPanel(false)" class="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:text-white">Chiudi</button>
             </div>
         </div>
@@ -7359,10 +7360,11 @@ function renderPlayersPassingTable() {
         function sendFeedback() {
             const textarea = document.getElementById('feedback-text');
             const userMessage = (textarea?.value || '').trim();
-            const baseText = 'Ciao RefereeLab, vorrei segnalare:';
-            const encoded = encodeURIComponent(userMessage ? `${baseText} ${userMessage}` : baseText);
+            const subject = encodeURIComponent('Feedback RefereeLab');
+            const baseBody = 'Ciao RefereeLab, vorrei segnalare:';
+            const body = encodeURIComponent(userMessage ? `${baseBody} ${userMessage}` : baseBody);
 
-            window.open(`https://ig.me/m/reflab25?message=${encoded}`, '_blank');
+            window.location.href = `mailto:ref-lab@referee-lab.com?subject=${subject}&body=${body}`;
             toggleFeedbackPanel(false);
         }
 
