@@ -455,11 +455,11 @@ html, body {
         }
         .ref-chip button:hover { opacity: 1; }
 
-        /* Feedback widget */
         .feedback-toggle {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 24px;
+            left: 24px;
+            right: auto;
             background: linear-gradient(135deg, #eab308, #facc15);
             color: #0f172a;
             border-radius: 9999px;
@@ -1688,8 +1688,10 @@ html, body {
                 </a>
             </div>
 
+            <div id="feedback-status" class="text-xs text-slate-400"></div>
+
             <div class="flex items-center gap-3">
-                <button onclick="sendFeedback()" class="flex-1 bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 font-bold py-2.5 rounded-lg shadow-glow hover:brightness-105 transition">Invia email</button>
+                <button id="feedback-send-btn" onclick="sendFeedback()" class="flex-1 bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 font-bold py-2.5 rounded-lg shadow-glow hover:brightness-105 transition">Invia email</button>
                 <button onclick="toggleFeedbackPanel(false)" class="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:text-white">Chiudi</button>
             </div>
         </div>
@@ -7357,15 +7359,54 @@ function renderPlayersPassingTable() {
             }
         }
 
-        function sendFeedback() {
+        async function sendFeedback() {
             const textarea = document.getElementById('feedback-text');
+            const status = document.getElementById('feedback-status');
+            const sendBtn = document.getElementById('feedback-send-btn');
             const userMessage = (textarea?.value || '').trim();
-            const subject = encodeURIComponent('Feedback RefereeLab');
-            const baseBody = 'Ciao RefereeLab, vorrei segnalare:';
-            const body = encodeURIComponent(userMessage ? `${baseBody} ${userMessage}` : baseBody);
 
-            window.location.href = `mailto:ref-lab@referee-lab.com?subject=${subject}&body=${body}`;
-            toggleFeedbackPanel(false);
+            if (!textarea || !status || !sendBtn) return;
+
+            if (!userMessage) {
+                status.textContent = 'Inserisci un messaggio prima di inviare.';
+                status.classList.remove('text-green-400');
+                status.classList.add('text-rose-400');
+                textarea.focus({ preventScroll: true });
+                return;
+            }
+
+            status.textContent = 'Invio in corso...';
+            status.classList.remove('text-rose-400');
+            status.classList.add('text-slate-400');
+            sendBtn.disabled = true;
+            sendBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch('https://formsubmit.co/ajax/ref-lab@referee-lab.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        name: 'RefereeLab Feedback',
+                        email: 'noreply@referee-lab.com',
+                        message: userMessage
+                    })
+                });
+
+                if (!response.ok) throw new Error('Invio non riuscito');
+
+                status.textContent = 'Messaggio inviato con successo! Ti risponderemo presto.';
+                status.classList.remove('text-slate-400');
+                status.classList.add('text-green-400');
+                textarea.value = '';
+                toggleFeedbackPanel(false);
+            } catch (error) {
+                status.textContent = 'Si è verificato un problema durante l\'invio. Riprova tra qualche secondo.';
+                status.classList.remove('text-slate-400');
+                status.classList.add('text-rose-400');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+            }
         }
 
         function attachRippleEffect(nodes) {
