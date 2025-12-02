@@ -1025,6 +1025,33 @@ html, body {
                     Escludi chi è sotto il 30% delle presenze
                 </button>
             </div>
+
+            <div class="pro-card rounded-lg p-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                    <div>
+                        <p class="text-xs uppercase text-slate-500 font-bold tracking-wider">Confronta giocatori</p>
+                        <p class="text-[11px] text-slate-400">Seleziona due nomi per confrontare le metriche.</p>
+                    </div>
+                    <i class="fa-solid fa-code-compare text-yellow-400"></i>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <label for="player-compare-1" class="text-[11px] text-slate-400">Giocatore A</label>
+                        <input id="player-compare-1" list="players-compare-options" type="text" placeholder="Digita un nome" oninput="handlePlayerComparisonInput(1, this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-yellow-500 focus:ring-0 outline-none" />
+                    </div>
+                    <div class="space-y-1">
+                        <label for="player-compare-2" class="text-[11px] text-slate-400">Giocatore B</label>
+                        <input id="player-compare-2" list="players-compare-options" type="text" placeholder="Digita un nome" oninput="handlePlayerComparisonInput(2, this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-yellow-500 focus:ring-0 outline-none" />
+                    </div>
+
+                    <datalist id="players-compare-options"></datalist>
+
+                    <div class="overflow-hidden rounded border border-slate-800">
+                        <table class="w-full text-[11px] text-slate-300" id="players-comparison-table"></table>
+                    </div>
+                </div>
+            </div>
         </div>
 
                 <div class="lg:col-span-9">
@@ -2448,6 +2475,7 @@ let selectedTeams = new Set(['all']);
 let playersStatMode = 'per90';
 let playerTeams = [];
 let excludeLowPresencePlayers = true;
+let playerComparisonSelections = { first: '', second: '' };
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -5659,11 +5687,11 @@ window.addEventListener('resize', debounceRenderAnalytics);
             }
 
             if (currentView === 'stats') {
-                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Presenze', 'matches', 'text-center')}${th('Falli/P', 'avgFouls', 'text-right')}${th('Gialli Tot', 'yellows', 'text-center !text-yellow-500 font-bold')}${th('Gialli/P', 'avgYellows', 'text-right !text-yellow-500')}${th('Rossi Tot', 'reds', 'text-center !text-red-500 font-bold')}${th('Rossi/P', 'avgReds', 'text-right !text-red-500')}${th('Rigori/P', 'avgPens', 'text-right')}</tr>`;
+                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Presenze', 'matches', 'text-center')}${th('Falli/P', 'avgFouls', 'text-center')}${th('Gialli Tot', 'yellows', 'text-center !text-yellow-500 font-bold')}${th('Gialli/P', 'avgYellows', 'text-center !text-yellow-500')}${th('Rossi Tot', 'reds', 'text-center !text-red-500 font-bold')}${th('Rossi/P', 'avgReds', 'text-center !text-red-500')}${th('Rigori/P', 'avgPens', 'text-center')}</tr>`;
                 let tM=0, tF=0, tY=0, tR=0, tP=0;
-                data.forEach((r) => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches; tbody.innerHTML += `<tr class="${r.isInactive?'opacity-50 grayscale':''}"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center font-bold text-white text-base">${r.matches}</td><td class="text-right text-slate-300">${r.avgFouls.toFixed(2)}</td><td class="text-center !text-yellow-500 font-bold">${r.yellows}</td><td class="text-right !text-yellow-500">${r.avgYellows.toFixed(2)}</td><td class="text-center !text-red-500 font-bold">${r.reds}</td><td class="text-right !text-red-500">${r.avgReds.toFixed(2)}</td><td class="text-right text-slate-400">${r.avgPens.toFixed(2)}</td></tr>`; });
+                data.forEach((r) => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches; tbody.innerHTML += `<tr class="${r.isInactive?'opacity-50 grayscale':''}"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center font-bold text-white text-base">${r.matches}</td><td class="text-center text-slate-300">${r.avgFouls.toFixed(2)}</td><td class="text-center !text-yellow-500 font-bold">${r.yellows}</td><td class="text-center !text-yellow-500">${r.avgYellows.toFixed(2)}</td><td class="text-center !text-red-500 font-bold">${r.reds}</td><td class="text-center !text-red-500">${r.avgReds.toFixed(2)}</td><td class="text-center text-slate-400">${r.avgPens.toFixed(2)}</td></tr>`; });
                 // Nota come ho cambiato tutti i 'p-3' in 'p-2'
-tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTALE</td><td class="text-center p-2 text-white">${tM}</td><td class="text-right p-2">${(tF/tM).toFixed(2)}</td><td class="text-center p-2 text-yellow-500 font-bold">${tY}</td><td class="text-right p-2 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-2 text-red-500 font-bold">${tR}</td><td class="text-right p-2 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-right p-2">${(tP/tM).toFixed(2)}</td></tr>`;
+tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTALE</td><td class="text-center p-2 text-white">${tM}</td><td class="text-center p-2">${(tF/tM).toFixed(2)}</td><td class="text-center p-2 text-yellow-500 font-bold">${tY}</td><td class="text-center p-2 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-2 text-red-500 font-bold">${tR}</td><td class="text-center p-2 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-center p-2">${(tP/tM).toFixed(2)}</td></tr>`;
             } 
             else if (currentView === 'playingTime') {
                 const showTot = activeSeasons.includes('2025-26') || activeSeasons.includes('2024-25');
@@ -6154,6 +6182,7 @@ function setPlayersStatMode(mode) {
     playersStatMode = mode;
     updatePlayersModeToggleUI();
     renderPlayersTable();
+    renderPlayerComparisonTable();
 }
 
 function renderPlayersTable() {
@@ -6198,7 +6227,7 @@ function renderPlayersTable() {
         const tr = document.createElement("tr");
         const stats = getPlayerStatsForMode(p);
         const rateDigits = playersStatMode === 'total' ? 0 : 2;
-        const volumeDigits = playersStatMode === 'total' ? 0 : 2;
+        const volumeDigits = playersStatMode === 'total' ? 0 : 1;
         const passPct = Number.isFinite(stats.passPct)
             ? `${stats.passPct.toFixed(1).replace('.', ',')}%`
             : '-';
@@ -6282,6 +6311,91 @@ function updatePlayersSortUI() {
         else icon.textContent = '';
     });
 }
+
+function populatePlayersComparisonOptions() {
+    const datalist = document.getElementById('players-compare-options');
+    if (!datalist) return;
+
+    const options = playersData
+        .map((p) => `<option value="${p.name}"></option>`)
+        .join('');
+
+    datalist.innerHTML = options;
+}
+
+function handlePlayerComparisonInput(slot, value) {
+    const sanitized = (value || '').trim();
+    if (slot === 1) playerComparisonSelections.first = sanitized;
+    else if (slot === 2) playerComparisonSelections.second = sanitized;
+
+    renderPlayerComparisonTable();
+}
+
+function findPlayerByName(name) {
+    if (!name) return null;
+    const key = normalizePlayerKey(name);
+    return playersData.find((p) => normalizePlayerKey(p.name) === key) || null;
+}
+
+function buildComparisonRow(label, valueA, valueB) {
+    return `
+        <tr class="border-t border-slate-800">
+            <th class="p-2 text-left text-slate-400 font-semibold">${label}</th>
+            <td class="p-2 text-center font-mono text-slate-200">${valueA}</td>
+            <td class="p-2 text-center font-mono text-slate-200">${valueB}</td>
+        </tr>
+    `;
+}
+
+function renderPlayerComparisonTable() {
+    const table = document.getElementById('players-comparison-table');
+    if (!table) return;
+
+    const playerA = findPlayerByName(playerComparisonSelections.first);
+    const playerB = findPlayerByName(playerComparisonSelections.second);
+
+    if (!playerA && !playerB) {
+        table.innerHTML = `<tbody><tr><td class="p-3 text-center text-slate-500" colspan="3">Seleziona due giocatori per confrontare le statistiche.</td></tr></tbody>`;
+        return;
+    }
+
+    const statsA = playerA ? getPlayerStatsForMode(playerA) : null;
+    const statsB = playerB ? getPlayerStatsForMode(playerB) : null;
+    const rateDigits = playersStatMode === 'total' ? 0 : 2;
+    const volumeDigits = playersStatMode === 'total' ? 0 : 1;
+    const presenceDigits = playersStatMode === 'total' ? 0 : 1;
+
+    const passPctA = Number.isFinite(statsA?.passPct) ? `${statsA.passPct.toFixed(1).replace('.', ',')}%` : '-';
+    const passPctB = Number.isFinite(statsB?.passPct) ? `${statsB.passPct.toFixed(1).replace('.', ',')}%` : '-';
+
+    const rows = [
+        buildComparisonRow("Presenze (90')", formatPassingValue(statsA?.n90, presenceDigits), formatPassingValue(statsB?.n90, presenceDigits)),
+        buildComparisonRow('Gialli', formatPassingValue(statsA?.yellow, rateDigits), formatPassingValue(statsB?.yellow, rateDigits)),
+        buildComparisonRow('Falli Commessi', formatPassingValue(statsA?.fouls, rateDigits), formatPassingValue(statsB?.fouls, rateDigits)),
+        buildComparisonRow('Falli Subiti', formatPassingValue(statsA?.fouled, rateDigits), formatPassingValue(statsB?.fouled, rateDigits)),
+        buildComparisonRow('Cross', formatPassingValue(statsA?.crosses, rateDigits), formatPassingValue(statsB?.crosses, rateDigits)),
+        buildComparisonRow('PassC', formatPassingValue(statsA?.passCompleted, volumeDigits), formatPassingValue(statsB?.passCompleted, volumeDigits)),
+        buildComparisonRow('PassT', formatPassingValue(statsA?.passAttempted, volumeDigits), formatPassingValue(statsB?.passAttempted, volumeDigits)),
+        buildComparisonRow('% Pass', passPctA, passPctB),
+        buildComparisonRow('Tiri', formatPassingValue(statsA?.shotsPer90, rateDigits), formatPassingValue(statsB?.shotsPer90, rateDigits)),
+        buildComparisonRow('Tiri in Porta', formatPassingValue(statsA?.shotsOnTargetPer90, rateDigits), formatPassingValue(statsB?.shotsOnTargetPer90, rateDigits)),
+    ];
+
+    const headerA = playerA ? formatPlayerName(playerA.name) : '—';
+    const headerB = playerB ? formatPlayerName(playerB.name) : '—';
+
+    table.innerHTML = `
+        <thead class="bg-slate-900/60 border-b border-slate-800">
+            <tr>
+                <th class="p-2 text-left text-slate-400">STATS</th>
+                <th class="p-2 text-center text-white">${headerA}</th>
+                <th class="p-2 text-center text-white">${headerB}</th>
+            </tr>
+        </thead>
+        <tbody>${rows.join('')}</tbody>
+    `;
+}
+
 function normalizePlayerKey(name) {
     return (name || '')
         .normalize('NFD')
@@ -6421,6 +6535,8 @@ playersData = parsePlayersDB(playersRawData);
 playersPassingData = parsePlayersPassing(playersPassingRawData);
 buildPlayersPassingIndex();
 initPlayersFilters();
+populatePlayersComparisonOptions();
+renderPlayerComparisonTable();
 function extractSurname(fullName) {
     const parts = (fullName || '').trim().split(/\s+/);
     return parts.length ? parts[parts.length - 1].toLowerCase() : '';
