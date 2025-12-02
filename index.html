@@ -1357,7 +1357,7 @@ html, body {
                         </div>
                     </div>
 
-                    <div id="chart-player-scatter" class="w-full h-[420px] mt-4"></div>
+                    <div id="chart-player-scatter" class="w-full h-[460px] mt-4"></div>
 
                     <p class="text-[11px] text-slate-400 mt-3">Asse X: tiri totali. Asse Y: tiri in porta totali. Puoi combinare i ruoli tramite i filtri.</p>
                 </div>
@@ -5813,30 +5813,72 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 return;
             }
 
+            const computeAxisParams = (maxValue) => {
+                const safeMax = Math.max(maxValue, 1);
+                const targetTicks = 6;
+                const roughStep = safeMax / targetTicks;
+                const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+                const residual = roughStep / magnitude;
+
+                let niceStep;
+                if (residual >= 5) niceStep = 10;
+                else if (residual >= 2) niceStep = 5;
+                else if (residual >= 1) niceStep = 2;
+                else niceStep = 1;
+
+                const stepSize = niceStep * magnitude;
+                const niceMax = Math.ceil(safeMax / stepSize) * stepSize;
+                const tickAmount = Math.max(3, Math.min(10, Math.round(niceMax / stepSize)));
+
+                return { niceMax, tickAmount };
+            };
+
+            const maxShotsTotal = Math.max(...eligiblePlayers.map(p => p.shotsTotal));
+            const maxShotsOnTarget = Math.max(...eligiblePlayers.map(p => p.shotsOnTarget));
+
+            const { niceMax: maxX, tickAmount: xTicks } = computeAxisParams(maxShotsTotal);
+            const { niceMax: maxY, tickAmount: yTicks } = computeAxisParams(maxShotsOnTarget);
+
             const scatterOptions = {
                 series,
                 chart: {
                     type: 'scatter',
-                    height: 420,
+                    height: 460,
                     background: 'transparent',
                     toolbar: { show: false },
                     zoom: { enabled: false }
                 },
                 colors: series.map(s => s.color),
                 dataLabels: { enabled: false },
-                markers: { size: 6, strokeWidth: 0 },
+                markers: { size: 4, strokeWidth: 0 },
                 grid: {
-                    borderColor: 'rgba(255,255,255,0.06)',
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    strokeDashArray: 0,
                     xaxis: { lines: { show: true } },
                     yaxis: { lines: { show: true } }
                 },
                 xaxis: {
                     title: { text: 'Tiri totali', style: { color: '#cbd5e1', fontWeight: 600 } },
-                    labels: { style: { colors: '#cbd5e1' } }
+                    labels: { style: { colors: '#cbd5e1' } },
+                    min: 0,
+                    max: maxX,
+                    tickAmount: xTicks,
+                    crosshairs: {
+                        show: true,
+                        position: 'back',
+                        stroke: { color: 'rgba(255,255,255,0.4)', width: 1, dashArray: 5 }
+                    }
                 },
                 yaxis: {
                     title: { text: 'Tiri in porta totali', style: { color: '#cbd5e1', fontWeight: 600 } },
-                    labels: { style: { colors: '#cbd5e1' } }
+                    labels: { style: { colors: '#cbd5e1' } },
+                    min: 0,
+                    max: maxY,
+                    tickAmount: yTicks,
+                    crosshairs: {
+                        show: true,
+                        stroke: { color: 'rgba(255,255,255,0.4)', width: 1, dashArray: 5 }
+                    }
                 },
                 legend: {
                     labels: { colors: '#e2e8f0' }
