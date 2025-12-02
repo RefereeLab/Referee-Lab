@@ -1026,7 +1026,7 @@ html, body {
                 </div>
                 <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
                 <button id="players-presence-threshold" type="button" class="mt-3 w-full px-3 py-2 rounded border border-slate-700 text-xs font-semibold text-slate-200 hover:border-yellow-500 hover:text-yellow-400 transition" onclick="toggleLowPresenceExclusion()">
-                    Escludi chi è sotto il 20% delle presenze
+                    Escludi chi è sotto il 30% delle presenze
                 </button>
             </div>
         </div>
@@ -2451,7 +2451,7 @@ let selectedPlayerRoles = new Set(PLAYER_ROLES);
 let selectedTeams = new Set(['all']);
 let playersStatMode = 'per90';
 let playerTeams = [];
-let excludeLowPresencePlayers = false;
+let excludeLowPresencePlayers = true;
 
         // --- DATA SECTION (Empty as requested) ---
         const MATCHES_DB_2425 = `Genoa-Inter	103,10	46,39	45,0%	29
@@ -6168,7 +6168,7 @@ function renderPlayersTable() {
     const filtered = playersData
         .filter(p => p.name.toLowerCase().includes(q))
         .filter(p => p.n90 >= playersMinMatches)
-        .filter(p => !excludeLowPresencePlayers || playersMaxMatches === 0 || p.n90 >= playersMaxMatches * 0.2)
+        .filter(p => !excludeLowPresencePlayers || playersMaxMatches === 0 || p.n90 >= playersMaxMatches * 0.3)
         .filter(p => {
             const playerRoles = (p.role || '')
                 .split(',')
@@ -6443,12 +6443,12 @@ function updatePresenceThresholdButton() {
     const btn = document.getElementById('players-presence-threshold');
     if (!btn) return;
 
-    const threshold = playersMaxMatches ? playersMaxMatches * 0.2 : 0;
+    const threshold = playersMaxMatches ? playersMaxMatches * 0.3 : 0;
     const thresholdLabel = threshold ? threshold.toFixed(1).replace('.', ',') : '0';
 
     btn.textContent = excludeLowPresencePlayers
-        ? `Esclusi i giocatori sotto ${thresholdLabel} presenze (20%)`
-        : 'Escludi chi è sotto il 20% delle presenze';
+        ? `Esclusi i giocatori sotto ${thresholdLabel} presenze (30%)`
+        : 'Escludi chi è sotto il 30% delle presenze';
 
     btn.classList.toggle('border-yellow-500', excludeLowPresencePlayers);
     btn.classList.toggle('text-yellow-400', excludeLowPresencePlayers);
