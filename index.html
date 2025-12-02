@@ -803,14 +803,10 @@ html, body {
 
                     <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
                     
-                    <!-- Export Button -->
-                    <button class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded border border-transparent hover:border-slate-700 transition-colors" onclick="alert('Export not available in demo')">
-                        <i class="fa-solid fa-download"></i> Export
-                    </button>
-
                     <!-- Instagram Button -->
                     <a href="https://instagram.com/reflab25" target="_blank" class="hidden md:flex text-slate-400 hover:text-pink-500 transition-colors transform hover:scale-110 duration-200">
                         <i class="fa-brands fa-instagram text-xl"></i>
+
                     </a>
                 </div>
             </div>
@@ -828,7 +824,7 @@ html, body {
                     <span class="mx-2">/</span>
                     <span class="text-slate-300 font-medium" id="breadcrumb-current">Overview</span>
                 </nav>
-                <h1 class="text-xl sm:text-3xl font-bold text-white tracking-tight" id="page-title">Statistiche Arbitrali</h1>
+                <h1 class="text-xl sm:text-3xl font-bold text-white tracking-tight hidden" id="page-title"></h1>
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded border border-slate-800">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -3839,12 +3835,13 @@ Di Marco	98,18`;
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21']; // Re-added
         const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25'];
+        const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
         let analyticsSeasonFilters = {
-            ritmo: [...ANALYTICS_SEASON_OPTIONS],
-            severity: [...ANALYTICS_SEASON_OPTIONS],
-            refRadar: [...ANALYTICS_SEASON_OPTIONS],
-            eff: [...ANALYTICS_SEASON_OPTIONS],
-            teamRadar: [...ANALYTICS_SEASON_OPTIONS],
+            ritmo: [...ANALYTICS_SEASON_DEFAULT],
+            severity: [...ANALYTICS_SEASON_DEFAULT],
+            refRadar: [...ANALYTICS_SEASON_DEFAULT],
+            eff: [...ANALYTICS_SEASON_DEFAULT],
+            teamRadar: [...ANALYTICS_SEASON_DEFAULT],
         };
 
         // --- LOGIC SECTION ---
@@ -4590,11 +4587,11 @@ if(q && result.length && currentView !== 'analytics') {
             const qSeverity = document.getElementById('analyticsSearchSeverity')?.value?.toLowerCase() || '';
             const qRitmo = document.getElementById('analyticsSearchRitmo')?.value?.toLowerCase() || '';
 
-            const severitySeasons = analyticsSeasonFilters.severity || ANALYTICS_SEASON_OPTIONS;
-            const radarSeasons = analyticsSeasonFilters.refRadar || ANALYTICS_SEASON_OPTIONS;
-            const ritmoSeasons = analyticsSeasonFilters.ritmo || ANALYTICS_SEASON_OPTIONS;
-            const effSeasons = analyticsSeasonFilters.eff || ANALYTICS_SEASON_OPTIONS;
-            const teamRadarSeasons = analyticsSeasonFilters.teamRadar || ANALYTICS_SEASON_OPTIONS;
+            const severitySeasons = analyticsSeasonFilters.severity || ANALYTICS_SEASON_DEFAULT;
+            const radarSeasons = analyticsSeasonFilters.refRadar || ANALYTICS_SEASON_DEFAULT;
+            const ritmoSeasons = analyticsSeasonFilters.ritmo || ANALYTICS_SEASON_DEFAULT;
+            const effSeasons = analyticsSeasonFilters.eff || ANALYTICS_SEASON_DEFAULT;
+            const teamRadarSeasons = analyticsSeasonFilters.teamRadar || ANALYTICS_SEASON_DEFAULT;
 
             // --- APPLICAZIONE NUOVO FILTRO MIN MATCHES (Feature 1) ---
             const minMatches = analyticsMinMatchesFilter;
@@ -5625,11 +5622,11 @@ window.addEventListener('resize', debounceRenderAnalytics);
         function updatePageTitleUI() {
             const el = document.getElementById('breadcrumb-current');
             const title = document.getElementById('page-title');
-            if(currentView === 'stats') { el.innerText = "Overview"; title.innerText = "Statistiche Arbitrali"; }
-            else if(currentView === 'analytics') { el.innerText = "Visual"; title.innerText = "Analytics & Grafici"; }
-            else if(currentView === 'playingTime') { el.innerText = "Performance"; title.innerText = "Tempo Effettivo"; }
-            else if(currentView === 'teams') { el.innerText = "Ranking"; title.innerText = "Classifiche Squadre"; }
-            else { el.innerText = "Database"; title.innerText = "Archivio Partite"; }
+            if(currentView === 'stats') { el.innerText = "Overview"; title.innerText = ""; }
+            else if(currentView === 'analytics') { el.innerText = "Visual"; title.innerText = ""; }
+            else if(currentView === 'playingTime') { el.innerText = "Performance"; title.innerText = ""; }
+            else if(currentView === 'teams') { el.innerText = "Ranking"; title.innerText = ""; }
+            else { el.innerText = "Database"; title.innerText = ""; }
         }
 
         function renderTable(data) {
@@ -6210,7 +6207,7 @@ function renderPlayersTable() {
         tr.innerHTML = `
             <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
             <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}</td>
-            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90)}</td>
+            <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90, 1)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.yellow, rateDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouls, rateDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouled, rateDigits)}</td>
