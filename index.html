@@ -66,11 +66,26 @@
 
     <style>
         /* Base Reset & Typography */
-html, body { 
+html, body {
     overflow-x: clip; /* 'clip' è meglio di 'hidden' per sticky */
-    background-color: #020617; 
-    color: #cbd5e1; 
-}        
+    background-color: #020617;
+    color: #cbd5e1;
+}
+        /* Soft background accents */
+        .aurora-blob {
+            position: fixed;
+            filter: blur(70px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .aurora-blob:nth-child(1) { top: 10%; left: 8%; width: 320px; height: 320px; background: radial-gradient(circle, #eab308, transparent 55%); animation: float 10s ease-in-out infinite; }
+        .aurora-blob:nth-child(2) { top: 20%; right: 5%; width: 380px; height: 380px; background: radial-gradient(circle, #38bdf8, transparent 55%); animation: float 12s ease-in-out infinite reverse; }
+        .aurora-blob:nth-child(3) { bottom: 5%; left: 30%; width: 420px; height: 420px; background: radial-gradient(circle, #a855f7, transparent 55%); animation: float 14s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-12px) scale(1.03); }
+        }
         /* Background Texture */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -85,6 +100,13 @@ html, body {
             background-color: #0f172a;
             border: 1px solid #1e293b;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+        }
+
+        .pro-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(234, 179, 8, 0.35);
+            box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(234, 179, 8, 0.05);
         }
         
         .pro-header {
@@ -190,6 +212,10 @@ html, body {
             background-color: #EAB308;
             color: #020617;
             box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+        }
+
+        .nav-pill:not(.active) {
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
         }
 
         /* Season Selector */
@@ -429,6 +455,66 @@ html, body {
         }
         .ref-chip button:hover { opacity: 1; }
 
+        /* Feedback widget */
+        .feedback-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #eab308, #facc15);
+            color: #0f172a;
+            border-radius: 9999px;
+            padding: 12px 16px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 20px 35px -18px rgba(234, 179, 8, 0.7);
+            border: 1px solid rgba(234, 179, 8, 0.6);
+            transition: transform 0.18s ease, box-shadow 0.25s ease;
+            z-index: 60;
+        }
+
+        .feedback-toggle:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 25px 45px -22px rgba(234, 179, 8, 0.9); }
+
+        #feedback-panel {
+            position: fixed;
+            bottom: 95px;
+            right: 20px;
+            width: min(380px, calc(100vw - 32px));
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            box-shadow: 0 20px 60px -28px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(234, 179, 8, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+            z-index: 60;
+        }
+
+        #feedback-panel[data-open="true"] {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        #feedback-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 80% 90%, rgba(234, 179, 8, 0.12), transparent 35%), rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        #feedback-overlay[data-open="true"] {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Mobile Optimizations */
         @media (max-width: 640px) {
 .pro-table th, .pro-table td {
@@ -585,6 +671,11 @@ html, body {
 
 </head>
 <body class="flex flex-col min-h-screen">
+
+    <!-- Ambient background glow -->
+    <div class="aurora-blob" aria-hidden="true"></div>
+    <div class="aurora-blob" aria-hidden="true"></div>
+    <div class="aurora-blob" aria-hidden="true"></div>
 
     <!-- Scroll To Top -->
     <button id="scroll-to-top" onclick="scrollToTop()" class="fixed bottom-6 right-6 z-50 w-10 h-10 rounded bg-slate-800 text-yellow-500 shadow-lg flex items-center justify-center hover:bg-slate-700 transition-all border border-slate-700 opacity-0 pointer-events-none data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto">
@@ -1566,7 +1657,56 @@ html, body {
 </div>
     </main>
 
+    <!-- Feedback widget -->
+    <div id="feedback-overlay" onclick="toggleFeedbackPanel(false)"></div>
+
+    <div id="feedback-panel" data-open="false" class="pro-card">
+        <div class="flex items-start gap-3 p-4 border-b border-slate-800 bg-slate-900/70">
+            <div class="w-10 h-10 rounded-full bg-yellow-500/15 border border-yellow-500/40 flex items-center justify-center text-yellow-400 shadow-glow">
+                <i class="fa-solid fa-sparkles"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-white font-semibold leading-tight">Segnala un errore o richiedi una statistica/grafico</p>
+                <p class="text-xs text-slate-400 mt-1">Il messaggio verrà inviato direttamente ai DM della nostra pagina Instagram.</p>
+            </div>
+            <button onclick="toggleFeedbackPanel(false)" class="text-slate-500 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="p-4 space-y-4">
+            <div>
+                <label for="feedback-text" class="block text-xs font-semibold text-slate-300 mb-2">Il tuo messaggio</label>
+                <textarea id="feedback-text" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-lg text-sm text-white p-3 focus:border-yellow-500 focus:ring-0" placeholder="Segnalazioni, bug, idee, richieste..."></textarea>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500">
+                <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Tempo medio di risposta: 1-2h</span>
+                <a href="https://instagram.com/reflab25" target="_blank" class="flex items-center gap-1 text-pink-400 hover:text-pink-300">
+                    <i class="fa-brands fa-instagram"></i> @reflab25
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="sendFeedback()" class="flex-1 bg-gradient-to-r from-yellow-400 to-amber-400 text-slate-900 font-bold py-2.5 rounded-lg shadow-glow hover:brightness-105 transition">Invia su Instagram</button>
+                <button onclick="toggleFeedbackPanel(false)" class="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:text-white">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="feedback-toggle" class="feedback-toggle" onclick="toggleFeedbackPanel()">
+        <span class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 text-yellow-500 shadow-inner shadow-black/30">
+            <i class="fa-regular fa-lightbulb text-lg"></i>
+            <span class="absolute inset-0 rounded-full border border-yellow-500/60 animate-pulse"></span>
+        </span>
+        <span class="flex flex-col items-start leading-tight">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-slate-800">Feedback</span>
+            <span class="text-sm font-extrabold">Richiedi o segnala</span>
+        </span>
+    </button>
+
     <script>
+
 
 const playersRawData = `
 Manuel De LucaATTCremonese0,200,005,005,000,00
@@ -7199,6 +7339,32 @@ function renderPlayersPassingTable() {
             if (window.scrollY > 300) btn.setAttribute('data-visible', 'true');
             else btn.setAttribute('data-visible', 'false');
         });
+
+        function toggleFeedbackPanel(forceState) {
+            const panel = document.getElementById('feedback-panel');
+            const overlay = document.getElementById('feedback-overlay');
+            const shouldOpen = typeof forceState === 'boolean'
+                ? forceState
+                : panel?.dataset.open !== 'true';
+
+            if (panel) panel.dataset.open = shouldOpen;
+            if (overlay) overlay.dataset.open = shouldOpen;
+
+            if (shouldOpen) {
+                const textarea = document.getElementById('feedback-text');
+                if (textarea) textarea.focus({ preventScroll: true });
+            }
+        }
+
+        function sendFeedback() {
+            const textarea = document.getElementById('feedback-text');
+            const userMessage = (textarea?.value || '').trim();
+            const baseText = 'Ciao RefereeLab, vorrei segnalare:';
+            const encoded = encodeURIComponent(userMessage ? `${baseText} ${userMessage}` : baseText);
+
+            window.open(`https://ig.me/m/reflab25?message=${encoded}`, '_blank');
+            toggleFeedbackPanel(false);
+        }
 
         function attachRippleEffect(nodes) {
             nodes.forEach((node) => {
