@@ -457,13 +457,13 @@ html, body {
 
         .feedback-toggle {
             position: fixed;
-            bottom: 24px;
-            left: 24px;
+            bottom: 18px;
+            left: 10px;
             right: auto;
             background: linear-gradient(135deg, #eab308, #facc15);
             color: #0f172a;
             border-radius: 9999px;
-            padding: 12px 16px;
+            padding: 4px 6px;
             font-weight: 800;
             display: inline-flex;
             align-items: center;
@@ -1677,6 +1677,11 @@ html, body {
 
         <div class="p-4 space-y-4">
             <div>
+                <label for="feedback-email" class="block text-xs font-semibold text-slate-300 mb-2">La tua email</label>
+                <input id="feedback-email" type="email" class="w-full bg-slate-900 border border-slate-800 rounded-lg text-sm text-white p-3 focus:border-yellow-500 focus:ring-0" placeholder="nome@esempio.com" />
+            </div>
+
+            <div>
                 <label for="feedback-text" class="block text-xs font-semibold text-slate-300 mb-2">Il tuo messaggio</label>
                 <textarea id="feedback-text" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-lg text-sm text-white p-3 focus:border-yellow-500 focus:ring-0" placeholder="Segnalazioni, bug, idee, richieste..."></textarea>
             </div>
@@ -1704,7 +1709,7 @@ html, body {
         </span>
         <span class="flex flex-col items-start leading-tight">
             <span class="text-[10px] uppercase tracking-[0.2em] text-slate-800">Feedback</span>
-            <span class="text-sm font-extrabold">Richiedi o segnala</span>
+            <span class="text-sm font-extrabold">Clicca qui</span>
         </span>
     </button>
 
@@ -7346,6 +7351,7 @@ function renderPlayersPassingTable() {
         function toggleFeedbackPanel(forceState) {
             const panel = document.getElementById('feedback-panel');
             const overlay = document.getElementById('feedback-overlay');
+            const emailInput = document.getElementById('feedback-email');
             const shouldOpen = typeof forceState === 'boolean'
                 ? forceState
                 : panel?.dataset.open !== 'true';
@@ -7354,8 +7360,11 @@ function renderPlayersPassingTable() {
             if (overlay) overlay.dataset.open = shouldOpen;
 
             if (shouldOpen) {
-                const textarea = document.getElementById('feedback-text');
-                if (textarea) textarea.focus({ preventScroll: true });
+                if (emailInput && !emailInput.value) emailInput.focus({ preventScroll: true });
+                else {
+                    const textarea = document.getElementById('feedback-text');
+                    if (textarea) textarea.focus({ preventScroll: true });
+                }
             }
         }
 
@@ -7363,9 +7372,21 @@ function renderPlayersPassingTable() {
             const textarea = document.getElementById('feedback-text');
             const status = document.getElementById('feedback-status');
             const sendBtn = document.getElementById('feedback-send-btn');
+            const emailInput = document.getElementById('feedback-email');
             const userMessage = (textarea?.value || '').trim();
+            const userEmail = (emailInput?.value || '').trim();
 
-            if (!textarea || !status || !sendBtn) return;
+            if (!textarea || !status || !sendBtn || !emailInput) return;
+
+            const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail);
+
+            if (!userEmail || !isValidEmail) {
+                status.textContent = 'Inserisci un indirizzo email valido per poterti rispondere.';
+                status.classList.remove('text-green-400');
+                status.classList.add('text-rose-400');
+                emailInput.focus({ preventScroll: true });
+                return;
+            }
 
             if (!userMessage) {
                 status.textContent = 'Inserisci un messaggio prima di inviare.';
@@ -7387,8 +7408,8 @@ function renderPlayersPassingTable() {
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         name: 'RefereeLab Feedback',
-                        email: 'noreply@referee-lab.com',
-                        message: userMessage
+                        email: userEmail,
+                        message: `${userMessage}\n\n---\nRispondi a: ${userEmail}`
                     })
                 });
 
@@ -7398,6 +7419,7 @@ function renderPlayersPassingTable() {
                 status.classList.remove('text-slate-400');
                 status.classList.add('text-green-400');
                 textarea.value = '';
+                emailInput.value = '';
                 toggleFeedbackPanel(false);
             } catch (error) {
                 status.textContent = 'Si è verificato un problema durante l\'invio. Riprova tra qualche secondo.';
