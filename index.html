@@ -1118,7 +1118,19 @@ html, body {
     </div>
 </div>
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
-            <div class="pro-card rounded-lg p-4 lg:col-span-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="text-xs uppercase text-slate-500 font-bold tracking-wider">Vista</span>
+                    <div class="bg-slate-900 border border-slate-800 rounded-full p-1 flex">
+                        <button type="button" class="analytics-subtab-btn px-4 py-2 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow" data-tab="arbitri" onclick="switchAnalyticsTab('arbitri')">Arbitri/Squadre</button>
+                        <button type="button" class="analytics-subtab-btn px-4 py-2 rounded-full text-xs font-semibold text-slate-200 hover:text-white" data-tab="giocatori" onclick="switchAnalyticsTab('giocatori')">Giocatori</button>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 max-w-xl">Usa lo switch per passare dai grafici su arbitri e squadre al nuovo scatter dedicato ai giocatori.</p>
+            </div>
+
+            <div id="analytics-tab-arbitri" class="space-y-6">
+                <div class="pro-card rounded-lg p-4 lg:col-span-2">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-green-500"></i> Ritmo vs Interruzioni</span>
                     <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-ritmo">
@@ -1314,8 +1326,42 @@ html, body {
         <div id="chart-team-heatmap"></div>
     </div>
 </div>
-          
 
+            </div>
+
+            <div id="analytics-tab-giocatori" class="hidden space-y-6">
+                <div class="pro-card rounded-lg p-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-futbol text-red-400"></i> Scatter Tiri Giocatori
+                            </h3>
+                            <p class="text-[11px] text-slate-400">Solo giocatori con almeno il 30% di presenze, portieri esclusi.</p>
+                        </div>
+                        <div class="flex flex-col items-start gap-2">
+                            <span class="text-[11px] text-slate-400">Filtra ruoli</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="player-scatter-role-toggle border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-2 bg-slate-800/70" data-role="DF" onclick="togglePlayerScatterRole('DF')">
+                                    <span class="w-2 h-2 rounded-full" style="background-color:#22c55e;"></span>
+                                    Difensori
+                                </button>
+                                <button type="button" class="player-scatter-role-toggle border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-2 bg-slate-800/70" data-role="CC" onclick="togglePlayerScatterRole('CC')">
+                                    <span class="w-2 h-2 rounded-full" style="background-color:#38bdf8;"></span>
+                                    Centrocampisti
+                                </button>
+                                <button type="button" class="player-scatter-role-toggle border border-slate-700 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-2 bg-slate-800/70" data-role="ATT" onclick="togglePlayerScatterRole('ATT')">
+                                    <span class="w-2 h-2 rounded-full" style="background-color:#ef4444;"></span>
+                                    Attaccanti
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="chart-player-scatter" class="w-full h-[420px] mt-4"></div>
+
+                    <p class="text-[11px] text-slate-400 mt-3">Asse X: tiri totali. Asse Y: tiri in porta totali. Puoi combinare i ruoli tramite i filtri.</p>
+                </div>
+            </div>
 
         </div>
 
@@ -3893,11 +3939,27 @@ Di Marco	98,18`;
         // Chart Instances
         let chartScatter = null;
         let chartMatchCorrelation = null;
+        let chartPlayerScatter = null;
         let currentAnalyticsData = [];
         let currentMatchData = [];
 let refereeData = [];
 let chartRadar = null;
 let selectedRadarReferees = [];
+        let analyticsActiveTab = 'arbitri';
+
+        const PLAYER_SCATTER_ROLE_COLORS = {
+            DF: '#22c55e',
+            CC: '#38bdf8',
+            ATT: '#ef4444'
+        };
+
+        const PLAYER_SCATTER_ROLE_LABELS = {
+            DF: 'Difensori',
+            CC: 'Centrocampisti',
+            ATT: 'Attaccanti'
+        };
+
+        let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
 
 
 // 🔵 Lista arbitri predefiniti (CAMBIALA OGNI GIORNATA)
@@ -5660,6 +5722,151 @@ const foulsColorScale = {
 // Ricalcola e riposiziona l'overlay ad ogni ridimensionamento
 window.addEventListener('resize', debounceRenderAnalytics);
 
+        function updatePlayerScatterRoleUI() {
+            document.querySelectorAll('.player-scatter-role-toggle').forEach((btn) => {
+                const role = btn.getAttribute('data-role');
+                const isActive = analyticsPlayerRoles.has(role);
+
+                btn.classList.toggle('bg-slate-800/70', isActive);
+                btn.classList.toggle('bg-slate-900/40', !isActive);
+                btn.style.borderColor = isActive
+                    ? (PLAYER_SCATTER_ROLE_COLORS[role] || '#eab308')
+                    : '#1e293b';
+            });
+        }
+
+        function togglePlayerScatterRole(role) {
+            if (!PLAYER_SCATTER_ROLE_COLORS[role]) return;
+
+            if (analyticsPlayerRoles.has(role) && analyticsPlayerRoles.size > 1) {
+                analyticsPlayerRoles.delete(role);
+            } else {
+                analyticsPlayerRoles.add(role);
+            }
+
+            updatePlayerScatterRoleUI();
+            renderPlayerScatterChart();
+        }
+
+        function renderPlayerScatterChart() {
+            const container = document.querySelector('#chart-player-scatter');
+            if (!container) return;
+
+            const minPresence = playersMaxMatches ? playersMaxMatches * 0.3 : 0;
+
+            const eligiblePlayers = playersData
+                .filter(p => Number.isFinite(p.n90) && p.n90 >= minPresence)
+                .filter(p => {
+                    const roles = (p.role || '')
+                        .split(',')
+                        .map(r => r.trim().toUpperCase())
+                        .filter(Boolean);
+
+                    const nonGoalkeeperRoles = roles.filter(r => r !== 'POR');
+                    if (!nonGoalkeeperRoles.length) return false;
+
+                    return nonGoalkeeperRoles.some(r => analyticsPlayerRoles.has(r));
+                })
+                .filter(p => Number.isFinite(p.shotsTotal) && Number.isFinite(p.shotsOnTarget));
+
+            const series = Array.from(analyticsPlayerRoles).map((role) => {
+                const roleData = eligiblePlayers
+                    .filter(p => (p.role || '').toUpperCase().includes(role))
+                    .map(p => ({
+                        x: p.shotsTotal,
+                        y: p.shotsOnTarget,
+                        name: formatPlayerName(p.name),
+                        team: p.team || ''
+                    }));
+
+                return {
+                    name: PLAYER_SCATTER_ROLE_LABELS[role] || role,
+                    data: roleData,
+                    color: PLAYER_SCATTER_ROLE_COLORS[role]
+                };
+            }).filter(series => series.data.length);
+
+            if (chartPlayerScatter) {
+                chartPlayerScatter.destroy();
+                chartPlayerScatter = null;
+            }
+
+            if (!series.length) {
+                chartPlayerScatter = new ApexCharts(container, {
+                    series: [],
+                    chart: {
+                        type: 'scatter',
+                        height: 420,
+                        background: 'transparent',
+                        toolbar: { show: false }
+                    },
+                    noData: {
+                        text: 'Nessun giocatore corrisponde ai filtri',
+                        align: 'center',
+                        style: { color: '#cbd5e1', fontSize: '12px' }
+                    },
+                    xaxis: { labels: { style: { colors: '#cbd5e1' } } },
+                    yaxis: { labels: { style: { colors: '#cbd5e1' } } }
+                });
+
+                chartPlayerScatter.render();
+                return;
+            }
+
+            const scatterOptions = {
+                series,
+                chart: {
+                    type: 'scatter',
+                    height: 420,
+                    background: 'transparent',
+                    toolbar: { show: false },
+                    zoom: { enabled: false }
+                },
+                colors: series.map(s => s.color),
+                dataLabels: { enabled: false },
+                markers: { size: 6, strokeWidth: 0 },
+                grid: {
+                    borderColor: 'rgba(255,255,255,0.06)',
+                    xaxis: { lines: { show: true } },
+                    yaxis: { lines: { show: true } }
+                },
+                xaxis: {
+                    title: { text: 'Tiri totali', style: { color: '#cbd5e1', fontWeight: 600 } },
+                    labels: { style: { colors: '#cbd5e1' } }
+                },
+                yaxis: {
+                    title: { text: 'Tiri in porta totali', style: { color: '#cbd5e1', fontWeight: 600 } },
+                    labels: { style: { colors: '#cbd5e1' } }
+                },
+                legend: {
+                    labels: { colors: '#e2e8f0' }
+                },
+                tooltip: {
+                    custom: ({ seriesIndex, dataPointIndex, w }) => {
+                        const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                        if (!d) return '';
+
+                        const roleKey = Object.keys(PLAYER_SCATTER_ROLE_LABELS).find(key =>
+                            PLAYER_SCATTER_ROLE_LABELS[key] === w.globals.initialSeries[seriesIndex].name
+                        );
+
+                        const bullet = roleKey && PLAYER_SCATTER_ROLE_COLORS[roleKey]
+                            ? `<span style="background:${PLAYER_SCATTER_ROLE_COLORS[roleKey]};" class="inline-block w-2 h-2 rounded-full mr-2"></span>`
+                            : '';
+
+                        return `
+                            <div class="px-3 py-2 bg-slate-800 border border-slate-700 rounded shadow-lg">
+                                <div class="font-bold text-white text-xs mb-1">${bullet}${d.name}</div>
+                                <div class="text-[10px] text-slate-300">${d.team ? `${d.team} · ` : ''}Tiri: ${d.x} — Tiri in porta: ${d.y}</div>
+                            </div>`;
+                    }
+                }
+            };
+
+            chartPlayerScatter = new ApexCharts(container, scatterOptions);
+            chartPlayerScatter.render();
+        }
+
 
 
 
@@ -5957,20 +6164,22 @@ const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 
-    if (view === 'analytics') {
-        if (tableView)     tableView.classList.add('hidden');
-        if (analyticsView) analyticsView.classList.remove('hidden');
-        if (playersView)   playersView.classList.add('hidden');
-        if (sidebar)       sidebar.classList.remove('hidden');
+        if (view === 'analytics') {
+            if (tableView)     tableView.classList.add('hidden');
+            if (analyticsView) analyticsView.classList.remove('hidden');
+            if (playersView)   playersView.classList.add('hidden');
+            if (sidebar)       sidebar.classList.remove('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
     }
-    } else if (view === 'players') {
-        if (tableView)     tableView.classList.add('hidden');
-        if (analyticsView) analyticsView.classList.add('hidden');
-        if (playersView)   playersView.classList.remove('hidden');
+            if (analyticsActiveTab === 'giocatori') renderPlayerScatterChart();
+            else renderAnalyticsWithFilters();
+        } else if (view === 'players') {
+            if (tableView)     tableView.classList.add('hidden');
+            if (analyticsView) analyticsView.classList.add('hidden');
+            if (playersView)   playersView.classList.remove('hidden');
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (mainContent) {
@@ -6133,6 +6342,30 @@ const seasonCard    = document.getElementById('season-selector-card');
 
         function refreshAllAnalyticsSeasonChips() {
             Object.keys(analyticsSeasonFilters).forEach(updateAnalyticsSeasonChipsUI);
+        }
+
+        function switchAnalyticsTab(tab) {
+            if (!['arbitri', 'giocatori'].includes(tab)) return;
+
+            analyticsActiveTab = tab;
+
+            const arbitriTab = document.getElementById('analytics-tab-arbitri');
+            const playersTab = document.getElementById('analytics-tab-giocatori');
+
+            if (arbitriTab) arbitriTab.classList.toggle('hidden', tab !== 'arbitri');
+            if (playersTab) playersTab.classList.toggle('hidden', tab !== 'giocatori');
+
+            document.querySelectorAll('.analytics-subtab-btn').forEach((btn) => {
+                const isActive = btn.getAttribute('data-tab') === tab;
+
+                btn.classList.toggle('bg-yellow-500', isActive);
+                btn.classList.toggle('text-slate-900', isActive);
+                btn.classList.toggle('shadow-glow', isActive);
+                btn.classList.toggle('text-slate-200', !isActive);
+            });
+
+            if (tab === 'giocatori') renderPlayerScatterChart();
+            else renderAnalyticsWithFilters();
         }
 
         function toggleSeasonDropdown() {
@@ -6578,6 +6811,7 @@ buildPlayersPassingIndex();
 initPlayersFilters();
 populatePlayersComparisonOptions();
 renderPlayerComparisonTable();
+updatePlayerScatterRoleUI();
 function extractSurname(fullName) {
     const parts = (fullName || '').trim().split(/\s+/);
     return parts.length ? parts[parts.length - 1].toLowerCase() : '';
