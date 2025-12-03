@@ -7079,14 +7079,21 @@ function setPlayersStatMode(mode) {
     renderPlayerComparisonTable();
 }
 
+function normalizeText(value) {
+    return (value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+}
+
 function renderPlayersTable() {
-    const q = (document.getElementById("players-search")?.value || "").toLowerCase();
+    const q = normalizeText(document.getElementById("players-search")?.value || "");
     const tbody = document.getElementById("players-table-body");
     if (!tbody) return;
     tbody.innerHTML = "";
 
     const filtered = playersData
-        .filter(p => p.name.toLowerCase().includes(q))
+        .filter(p => normalizeText(p.name).includes(q))
         .filter(p => p.n90 >= playersMinMatches)
         .filter(p => !excludeLowPresencePlayers || playersMaxMatches === 0 || p.n90 >= playersMaxMatches * 0.3)
         .filter(p => {
