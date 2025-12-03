@@ -5013,6 +5013,16 @@ let selectedRadarReferees = [];
 
         let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
 
+        // Cache per i dataset pesanti usati nei grafici analytics
+        const DATA_CACHE = {
+            combinedStats: new Map(),
+            playingTime: new Map(),
+            matches: new Map(),
+            heatmap: new Map(),
+        };
+
+        const SCUDETTO_ICON_URL = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Scudetto.svg';
+
         // Heatmap hover/focus cache
         let heatmapMatrixCache = {};
         let heatmapOrderedTeams = [];
@@ -5092,6 +5102,21 @@ function getTeamLogo(teamName) {
         const debounceAggregate = debounce(aggregateData);
         // Nuova funzione debounce per i grafici
         const debounceRenderAnalytics = debounce(renderAnalyticsWithFilters);
+
+        function getCacheKeyFromSeasons(seasons) {
+            const seasonsArray = (Array.isArray(seasons) && seasons.length) ? seasons : activeSeasons;
+            return [...seasonsArray].sort().join('|');
+        }
+
+        function scheduleAnalyticsRender(task = renderAnalyticsWithFilters) {
+            const runner = () => task();
+
+            if (typeof requestIdleCallback === 'function') {
+                requestIdleCallback(runner, { timeout: 150 });
+            } else {
+                requestAnimationFrame(runner);
+            }
+        }
 
         // Helper Functions
         function parseTimeStr(str) {
@@ -5251,11 +5276,14 @@ function getTeamLogo(teamName) {
 
         function processCombinedStats(seasons) {
             const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
+            const cacheKey = getCacheKeyFromSeasons(seasonsToUse);
+            if (DATA_CACHE.combinedStats.has(cacheKey)) return DATA_CACHE.combinedStats.get(cacheKey);
+
             const stats = processStatsData(seasonsToUse);
             const pt = processPlayingTimeViewData(seasonsToUse);
             
             // IMPROVED MERGE: Match by Surname to solve "0 data" issues
-            return stats.map(s => {
+            const merged = stats.map(s => {
                 const surnameS = getRefereeSurname(s.name);
                 const ptData = pt.find(p => getRefereeSurname(p.name) === surnameS);
                 // Se ci sono dati in ptData, sovrascrivi l'avgEffSec calcolato prima
@@ -5266,10 +5294,15 @@ function getTeamLogo(teamName) {
                     avgTotSec: ptData ? ptData.avgTotSec : 0
                 };
             });
+
+            DATA_CACHE.combinedStats.set(cacheKey, merged);
+            return merged;
         }
 
         function processPlayingTimeViewData(seasons) {
             const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
+            const cacheKey = getCacheKeyFromSeasons(seasonsToUse);
+            if (DATA_CACHE.playingTime.has(cacheKey)) return DATA_CACHE.playingTime.get(cacheKey);
             let statsMap = new Map();
             let allMatchData = [];
             seasonsToUse.forEach(s => {
@@ -5306,16 +5339,21 @@ function getTeamLogo(teamName) {
                     }
                 });
             });
-            return Array.from(statsMap.values()).map(r => {
+            const processed = Array.from(statsMap.values()).map(r => {
                 r.avgEffSec = r.validEffMatches ? (r.totalEffectiveSec / r.validEffMatches) : 0;
                 r.avgTotSec = r.validTotMatches ? (r.totalTotalSec / r.validTotMatches) : 0;
                 r.effRatio = calculateEffRatio(r.avgEffSec, r.avgTotSec);
                 return r;
             });
+
+            DATA_CACHE.playingTime.set(cacheKey, processed);
+            return processed;
         }
 
         function processMatchesViewData(seasons) {
             const seasonsToUse = Array.isArray(seasons) && seasons.length ? seasons : activeSeasons;
+            const cacheKey = getCacheKeyFromSeasons(seasonsToUse);
+            if (DATA_CACHE.matches.has(cacheKey)) return DATA_CACHE.matches.get(cacheKey);
             let all = [];
             seasonsToUse.forEach(s => {
                 let dbData = (s === '2025-26')
@@ -5326,7 +5364,9 @@ function getTeamLogo(teamName) {
                 if(dbData) all = all.concat(parseMatchesDB(dbData, s));
             });
 
-            return assignRefereesToMatches(all, seasonsToUse);
+            const parsed = assignRefereesToMatches(all, seasonsToUse);
+            DATA_CACHE.matches.set(cacheKey, parsed);
+            return parsed;
         }
 
         function assignRefereesToMatches(matches, seasons) {
@@ -6662,12 +6702,12 @@ const HEATMAP_SEASONS = {
 // PARSER STAGIONE (TEMPO EFFETTIVO + FALLI)
 // ===========================================
 function parseSeasonMatches(seasonKey) {
+    if (DATA_CACHE.heatmap.has(seasonKey)) return DATA_CACHE.heatmap.get(seasonKey);
+
     const config = HEATMAP_SEASONS[seasonKey] || {};
     const dataset = config.dataset || '';
     const lines = dataset.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
     const matrix = {};
-
     const orderedTeams = Array.isArray(config.orderedTeams) && config.orderedTeams.length
         ? [...config.orderedTeams]
         : [];
@@ -6703,7 +6743,9 @@ function parseSeasonMatches(seasonKey) {
         matrix[away][giornata] = cellData;
     }
 
-    return { teams: orderedTeams, matrix, label: config.label || seasonKey };
+    const parsed = { teams: orderedTeams, matrix, label: config.label || seasonKey };
+    DATA_CACHE.heatmap.set(seasonKey, parsed);
+    return parsed;
 }
 
 let currentHeatmapMetric = 'eff'; // 'eff' oppure 'fouls'
@@ -6929,8 +6971,7 @@ const foulsColorScale = {
             return `${rank}. ${value}`;
         }
     }
-},
-        dataLabels: { enabled: false },
+},        dataLabels: { enabled: false },
         tooltip: {
             theme: 'dark',
             x: { show: false },
@@ -7639,8 +7680,8 @@ const seasonCard    = document.getElementById('season-selector-card');
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
     }
-            if (analyticsActiveTab === 'giocatori') renderPlayerScatterChart();
-            else renderAnalyticsWithFilters();
+            if (analyticsActiveTab === 'giocatori') scheduleAnalyticsRender(renderPlayerScatterChart);
+            else scheduleAnalyticsRender();
         } else if (view === 'players') {
             hideSection(tableView);
             hideSection(analyticsView);
@@ -7801,7 +7842,7 @@ const seasonCard    = document.getElementById('season-selector-card');
 
             analyticsSeasonFilters[chartKey] = Array.from(current);
             updateAnalyticsSeasonChipsUI(chartKey);
-            renderAnalyticsWithFilters();
+            scheduleAnalyticsRender();
         }
 
         function updateAnalyticsSeasonChipsUI(chartKey) {
@@ -7845,8 +7886,8 @@ const seasonCard    = document.getElementById('season-selector-card');
                 btn.classList.toggle('text-slate-200', !isActive);
             });
 
-            if (tab === 'giocatori') renderPlayerScatterChart();
-            else renderAnalyticsWithFilters();
+            if (tab === 'giocatori') scheduleAnalyticsRender(renderPlayerScatterChart);
+            else scheduleAnalyticsRender();
         }
 
         function toggleSeasonDropdown() {
