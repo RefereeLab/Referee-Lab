@@ -449,6 +449,17 @@ html, body {
             animation: pulse-slow 3s infinite;
         }
 
+        .season-new-badge {
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            background: linear-gradient(120deg, #fbbf24, #f97316, #ef4444);
+            color: #0f172a;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.45);
+        }
+
 
 .quadrant-mini {
     width: 28px;
@@ -1081,7 +1092,10 @@ html, body {
                         </button>
                         
                         <button onclick="toggleSeason('2023-24')" id="btn-2023-24" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
-                            <span class="font-mono">2023-24</span>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono">2023-24</span>
+                                <span class="season-new-badge hidden">NEW</span>
+                            </div>
                             <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                         </button>
                         <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
@@ -7662,17 +7676,26 @@ const seasonCard    = document.getElementById('season-selector-card');
         function updateSeasonButtonsUI() {
             const allSeasons = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
             // Viste in cui i dati storici sono "SOON" e quindi disabilitati (a meno che non siano stats/analytics)
-            const viewsToBlockSoon = ['playingTime', 'matches', 'teams']; 
+            const viewsToBlockSoon = ['playingTime', 'matches', 'teams'];
             const isBlockedView = viewsToBlockSoon.includes(currentView);
+            const viewsWithNewHistorical = ['playingTime', 'matches', 'teams'];
 
             allSeasons.forEach(s => {
                 const btn = document.getElementById(`btn-${s}`);
                 if(!btn) return;
                 const icon = btn.querySelector('.check-icon');
                 const soonLabel = btn.querySelector('.coming-soon-label');
+                const newBadge = btn.querySelector('.season-new-badge');
                 const isSoonSeason = SOON_SEASONS.includes(s);
                 const is2425 = s === '2024-25';
-                const isSelected = activeSeasons.includes(s); 
+                const isSelected = activeSeasons.includes(s);
+
+                const shouldShowNewBadge = viewsWithNewHistorical.includes(currentView) && s === '2023-24';
+
+                if (newBadge) {
+                    if (shouldShowNewBadge) newBadge.classList.remove('hidden');
+                    else newBadge.classList.add('hidden');
+                }
 
                 // Gestione Visibilità SOON
                 if (isSoonSeason && soonLabel) {
