@@ -1193,7 +1193,12 @@ html, body {
                 </div>
 
                 <div class="mt-4">
-                    <p class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per ruolo</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs uppercase text-slate-500 font-bold tracking-wider">Filtra per ruolo</p>
+                        <button type="button" onclick="selectAllPlayerRoles()" class="text-[11px] text-yellow-400 hover:text-yellow-300 font-semibold px-2 py-1 rounded border border-yellow-500/30 bg-yellow-500/10">
+                            Tutti
+                        </button>
+                    </div>
                     <div class="grid grid-cols-2 gap-2 mt-2 text-sm text-slate-200">
                         <label class="flex items-center gap-2 text-orange-400">
                             <input type="checkbox" id="role-filter-por" class="rounded border-slate-700 bg-slate-900 text-orange-400 focus:ring-orange-400" onchange="togglePlayerRole('POR')" checked>
@@ -4264,8 +4269,11 @@ const TEAM_LOGOS = {
 
 // Funzione helper per ottenere il logo (o uno scudetto grigio se manca)
 function getTeamLogo(teamName) {
-    // Cerca corrispondenza esatta o parziale
-    const key = Object.keys(TEAM_LOGOS).find(k => teamName.includes(k));
+    const normalized = (teamName || '').trim();
+    if (!normalized) return '';
+
+    const lower = normalized.toLowerCase();
+    const key = Object.keys(TEAM_LOGOS).find(k => lower.includes(k.toLowerCase()));
     return key ? TEAM_LOGOS[key] : "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
 }
 
@@ -7117,11 +7125,15 @@ function renderPlayersTable() {
         const passPct = Number.isFinite(stats.passPct)
             ? `${stats.passPct.toFixed(1).replace('.', ',')}%`
             : '-';
+        const teamLogo = getTeamLogo(p.team || '');
+        const logoImg = teamLogo
+            ? `<img src="${teamLogo}" alt="${p.team || 'Logo squadra'}" class="inline-block ml-2 h-4 w-4 object-contain align-middle opacity-80">`
+            : '';
 
         tr.title = p.team ? `Squadra: ${p.team}` : 'Squadra non disponibile';
         tr.innerHTML = `
             <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
-            <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}</td>
+            <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}${logoImg}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90, 1)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.yellow, rateDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouls, rateDigits)}</td>
@@ -7493,12 +7505,16 @@ function initPlayersFilters() {
 
     if (teamOptionsContainer) renderPlayersTeamOptions();
 
+    syncPlayerRoleCheckboxes();
+
+    updatePlayersModeToggleUI();
+}
+
+function syncPlayerRoleCheckboxes() {
     PLAYER_ROLES.forEach(role => {
         const cb = document.getElementById(`role-filter-${role.toLowerCase()}`);
         if (cb) cb.checked = selectedPlayerRoles.has(role);
     });
-
-    updatePlayersModeToggleUI();
 }
 
 function renderPlayersTeamOptions() {
@@ -7593,12 +7609,19 @@ document.addEventListener('click', (event) => {
     if (!container.contains(event.target)) closePlayersTeamDropdown();
 });
 
+function selectAllPlayerRoles() {
+    selectedPlayerRoles = new Set(PLAYER_ROLES);
+    syncPlayerRoleCheckboxes();
+    renderPlayersTable();
+}
+
 function togglePlayerRole(role) {
     if (!PLAYER_ROLES.includes(role)) return;
 
     if (selectedPlayerRoles.has(role)) selectedPlayerRoles.delete(role);
     else selectedPlayerRoles.add(role);
 
+    syncPlayerRoleCheckboxes();
     renderPlayersTable();
 }
 
