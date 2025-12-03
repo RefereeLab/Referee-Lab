@@ -6652,8 +6652,8 @@ const HEATMAP_SEASONS = {
         label: '2023/24',
         dataset: MATCHES_DB_2324,
         orderedTeams: [
-            "Inter","Milan","Juventus","Bologna","Atalanta","Roma","Napoli","Fiorentina","Lazio","Torino",
-            "Monza","Genoa","Lecce","Udinese","Frosinone","Cagliari","Empoli","Verona","Sassuolo","Salernitana"
+            "Salernitana","Sassuolo","Frosinone","Empoli","Cagliari","Udinese","Lecce","Verona","Monza","Genoa",
+            "Napoli","Torino","Fiorentina","Lazio","Roma","Bologna","Atalanta","Juventus","Milan","Inter"
         ]
     }
 };
@@ -6915,10 +6915,20 @@ const foulsColorScale = {
             title: { text: "Giornate", style: { color: '#cbd5e1' } },
             labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
         },
-        yaxis: {
-            categories: orderedTeams,
-            labels: { style: { colors: '#cbd5e1', fontSize: '11px' } }
-        },
+	yaxis: {
+    		categories: orderedTeams,
+    		labels: {
+       		 style: { colors: '#cbd5e1', fontSize: '11px' },
+        	// Modifica qui: aggiungiamo una logica di controllo
+        	formatter: (value, index) => {
+           	 const rank = 20 - index;
+            // Se il numero è 0 (o meno) oppure non c'è una squadra (value è vuoto), non mostrare nulla
+            if (rank < 1 || !value) return ""; 
+            
+            return `${rank}. ${value}`;
+        }
+    }
+},
         dataLabels: { enabled: false },
         tooltip: {
             theme: 'dark',
