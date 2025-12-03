@@ -1182,6 +1182,17 @@ html, body {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-3 space-y-4">
             <div class="pro-card rounded-lg p-4">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                    <span>Min. presenze (90')</span>
+                    <span id="playersMinMatchesValue" class="font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
+                </div>
+                <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
+                <button id="players-presence-threshold" type="button" class="mt-3 w-full px-3 py-2 rounded border border-slate-700 text-xs font-semibold text-slate-200 hover:border-yellow-500 hover:text-yellow-400 transition" onclick="toggleLowPresenceExclusion()">
+                    Escludi chi è sotto il 30% delle presenze
+                </button>
+            </div>
+
+            <div class="pro-card rounded-lg p-4">
                 <label for="players-search" class="text-xs uppercase text-slate-500 font-bold tracking-wider">Ricerca giocatore</label>
                 <div class="relative mt-2">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
@@ -1230,17 +1241,6 @@ html, body {
                         <div id="players-team-options" class="max-h-52 overflow-y-auto"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="pro-card rounded-lg p-4">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span>Min. presenze (90')</span>
-                    <span id="playersMinMatchesValue" class="font-mono text-yellow-500 bg-yellow-500/10 px-1.5 rounded border border-yellow-500/20">0</span>
-                </div>
-                <input type="range" id="playersMinMatches" min="0" max="10" step="1" value="0" oninput="updatePlayersMinMatches(this.value)" class="w-full">
-                <button id="players-presence-threshold" type="button" class="mt-3 w-full px-3 py-2 rounded border border-slate-700 text-xs font-semibold text-slate-200 hover:border-yellow-500 hover:text-yellow-400 transition" onclick="toggleLowPresenceExclusion()">
-                    Escludi chi è sotto il 30% delle presenze
-                </button>
             </div>
 
             <div class="pro-card rounded-lg p-4">
@@ -7624,7 +7624,6 @@ function togglePlayerRole(role) {
     syncPlayerRoleCheckboxes();
     renderPlayersTable();
 }
-
 function formatPlayerName(fullName) {
     const parts = (fullName || '').trim().split(/\s+/);
     if (!parts.length) return '';
