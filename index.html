@@ -68,30 +68,30 @@
         /* Base Reset & Typography */
 html, body {
     overflow-x: clip; /* 'clip' è meglio di 'hidden' per sticky */
-    background: radial-gradient(circle at 15% 20%, rgba(234, 179, 8, 0.08), transparent 35%),
-                radial-gradient(circle at 85% 10%, rgba(56, 189, 248, 0.08), transparent 32%),
-                linear-gradient(160deg, #0b1120 0%, #020617 60%, #020617 100%);
+    background-color: #020617;
     color: #cbd5e1;
 }
-        /* Soft background accents (alleggeriti) */
+        /* Soft background accents */
         .aurora-blob {
             position: fixed;
-            filter: blur(60px);
-            opacity: 0.08;
+            filter: blur(70px);
+            opacity: 0.12;
             pointer-events: none;
             z-index: -1;
         }
-        .aurora-blob:nth-child(1) { top: 12%; left: 10%; width: 260px; height: 260px; background: radial-gradient(circle, #facc15, transparent 55%); animation: float 10s ease-in-out infinite; }
-        .aurora-blob:nth-child(2) { top: 22%; right: 10%; width: 300px; height: 300px; background: radial-gradient(circle, #38bdf8, transparent 55%); animation: float 12s ease-in-out infinite reverse; }
-        .aurora-blob:nth-child(3) { display: none; }
+        .aurora-blob:nth-child(1) { top: 10%; left: 8%; width: 320px; height: 320px; background: radial-gradient(circle, #eab308, transparent 55%); animation: float 10s ease-in-out infinite; }
+        .aurora-blob:nth-child(2) { top: 20%; right: 5%; width: 380px; height: 380px; background: radial-gradient(circle, #38bdf8, transparent 55%); animation: float 12s ease-in-out infinite reverse; }
+        .aurora-blob:nth-child(3) { bottom: 5%; left: 30%; width: 420px; height: 420px; background: radial-gradient(circle, #a855f7, transparent 55%); animation: float 14s ease-in-out infinite; }
         @keyframes float {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.02); }
+            50% { transform: translateY(-12px) scale(1.03); }
         }
-        /* Background Texture semplificato */
+        /* Background Texture */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.8));
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23334155' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             z-index: -1; pointer-events: none;
         }
 
@@ -143,9 +143,54 @@ html, body {
             animation: fadeInSoft 0.32s ease-out;
         }
 
+        .view-transitioning {
+            position: relative;
+            overflow: hidden;
+            animation: viewLift 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .view-transitioning::before {
+            content: '';
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(circle at 20% 20%, rgba(234, 179, 8, 0.12), transparent 45%),
+                        radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.08), transparent 50%);
+            opacity: 0;
+            animation: viewPulseGlow 0.7s ease forwards;
+            pointer-events: none;
+        }
+
+        .view-transitioning::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.06), transparent 60%);
+            transform: translateX(-120%);
+            opacity: 0;
+            animation: viewSweep 0.75s ease forwards;
+            pointer-events: none;
+        }
+
         @keyframes fadeInSoft {
             0% { opacity: 0; transform: translateY(8px) scale(0.995); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes viewLift {
+            0% { opacity: 0.35; filter: blur(8px); transform: translateY(12px) scale(0.985); }
+            60% { filter: blur(0); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes viewPulseGlow {
+            0% { opacity: 0.35; transform: scale(0.96); }
+            100% { opacity: 0; transform: scale(1.08); }
+        }
+
+        @keyframes viewSweep {
+            0% { opacity: 0; transform: translateX(-120%); }
+            25% { opacity: 0.45; }
+            100% { opacity: 0; transform: translateX(120%); }
         }
 
         .interactive-surface {
@@ -185,8 +230,10 @@ html, body {
         .nav-pill {
             padding: 6px 16px;
             border-radius: 9999px;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* text-xs */
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: #94a3b8;
             transition: all 0.2s ease;
             white-space: nowrap;
@@ -211,11 +258,23 @@ html, body {
 }
         
         .nav-pill:hover { color: #fff; }
-        
+
         .nav-pill.active {
             background-color: #EAB308;
             color: #020617;
             box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+        }
+
+        .nav-pill-boost {
+            animation: navBoost 0.6s ease;
+            box-shadow: 0 10px 25px rgba(234, 179, 8, 0.25), 0 0 20px rgba(234, 179, 8, 0.2);
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        @keyframes navBoost {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 0 0 rgba(234, 179, 8, 0.0); }
+            35% { transform: translateY(-2px) scale(1.03); }
+            100% { transform: translateY(-1px) scale(1.01); box-shadow: 0 10px 25px rgba(234, 179, 8, 0.25), 0 0 20px rgba(234, 179, 8, 0.2); }
         }
 
         .nav-pill:not(.active) {
@@ -686,25 +745,13 @@ html, body {
 }
 
 /* Mantiene leggibili le squadre (fisso a sinistra) */
-        .apexcharts-yaxis text {
-            position: sticky;
-            left: 0;
-            background: #0f172a;
-            padding-right: 6px;
-            z-index: 10;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition: none !important;
-                scroll-behavior: auto !important;
-            }
-            .aurora-blob {
-                display: none;
-            }
-        }
+.apexcharts-yaxis text {
+    position: sticky;
+    left: 0;
+    background: #0f172a;
+    padding-right: 6px;
+    z-index: 10;
+}
 
 </style>
 
@@ -997,20 +1044,9 @@ html, body {
             </div>
         </div>
 
-        <div class="lg:hidden flex items-center justify-between gap-3 mb-3">
-            <div class="text-xs text-slate-400 flex items-center gap-2">
-                <i class="fa-solid fa-filter text-yellow-500"></i>
-                <span>Filtri e stagioni</span>
-            </div>
-            <button id="filters-toggle" aria-expanded="false" class="text-sm font-semibold text-yellow-500 bg-slate-900 border border-slate-800 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-card hover:border-yellow-500 focus-visible:outline-none">
-                <span data-label>Apri</span>
-                <i class="fa-solid fa-chevron-down transition-transform text-xs" aria-hidden="true"></i>
-            </button>
-        </div>
-
 <div id="layout-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    <aside id="sidebar-filters" class="hidden lg:block lg:col-span-3 space-y-6 lg:self-start" data-mobile-collapsed="true">
+    <aside id="sidebar-filters" class="lg:col-span-3 space-y-6 lg:self-start">
         <div id="global-search-container" class="pro-card rounded-lg p-1">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
@@ -4138,7 +4174,6 @@ Colombo	49,56`,
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
         let debounceTimer; // Timer for debounce optimization
-        let isSidebarCollapsed = window.innerWidth < 1024;
         
         // Paging variables for 'matches' view
         let matchesDataAll = [];
@@ -6606,39 +6641,22 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         function animateSection(section) {
             if (!section) return;
 
-            section.classList.remove('fade-in-soft');
+            section.classList.remove('fade-in-soft', 'view-transitioning');
             // force reflow to restart animation
             void section.offsetWidth;
-            section.classList.add('fade-in-soft');
+            section.classList.add('fade-in-soft', 'view-transitioning');
         }
 
-        function updateSidebarVisibility() {
-            const sidebar = document.getElementById('sidebar-filters');
-            const toggleBtn = document.getElementById('filters-toggle');
-            const viewAllowsSidebar = currentView !== 'players';
-            const shouldCollapse = isSidebarCollapsed && window.innerWidth < 1024;
+        function pulseNavigation(view) {
+            const navKey = view === 'playingTime' ? 'time' : view;
+            [`nav-${navKey}`, `mob-nav-${navKey}`].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
 
-            if (!sidebar) return;
-
-            if (!viewAllowsSidebar) {
-                sidebar.classList.add('hidden');
-                return;
-            }
-
-            if (shouldCollapse) {
-                sidebar.classList.add('hidden');
-                sidebar.dataset.mobileCollapsed = 'true';
-            } else {
-                sidebar.classList.remove('hidden');
-                sidebar.dataset.mobileCollapsed = 'false';
-            }
-
-            if (toggleBtn) {
-                const label = toggleBtn.querySelector('[data-label]');
-                toggleBtn.setAttribute('aria-expanded', (!shouldCollapse).toString());
-                if (label) label.textContent = shouldCollapse ? 'Apri' : 'Nascondi';
-                toggleBtn.querySelector('i')?.classList.toggle('rotate-180', !shouldCollapse);
-            }
+                el.classList.remove('nav-pill-boost');
+                void el.offsetWidth;
+                el.classList.add('nav-pill-boost');
+            });
         }
 
         function showSection(section) {
@@ -6652,11 +6670,6 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             if (!section) return;
 
             section.classList.add('hidden');
-        }
-
-        function toggleFiltersPanel() {
-            isSidebarCollapsed = !isSidebarCollapsed;
-            updateSidebarVisibility();
         }
 
         function getBasePathForRouting() {
@@ -6822,8 +6835,6 @@ const seasonCard    = document.getElementById('season-selector-card');
 
             updateSeasonButtonsUI();
             aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
-
-            updateSidebarVisibility();
 
             if (updateHistory) updateHistoryState(view, { replace: replaceHistory });
         }
@@ -7788,13 +7799,6 @@ function renderPlayersPassingTable() {
         document.addEventListener('DOMContentLoaded', () => {
             const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
             attachRippleEffect(Array.from(interactiveTargets));
-
-            const filterToggle = document.getElementById('filters-toggle');
-            if (filterToggle) {
-                filterToggle.addEventListener('click', toggleFiltersPanel);
-            }
-
-            updateSidebarVisibility();
         });
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
@@ -7817,10 +7821,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const view = viewFromState && VIEW_ROUTE_MAP[viewFromState] ? viewFromState : fallbackView;
 
             switchView(view, { updateHistory: false });
-        });
-
-        window.addEventListener('resize', () => {
-            updateSidebarVisibility();
         });
 
 
