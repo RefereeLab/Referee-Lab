@@ -6445,22 +6445,23 @@ function renderFoulsByMatchdayChart() {
         legend: { show: false },
         grid: { borderColor: 'rgba(255,255,255,0.05)' },
         annotations: {
-            yaxis: seasonAverages.map(season => ({
-                y: season.average,
-                borderColor: hexToRgba(season.color, 0.5),
-                strokeDashArray: 6,
-                opacity: 0.6,
-                label: {
-                    text: `Media ${season.season}`,
-                    position: 'left',
-                    style: {
-                        color: '#0f172a',
-                        background: hexToRgba(season.color, 0.7),
-                        fontSize: '10px'
+                yaxis: seasonAverages.map(season => ({
+                    y: season.average,
+                    borderColor: hexToRgba(season.color, 0.5),
+                    strokeDashArray: 6,
+                    opacity: 0.6,
+                    label: {
+                        text: `Media ${season.season}: ${season.average.toFixed(1)}`,
+                        position: 'right',
+                        offsetX: 10,
+                        style: {
+                            color: '#0f172a',
+                            background: hexToRgba(season.color, 0.7),
+                            fontSize: '10px'
+                        }
                     }
-                }
-            }))
-        },
+                }))
+            },
         tooltip: {
             theme: 'dark',
             y: { formatter: val => `${val.toFixed(2)} falli` }
