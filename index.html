@@ -331,6 +331,32 @@ html, body {
             outline-offset: 2px;
         }
 
+        .analytics-anchor-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .analytics-anchor-btn:hover {
+            border-color: rgba(234, 179, 8, 0.35);
+            color: #fff;
+            box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .analytics-anchor-btn i {
+            color: #eab308;
+        }
+
 .pro-table th {
     background-color: #111827;
     font-size: 0.7rem;
@@ -1359,8 +1385,48 @@ html, body {
                 <p class="text-[11px] text-slate-400 max-w-xl">Usa lo switch per passare dai grafici su arbitri e squadre al nuovo scatter dedicato ai giocatori.</p>
             </div>
 
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
+                <aside class="lg:w-64 w-full lg:flex-shrink-0">
+                    <div class="pro-card rounded-lg p-4 space-y-4 sticky top-24">
+                        <div class="space-y-1">
+                            <div class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-bold">Vai al grafico</div>
+                            <p class="text-xs text-slate-400">Shortcut rapidi per raggiungere ogni visual senza scroll infinito.</p>
+                        </div>
+                        <div class="flex flex-wrap lg:flex-col gap-2">
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-ritmo')">
+                                <i class="fa-solid fa-arrow-down"></i> Ritmo vs Interruzioni
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-radar')">
+                                <i class="fa-solid fa-arrow-down"></i> Profilo Arbitro
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-severity')">
+                                <i class="fa-solid fa-arrow-down"></i> Indice di Severità
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-eff')">
+                                <i class="fa-solid fa-arrow-down"></i> Distribuzione Tempo Effettivo
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-teamradar')">
+                                <i class="fa-solid fa-arrow-down"></i> Radar Ritmo Squadre
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-fouls')">
+                                <i class="fa-solid fa-arrow-down"></i> Falli medi/giornata
+                            </button>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-heatmap')">
+                                <i class="fa-solid fa-arrow-down"></i> Heatmaps
+                            </button>
+                        </div>
+                        <div class="pt-2 border-t border-slate-800">
+                            <div class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-bold mb-2">Giocatori</div>
+                            <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-player-scatter','giocatori')">
+                                <i class="fa-solid fa-arrow-down"></i> Scatter Tiri Giocatori
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="flex-1 space-y-6">
             <div id="analytics-tab-arbitri" class="space-y-6">
-                <div class="pro-card rounded-lg p-4 lg:col-span-2">
+                <div id="analytics-section-ritmo" class="pro-card rounded-lg p-4 lg:col-span-2">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-green-500"></i> Ritmo vs Interruzioni</span>
                     <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-ritmo">
@@ -1408,7 +1474,7 @@ html, body {
 
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">              
-                <div class="pro-card rounded-lg p-4">
+                <div id="analytics-section-radar" class="pro-card rounded-lg p-4">
                     <div class="flex flex-col gap-2 mb-4 border-b border-slate-800 pb-2">
                         <h3 class="text-sm font-bold text-white uppercase tracking-wider flex flex-wrap gap-2 items-center justify-between">
                             <span class="flex items-center gap-2"><i class="fa-solid fa-fingerprint text-blue-500"></i> Profilo Arbitro</span>
@@ -1446,7 +1512,7 @@ html, body {
                     </p>
                 </div>
 
-                <div class="pro-card rounded-lg p-4 relative">
+                <div id="analytics-section-severity" class="pro-card rounded-lg p-4 relative">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
                         <span class="flex items-center gap-2"><i class="fa-solid fa-crosshairs text-yellow-500"></i> Indice di Severità (Falli vs Cartellini)</span>
                         <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-severity">
@@ -1501,7 +1567,7 @@ html, body {
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="pro-card rounded-lg p-4">
+                <div id="analytics-section-eff" class="pro-card rounded-lg p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
                         <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-chart-column text-indigo-400"></i> Distribuzione Tempo Effettivo
@@ -1520,7 +1586,7 @@ html, body {
                     </p>
                 </div>
 
-                <div class="pro-card rounded-lg p-4">
+                <div id="analytics-section-teamradar" class="pro-card rounded-lg p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
                         <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-bullseye text-pink-500"></i> Radar: Ritmo Squadre
@@ -1541,7 +1607,7 @@ html, body {
             </div>
 
 
-            <div class="pro-card rounded-lg p-4">
+            <div id="analytics-section-fouls" class="pro-card rounded-lg p-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-bars-progress text-emerald-400"></i> Falli medi per giornata (dalla stagione 2023/24)
@@ -1562,7 +1628,7 @@ html, body {
             </div>
 
 <!-- HEATMAP SQUADRE (SELETTORI STAGIONE + METRICA) -->
-<div class="mt-10 w-full">
+<div id="analytics-section-heatmap" class="mt-10 w-full">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
         <h3 id="heatmap-title" class="text-lg font-bold text-slate-200 flex items-center gap-2">
             Heatmap Squadre — Stagione 2024/25
@@ -1616,7 +1682,7 @@ html, body {
             </div>
 
             <div id="analytics-tab-giocatori" class="hidden space-y-6">
-                <div class="pro-card rounded-lg p-4">
+                <div id="analytics-section-player-scatter" class="pro-card rounded-lg p-4">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                             <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -1664,8 +1730,10 @@ html, body {
                 </div>
             </div>
 
-        </div>
+                </div>
+            </div>
 
+        </div>
 
 
         <div id="table-view" class="pro-card rounded-lg overflow-hidden flex flex-col min-h-[600px] relative">
@@ -8053,6 +8121,25 @@ const seasonCard    = document.getElementById('season-selector-card');
 
             if (tab === 'giocatori') scheduleAnalyticsRender(renderPlayerScatterChart);
             else scheduleAnalyticsRender();
+        }
+
+        function scrollToAnalyticsSection(targetId, tab = null) {
+            const performScroll = () => {
+                const target = document.getElementById(targetId);
+                if (!target) return;
+
+                const headerHeight = document.querySelector('.pro-header')?.offsetHeight || 0;
+                const offset = headerHeight + 16;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
+            };
+
+            if (tab && analyticsActiveTab !== tab) {
+                switchAnalyticsTab(tab);
+                setTimeout(performScroll, 120);
+            } else {
+                performScroll();
+            }
         }
 
         function toggleSeasonDropdown() {
