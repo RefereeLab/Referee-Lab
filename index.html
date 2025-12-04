@@ -1552,9 +1552,9 @@ html, body {
                         <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-300"></span>2025/26</span>
                     </div>
                 </div>
-                <div id="chart-fouls-matchday" class="w-full h-[360px]"></div>
+                <div id="chart-fouls-matchday" class="w-full h-[440px]"></div>
                 <p class="text-[10px] text-slate-400 mt-2 italic">
-                    Medie calcolate ogni 10 gare in ordine cronologico: 38 giornate 23/24, 38 giornate 24/25 e 13 giornate 25/26.
+                    Ogni barra rappresenta la media di falli a partita per ogni giornata
                 </p>
             </div>
 
@@ -6365,22 +6365,46 @@ function renderFoulsByMatchdayChart() {
     const categories = [];
     const data = [];
     const colors = [];
+    const seasonAverages = [];
+
+    const hexToRgba = (hex, alpha = 1) => {
+        const clean = hex.replace('#', '');
+        const expanded = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+        const bigint = parseInt(expanded, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
 
     meta.forEach(season => {
         const matches = processMatchesViewData([season.key]).filter(
             m => m.season === season.key && Number.isFinite(m.fouls)
         );
 
-        for (let i = 0; i < matches.length; i += 10) {
-            const giornata = Math.floor(i / 10) + 1;
-            const chunk = matches.slice(i, i + 10);
-            if (!chunk.length) continue;
+        if (matches.length) {
+            const seasonAvg = matches.reduce((sum, match) => sum + match.fouls, 0) / matches.length;
+            const startIndex = categories.length;
 
-            const avgFouls = chunk.reduce((sum, match) => sum + match.fouls, 0) / chunk.length;
+            for (let i = 0; i < matches.length; i += 10) {
+                const giornata = Math.floor(i / 10) + 1;
+                const chunk = matches.slice(i, i + 10);
+                if (!chunk.length) continue;
 
-            categories.push(`${season.label} G${giornata}`);
-            data.push(+avgFouls.toFixed(2));
-            colors.push(season.color);
+                const avgFouls = chunk.reduce((sum, match) => sum + match.fouls, 0) / chunk.length;
+
+                categories.push(giornata);
+                data.push(+avgFouls.toFixed(2));
+                colors.push(season.color);
+            }
+
+            seasonAverages.push({
+                season: season.label,
+                average: +seasonAvg.toFixed(2),
+                start: startIndex,
+                end: categories.length - 1,
+                color: season.color
+            });
         }
     });
 
@@ -6388,7 +6412,7 @@ function renderFoulsByMatchdayChart() {
         series: [{ name: 'Falli medi', data }],
         chart: {
             type: 'bar',
-            height: 360,
+            height: 440,
             background: 'transparent',
             toolbar: { show: false }
         },
@@ -6404,7 +6428,7 @@ function renderFoulsByMatchdayChart() {
         xaxis: {
             categories,
             labels: {
-                rotate: -45,
+                rotate: 0,
                 style: { colors: '#cbd5e1', fontSize: '10px' }
             },
             axisBorder: { color: 'rgba(255,255,255,0.08)' },
@@ -6418,7 +6442,25 @@ function renderFoulsByMatchdayChart() {
             },
             min: 0
         },
+        legend: { show: false },
         grid: { borderColor: 'rgba(255,255,255,0.05)' },
+        annotations: {
+            yaxis: seasonAverages.map(season => ({
+                y: season.average,
+                borderColor: hexToRgba(season.color, 0.5),
+                strokeDashArray: 6,
+                opacity: 0.6,
+                label: {
+                    text: `Media ${season.season}`,
+                    position: 'left',
+                    style: {
+                        color: '#0f172a',
+                        background: hexToRgba(season.color, 0.7),
+                        fontSize: '10px'
+                    }
+                }
+            }))
+        },
         tooltip: {
             theme: 'dark',
             y: { formatter: val => `${val.toFixed(2)} falli` }
