@@ -1405,11 +1405,21 @@ html, body {
 </div>
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 class="text-lg font-bold text-white">Analytics — Arbitri & Squadre</h2>
-                <p class="text-[11px] text-slate-400 max-w-xl">Analizza ritmo, severità e profili arbitro con i grafici interattivi qui sotto.</p>
+                <div>
+                    <h2 class="text-lg font-bold text-white">Analytics — Arbitri & Squadre</h2>
+                    <p class="text-[11px] text-slate-400 max-w-xl">Analizza ritmo, severità e profili arbitro con i grafici interattivi qui sotto.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Vista</div>
+                    <div class="flex bg-slate-900 rounded-full p-1 border border-slate-800 shadow-inner">
+                        <button id="analytics-mode-refs" type="button" onclick="setAnalyticsViewMode('refs')" class="px-4 py-2 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow transition-colors">Arbitri/Squadre</button>
+                        <button id="analytics-mode-players" type="button" onclick="setAnalyticsViewMode('players')" class="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 transition-colors">Giocatori</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="space-y-6">
+            <div id="analytics-refs-wrapper" class="space-y-6">
+
                 <div id="analytics-section-ritmo" class="pro-card rounded-lg p-4 lg:col-span-2">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-green-500"></i> Ritmo vs Interruzioni</span>
@@ -1662,7 +1672,47 @@ html, body {
         </div>
     </div>
     </div>
+            </div>
 
+            <div id="analytics-players-wrapper" class="hidden space-y-6">
+                <div class="pro-card rounded-lg p-4 space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
+                            <i class="fa-solid fa-bullseye text-yellow-400"></i>
+                            <span>Scatter — Tiri Giocatori</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 text-xs">
+                            <span class="text-slate-400">Mostrati solo giocatori con almeno il 30% delle presenze:</span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" class="player-scatter-role-toggle px-3 py-1 rounded-full border border-slate-700 bg-slate-900/40 text-slate-200 font-semibold" data-role="DF" onclick="togglePlayerScatterRole('DF')">
+                                    Difensori
+                                </button>
+                                <button type="button" class="player-scatter-role-toggle px-3 py-1 rounded-full border border-slate-700 bg-slate-900/40 text-slate-200 font-semibold" data-role="CC" onclick="togglePlayerScatterRole('CC')">
+                                    Centrocampisti
+                                </button>
+                                <button type="button" class="player-scatter-role-toggle px-3 py-1 rounded-full border border-slate-700 bg-slate-900/40 text-slate-200 font-semibold" data-role="ATT" onclick="togglePlayerScatterRole('ATT')">
+                                    Attaccanti
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        <div class="lg:col-span-3">
+                            <div id="chart-player-scatter" class="w-full h-[460px]"></div>
+                        </div>
+                        <div id="player-scatter-focus" class="pro-card rounded-lg border border-slate-800 p-4 space-y-2 bg-slate-900/60">
+                            <div class="text-[10px] uppercase tracking-[0.16em] text-slate-400 font-semibold">Focus giocatore</div>
+                            <div id="scatter-focus-name" class="text-lg font-bold text-white">Passa sopra un punto o clicca</div>
+                            <div id="scatter-focus-team" class="text-sm text-slate-300">—</div>
+                            <div id="scatter-focus-role" class="text-sm text-slate-300">Ruolo: —</div>
+                            <div id="scatter-focus-shots" class="text-sm text-slate-200">Tiri/90: —</div>
+                            <div id="scatter-focus-on-target" class="text-sm text-slate-200">Tiri in porta/90: —</div>
+                            <button type="button" onclick="resetScatterFocus()" class="mt-1 text-[11px] text-yellow-400 hover:text-yellow-300 underline">Reset selezione</button>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic">Passa il mouse o tocca un punto per evidenziare i tiri/90 e i tiri in porta/90 dei giocatori filtrati per ruolo.</p>
+                </div>
             </div>
 
         </div>
@@ -5032,6 +5082,7 @@ let selectedRadarReferees = [];
         };
 
         let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
+        let analyticsViewMode = 'refs';
 
         // Cache per i dataset pesanti usati nei grafici analytics
         const DATA_CACHE = {
@@ -7846,6 +7897,7 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
         mainContent.classList.remove('lg:col-span-12');
         mainContent.classList.add('lg:col-span-9');
     }
+            setAnalyticsViewMode('refs');
             scheduleAnalyticsRender();
         } else if (view === 'players') {
             hideSection(tableView);
@@ -7895,6 +7947,41 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
             aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
 
             if (updateHistory) updateHistoryState(view, { replace: replaceHistory });
+        }
+
+        function setAnalyticsViewMode(mode) {
+            if (!['refs', 'players'].includes(mode)) return;
+
+            analyticsViewMode = mode;
+
+            const refsWrapper = document.getElementById('analytics-refs-wrapper');
+            const playersWrapper = document.getElementById('analytics-players-wrapper');
+            const btnRefs = document.getElementById('analytics-mode-refs');
+            const btnPlayers = document.getElementById('analytics-mode-players');
+            const shortcutsCard = document.getElementById('analytics-shortcuts-card');
+
+            if (refsWrapper) refsWrapper.classList.toggle('hidden', mode !== 'refs');
+            if (playersWrapper) playersWrapper.classList.toggle('hidden', mode !== 'players');
+
+            const updateButtonState = (btn, isActive) => {
+                if (!btn) return;
+                btn.classList.toggle('bg-yellow-500', isActive);
+                btn.classList.toggle('text-slate-900', isActive);
+                btn.classList.toggle('shadow-glow', isActive);
+                btn.classList.toggle('bg-slate-900', !isActive);
+                btn.classList.toggle('text-slate-300', !isActive);
+                btn.classList.toggle('border', !isActive);
+                btn.classList.toggle('border-slate-700', !isActive);
+            };
+
+            updateButtonState(btnRefs, mode === 'refs');
+            updateButtonState(btnPlayers, mode === 'players');
+
+            if (shortcutsCard) shortcutsCard.classList.toggle('hidden', mode !== 'refs');
+
+            if (mode === 'players') {
+                renderPlayerScatterChart();
+            }
         }
 
         function toggleSeason(s) {
