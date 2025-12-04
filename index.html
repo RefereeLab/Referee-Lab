@@ -5221,6 +5221,15 @@ function getTeamLogo(teamName) {
             return parseFloat(str.replace(',', '.').replace('%', ''));
         }
 
+        function formatTitleCase(text) {
+            if (!text) return '';
+            return text
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+                .join(' ');
+        }
+
         function isRefereeActive(name) {
             const searchName = name.toUpperCase();
             if (activeSeasons.includes('2025-26')) {
@@ -7601,10 +7610,11 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     ${th('T.Eff. Casa', 'avgEffHome', 'text-center text-green-400/70', tooltipMap.avgEffHome)}
                     ${th('T.Eff. Trasf', 'avgEffAway', 'text-center text-green-400/70', tooltipMap.avgEffAway)}
                     </tr>`;
-                
+
                 data.forEach(t => {
+                    const teamName = (t.name || '').toUpperCase();
                     tbody.innerHTML += `<tr>
-                        <td class="sticky-col border-b border-slate-800 font-bold text-white">${t.name}</td>
+                        <td class="sticky-col border-b border-slate-800 font-bold text-white uppercase">${teamName}</td>
                         <td class="text-center text-slate-400">${t.matches}</td>
                         <td class="text-center font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
                         <td class="text-center text-red-400/70">${t.avgFoulsHome.toFixed(1)}</td>
@@ -7635,14 +7645,17 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             const minRat = Math.min(...validRatios); const maxRat = Math.max(...validRatios);
 
             let rowsHtml = '';
-            data.forEach((r) => { 
+            data.forEach((r) => {
                 const colTot = getColorForValue(r.totalTimeSec, minTot, maxTot, true);
                 const colEff = getColorForValue(r.effectiveTimeSec, minEff, maxEff);
                 const colRat = getColorForValue(r.ratio, minRat, maxRat);
 
+                const matchLabel = (r.match || '').toUpperCase();
+                const refereeName = formatTitleCase(r.referee);
+
                 rowsHtml += `<tr>
-                    <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none" title="${r.match}">${r.match}</td>
-                    <td class="text-center text-green-400 bg-slate-800/10 rounded">${r.referee || '-'}</td>
+                    <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none uppercase" title="${matchLabel}">${matchLabel}</td>
+                    <td class="text-center text-green-400 bg-slate-800/10 rounded font-sans">${refereeName || '-'}</td>
                     <td class="text-center text-slate-500 text-xs">${r.season}</td>
                     <td class="text-center font-mono" style="color: ${colTot}">${formatSecondsToTime(r.totalTimeSec)}</td>
                     <td class="text-center font-mono font-bold" style="color: ${colEff}">${formatSecondsToTime(r.effectiveTimeSec)}</td>
@@ -9023,3 +9036,4 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
+
