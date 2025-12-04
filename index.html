@@ -6024,13 +6024,17 @@ if(q && result.length && currentView !== 'analytics') {
                 // Marker size ripristinata
                 markers: { size: 4 }, 
                 colors: ['#EAB308'],
-                xaxis: { 
-                    title: { text: 'Media Falli', style: { color: '#94a3b8' } }, 
+                xaxis: {
+                    title: { text: 'Media Falli', style: { color: '#94a3b8' } },
                     tickAmount: xTickAmount,
                     min: xMin, max: xMax,
                     labels: { style: { colors: '#cbd5e1' } },
+                    tooltip: {
+                        enabled: true,
+                        formatter: (val) => Number(val).toFixed(1)
+                    },
                     axisBorder: { color: '#334155' },
-                    axisTicks: { color: '#334155' } 
+                    axisTicks: { color: '#334155' }
                 },
                 yaxis: { 
                     title: { text: 'Media Gialli', style: { color: '#94a3b8' } }, 
@@ -7452,6 +7456,10 @@ window.addEventListener('resize', debounceRenderAnalytics);
                     min: 0,
                     max: maxX,
                     tickAmount: xTicks,
+                    tooltip: {
+                        enabled: true,
+                        formatter: (val) => Number(val).toFixed(2)
+                    },
                     crosshairs: {
                         show: true,
                         position: 'back',
