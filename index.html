@@ -1132,9 +1132,11 @@ html, body {
                             </div>
                             <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                         </button>
-                        <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
-                            <span class="font-mono">2022-23</span>
-                            <span class="text-[9px] bg-slate-800 px-1.5 rounded coming-soon-label">SOON</span>
+                        <button onclick="toggleSeason('2022-23')" id="btn-2022-23" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono">2022-23</span>
+                                <span class="season-new-badge hidden">NEW</span>
+                            </div>
                             <i class="fa-solid fa-check text-yellow-500 text-xs check-icon opacity-0"></i>
                         </button>
                         <button onclick="toggleSeason('2021-22')" id="btn-2021-22" class="season-item w-full flex items-center justify-between px-3 py-2 rounded text-sm text-left text-slate-500" title="dati in arrivo">
@@ -1439,6 +1441,7 @@ html, body {
                             <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('effTot','2025-26', this)">25/26</button>
                             <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('effTot','2024-25', this)">24/25</button>
                             <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('effTot','2023-24', this)">23/24</button>
+                            <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('effTot','2022-23', this)">22/23</button>
                         </div>
                         <div class="relative w-full sm:w-64 lg:w-72">
 
@@ -1486,6 +1489,7 @@ html, body {
                                 <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('refRadar','2025-26', this)">25/26</button>
                                 <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('refRadar','2024-25', this)">24/25</button>
                                 <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('refRadar','2023-24', this)">23/24</button>
+                                <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('refRadar','2022-23', this)">22/23</button>
                             </div>
                         </h3>
                         <div class="flex flex-col gap-2 w-full">
@@ -1523,6 +1527,7 @@ html, body {
                             <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('severity','2025-26', this)">25/26</button>
                             <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('severity','2024-25', this)">24/25</button>
                             <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('severity','2023-24', this)">23/24</button>
+                            <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('severity','2022-23', this)">22/23</button>
                         </div>
                         <div class="relative w-full sm:w-1/3 min-w-[180px]">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
@@ -1580,6 +1585,7 @@ html, body {
                             <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('eff','2025-26', this)">25/26</button>
                             <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('eff','2024-25', this)">24/25</button>
                             <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('eff','2023-24', this)">23/24</button>
+                            <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('eff','2022-23', this)">22/23</button>
                         </div>
                     </div>
 
@@ -1599,6 +1605,7 @@ html, body {
                             <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('teamRadar','2025-26', this)">25/26</button>
                             <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('teamRadar','2024-25', this)">24/25</button>
                             <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('teamRadar','2023-24', this)">23/24</button>
+                            <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('teamRadar','2022-23', this)">22/23</button>
                         </div>
                     </div>
 
@@ -1613,9 +1620,10 @@ html, body {
             <div id="analytics-section-fouls" class="pro-card rounded-lg p-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-bars-progress text-emerald-400"></i> Falli medi per giornata (dalla stagione 2023/24)
+                        <i class="fa-solid fa-bars-progress text-emerald-400"></i> Falli medi per giornata (dalla stagione 2022/23)
                     </h3>
                     <div class="flex items-center gap-3 text-[11px] text-slate-300">
+                        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-fuchsia-400"></span>2022/23</span>
                         <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-400"></span>2023/24</span>
                         <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-400"></span>2024/25</span>
                         <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-300"></span>2025/26</span>
@@ -1643,6 +1651,7 @@ html, body {
                 <select id="heatmap-season" class="bg-slate-800 border border-slate-700 text-slate-100 text-xs rounded px-2 py-1">
                     <option value="2024-25" selected>2024/25</option>
                     <option value="2023-24">2023/24</option>
+                    <option value="2022-23">2022/23</option>
                 </select>
             </div>
 
@@ -2956,8 +2965,388 @@ let playerComparisonSelections = { first: '', second: '' };
 let playerComparisonOptions = [];
 
         // --- DATA SECTION (Empty as requested) ---
-        const MATCHES_DB_2324 = `
-Empoli-Verona	99,21	46,08	46,4%	35
+        const MATCHES_DB_2223 = `Sampdoria-Atalanta	98,53	51,55	52,5%	34
+Milan-Udinese	100,25	52,44	52,5%	29
+Monza-Torino	95,55	57,57	60,4%	23
+Lecce-Inter	99,43	54,26	54,6%	40
+Fiorentina-Cremonese	101,51	55,24	54,4%	29
+Lazio-Bologna	101,20	47,59	47,4%	29
+Salernitana-Roma	95,10	58,11	61,1%	27
+Spezia-Empoli	96,10	55,58	58,2%	23
+Verona-Napoli	98,50	48,30	49,1%	21
+Juventus-Sassuolo	99,14	58,08	58,6%	12
+Torino-Lazio	93,37	56,05	59,9%	23
+Udinese-Salernitana	100,06	52,51	52,8%	21
+Inter-Spezia	93,05	56,58	61,2%	18
+Sassuolo-Lecce	98,01	54,41	55,8%	26
+Empoli-Fiorentina	103,10	52,18	50,7%	24
+Napoli-Monza	99,13	50,41	51,1%	24
+Atalanta-Milan	97,26	57,33	59,1%	21
+Bologna-Verona	100,48	45,08	44,8%	24
+Roma-Cremonese	98,55	52,51	53,4%	21
+Sampdoria-Juventus	97,29	54,41	56,1%	22
+Monza-Udinese	94,08	51,40	54,9%	26
+Lazio-Inter	98,01	59,26	60,6%	17
+Cremonese-Torino	95,56	53,11	55,4%	30
+Juventus-Roma	95,44	52,46	55,1%	23
+Milan-Bologna	94,07	55,04	58,5%	22
+Spezia-Sassuolo	99,04	56,24	56,9%	27
+Salernitana-Sampdoria	95,12	52,57	55,6%	33
+Verona-Atalanta	95,06	50,37	53,2%	22
+Fiorentina-Napoli	95,08	61,59	65,2%	26
+Lecce-Empoli	98,09	53,31	54,5%	15
+Sassuolo-Milan	100,27	49,03	48,8%	27
+Inter-Cremonese	94,15	52,10	55,3%	20
+Roma-Monza	97,30	60,22	61,9%	17
+Empoli-Verona	95,12	49,06	51,6%	27
+Sampdoria-Lazio	101,33	60,16	59,3%	22
+Udinese-Fiorentina	97,10	58,09	59,8%	25
+Juventus-Spezia	98,48	55,35	56,3%	21
+Napoli-Lecce	100,16	58,48	58,6%	27
+Atalanta-Torino	97,14	52,42	54,2%	27
+Bologna-Salernitana	94,04	52,32	55,8%	21
+Fiorentina-Juventus	96,03	52,09	54,3%	25
+Milan-Inter	97,08	48,47	50,2%	22
+Lazio-Napoli	99,40	57,42	57,9%	26
+Cremonese-Sassuolo	96,02	54,44	57,0%	22
+Spezia-Bologna	102,56	52,16	50,8%	17
+Verona-Sampdoria	99,21	48,36	48,9%	27
+Udinese-Roma	98,05	53,37	54,7%	29
+Monza-Atalanta	95,03	58,24	61,4%	19
+Salernitana-Empoli	96,58	55,59	57,7%	16
+Torino-Lecce	96,00	54,59	57,3%	24
+Napoli-Spezia	98,03	53,04	54,1%	20
+Inter-Torino	96,47	56,38	58,5%	25
+Sampdoria-Milan	101,05	52,57	52,4%	22
+Atalanta-Cremonese	95,08	53,32	56,3%	26
+Bologna-Fiorentina	103,24	54,56	53,1%	21
+Lecce-Monza	100,14	48,50	48,7%	40
+Sassuolo-Udinese	98,36	50,55	51,6%	23
+Lazio-Verona	98,45	53,02	53,7%	28
+Juventus-Salernitana	106,27	54,17	51,0%	28
+Empoli-Roma	99,17	49,19	49,7%	25
+Salernitana-Lecce	99,21	57,41	58,1%	20
+Bologna-Empoli	98,03	44,44	45,6%	27
+Spezia-Sampdoria	95,05	47,58	50,4%	31
+Torino-Sassuolo	96,28	60,38	62,9%	20
+Udinese-Inter	98,18	50,46	51,6%	24
+Cremonese-Lazio	97,10	51,09	52,6%	21
+Fiorentina-Verona	98,05	47,21	48,3%	35
+Monza-Juventus	100,28	55,57	55,7%	33
+Roma-Atalanta	98,09	55,59	57,0%	28
+Milan-Napoli	97,07	51,38	53,2%	29
+Napoli-Torino	97,18	56,00	57,6%	21
+Inter-Roma	99,37	56,56	57,2%	29
+Empoli-Milan	101,43	45,28	44,7%	25
+Lazio-Spezia	94,30	52,38	55,7%	17
+Lecce-Cremonese	95,43	50,17	52,5%	26
+Sampdoria-Monza	99,58	52,42	52,7%	40
+Sassuolo-Salernitana	95,21	58,43	61,6%	18
+Atalanta-Fiorentina	96,03	56,54	59,2%	22
+Juventus-Bologna	92,02	54,59	59,7%	26
+Verona-Udinese	99,10	51,57	52,4%	26
+Sassuolo-Inter	95,28	55,39	58,3%	31
+Milan-Juventus	97,29	57,25	58,9%	14
+Bologna-Sampdoria	98,20	45,36	46,4%	38
+Torino-Empoli	97,07	49,49	51,3%	24
+Monza-Spezia	95,16	53,03	55,7%	30
+Salernitana-Verona	101,45	54,44	53,8%	24
+Udinese-Atalanta	95,05	51,25	54,1%	23
+Cremonese-Napoli	97,57	52,42	53,8%	24
+Roma-Lecce	98,06	52,11	53,2%	23
+Fiorentina-Lazio	97,01	50,32	52,1%	26
+Empoli-Monza	96,38	56,51	58,8%	31
+Torino-Juventus	95,06	57,01	60,0%	19
+Atalanta-Sassuolo	96,01	63,31	66,2%	18
+Inter-Salernitana	94,05	51,14	54,5%	26
+Lazio-Udinese	95,08	58,33	61,5%	19
+Spezia-Cremonese	95,02	49,42	52,3%	23
+Napoli-Bologna	95,01	57,28	60,5%	16
+Verona-Milan	97,41	48,00	49,1%	16
+Sampdoria-Roma	100,47	57,06	56,7%	40
+Lecce-Fiorentina	98,23	54,26	55,3%	31
+Juventus-Empoli	97,08	55,07	56,7%	24
+Salernitana-Spezia	101,03	49,27	48,9%	17
+Milan-Monza	94,03	55,59	59,5%	27
+Fiorentina-Inter	100,53	48,44	48,3%	29
+Udinese-Torino	95,18	50,56	53,4%	28
+Bologna-Lecce	98,53	48,45	49,3%	26
+Atalanta-Lazio	97,15	57,19	58,9%	24
+Roma-Napoli	98,00	54,25	55,5%	26
+Cremonese-Sampdoria	99,33	57,16	57,5%	31
+Sassuolo-Verona	96,16	51,51	53,9%	26
+Napoli-Sassuolo	93,54	54,44	58,3%	11
+Lecce-Juventus	96,27	54,08	56,1%	29
+Inter-Sampdoria	96,00	58,01	60,4%	17
+Empoli-Atalanta	96,02	52,17	54,4%	26
+Cremonese-Udinese	95,19	55,54	58,6%	17
+Spezia-Fiorentina	97,53	43,41	44,6%	33
+Lazio-Salernitana	97,42	60,43	62,1%	17
+Torino-Milan	97,59	49,43	50,7%	27
+Verona-Roma	98,13	55,01	56,0%	18
+Monza-Bologna	95,07	56,52	59,8%	31
+Udinese-Lecce	97,30	56,29	57,9%	30
+Empoli-Sassuolo	98,03	58,24	59,6%	22
+Salernitana-Cremonese	99,42	51,13	51,4%	24
+Atalanta-Napoli	96,35	56,29	58,5%	19
+Milan-Spezia	100,58	51,13	50,7%	25
+Bologna-Torino	101,14	52,53	52,2%	31
+Monza-Verona	98,07	53,03	54,1%	19
+Sampdoria-Fiorentina	99,59	56,57	57,0%	28
+Roma-Lazio	101,54	58,13	57,1%	32
+Juventus-Inter	97,24	56,25	57,9%	29
+Napoli-Empoli	95,13	53,21	56,0%	28
+Spezia-Udinese	97,13	54,00	55,5%	24
+Cremonese-Milan	95,58	57,02	59,4%	26
+Lecce-Atalanta	97,22	55,37	57,1%	23
+Sassuolo-Roma	96,02	58,52	61,3%	27
+Fiorentina-Salernitana	95,16	57,59	60,9%	21
+Inter-Bologna	94,01	53,34	57,0%	21
+Torino-Sampdoria	94,38	49,55	52,7%	35
+Verona-Juventus	95,56	50,14	52,4%	27
+Lazio-Monza	96,09	58,38	61,0%	29
+Empoli-Cremonese	99,03	56,52	57,4%	23
+Napoli-Udinese	98,09	55,44	56,8%	25
+Sampdoria-Lecce	96,43	46,00	47,6%	33
+Bologna-Sassuolo	93,19	55,10	59,1%	18
+Atalanta-Inter	97,10	53,30	55,1%	21
+Monza-Salernitana	94,18	61,05	64,8%	20
+Roma-Torino	99,34	57,35	57,8%	23
+Verona-Spezia	101,35	46,30	45,8%	34
+Milan-Fiorentina	99,02	55,35	56,1%	24
+Juventus-Lazio	95,29	63,51	66,9%	18
+Salernitana-Milan	100,38	46,41	46,4%	34
+Sassuolo-Sampdoria	100,48	52,31	52,1%	35
+Spezia-Atalanta	102,57	55,00	53,4%	22
+Torino-Verona	99,03	60,42	61,3%	24
+Lecce-Lazio	98,14	52,21	53,3%	29
+Roma-Bologna	98,41	58,08	58,9%	20
+Cremonese-Juventus	97,57	49,23	50,4%	24
+Fiorentina-Monza	95,39	53,00	55,4%	24
+Inter-Napoli	94,15	56,01	59,4%	19
+Udinese-Empoli	96,41	56,20	58,3%	29
+Fiorentina-Sassuolo	103,00	49,25	48,0%	23
+Juventus-Udinese	94,55	55,29	58,5%	29
+Monza-Inter	98,52	53,50	54,5%	34
+Salernitana-Torino	97,13	52,44	54,2%	25
+Lazio-Empoli	95,23	58,50	61,7%	27
+Spezia-Lecce	94,15	47,41	50,6%	29
+Sampdoria-Napoli	99,38	55,56	56,1%	27
+Milan-Roma	98,48	51,20	52,0%	32
+Verona-Cremonese	100,16	54,37	54,5%	27
+Bologna-Atalanta	96,25	57,14	59,4%	31
+Napoli-Juventus	95,10	52,37	55,3%	19
+Cremonese-Monza	99,32	52,14	52,5%	24
+Lecce-Milan	97,12	52,17	53,8%	23
+Inter-Verona	96,20	55,07	57,2%	24
+Sassuolo-Lazio	97,57	59,24	60,6%	27
+Torino-Spezia	97,24	57,17	58,8%	25
+Udinese-Bologna	100,27	47,11	47,0%	27
+Atalanta-Salernitana	93,03	53,33	57,5%	22
+Roma-Fiorentina	95,16	52,35	55,2%	27
+Empoli-Sampdoria	104,32	52,46	50,5%	31
+Verona-Lecce	101,29	48,33	47,8%	27
+Salernitana-Napoli	97,50	57,27	58,7%	29
+Fiorentina-Torino	97,00	61,20	63,2%	32
+Sampdoria-Udinese	98,24	50,42	51,5%	32
+Monza-Sassuolo	94,04	55,10	58,6%	35
+Spezia-Roma	98,39	58,30	59,3%	28
+Juventus-Atalanta	98,00	61,33	62,8%	15
+Bologna-Cremonese	97,32	55,27	56,9%	24
+Inter-Empoli	96,55	61,13	63,2%	29
+Lazio-Milan	95,28	54,46	57,4%	25
+Bologna-Spezia	97,24	55,40	57,2%	24
+Lecce-Salernitana	101,22	55,40	54,9%	25
+Empoli-Torino	94,02	55,04	58,6%	21
+Cremonese-Inter	94,03	57,50	61,5%	19
+Atalanta-Sampdoria	96,18	56,42	58,9%	28
+Milan-Sassuolo	101,38	46,35	45,8%	21
+Juventus-Monza	96,51	59,19	61,2%	22
+Lazio-Fiorentina	96,27	59,39	61,8%	29
+Napoli-Roma	100,08	57,09	57,1%	22
+Udinese-Verona	95,59	51,46	53,9%	20
+Cremonese-Lecce	98,11	55,51	56,9%	27
+Roma-Empoli	97,58	54,19	55,4%	28
+Sassuolo-Atalanta	98,24	61,52	62,9%	25
+Spezia-Napoli	94,08	53,12	56,5%	37
+Torino-Udinese	96,45	54,20	56,2%	21
+Fiorentina-Bologna	97,90	50,30	51,3%	35
+Inter-Milan	97,42	53,35	54,8%	27
+Verona-Lazio	98,54	53,13	53,8%	28
+Monza-Sampdoria	100,00	59,39	59,7%	24
+Salernitana-Juventus	96,58	61,11	63,1%	21
+Milan-Torino	95,03	54,37	57,5%	30
+Empoli-Spezia	99,49	55,02	55,1%	23
+Lecce-Roma	98,28	52,35	53,4%	32
+Lazio-Atalanta	97,56	59,45	61,0%	26
+Udinese-Sassuolo	98,37	56,07	56,9%	20
+Bologna-Monza	98,46	51,03	51,7%	33
+Juventus-Fiorentina	98,31	51,08	51,9%	28
+Napoli-Cremonese	96,12	56,14	58,5%	14
+Verona-Salernitana	98,48	49,41	50,3%	35
+Sampdoria-Inter	96,45	60,20	62,4%	24
+Sassuolo-Napoli	98,32	61,18	62,2%	22
+Sampdoria-Bologna	103,52	54,27	52,4%	26
+Monza-Milan	98,00	58,06	59,3%	28
+Inter-Udinese	98,12	55,00	56,0%	28
+Atalanta-Lecce	100,17	61,10	61,0%	22
+Fiorentina-Empoli	100,48	48,17	47,9%	23
+Salernitana-Lazio	94,58	59,36	62,8%	17
+Spezia-Juventus	95,36	56,44	59,3%	17
+Roma-Verona	100,15	53,43	53,6%	34
+Torino-Cremonese	95,40	53,33	56,0%	21
+Empoli-Napoli	97,22	50,57	52,3%	19
+Lecce-Sassuolo	97,25	52,25	53,8%	24
+Bologna-Inter	98,13	59,57	61,0%	21
+Salernitana-Monza	102,27	57,03	55,7%	28
+Udinese-Spezia	96,04	53,39	55,8%	27
+Milan-Atalanta	95,06	56,05	59,0%	22
+Verona-Fiorentina	95,16	53,43	56,4%	26
+Lazio-Sampdoria	94,31	59,56	63,4%	23
+Cremonese-Roma	99,53	57,41	57,8%	28
+Juventus-Torino	98,29	56,38	57,5%	18
+Napoli-Lazio	94,58	60,47	64,0%	21
+Monza-Empoli	97,06	57,15	59,0%	22
+Atalanta-Udinese	98,28	55,28	56,3%	24
+Fiorentina-Milan	98,20	50,58	51,8%	29
+Spezia-Verona	95,22	51,33	54,1%	13
+Sampdoria-Salernitana	98,17	48,49	49,7%	31
+Inter-Lecce	96,18	51,54	53,9%	21
+Roma-Juventus	99,03	59,10	59,7%	21
+Sassuolo-Cremonese	98,06	54,11	55,2%	20
+Torino-Bologna	93,56	59,41	63,5%	19
+Spezia-Inter	98,52	53,09	53,8%	20
+Empoli-Udinese	100,06	51,01	51,0%	25
+Napoli-Atalanta	97,03	56,56	58,7%	23
+Bologna-Lazio	96,09	60,45	63,2%	19
+Lecce-Torino	97,12	53,24	54,9%	33
+Cremonese-Fiorentina	93,21	54,16	58,1%	27
+Verona-Monza	94,29	60,52	64,4%	29
+Roma-Sassuolo	103,00	55,02	53,4%	29
+Juventus-Sampdoria	96,13	55,56	58,1%	20
+Milan-Salernitana	100,12	55,20	55,2%	28
+Sassuolo-Spezia	97,10	58,38	60,3%	23
+Atalanta-Empoli	99,01	55,57	56,5%	21
+Monza-Cremonese	97,05	58,55	60,7%	24
+Salernitana-Bologna	95,28	54,40	57,3%	24
+Udinese-Milan	103,11	50,07	48,6%	25
+Sampdoria-Verona	99,33	50,57	51,2%	21
+Fiorentina-Lecce	95,03	50,51	53,5%	35
+Torino-Napoli	92,25	47,52	51,8%	28
+Lazio-Roma	99,10	54,46	55,2%	31
+Inter-Juventus	103,11	57,20	55,6%	24
+Cremonese-Atalanta	96,08	59,05	61,5%	23
+Inter-Fiorentina	98,48	54,16	54,9%	15
+Juventus-Verona	94,58	52,56	55,7%	36
+Bologna-Udinese	98,27	54,27	55,3%	27
+Monza-Lazio	94,01	61,24	65,3%	21
+Spezia-Salernitana	100,12	48,50	48,7%	24
+Roma-Sampdoria	97,16	53,02	54,5%	24
+Napoli-Milan	96,00	56,24	58,8%	20
+Empoli-Lecce	98,16	49,51	50,7%	25
+Sassuolo-Torino	96,09	59,27	61,8%	21
+Salernitana-Inter	97,19	56,44	58,3%	24
+Lecce-Napoli	98,37	59,11	60,0%	21
+Milan-Empoli	98,33	60,45	61,6%	19
+Udinese-Monza	99,31	60,18	60,6%	33
+Fiorentina-Spezia	99,26	53,48	54,1%	41
+Atalanta-Bologna	96,04	60,35	63,1%	11
+Sampdoria-Cremonese	100,21	52,52	52,7%	29
+Torino-Roma	97,03	58,26	60,2%	16
+Verona-Sassuolo	96,51	51,33	53,2%	26
+Lazio-Juventus	100,13	54,17	54,2%	26
+Cremonese-Empoli	99,23	57,35	57,9%	20
+Spezia-Lazio	98,12	61,50	63,0%	19
+Bologna-Milan	93,12	52,34	56,4%	29
+Napoli-Verona	95,41	60,26	63,2%	26
+Inter-Monza	96,06	60,58	63,4%	17
+Lecce-Sampdoria	95,18	48,37	51,0%	28
+Torino-Salernitana	94,39	52,34	55,5%	28
+Sassuolo-Juventus	95,24	58,40	61,5%	15
+Roma-Udinese	100,10	49,44	49,7%	29
+Fiorentina-Atalanta	98,35	52,11	52,9%	28
+Verona-Bologna	109,13	59,01	54,0%	22
+Salernitana-Sassuolo	94,01	53,04	56,4%	26
+Lazio-Torino	97,03	62,52	64,8%	26
+Sampdoria-Spezia	104,43	49,43	47,5%	20
+Empoli-Inter	96,14	60,31	62,9%	19
+Monza-Fiorentina	99,11	51,52	52,3%	33
+Udinese-Cremonese	98,13	53,12	54,2%	24
+Milan-Lecce	99,35	61,50	62,1%	16
+Juventus-Napoli	100,33	55,19	55,0%	26
+Atalanta-Roma	101,48	55,09	54,2%	26
+Lecce-Udinese	98,07	51,46	52,8%	33
+Spezia-Monza	95,59	59,37	62,1%	26
+Roma-Milan	106,06	55,52	52,7%	15
+Torino-Atalanta	95,01	60,51	64,0%	16
+Inter-Lazio	99,02	58,38	59,2%	27
+Cremonese-Verona	100,26	52,44	52,5%	26
+Napoli-Salernitana	98,00	56,39	57,8%	24
+Sassuolo-Empoli	98,39	57,10	57,9%	22
+Fiorentina-Sampdoria	94,18	50,09	53,2%	23
+Bologna-Juventus	99,05	57,34	58,1%	21
+Atalanta-Spezia	97,38	56,53	58,3%	18
+Juventus-Lecce	99,24	52,07	52,4%	21
+Salernitana-Fiorentina	95,18	45,49	48,1%	33
+Sampdoria-Torino	98,54	61,12	61,9%	25
+Lazio-Sassuolo	98,49	57,31	58,2%	26
+Milan-Cremonese	99,23	58,52	59,2%	24
+Monza-Roma	97,16	51,54	53,4%	28
+Verona-Inter	94,54	58,43	61,9%	15
+Empoli-Bologna	100,03	48,51	48,8%	31
+Udinese-Napoli	94,20	52,08	55,3%	28
+Milan-Lazio	97,04	59,23	61,2%	18
+Roma-Inter	101,50	59,53	58,8%	20
+Cremonese-Spezia	95,15	55,58	58,8%	14
+Atalanta-Juventus	100,30	59,59	59,7%	29
+Torino-Monza	99,50	56,03	56,1%	25
+Napoli-Fiorentina	94,18	53,11	56,4%	27
+Lecce-Verona	97,09	48,08	49,5%	24
+Empoli-Salernitana	98,47	50,45	51,4%	28
+Udinese-Sampdoria	96,07	56,40	59,0%	27
+Sassuolo-Bologna	93,41	62,02	66,2%	26
+Lazio-Lecce	100,13	57,09	57,0%	24
+Salernitana-Atalanta	97,45	54,00	55,2%	27
+Spezia-Milan	97,04	48,31	50,0%	26
+Inter-Sassuolo	96,00	61,47	64,4%	20
+Verona-Torino	97,47	57,53	59,2%	25
+Fiorentina-Udinese	98,55	52,30	53,1%	30
+Monza-Napoli	96,31	57,38	59,7%	24
+Bologna-Roma	97,29	57,36	59,1%	23
+Juventus-Cremonese	96,38	59,54	62,0%	20
+Sampdoria-Empoli	97,02	53,49	55,5%	30
+Sassuolo-Monza	103,39	59,24	57,3%	27
+Cremonese-Bologna	94,18	56,39	60,1%	20
+Atalanta-Verona	96,01	58,18	60,7%	20
+Milan-Sampdoria	90,04	56,23	62,6%	19
+Lecce-Spezia	95,53	45,44	47,7%	31
+Torino-Fiorentina	95,23	58,00	60,8%	20
+Napoli-Inter	95,54	63,07	65,8%	24
+Udinese-Lazio	96,36	59,44	61,8%	24
+Roma-Salernitana	104,54	58,47	56,0%	23
+Empoli-Juventus	97,56	50,29	51,5%	39
+Sampdoria-Sassuolo	96,07	55,21	57,6%	24
+Salernitana-Udinese	102,34	52,24	51,1%	34
+Spezia-Torino	100,44	47,48	47,5%	27
+Fiorentina-Roma	99,21	55,33	55,9%	23
+Inter-Atalanta	96,27	55,53	57,9%	26
+Verona-Empoli	102,42	52,14	50,9%	24
+Bologna-Napoli	99,38	57,29	57,7%	27
+Monza-Lecce	103,09	54,47	53,1%	31
+Lazio-Cremonese	95,59	60,12	62,7%	23
+Juventus-Milan	96,09	59,10	61,5%	22
+Sassuolo-Fiorentina	94,20	50,49	53,9%	22
+Torino-Inter	95,10	62,16	65,4%	13
+Cremonese-Salernitana	105,01	58,10	55,4%	27
+Empoli-Lazio	94,14	58,58	62,6%	17
+Napoli-Sampdoria	92,12	59,28	64,5%	14
+Atalanta-Monza	99,12	61,36	62,1%	21
+Lecce-Bologna	99,17	58,12	58,6%	20
+Milan-Verona	100,48	51,00	50,6%	23
+Roma-Spezia	105,18	52,48	50,1%	31
+Udinese-Juventus	96,52	55,59	57,8%	20`;
+
+        const MATCHES_DB_2324 = `Empoli-Verona	99,21	46,08	46,4%	35
 Frosinone-Napoli	99,55	54,42	54,7%	31
 Genoa-Fiorentina	96,55	56,01	57,8%	27
 Inter-Monza	99,29	60,33	60,9%	21
@@ -3853,6 +4242,7 @@ Roma-Napoli	97,12	58,40	60,4%	27
 Bologna-Cremonese	101,26	52,25	51,7%	21`;
 
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
+        const EXTRA_MATCHES_2223 = ``;
         const EXTRA_MATCHES_2324 = ``;
         const EXTRA_MATCHES_2526 = ``;
 
@@ -4760,8 +5150,389 @@ Massa	55,35
 Doveri	45,00'
 `, 
 
+            "2022-23": `Dionisi	51,55
+Marinelli	52,44
+Mariani	57,57
+Prontera	54,26
+Sacchi	55,24
+Massimi	47,59
+Sozza	58,11
+Chiffi	55,58
+Fabbri	48,30
+Rapuano	58,08
+Piccinini	56,05
+Aureliano	52,51
+Ghersini	56,58
+Colombo	54,41
+Marchetti	52,18
+Fourneau	50,41
+Maresca	57,33
+Marcenaro	45,08
+Massimi	52,51
+Abisso	54,41
+Di Bello	51,40
+Fabbri	59,26
+Valeri	53,11
+Irrati	52,46
+Manganiello	55,04
+Cosso	56,24
+Massa	52,57
+Prontera	50,37
+Marinelli	61,59
+Santoro	53,31
+Ayroldi	49,03
+Fourneau	52,10
+Piccinini	60,22
+Serra	49,06
+Aureliano	60,16
+Mariani	58,09
+Colombo	55,35
+Marcenaro	58,48
+Di Bello	52,42
+Ghersini	52,32
+Doveri	52,09
+Chiffi	48,47
+Sozza	57,42
+Pairetto	54,44
+Giua	52,16
+Valeri	48,36
+Maresca	53,37
+Sacchi	58,24
+Abisso	55,59
+Volpi	54,59
+Santoro	53,04
+Ayroldi	56,38
+Fabbri	52,57
+Colombo	53,32
+Orsato	54,56
+Pairetto	48,50
+Camplone	50,55
+Irrati	53,02
+Marcenaro	54,17
+Marinelli	49,19
+Doveri	57,41
+Volpi	44,44
+Sozza	47,58
+Baroni	60,38
+Valeri	50,46
+Orsato	51,09
+Rapuano	47,21
+Maresca	55,57
+Chiffi	55,59
+Mariani	51,38
+Massimi	56,00
+Massa	56,56
+Aureliano	45,28
+Sacchi	52,38
+Marinelli	50,17
+Ayroldi	52,42
+Ferrieri Caputi	58,43
+Irrati	56,54
+Abisso	54,59
+Minelli	51,57
+Sozza	55,39
+Orsato	57,25
+Piccinini	45,36
+Fourneau	49,49
+Perenzoni	53,03
+Ghersini	54,44
+Doveri	51,25
+Abisso	52,42
+Prontera	52,11
+Maresca	50,32
+Rapuano	56,51
+Mariani	57,01
+Marcenaro	63,31
+Sacchi	51,14
+Colombo	58,33
+Manganiello	49,42
+Cosso	57,28
+Massa	48,00
+Di Bello	57,06
+Massimi	54,26
+Fabbri	55,07
+Chiffi	49,27
+Marinelli	55,59
+Valeri	48,44
+march	50,56
+Sozza	48,45
+Abisso	57,19
+Irrati	54,25
+Maresca	57,16
+Santoro	51,51
+Rapuano	54,44
+Chiffi	54,08
+Massimi	58,01
+Ayroldi	52,17
+Irrati	55,54
+Massa	43,41
+Manganiello	60,43
+Abisso	49,43
+Sacchi	55,01
+Pairetto	56,52
+Fourneau	56,29
+Feliciani	58,24
+Marchetti	51,13
+Mariani	56,29
+Fabbri	51,13
+Giua	52,53
+Cosso	53,03
+Marinelli	56,57
+Orsato	58,13
+Doveri	56,25
+Pairetto	53,21
+Piccinini	54,00
+Rapuano	57,02
+Aureliano	55,37
+Ayroldi	58,52
+La Penna	57,59
+Colombo	53,34
+Massa	49,55
+Di Bello	50,14
+Santoro	58,38
+Dionisi	56,52
+Ayroldi	55,44
+Doveri	46,00
+Pezzuto	55,10
+Chiffi	53,30
+Giua	61,05
+Rapuano	57,35
+Maresca	46,30
+Sozza	55,35
+Massa	63,51
+Fourneau	46,41
+Maresca	52,31
+Giua	55,00
+Dionisi	60,42
+Marinelli	52,21
+Santoro	58,08
+Ayroldi	49,23
+Feliciani	53,00
+Sozza	56,01
+Serra	56,20
+Manganiello	49,25
+Marchetti	55,29
+Sacchi	53,50
+Colombo	52,44
+Pezzuto	58,50
+Chiffi	47,41
+Abisso	55,56
+Massa	51,20
+Mariani	54,37
+Di Bello	57,14
+Doveri	52,37
+Massa	52,14
+Orsato	52,17
+Fabbri	55,07
+Pairetto	59,24
+Ghersini	57,17
+Volpi	47,11
+Aureliano	53,33
+Giua	52,35
+Santoro	52,46
+La Penna	48,33
+Chiffi	57,27
+Dionisi	61,20
+Mariani	50,42
+Prontera	55,10
+Sozza	58,30
+Marinelli	61,33
+Marchetti	55,27
+Rapuano	61,13
+Di Bello	54,46
+Massimi	55,40
+Massa	55,40
+Marcenaro	55,04
+Mariani	57,50
+Doveri	56,42
+Giua	46,35
+Aureliano	59,19
+Colombo	59,39
+Orsato	57,09
+Pairetto	51,46
+Orsato	55,51
+Dionisi	54,19
+Marcenaro	61,52
+Di Bello	53,12
+Prontera	54,20
+Pairetto	50,30
+Massa	53,35
+Ayroldi	53,13
+Chiffi	59,39
+Rapuano	61,11
+Ayroldi	54,37
+Giua	55,02
+Aureliano	52,35
+Orsato	59,45
+Pezzuto	56,07
+Zufferli	51,03
+Fabbri	51,08
+Massimi	56,14
+Valeri	49,41
+Maresca	60,20
+Colombo	61,18
+Irrati	54,27
+Rapuano	58,06
+Dionisi	55,00
+Piccinini	61,10
+Prontera	48,17
+Abisso	59,36
+La Penna	56,44
+Sozza	53,43
+Camplone	53,33
+Ayroldi	50,57
+Baroni	52,25
+Orsato	59,57
+Marinelli	57,03
+Marchetti	53,39
+Mariani	56,05
+La Penna	53,43
+Colombo	59,56
+Piccinini	57,41
+Chiffi	56,38
+Pairetto	60,47
+Feliciani	57,15
+Piccinini	55,28
+Di Bello	50,58
+Doveri	51,33
+Massa	48,49
+Manganiello	51,54
+Maresca	59,10
+Fourneau	54,11
+Rapuano	59,41
+Marinelli	53,09
+Cosso	51,01
+Colombo	56,56
+Maresca	60,45
+Sacchi	53,24
+Marcenaro	54,16
+Piccinini	60,52
+Fabbri	55,02
+Prontera	55,56
+La Penna	55,20
+Ghersini	58,38
+Dionisi	55,57
+Giua	58,55
+Pairetto	54,40
+Doveri	50,07
+Mariani	50,57
+Abisso	50,51
+Marchetti	47,52
+Massa	54,46
+Chiffi	57,20
+Marinelli	59,05
+Maresca	54,16
+Marchetti	52,56
+Ferrieri Caputi	54,27
+Marcenaro	61,24
+Orsato	48,50
+Irrati	53,02
+Rapuano	56,24
+Fabbri	49,51
+Pezzuto	59,27
+Fabbri	56,44
+Manganiello	59,11
+Marcenaro	60,45
+Massimi	60,18
+Dionisi	53,48
+Orsato	60,35
+Doveri	52,52
+Colombo	58,26
+Fourneau	51,33
+Di Bello	54,17
+Zufferli	57,35
+Irrati	61,50
+Massa	52,34
+La Penna	60,26
+Pairetto	60,58
+Mariani	48,37
+Aureliano	52,34
+Rapuano	58,40
+Giua	49,44
+Guida	52,11
+Mariani	59,01
+Camplone	53,04
+Ghersini	62,52
+Maresca	49,43
+Marinelli	60,31
+Sacchi	51,52
+Fourneau	53,12
+Chiffi	61,50
+Fabbri	55,19
+Irrati	55,09
+Marchetti	51,46
+Rapuano	59,37
+Orsato	55,52
+Sacchi	60,51
+Guida	58,38
+Doveri	52,44
+Marcenaro	56,39
+Dionisi	57,10
+Giua	50,09
+Sozza	57,34
+Marinelli	56,53
+Fourneau	52,07
+Pezzuto	45,49
+Camplone	61,12
+Irrati	57,31
+Pairetto	58,52
+Chiffi	51,54
+Orsato	58,43
+La Penna	48,51
+Abisso	52,08
+Rapuano	59,23
+Maresca	59,53
+Guida	55,58
+Doveri	59,59
+Zufferli	56,03
+Marchetti	53,11
+Massa	48,08
+Volpi	50,45
+Baroni	56,40
+Ferrieri Caputi	62,02
+Maresca	57,09
+Piccinini	54,00
+Doveri	48,31
+Marcenaro	61,47
+Di Bello	57,53
+Paterna	52,30
+Cosso	57,38
+Orsato	57,36
+Chiffi	59,54
+Feliciani	53,49
+Santoro	59,24
+Valeri	56,39
+Sozza	58,18
+Fourneau	56,23
+Mariani	45,44
+Massimi	58,00
+Marinelli	63,07
+Pairetto	59,44
+Colombo	58,47
+Ayroldi	50,29
+Meraviglia	55,21
+Baroni	52,24
+Guida	47,48
+Ayroldi	55,33
+Orsato	55,53
+Chiffi	52,14
+Marcenaro	57,29
+Doveri	54,47
+Giua	60,12
+Mariani	59,10
+Marchetti	50,49
+Fabbri	62,16
+Perenzoni	58,10
+Massimi	58,58
+Feliciani	59,28
+Di Bello	61,36
+Piccinini	58,12
+Valeri	51,00
+Maresca	52,48
+Guida	55,59'
+`, 
 
-            "2022-23": ``, "2021-22": ``, "2020-21": ``
+            "2021-22": ``, "2020-21": ``
         };
         
 
@@ -5029,8 +5800,8 @@ Doveri	45,00'
         };
 
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
-        const SOON_SEASONS = ['2022-23', '2021-22', '2020-21']; // Re-added
-        const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24'];
+        const SOON_SEASONS = ['2021-22', '2020-21']; // Re-added
+        const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24', '2022-23'];
         const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
         let analyticsSeasonFilters = {
             ritmo: [...ANALYTICS_SEASON_DEFAULT],
@@ -5401,7 +6172,9 @@ function getTeamLogo(teamName) {
                     ? MATCHES_DB_2526 + EXTRA_MATCHES_2526
                     : (s === '2024-25'
                         ? MATCHES_DB_2425
-                        : (s === '2023-24' ? MATCHES_DB_2324 + EXTRA_MATCHES_2324 : null));
+                        : (s === '2023-24'
+                            ? MATCHES_DB_2324 + EXTRA_MATCHES_2324
+                            : (s === '2022-23' ? MATCHES_DB_2223 + EXTRA_MATCHES_2223 : null)));
                 if(db) allMatchData = allMatchData.concat(parseMatchesDB(db, s));
             });
             seasonsToUse.forEach(season => {
@@ -5451,7 +6224,9 @@ function getTeamLogo(teamName) {
                     ? MATCHES_DB_2526 + EXTRA_MATCHES_2526
                     : (s === '2024-25'
                         ? MATCHES_DB_2425
-                        : (s === '2023-24' ? MATCHES_DB_2324 + EXTRA_MATCHES_2324 : null));
+                        : (s === '2023-24'
+                            ? MATCHES_DB_2324 + EXTRA_MATCHES_2324
+                            : (s === '2022-23' ? MATCHES_DB_2223 + EXTRA_MATCHES_2223 : null)));
                 if(dbData) all = all.concat(parseMatchesDB(dbData, s));
             });
 
@@ -6634,6 +7409,7 @@ function hexToRgba(hex, alpha = 1) {
 
 function renderFoulsByMatchdayChart() {
     const meta = [
+        { key: '2022-23', label: '22/23', color: '#f472b6' },
         { key: '2023-24', label: '23/24', color: '#22c55e' },
         { key: '2024-25', label: '24/25', color: '#3b82f6' },
         { key: '2025-26', label: '25/26', color: '#eab308' },
@@ -7109,24 +7885,30 @@ function updateRadarChart() {
     chartRadar.render();
 }
 
-const HEATMAP_SEASONS = {
-    '2024-25': {
-        label: '2024/25',
-        dataset: MATCHES_DB_2425,
-        orderedTeams: [
-            "Monza","Venezia","Empoli","Lecce","Parma","Cagliari","Verona","Genoa","Udinese","Torino",
-            "Como","Bologna","Milan","Lazio","Fiorentina","Roma","Juventus","Atalanta","Inter","Napoli"
-        ]
-    },
-    '2023-24': {
-        label: '2023/24',
-        dataset: MATCHES_DB_2324,
-        orderedTeams: [
-            "Salernitana","Sassuolo","Frosinone","Empoli","Cagliari","Udinese","Lecce","Verona","Monza","Genoa",
-            "Napoli","Torino","Fiorentina","Lazio","Roma","Bologna","Atalanta","Juventus","Milan","Inter"
-        ]
-    }
-};
+    const HEATMAP_SEASONS = {
+        '2024-25': {
+            label: '2024/25',
+            dataset: MATCHES_DB_2425,
+            orderedTeams: [
+                "Monza","Venezia","Empoli","Lecce","Parma","Cagliari","Verona","Genoa","Udinese","Torino",
+                "Como","Bologna","Milan","Lazio","Fiorentina","Roma","Juventus","Atalanta","Inter","Napoli"
+            ]
+        },
+        '2023-24': {
+            label: '2023/24',
+            dataset: MATCHES_DB_2324,
+            orderedTeams: [
+                "Salernitana","Sassuolo","Frosinone","Empoli","Cagliari","Udinese","Lecce","Verona","Monza","Genoa",
+                "Napoli","Torino","Fiorentina","Lazio","Roma","Bologna","Atalanta","Juventus","Milan","Inter"
+            ]
+        },
+        '2022-23': {
+            label: '2022/23',
+            dataset: MATCHES_DB_2223,
+            orderedTeams: ["Sampdoria","Cremonese","Spezia","Verona","Lecce","Salernitana","Empoli","Sassuolo","Udinese","Monza",
+                "Torino","Bologna","Fiorentina","Juventus","Roma","Atalanta","Milan","Inter","Lazio","Napoli"]
+        }
+    };
 
 // ===========================================
 // PARSER STAGIONE (TEMPO EFFETTIVO + FALLI)
@@ -8229,7 +9011,7 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
         function toggleAllSeasons() {
             resetMatchesPaging();
             
-            const all = ['2025-26', '2024-25', '2023-24'];
+            const all = ['2025-26', '2024-25', '2023-24', '2022-23'];
             activeSeasons = activeSeasons.length === all.length ? [] : [...all];
             updateSeasonButtonsUI();
             aggregateData();
@@ -8252,7 +9034,7 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
                 const is2425 = s === '2024-25';
                 const isSelected = activeSeasons.includes(s);
 
-                const shouldShowNewBadge = viewsWithNewHistorical.includes(currentView) && s === '2023-24';
+                const shouldShowNewBadge = viewsWithNewHistorical.includes(currentView) && (s === '2023-24' || s === '2022-23');
 
                 if (newBadge) {
                     if (shouldShowNewBadge) newBadge.classList.remove('hidden');
