@@ -6353,7 +6353,12 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
                     tickAmount: 7,
                     labels: { style: { colors: '#cbd5e1' } }
                 },
-                yaxis: { labels: { style: { colors: '#cbd5e1' } } }
+                yaxis: {
+                    min: 90,
+                    max: 112,
+                    tickAmount: 11,
+                    labels: { style: { colors: '#cbd5e1' } }
+                }
             }
         );
         chartEffTotalCorrelation.render();
@@ -6375,23 +6380,19 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
     const X_MAX = 68;
     const X_TICK_STEP = 4;
 
-    const xVals = validBase.map(m => +(m.effectiveTimeSec / 60).toFixed(2));
-    const yVals = validBase.map(m => +(m.totalTimeSec / 60).toFixed(2));
-
-    const yMinData = yVals.length ? Math.min(...yVals) : 90;
-    const yMaxData = yVals.length ? Math.max(...yVals) : 110;
+    const Y_MIN = 90;
+    const Y_MAX = 112;
+    const Y_TICK_STEP = 2;
 
     const xMin = X_MIN;
     const xMax = X_MAX;
-    const yMin = Math.floor(yMinData - 2);
-    const yMax = Math.ceil(yMaxData + 2);
 
     const avgEff = validBase.length
         ? +(validBase.reduce((sum, m) => sum + m.effectiveTimeSec, 0) / validBase.length / 60).toFixed(2)
         : ((xMin + xMax) / 2);
     const avgTotal = validBase.length
         ? +(validBase.reduce((sum, m) => sum + m.totalTimeSec, 0) / validBase.length / 60).toFixed(2)
-        : ((yMin + yMax) / 2);
+        : ((Y_MIN + Y_MAX) / 2);
 
     const options = {
         series,
@@ -6443,8 +6444,9 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
         },
         yaxis: {
             title: { text: 'Tempo Totale (min)', style: { color: '#94a3b8' } },
-            min: yMin,
-            max: yMax,
+            min: Y_MIN,
+            max: Y_MAX,
+            tickAmount: (Y_MAX - Y_MIN) / Y_TICK_STEP,
             tickAmount: 6,
             labels: {
                 style: { colors: '#cbd5e1' },
@@ -6485,6 +6487,9 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
             }]
         },
         tooltip: {
+            x: {
+                formatter: (val) => Number(val).toFixed(2)
+            },
             custom: ({ seriesIndex, dataPointIndex, w }) => {
                 const d = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
                 if (!d) return '';
