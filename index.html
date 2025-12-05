@@ -1205,9 +1205,6 @@ html, body {
                 <p class="text-xs text-slate-400">Shortcut rapidi per raggiungere ogni visual senza scroll infinito.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-ritmo')">
-                    <i class="fa-solid fa-arrow-down"></i> Ritmo vs Interruzioni
-                </button>
                 <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-efftot')">
                     <i class="fa-solid fa-arrow-down"></i> Tempo Effettivo vs Totale
                 </button>
@@ -1424,24 +1421,24 @@ html, body {
             <div id="analytics-refs-wrapper" class="space-y-6">
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div id="analytics-section-ritmo" class="pro-card rounded-lg p-4 lg:col-span-1">
+                <div id="analytics-section-efftot" class="pro-card rounded-lg p-4 lg:col-span-2">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-green-500"></i> Ritmo vs Interruzioni</span>
-                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-ritmo">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-stopwatch text-yellow-500"></i> Tempo Effettivo vs Totale</span>
+                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-effTot">
                             <span class="text-slate-400">Stagioni:</span>
-                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('ritmo','2025-26', this)">25/26</button>
-                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('ritmo','2024-25', this)">24/25</button>
-                            <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('ritmo','2023-24', this)">23/24</button>
-                        </div>
-                        <div class="relative w-full sm:w-1/3 min-w-[180px]">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-                            <input type="text" id="analyticsSearchRitmo" oninput="debounceRenderAnalytics()" placeholder="Filtra per squadra..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
+                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('effTot','2025-26', this)">25/26</button>
+                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('effTot','2024-25', this)">24/25</button>
+                            <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('effTot','2023-24', this)">23/24</button>
                         </div>
                     </h3>
-                    <div id="chart-match-scatter" class="w-full h-[350px] relative">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div class="relative w-full sm:w-1/3 min-w-[220px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                            <input type="text" id="analyticsSearchEffTot" oninput="debounceRenderAnalytics()" placeholder="Filtra per squadra..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
                         </div>
-
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] text-slate-300">
+                    </div>
+                    <div id="chart-eff-total" class="w-full h-[350px] relative"></div>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] text-slate-300">
                         <div class="flex items-start gap-3">
                             <div class="quadrant-mini">
                                 <div class="quadrant-fill" style="left:0; top:0; width:50%; height:50%; background:white;"></div>
@@ -1467,20 +1464,6 @@ html, body {
                             <p><span class="font-bold text-slate-100">Spezzettato</span><br>Molti falli e tempo effettivo basso</p>
                         </div>
                     </div>
-                </div>
-
-                <div id="analytics-section-efftot" class="pro-card rounded-lg p-4 lg:col-span-1">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex flex-wrap gap-3 items-center justify-between">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-stopwatch text-yellow-500"></i> Tempo Effettivo vs Totale</span>
-                        <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-efftot">
-                            <span class="text-slate-400">Stagioni:</span>
-                            <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('effTot','2025-26', this)">25/26</button>
-                            <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('effTot','2024-25', this)">24/25</button>
-                            <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('effTot','2023-24', this)">23/24</button>
-                        </div>
-                    </h3>
-                    <div id="chart-eff-total" class="w-full h-[350px] relative"></div>
-                    <p class="mt-3 text-[11px] text-slate-400">Ogni punto rappresenta una partita: ascissa = minuti di tempo effettivo, ordinata = minuti totali giocati.</p>
                 </div>
             </div>
 
@@ -5943,7 +5926,7 @@ if(q && result.length && currentView !== 'analytics') {
         function renderAnalyticsWithFilters() {
             // 1. Applica filtri locali ai dati globali
             const qSeverity = document.getElementById('analyticsSearchSeverity')?.value?.toLowerCase() || '';
-            const qRitmo = document.getElementById('analyticsSearchRitmo')?.value?.toLowerCase() || '';
+            const qEffTot = document.getElementById('analyticsSearchEffTot')?.value?.toLowerCase() || '';
 
             const severitySeasons = analyticsSeasonFilters.severity || ANALYTICS_SEASON_DEFAULT;
             const radarSeasons = analyticsSeasonFilters.refRadar || ANALYTICS_SEASON_DEFAULT;
@@ -5968,20 +5951,14 @@ if(q && result.length && currentView !== 'analytics') {
 
             radarData = radarData.filter(r => getRefereeSurname(r.name).toLowerCase().includes(qSeverity));
 
-            const ritmoMatches = processMatchesViewData(ritmoSeasons);
-            const filteredMatchData = ritmoMatches.filter(m =>
-                m.match.toLowerCase().includes(qRitmo)
-            );
-
             const effMatches = processMatchesViewData(effSeasons);
             const effTotMatches = processMatchesViewData(effTotSeasons);
             const filteredEffTotData = effTotMatches.filter(m =>
-                m.match.toLowerCase().includes(qRitmo)
+                m.match.toLowerCase().includes(qEffTot)
             );
 
             // Aggiorna i dataset globali usati dai grafici radar e scatter
             currentAnalyticsData = radarData;
-            currentMatchData = ritmoMatches;
             refereeData = radarData;
 
             // Aggiorna la UI dei chip stagione
@@ -6007,7 +5984,6 @@ if(q && result.length && currentView !== 'analytics') {
 
             // 2. Renderizza i grafici con i dati filtrati
             renderSeverityScatter(filteredRefData);
-            renderRitmoScatter(filteredMatchData, ritmoMatches, ritmoSeasons);
             renderEffVsTotalScatter(filteredEffTotData, effTotMatches, effTotSeasons);
             updateRadarChart();
             renderEffDistributionChart(effMatches); // Passiamo i dati delle partite
