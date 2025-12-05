@@ -6347,7 +6347,12 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
                     align: 'center',
                     style: { color: '#cbd5e1', fontSize: '12px' }
                 },
-                xaxis: { labels: { style: { colors: '#cbd5e1' } } },
+                xaxis: {
+                    min: 40,
+                    max: 68,
+                    tickAmount: 7,
+                    labels: { style: { colors: '#cbd5e1' } }
+                },
                 yaxis: { labels: { style: { colors: '#cbd5e1' } } }
             }
         );
@@ -6366,16 +6371,18 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
             }))
     }));
 
+    const X_MIN = 40;
+    const X_MAX = 68;
+    const X_TICK_STEP = 4;
+
     const xVals = validBase.map(m => +(m.effectiveTimeSec / 60).toFixed(2));
     const yVals = validBase.map(m => +(m.totalTimeSec / 60).toFixed(2));
 
-    const xMinData = xVals.length ? Math.min(...xVals) : 45;
-    const xMaxData = xVals.length ? Math.max(...xVals) : 65;
     const yMinData = yVals.length ? Math.min(...yVals) : 90;
     const yMaxData = yVals.length ? Math.max(...yVals) : 110;
 
-    const xMin = Math.floor(xMinData - 1);
-    const xMax = Math.ceil(xMaxData + 1);
+    const xMin = X_MIN;
+    const xMax = X_MAX;
     const yMin = Math.floor(yMinData - 2);
     const yMax = Math.ceil(yMaxData + 2);
 
@@ -6402,7 +6409,7 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
         markers: {
             size: 2.5,
             strokeWidth: 0,
-            hover: { size: 4 }
+            hover: { size: 3.2 }
         },
         responsive: [
             {
@@ -6426,7 +6433,7 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
             title: { text: 'Tempo Effettivo (min)', style: { color: '#94a3b8' } },
             min: xMin,
             max: xMax,
-            tickAmount: 6,
+            tickAmount: (X_MAX - X_MIN) / X_TICK_STEP,
             labels: {
                 style: { colors: '#cbd5e1' },
                 formatter: (val) => val.toFixed(0)
