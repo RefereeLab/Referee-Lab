@@ -4391,7 +4391,7 @@ Feliciani	52,25'
 Ayroldi	48,46
 Fabbri	44,43
 Maresca	58,27
-Caputi	48,59
+Ferrieri Caputi	48,59
 Marchetti	48,53
 Marinelli	53,36
 Tremolada	56,00
@@ -4493,7 +4493,7 @@ Feliciani	56,22
 Doveri	62,27
 La Penna	59,23
 Marcenaro	53,58
-Caputi	55,55
+Ferrieri Caputi	55,55
 Di Bello	54,05
 Guida	51,42
 Ayroldi	54,05
@@ -4859,7 +4859,7 @@ Mariani	56,39
 Tremolada	51,07
 Dionisi	56,24
 Massa	51,39
-giua	61,34
+Giua	61,34
 Aureliano	59,31
 Feliciani	58,07
 Pairetto	55,07
@@ -5085,7 +5085,7 @@ La Penna	55,41
 Fabbri	52,04
 Massa	51,32
 Fourneau	60,21
-Dimarco	50,47
+Di Marco	50,47
 Sacchi	51,43
 Pairetto	60,48
 Feliciani	61,03
@@ -5141,7 +5141,7 @@ Ayroldi	53,52
 Prontera	46,55
 Santoro	51,39
 Ferrieri Caputi	56,01
-Dimarco	51,01
+Di Marco	51,01
 Dionisi	61,57
 Sozza	57,03
 Tremolada	59,18
@@ -5254,7 +5254,7 @@ Fabbri	55,07
 Chiffi	49,27
 Marinelli	55,59
 Valeri	48,44
-march	50,56
+Marchetti	50,56
 Sozza	48,45
 Abisso	57,19
 Irrati	54,25
@@ -5901,7 +5901,7 @@ const PRESET_RADAR_REFEREES = [
 ];
 
 
-        const REFEREES_2425 = ["Feliciani", "Ayroldi", "Fabbri", "Maresca", "Caputi", "Marchetti", "Marinelli", "Tremolada", "Massa", "Marcenaro", "Sacchi", "Doveri", "Di Marco", "Mariani", "Rapuano", "Sozza", "Pairetto", "Zufferli", "Di Bello", "Giua", "Colombo", "Guida", "Prontera", "Piccinini", "La Penna", "Abisso", "Aureliano", "Manganiello", "Fourneau", "Chiffi", "Dionisi", "Collu", "Massimi", "Bonacina", "Cosso", "Perenzoni", "Ghersini", "Monaldi", "Rutella"];
+        const REFEREES_2425 = ["Feliciani", "Ayroldi", "Fabbri", "Maresca", "Ferrieri Caputi", "Marchetti", "Marinelli", "Tremolada", "Massa", "Marcenaro", "Sacchi", "Doveri", "Di Marco", "Mariani", "Rapuano", "Sozza", "Pairetto", "Zufferli", "Di Bello", "Giua", "Colombo", "Guida", "Prontera", "Piccinini", "La Penna", "Abisso", "Aureliano", "Manganiello", "Fourneau", "Chiffi", "Dionisi", "Collu", "Massimi", "Bonacina", "Cosso", "Perenzoni", "Ghersini", "Monaldi", "Rutella"];
         const REFEREES_2526 = ["Massa", "Ayroldi", "Collu", "Zufferli", "Sozza", "Manganiello", "Arena", "Marcenaro", "Tremolada", "La Penna", "Guida", "Marinelli", "Doveri", "Mariani", "Bonacina", "Chiffi", "Abisso", "Marchetti", "Crezzini", "Fourneau", "Colombo", "Piccinini", "Rapuano", "Feliciani", "Fabbri", "Dionisi", "Di Bello", "Pairetto", "Sacchi", "Pezzuto", "Di Marco", "Galipò", "Perenzoni", "Ghersini", "Rutella", "Camplone", "Monaldi", "Cosso", "Santoro", "Scatena"];
         const ACTIVE_EXCEPTIONS = ["Maresca", "Caputi", "Ferrieri Caputi"];
         const HISTORICAL_SURNAMES = ["Irrati", "Orsato", "Valeri", "Pasqua", "Calvarese", "Giacomelli"];
@@ -8557,7 +8557,7 @@ window.addEventListener('resize', debounceRenderAnalytics);
 tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTALE</td><td class="text-center p-2 text-white">${tM}</td><td class="text-center p-2">${(tF/tM).toFixed(2)}</td><td class="text-center p-2 text-yellow-500 font-bold">${tY}</td><td class="text-center p-2 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-2 text-red-500 font-bold">${tR}</td><td class="text-center p-2 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-center p-2">${(tP/tM).toFixed(2)}</td></tr>`;
             } 
             else if (currentView === 'playingTime') {
-                const showTot = activeSeasons.some(season => ['2025-26', '2024-25', '2023-24'].includes(season));
+                const showTot = activeSeasons.some(season => ['2025-26', '2024-25', '2023-24', '2022-23'].includes(season));
                 thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Media T.E.', 'avgEffSec', 'text-center text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-center text-blue-400') : ''}${th('Media % T.Eff', 'effRatio', 'text-center text-yellow-400')}<th class="w-10"></th></tr>`;
                 data.forEach((r, i) => {
                     tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-bold text-green-400 font-mono text-base">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium text-blue-400 font-mono">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono text-yellow-400 font-semibold">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
