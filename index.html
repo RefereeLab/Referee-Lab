@@ -1443,25 +1443,25 @@ html, body {
                             <div class="quadrant-mini">
                                 <div class="quadrant-fill" style="left:0; top:0; width:50%; height:50%; background:white;"></div>
                             </div>
-                            <p><span class="font-bold text-slate-100">Fluidità</span><br>Tempo Effettivo alto e pochi falli</p>
+                            <p><span class="font-bold text-slate-100">Spezzettato</span><br>Basso Tempo Effettivo nonostante una durata molto lunga</p>
                         </div>
                         <div class="flex items-start gap-3">
                             <div class="quadrant-mini">
                                 <div class="quadrant-fill" style="right:0; top:0; width:50%; height:50%; background:white;"></div>
                             </div>
-                            <p><span class="font-bold text-slate-100">Intenso</span><br>Tempo effettivo alto nonostante molti falli</p>
+                            <p><span class="font-bold text-slate-100">Intenso</span><br>Alto Tempo Effettivo in una partita molto lunga</p>
                         </div>
                         <div class="flex items-start gap-3">
                             <div class="quadrant-mini">
                                 <div class="quadrant-fill" style="left:0; bottom:0; width:50%; height:50%; background:white;"></div>
                             </div>
-                            <p><span class="font-bold text-slate-100">Lento</span><br>Pochi falli ma tempo effettivo basso</p>
+                            <p><span class="font-bold text-slate-100">Lento</span><br>Basso Tempo Effettivo e durata partita breve</p>
                         </div>
                         <div class="flex items-start gap-3">
                             <div class="quadrant-mini">
                                 <div class="quadrant-fill" style="right:0; bottom:0; width:50%; height:50%; background:white;"></div>
                             </div>
-                            <p><span class="font-bold text-slate-100">Spezzettato</span><br>Molti falli e tempo effettivo basso</p>
+                            <p><span class="font-bold text-slate-100">Fluidità</span><br>Alto Tempo Effettivo, poche interruzioni (Tempo Totale basso)</p>
                         </div>
                     </div>
                 </div>
@@ -6378,7 +6378,7 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
 
     const X_MIN = 40;
     const X_MAX = 68;
-    const X_TICK_STEP = 4;
+    const X_TICK_STEP = 1;
 
     const Y_MIN = 90;
     const Y_MAX = 112;
@@ -6447,7 +6447,6 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
             min: Y_MIN,
             max: Y_MAX,
             tickAmount: (Y_MAX - Y_MIN) / Y_TICK_STEP,
-            tickAmount: 6,
             labels: {
                 style: { colors: '#cbd5e1' },
                 formatter: (val) => val.toFixed(0)
