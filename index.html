@@ -389,7 +389,8 @@ html, body {
 
 .players-table td:nth-child(2),
 .players-table th:nth-child(2) {
-    min-width: 11rem;
+    min-width: 8.5rem;
+    max-width: 10rem;
 }
 
 .players-table td:nth-child(2),
@@ -9271,7 +9272,7 @@ function renderPlayersTable() {
         tr.title = p.team ? `Squadra: ${p.team}` : 'Squadra non disponibile';
         tr.innerHTML = `
             <td class="p-2 font-mono text-xs text-slate-400 sticky-col">${index + 1}</td>
-            <td class="p-2 text-left whitespace-nowrap sticky-col sticky-col-name">${formatPlayerName(p.name)}${logoImg}</td>
+            <td class="p-2 text-left whitespace-nowrap sticky-col sticky-col-name max-w-[10rem] truncate">${formatPlayerName(p.name)}${logoImg}</td>
 
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90, 1)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.yellow, rateDigits)}</td>
@@ -9777,8 +9778,12 @@ function togglePlayerRole(role) {
     renderPlayersTable();
 }
 function formatPlayerName(fullName) {
-    const parts = (fullName || '').trim().split(/\s+/);
-    if (!parts.length) return '';
+    const parts = (fullName || '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (!parts.length) return 'Nome non disponibile';
 
     const surnamePrefixes = new Set([
         'de', 'del', 'della', 'dello', 'dei', 'degli', 'delle',
@@ -9807,7 +9812,7 @@ function formatPlayerName(fullName) {
 
     const givenNames = parts.slice(0, idx + 1).join(' ');
 
-    return `${surnameParts.join(' ')} `;
+    return `${surnameParts.join(' ')}${givenNames ? ` ${givenNames}` : ''}`;
 }
 
 function formatPassingValue(val, digits = 2) {
