@@ -380,6 +380,7 @@ html, body {
     text-align: center;
 }
 
+/* Column sizing */
 .players-table td:first-child,
 .players-table th:first-child {
     min-width: 3rem;
@@ -411,8 +412,10 @@ html, body {
         
         .sticky-head { position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .sticky-col { position: sticky; left: 0; z-index: 10; background-color: #0f172a; border-right: 1px solid #1e293b; }
-        .pro-table tr:hover .sticky-col { background-color: #1e293b; }
-
+        .sticky-col-name { left: 3rem; z-index: 11; }
+        #players-table th.sticky-col, #players-table th.sticky-col-name { background-color: #111827; }
+        #players-table td.sticky-col, #players-table td.sticky-col-name { background-color: #0f172a; }
+        .pro-table tr:hover .sticky-col, .pro-table tr:hover .sticky-col-name { background-color: #1e293b; }
         /* Footer Special Style */
         #tableFooter tr td {
             border-top: 2px solid #EAB308;
@@ -1369,8 +1372,8 @@ html, body {
                     <table class="w-full text-[11px] text-slate-300 pro-table players-table text-center" id="players-table">
                                                 <thead class="bg-slate-800 text-slate-300">
                             <tr>
-                                <th class="p-2 w-10" title="Posizione in classifica dinamica rispetto all'ordinamento scelto">#</th>
-                                <th class="p-2 cursor-pointer select-none text-left whitespace-nowrap" data-sort-col="name" onclick="handlePlayersSort('name')" title="Cognome in evidenza e nome completo del giocatore">
+                                <th class="p-2 w-10 sticky-col" title="Posizione in classifica dinamica rispetto all'ordinamento scelto">#</th>
+                                <th class="p-2 cursor-pointer select-none text-left whitespace-nowrap sticky-col sticky-col-name" data-sort-col="name" onclick="handlePlayersSort('name')" title="Cognome in evidenza e nome completo del giocatore">
                                     <span class="players-col-label">Giocatore</span> <span class="players-sort-icon text-yellow-400"></span>
                                 </th>
                                 <th class="p-2 cursor-pointer select-none whitespace-nowrap" data-sort-col="n90" onclick="handlePlayersSort('n90')" title="Numero di presenze espresse come partite intere da 90 minuti">
@@ -9267,8 +9270,9 @@ function renderPlayersTable() {
 
         tr.title = p.team ? `Squadra: ${p.team}` : 'Squadra non disponibile';
         tr.innerHTML = `
-            <td class="p-2 font-mono text-xs text-slate-400">${index + 1}</td>
-            <td class="p-2 text-left whitespace-nowrap">${formatPlayerName(p.name)}${logoImg}</td>
+            <td class="p-2 font-mono text-xs text-slate-400 sticky-col">${index + 1}</td>
+            <td class="p-2 text-left whitespace-nowrap sticky-col sticky-col-name">${formatPlayerName(p.name)}${logoImg}</td>
+
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.n90, 1)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.yellow, rateDigits)}</td>
             <td class="p-2 whitespace-nowrap">${formatPassingValue(stats.fouls, rateDigits)}</td>
@@ -10020,5 +10024,6 @@ updateRadarSelectOptions();
     </script>
 </body>
 </html>
+
 
 
