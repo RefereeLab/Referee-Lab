@@ -5993,8 +5993,9 @@ let refereeData = [];
 let chartRadar = null;
 
         const QUIZ_LENGTH = 10;
-        const QUIZ_RECENT_SEASONS = ANALYTICS_SEASON_OPTIONS.slice(0, 2);
+        const QUIZ_SEASON_WINDOWS = ANALYTICS_SEASON_OPTIONS.map((_, idx) => ANALYTICS_SEASON_OPTIONS.slice(0, idx + 1));
         const QUIZ_LATEST_SEASON = ANALYTICS_SEASON_OPTIONS[0];
+        const QUIZ_MIN_REF_MATCHES = 5;
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i -= 1) {
@@ -6015,7 +6016,7 @@ let chartRadar = null;
             return answer === -1 ? null : { options, answer };
         }
 
-        function buildTopEntityQuestion({ items, metricAccessor, labelAccessor, question, order = 'desc' }) {
+        function buildTopEntityQuestion({ items, metricAccessor, labelAccessor, question, order = 'desc', valueFormatter, seasonLabel }) {
             const scored = (items || [])
                 .map(item => ({ item, value: metricAccessor(item), label: labelAccessor(item) }))
                 .filter(entry => Number.isFinite(entry.value) && entry.label);
@@ -6029,12 +6030,23 @@ let chartRadar = null;
 
             if (uniqueLabels.length < 4 || !sorted.length) return null;
 
-            const correctLabel = sorted[0].label;
+            const topEntry = sorted[0];
+            const correctLabel = topEntry.label;
             const optionSet = buildOptionsFromCandidates(uniqueLabels, correctLabel);
             if (!optionSet) return null;
 
+            const questionText = typeof question === 'function'
+                ? question({ topValue: topEntry.value, topLabel: correctLabel, seasonLabel })
+                : question;
+
+            if (!questionText) return null;
+
+            const finalQuestion = valueFormatter && typeof valueFormatter === 'function' && typeof question !== 'function'
+                ? `${questionText} (${valueFormatter(topEntry.value)})`
+                : questionText;
+
             return {
-                question,
+                question: finalQuestion,
                 options: optionSet.options,
                 answer: optionSet.answer,
             };
@@ -6042,77 +6054,105 @@ let chartRadar = null;
 
         function buildDynamicQuizQuestions() {
             const questions = [];
-            const recentMatches = processMatchesViewData(QUIZ_RECENT_SEASONS);
-            const recentRefs = processCombinedStats(QUIZ_RECENT_SEASONS);
             const latestTeams = processTeamsData([QUIZ_LATEST_SEASON]);
+            const seasonWindows = QUIZ_SEASON_WINDOWS.length ? QUIZ_SEASON_WINDOWS : [ANALYTICS_SEASON_OPTIONS];
 
             const matchLabel = m => `${m.match} (${m.season})`;
             const effRatio = m => Number.isFinite(m.effRatio) ? m.effRatio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec);
 
-            const builders = [
-                buildTopEntityQuestion({
-                    items: recentMatches,
-                    metricAccessor: m => m.effectiveTimeSec,
-                    labelAccessor: matchLabel,
-                    question: 'Quale partita ha avuto il maggior tempo effettivo nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentMatches,
-                    metricAccessor: m => m.totalTimeSec,
-                    labelAccessor: matchLabel,
-                    question: 'Quale partita ha avuto il maggior tempo totale nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentMatches,
-                    metricAccessor: m => effRatio(m),
-                    labelAccessor: matchLabel,
-                    question: 'Quale partita ha registrato la percentuale di tempo effettivo più alta nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentMatches,
-                    metricAccessor: m => m.fouls,
-                    labelAccessor: matchLabel,
-                    question: 'Quale partita ha avuto più falli fischiati nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentRefs,
-                    metricAccessor: r => r.avgFouls,
-                    labelAccessor: r => r.name,
-                    question: 'Quale arbitro ha la media falli più alta nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentRefs,
-                    metricAccessor: r => r.avgYellows,
-                    labelAccessor: r => r.name,
-                    question: 'Quale arbitro estrae più cartellini gialli in media nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentRefs,
-                    metricAccessor: r => r.avgPens,
-                    labelAccessor: r => r.name,
-                    question: 'Quale arbitro ha assegnato più rigori in media nelle ultime 2 stagioni?'
-                }),
-                buildTopEntityQuestion({
-                    items: recentRefs,
-                    metricAccessor: r => r.avgEffSec,
-                    labelAccessor: r => r.name,
-                    question: 'Quale arbitro gestisce le gare con il maggior tempo effettivo medio nelle ultime 2 stagioni?'
-                }),
+            seasonWindows.forEach(seasons => {
+                const seasonLabel = formatSeasonSpanLabel(seasons);
+                const recentMatches = processMatchesViewData(seasons);
+                const recentRefs = processCombinedStats(seasons).filter(r => (r.matches || 0) >= QUIZ_MIN_REF_MATCHES);
+
+                const builders = [
+                    buildTopEntityQuestion({
+                        items: recentMatches,
+                        metricAccessor: m => m.effectiveTimeSec,
+                        labelAccessor: matchLabel,
+                        valueFormatter: formatSecondsToTime,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale partita ha avuto il maggior tempo effettivo (${formatSecondsToTime(topValue)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentMatches,
+                        metricAccessor: m => m.totalTimeSec,
+                        labelAccessor: matchLabel,
+                        valueFormatter: formatSecondsToTime,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale partita ha avuto il maggior tempo totale (${formatSecondsToTime(topValue)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentMatches,
+                        metricAccessor: m => effRatio(m),
+                        labelAccessor: matchLabel,
+                        valueFormatter: formatEffRatio,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale partita ha registrato la percentuale di tempo effettivo più alta (${formatEffRatio(topValue)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentMatches,
+                        metricAccessor: m => m.fouls,
+                        labelAccessor: matchLabel,
+                        valueFormatter: v => formatQuizNumber(v, 0),
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale partita ha avuto più falli fischiati (${formatQuizNumber(topValue, 0)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentRefs,
+                        metricAccessor: r => r.avgFouls,
+                        labelAccessor: r => r.name,
+                        valueFormatter: v => `${formatQuizNumber(v, 2)} falli`,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale arbitro ha la media falli più alta (${formatQuizNumber(topValue, 2)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentRefs,
+                        metricAccessor: r => r.avgYellows,
+                        labelAccessor: r => r.name,
+                        valueFormatter: v => `${formatQuizNumber(v, 2)} gialli`,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale arbitro estrae più cartellini gialli in media (${formatQuizNumber(topValue, 2)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentRefs,
+                        metricAccessor: r => r.avgPens,
+                        labelAccessor: r => r.name,
+                        valueFormatter: v => `${formatQuizNumber(v, 2)} rigori`,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale arbitro ha assegnato più rigori in media (${formatQuizNumber(topValue, 2)}) ${seasonLabel}?`
+                    }),
+                    buildTopEntityQuestion({
+                        items: recentRefs,
+                        metricAccessor: r => r.avgEffSec,
+                        labelAccessor: r => r.name,
+                        valueFormatter: formatSecondsToTime,
+                        seasonLabel,
+                        question: ({ topValue }) => `Quale arbitro gestisce le gare con il maggior tempo effettivo medio (${formatSecondsToTime(topValue)}) ${seasonLabel}?`
+                    })
+                ];
+
+                builders.filter(Boolean).forEach(q => questions.push(q));
+            });
+
+            const teamQuestions = [
                 buildTopEntityQuestion({
                     items: latestTeams,
                     metricAccessor: t => t.avgEff,
                     labelAccessor: t => t.name,
-                    question: `Quale squadra ha la media tempo effettivo più alta in ${QUIZ_LATEST_SEASON}?`
+                    valueFormatter: formatSecondsToTime,
+                    question: ({ topValue }) => `Quale squadra ha la media tempo effettivo più alta (${formatSecondsToTime(topValue)}) in ${QUIZ_LATEST_SEASON}?`
                 }),
                 buildTopEntityQuestion({
                     items: latestTeams,
                     metricAccessor: t => t.avgFouls,
                     labelAccessor: t => t.name,
-                    question: `Quale squadra registra più falli medi a partita in ${QUIZ_LATEST_SEASON}?`
+                    valueFormatter: v => `${formatQuizNumber(v, 2)} falli`,
+                    question: ({ topValue }) => `Quale squadra registra più falli medi a partita (${formatQuizNumber(topValue, 2)}) in ${QUIZ_LATEST_SEASON}?`
                 })
             ];
 
-            builders.filter(Boolean).forEach(q => questions.push(q));
+            teamQuestions.filter(Boolean).forEach(q => questions.push(q));
             return questions;
         }
 
@@ -6369,6 +6409,10 @@ function getTeamLogo(teamName) {
             return `${m}'${s.toString().padStart(2, '0')}''`;
         }
 
+        function formatQuizNumber(value, digits = 2) {
+            return Number.isFinite(value) ? value.toFixed(digits).replace('.', ',') : '-';
+        }
+
         function calculateEffRatio(effSec, totSec) {
             if (!Number.isFinite(effSec) || !Number.isFinite(totSec) || totSec === 0) return NaN;
             return (effSec / totSec) * 100;
@@ -6376,6 +6420,13 @@ function getTeamLogo(teamName) {
 
         function formatEffRatio(value) {
             return Number.isFinite(value) ? `${value.toFixed(1)}%` : '-';
+        }
+
+        function formatSeasonSpanLabel(seasons) {
+            if (!Array.isArray(seasons)) return '';
+            const count = seasons.length;
+            if (count === 1) return "nell'ultima stagione";
+            return `nelle ultime ${count} stagioni`;
         }
 
         function parseItalianFloat(str) {
