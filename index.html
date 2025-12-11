@@ -6141,14 +6141,14 @@ let chartRadar = null;
                     metricAccessor: t => t.avgEff,
                     labelAccessor: t => t.name,
                     valueFormatter: formatSecondsToTime,
-                    question: ({ topValue }) => `Quale squadra ha la media tempo effettivo più alta (${formatSecondsToTime(topValue)}) in ${QUIZ_LATEST_SEASON}?`
+                    question: ({ topValue }) => `Le partite di quale squadra hanno il tempo effettivo medio più alto (${formatSecondsToTime(topValue)}) nella stagione ${QUIZ_LATEST_SEASON}?`
                 }),
                 buildTopEntityQuestion({
                     items: latestTeams,
                     metricAccessor: t => t.avgFouls,
                     labelAccessor: t => t.name,
                     valueFormatter: v => `${formatQuizNumber(v, 2)} falli`,
-                    question: ({ topValue }) => `Quale squadra registra più falli medi a partita (${formatQuizNumber(topValue, 2)}) in ${QUIZ_LATEST_SEASON}?`
+                    question: ({ topValue }) => `Le partite di quale squadra registrano più falli in media (${formatQuizNumber(topValue, 2)}) nella stagione ${QUIZ_LATEST_SEASON}?`
                 })
             ];
 
@@ -6425,7 +6425,7 @@ function getTeamLogo(teamName) {
         function formatSeasonSpanLabel(seasons) {
             if (!Array.isArray(seasons)) return '';
             const count = seasons.length;
-            if (count === 1) return "nell'ultima stagione";
+            if (count === 1) return `nella stagione ${seasons[0]}`;
             return `nelle ultime ${count} stagioni`;
         }
 
