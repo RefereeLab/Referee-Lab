@@ -5982,6 +5982,7 @@ Guida	55,59'
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
         let debounceTimer; // Timer for debounce optimization
+        let scheduledAggregateFrame = null; // R.A.F. slot for view re-rendering
         
         // Paging variables for 'matches' view
         let matchesDataAll = [];
@@ -9329,9 +9330,20 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             if (!section) return;
 
             section.classList.remove('fade-in-soft', 'view-transitioning');
-            // force reflow to restart animation
-            void section.offsetWidth;
-            section.classList.add('fade-in-soft', 'view-transitioning');
+            if (section._animationFrame) cancelAnimationFrame(section._animationFrame);
+
+            section._animationFrame = requestAnimationFrame(() => {
+                section.classList.add('fade-in-soft', 'view-transitioning');
+            });
+        }
+
+        function scheduleAggregateData() {
+            if (scheduledAggregateFrame) cancelAnimationFrame(scheduledAggregateFrame);
+
+            scheduledAggregateFrame = requestAnimationFrame(() => {
+                aggregateData();
+                scheduledAggregateFrame = null;
+            });
         }
 
         function pulseNavigation(view) {
@@ -9542,7 +9554,8 @@ const quizView      = document.getElementById('quiz-view');
             if(view === 'teams') { sortColumn = 'matches'; sortDirection = 'desc'; } // Nuovo default per squadre
 
             updateSeasonButtonsUI();
-            aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
+            // Bump rendering to next frame to avoid layout thrash while toggling le viste
+            scheduleAggregateData();
 
             if (updateHistory) updateHistoryState(view, { replace: replaceHistory });
         }
