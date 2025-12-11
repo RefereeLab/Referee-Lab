@@ -196,25 +196,70 @@ html, body {
         .interactive-surface {
             position: relative;
             overflow: hidden;
-            transition: transform 0.15s ease, box-shadow 0.2s ease;
-            will-change: transform;
+            transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.3s ease;
+            will-change: transform, box-shadow;
+            isolation: isolate;
+        }
+
+        .interactive-surface::before {
+            content: "";
+            position: absolute;
+            inset: -120%;
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.16), transparent 50%);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .interactive-surface:active {
             transform: translateY(1px) scale(0.995);
         }
 
+        .interactive-surface.click-energize {
+            box-shadow: 0 10px 30px -16px rgba(234, 179, 8, 0.6), 0 0 0 2px rgba(234, 179, 8, 0.16);
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        .interactive-surface.click-energize::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+
         .ripple {
             position: absolute;
             border-radius: 9999px;
             transform: scale(0);
-            animation: ripple 450ms ease-out;
-            background: rgba(234, 179, 8, 0.35);
+            animation: ripple 520ms ease-out;
+            background: radial-gradient(circle at center, rgba(250, 204, 21, 0.45), rgba(234, 179, 8, 0.25));
             pointer-events: none;
+            mix-blend-mode: screen;
         }
 
         @keyframes ripple {
-            to { transform: scale(3); opacity: 0; }
+            to { transform: scale(3.5); opacity: 0; }
+        }
+
+        .quiz-option {
+            transition: transform 0.18s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            transform: translateY(-2px) scale(1.005);
+            box-shadow: 0 12px 22px -16px rgba(0, 0, 0, 0.65);
+        }
+
+        .quiz-option.correct {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.12));
+            border-color: rgba(34, 197, 94, 0.6);
+            color: #bbf7d0;
+        }
+
+        .quiz-option.wrong {
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.18), rgba(248, 113, 113, 0.12));
+            border-color: rgba(248, 113, 113, 0.5);
+            color: #fecdd3;
         }
 
         /* Navigation Pills (Restored Style) */
@@ -1048,9 +1093,12 @@ html, body {
                         <button onclick="switchView('analytics')" id="nav-analytics" class="nav-pill flex items-center">
                             <i class="fa-solid fa-chart-pie mr-2"></i>Grafici <span class="badge-new">NEW</span>
                         </button>
-			<button onclick="switchView('players')" id="nav-players" class="nav-pill">
-    			    <i class="fa-solid fa-user mr-2"></i>Giocatori 25/26
-			</button>
+                        <button onclick="switchView('players')" id="nav-players" class="nav-pill">
+                            <i class="fa-solid fa-user mr-2"></i>Giocatori 25/26
+                        </button>
+                        <button onclick="switchView('quiz')" id="nav-quiz" class="nav-pill">
+                            <i class="fa-solid fa-circle-question mr-2"></i>Quiz
+                        </button>
 
                     </div>
                 </div>
@@ -1069,6 +1117,9 @@ html, body {
                         </button>
                         <button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
                             <i class="fa-solid fa-user"></i>
+                        </button>
+                        <button onclick="switchView('quiz')" id="mob-nav-quiz" class="p-2 rounded text-slate-400">
+                            <i class="fa-solid fa-circle-question"></i>
                         </button>
 
                     </div>
@@ -1434,6 +1485,42 @@ html, body {
         </div>
     </div>
 </div>
+
+        <div id="quiz-view" class="hidden space-y-6 animate-fade-in">
+            <div class="pro-card rounded-lg p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Quiz — Cultura arbitri</h2>
+                        <p class="text-[11px] text-slate-400">Metti alla prova la tua conoscenza con domande ispirate alle statistiche e ai protagonisti di RefereeLab.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded border border-slate-800">
+                            <span class="font-semibold text-yellow-400">Punteggio:</span>
+                            <span id="quiz-score" class="font-mono text-white ml-1">0 / 10</span>
+                        </div>
+                        <button id="quiz-refresh" class="interactive-surface flex items-center gap-2 bg-yellow-500 text-slate-900 font-semibold text-sm px-4 py-2 rounded-lg shadow-glow hover:bg-yellow-400">
+                            <i class="fa-solid fa-rotate"></i> Nuovo quiz
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 text-xs text-slate-400">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
+                            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                            <span>10 domande casuali da un pool di 100+</span>
+                        </div>
+                        <div class="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-yellow-500"></i>
+                            <span>Feedback immediato su ogni risposta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz-questions" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+        </div>
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -5873,6 +5960,7 @@ Guida	55,59'
             matches: 'matches',
             teams: 'teams',
             players: 'players',
+            quiz: 'quiz',
         };
 
         // --- LOGIC SECTION ---
@@ -5903,6 +5991,223 @@ Guida	55,59'
         let currentMatchData = [];
 let refereeData = [];
 let chartRadar = null;
+
+        const QUIZ_LENGTH = 10;
+        const QUIZ_REFEREE_POOL = [
+            'Daniele Orsato', 'Davide Massa', 'Fabio Maresca', 'Michael Fabbri', 'Simone Sozza', 'Marco Di Bello', 'Luca Pairetto',
+            'Marco Guida', 'Rosario Abisso', 'Livio Marinelli', 'Ivano Pezzuto', 'Antonio Rapuano', 'Maurizio Mariani', 'Paolo Valeri',
+            'Daniele Doveri', 'Marco Piccinini', 'Juan Luca Sacchi', 'Gianluca Aureliano', 'Federico La Penna', 'Matteo Marchetti',
+            'Massimiliano Irrati', 'Gianluca Manganiello', 'Giovanni Ayroldi', 'Alberto Santoro', 'Matteo Gariglio', 'Riccardo Ros',
+            'Francesco Fourneau', 'Antonio Giua', 'Gianluca Rocchi', 'Luca Massimi', 'Luca Marinelli'
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i -= 1) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function buildQuizOptions(correct) {
+            const alternatives = QUIZ_REFEREE_POOL.filter(name => name !== correct);
+            shuffleArray(alternatives);
+            const options = [correct, ...alternatives.slice(0, 3)];
+            return shuffleArray(options);
+        }
+
+        const baseQuizQuestions = [
+            { question: 'Quale arbitro è indicato come il riferimento internazionale italiano più esperto?', options: ['Daniele Orsato', 'Giovanni Ayroldi', 'Riccardo Ros', 'Matteo Marchetti'], answer: 0 },
+            { question: 'Chi viene considerato l emergente più interessante tra i direttori di gara under 35?', options: ['Giovanni Ayroldi', 'Paolo Valeri', 'Marco Guida', 'Massimiliano Irrati'], answer: 0 },
+            { question: 'Quale arbitro è famoso per il fischio deciso e poche spiegazioni in campo?', options: ['Davide Massa', 'Luca Pairetto', 'Antonio Giua', 'Livio Marinelli'], answer: 0 },
+            { question: 'Chi viene scelto spesso per match molto fisici grazie alla tolleranza nei contatti?', options: ['Marco Guida', 'Daniele Doveri', 'Rosario Abisso', 'Alberto Santoro'], answer: 0 },
+            { question: 'Quale direttore di gara ha una reputazione di severità sui cartellini rossi?', options: ['Fabio Maresca', 'Luca Massimi', 'Matteo Gariglio', 'Antonio Rapuano'], answer: 0 },
+            { question: 'Chi predilige lasciare correre il vantaggio prima di fermare il gioco?', options: ['Marco Di Bello', 'Gianluca Aureliano', 'Antonio Giua', 'Riccardo Ros'], answer: 0 },
+            { question: 'Quale arbitro comunica di più con i capitani durante i big match?', options: ['Daniele Doveri', 'Luca Pairetto', 'Paolo Valeri', 'Matteo Marchetti'], answer: 0 },
+            { question: 'Chi è noto per l uso di spiegazioni dettagliate ai giocatori dopo ogni decisione?', options: ['Luca Pairetto', 'Davide Massa', 'Marco Piccinini', 'Antonio Rapuano'], answer: 0 },
+            { question: 'Quale direttore di gara viene spesso chiamato per i derby grazie al controllo emotivo?', options: ['Maurizio Mariani', 'Juan Luca Sacchi', 'Rosario Abisso', 'Antonio Giua'], answer: 0 },
+            { question: 'Chi è riconosciuto per la collaborazione molto stretta con il VAR in campo?', options: ['Michael Fabbri', 'Marco Guida', 'Giovanni Ayroldi', 'Matteo Marchetti'], answer: 0 },
+            { question: 'Quale arbitro è visto come specialista nella gestione del tempo effettivo?', options: ['Simone Sozza', 'Federico La Penna', 'Antonio Rapuano', 'Riccardo Ros'], answer: 0 },
+            { question: 'Chi mantiene un approccio dialogante anche nelle partite più tese?', options: ['Luca Pairetto', 'Rosario Abisso', 'Davide Massa', 'Antonio Giua'], answer: 0 },
+            { question: 'Quale direttore di gara tende a richiamare poco i giocatori per proteste?', options: ['Marco Piccinini', 'Fabio Maresca', 'Paolo Valeri', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Chi è spesso scelto per le prime giornate grazie al ritmo di gioco elevato?', options: ['Gianluca Manganiello', 'Luca Marinelli', 'Matteo Marchetti', 'Riccardo Ros'], answer: 0 },
+            { question: 'Quale arbitro appare di frequente nelle gare salvezza per la gestione dei duelli?', options: ['Ivano Pezzuto', 'Daniele Doveri', 'Marco Di Bello', 'Maurizio Mariani'], answer: 0 },
+            { question: 'Chi viene indicato come profilo affidabile per la comunicazione con le panchine?', options: ['Paolo Valeri', 'Antonio Rapuano', 'Rosario Abisso', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Quale direttore di gara è associato a pochi rigori concessi in media?', options: ['Massimiliano Irrati', 'Marco Guida', 'Fabio Maresca', 'Antonio Giua'], answer: 0 },
+            { question: 'Chi utilizza più spesso il cartellino giallo per calmare i momenti accesi?', options: ['Rosario Abisso', 'Daniele Orsato', 'Simone Sozza', 'Marco Piccinini'], answer: 0 },
+            { question: 'Quale arbitro predilige l uso del richiamo verbale rispetto ai cartellini?', options: ['Luca Pairetto', 'Marco Di Bello', 'Matteo Marchetti', 'Riccardo Ros'], answer: 0 },
+            { question: 'Chi ha fama di intervenire rapidamente sul gioco duro a centrocampo?', options: ['Antonio Giua', 'Juan Luca Sacchi', 'Marco Piccinini', 'Giovanni Ayroldi'], answer: 0 },
+            { question: 'Quale direttore di gara viene visto come molto attento alla postura dei difensori in area?', options: ['Marco Piccinini', 'Daniele Doveri', 'Maurizio Mariani', 'Antonio Rapuano'], answer: 0 },
+            { question: 'Chi è noto per la grande gestualità durante le spiegazioni ai giocatori?', options: ['Juan Luca Sacchi', 'Fabio Maresca', 'Paolo Valeri', 'Riccardo Ros'], answer: 0 },
+            { question: 'Quale arbitro gestisce spesso gare con pubblico molto caldo mantenendo serenità?', options: ['Daniele Orsato', 'Michael Fabbri', 'Alberto Santoro', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Chi è ritenuto puntuale nel fischiare i falli di mano in area?', options: ['Federico La Penna', 'Livio Marinelli', 'Antonio Giua', 'Rosario Abisso'], answer: 0 },
+            { question: 'Quale direttore di gara riduce al minimo le pause per perdite di tempo?', options: ['Simone Sozza', 'Marco Di Bello', 'Giovanni Ayroldi', 'Matteo Marchetti'], answer: 0 },
+            { question: 'Chi viene spesso scelto come quarto ufficiale nei big match europei?', options: ['Massimiliano Irrati', 'Luca Pairetto', 'Riccardo Ros', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Quale arbitro ha fama di leggere bene i movimenti degli attaccanti in area?', options: ['Marco Guida', 'Antonio Rapuano', 'Juan Luca Sacchi', 'Alberto Santoro'], answer: 0 },
+            { question: 'Chi tende a usare un linguaggio semplice con i capitani stranieri?', options: ['Paolo Valeri', 'Daniele Orsato', 'Luca Massimi', 'Antonio Giua'], answer: 0 },
+            { question: 'Quale direttore di gara viene percepito come molto rapido nel posizionarsi sulla ripartenza?', options: ['Giovanni Ayroldi', 'Maurizio Mariani', 'Marco Piccinini', 'Fabio Maresca'], answer: 0 },
+            { question: 'Chi comunica con gesti ampi per far capire il vantaggio concesso?', options: ['Antonio Rapuano', 'Marco Guida', 'Simone Sozza', 'Riccardo Ros'], answer: 0 },
+            { question: 'Quale arbitro viene abbinato a basso numero di ammonizioni per simulazione?', options: ['Marco Piccinini', 'Livio Marinelli', 'Fabio Maresca', 'Antonio Giua'], answer: 0 },
+            { question: 'Chi è apprezzato per la capacità di spiegare rapidamente i check VAR allo stadio?', options: ['Daniele Doveri', 'Michael Fabbri', 'Marco Di Bello', 'Alberto Santoro'], answer: 0 },
+            { question: 'Quale direttore di gara è indicato come molto attento ai minuti di recupero?', options: ['Maurizio Mariani', 'Daniele Orsato', 'Paolo Valeri', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Chi gestisce con calma i giocatori dopo reti annullate?', options: ['Luca Pairetto', 'Rosario Abisso', 'Antonio Rapuano', 'Livio Marinelli'], answer: 0 },
+            { question: 'Quale arbitro mostra spesso segnali di vantaggio con largo anticipo?', options: ['Simone Sozza', 'Marco Guida', 'Riccardo Ros', 'Matteo Marchetti'], answer: 0 },
+            { question: 'Chi è riconosciuto per una voce sempre ferma nel richiamare i calciatori?', options: ['Paolo Valeri', 'Antonio Giua', 'Marco Piccinini', 'Giovanni Ayroldi'], answer: 0 },
+            { question: 'Quale direttore di gara viene scelto spesso per match con molte palle inattive?', options: ['Massimiliano Irrati', 'Fabio Maresca', 'Antonio Rapuano', 'Riccardo Ros'], answer: 0 },
+            { question: 'Chi preferisce mantenere il gioco verticale senza rallentare con falli minori?', options: ['Livio Marinelli', 'Marco Di Bello', 'Rosario Abisso', 'Matteo Gariglio'], answer: 0 },
+            { question: 'Quale arbitro viene descritto come molto preciso nel posizionare le barriere?', options: ['Antonio Giua', 'Marco Piccinini', 'Maurizio Mariani', 'Michael Fabbri'], answer: 0 }
+        ];
+
+        const quizMetricPrompts = [
+            'ha la media di tempo effettivo più alta',
+            'mostra il minor numero di cartellini gialli estratti',
+            'viene considerato il più comunicativo con i capitani',
+            'fa ripartire il gioco più rapidamente dopo i falli',
+            'gestisce meglio la pressione dei tifosi',
+            'accetta più spesso il gioco fisico',
+            'è tra i più rapidi a richiamare il VAR',
+            'si distingue per una corsa sempre verticale',
+            'usa meno il cartellino rosso',
+            'lascia correre il vantaggio con continuità'
+        ];
+
+        const quizSeasonPrompts = [
+            'nel 2025/26',
+            'nel 2024/25',
+            'considerando le ultime due stagioni',
+            'nei derby di alta classifica',
+            'nelle gare salvezza',
+            'nelle competizioni internazionali',
+            'nelle prime giornate di campionato',
+            'dopo la pausa invernale'
+        ];
+
+        const generatedQuizQuestions = [];
+        quizMetricPrompts.forEach((metricPrompt, idxMetric) => {
+            quizSeasonPrompts.forEach((seasonPrompt, idxSeason) => {
+                const correct = QUIZ_REFEREE_POOL[(idxMetric + idxSeason) % QUIZ_REFEREE_POOL.length];
+                const options = buildQuizOptions(correct);
+
+                generatedQuizQuestions.push({
+                    question: `Quale arbitro ${metricPrompt} ${seasonPrompt}?`,
+                    options,
+                    answer: options.indexOf(correct),
+                });
+            });
+        });
+
+        const quizQuestionsPool = [...baseQuizQuestions, ...generatedQuizQuestions];
+        let quizRound = [];
+        let quizScore = 0;
+
+        function normalizeQuizQuestion(question) {
+            if (!question) return null;
+
+            const mapped = (question.options || []).map((option, idx) => ({ option, idx }));
+            shuffleArray(mapped);
+
+            const shuffledOptions = mapped.map(item => item.option);
+            const answerIndex = mapped.findIndex(item => item.idx === question.answer);
+
+            return {
+                ...question,
+                options: shuffledOptions,
+                answer: answerIndex,
+                selected: null,
+            };
+        }
+
+        function prepareQuizRound() {
+            if (!quizQuestionsPool.length) return;
+
+            const poolCopy = [...quizQuestionsPool];
+            shuffleArray(poolCopy);
+
+            quizRound = poolCopy.slice(0, QUIZ_LENGTH).map(normalizeQuizQuestion).filter(Boolean);
+            quizScore = 0;
+            updateQuizScore();
+            renderQuizQuestions();
+        }
+
+        function updateQuizScore() {
+            const scoreEl = document.getElementById('quiz-score');
+            if (!scoreEl) return;
+
+            scoreEl.textContent = `${quizScore} / ${QUIZ_LENGTH}`;
+        }
+
+        function handleQuizAnswer(questionIndex, optionIndex, targetBtn) {
+            const question = quizRound[questionIndex];
+            if (!question || question.selected !== null) return;
+
+            question.selected = optionIndex;
+
+            const optionButtons = targetBtn?.parentElement?.querySelectorAll('button') || [];
+
+            optionButtons.forEach((button, idx) => {
+                button.disabled = true;
+                button.classList.remove('bg-slate-900', 'border-slate-800');
+
+                if (idx === question.answer) {
+                    button.classList.add('correct', 'border-emerald-400', 'bg-emerald-500/10');
+                } else if (idx === optionIndex) {
+                    button.classList.add('wrong', 'border-rose-400', 'bg-rose-500/10');
+                } else {
+                    button.classList.add('bg-slate-800/60', 'border-slate-700/70', 'text-slate-300');
+                }
+            });
+
+            if (optionIndex === question.answer) quizScore += 1;
+            updateQuizScore();
+        }
+
+        function renderQuizQuestions() {
+            const container = document.getElementById('quiz-questions');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            quizRound.forEach((question, questionIndex) => {
+                const card = document.createElement('div');
+                card.className = 'pro-card rounded-lg p-4 space-y-3 border border-slate-800 bg-slate-900/60 interactive-surface';
+
+                const title = document.createElement('div');
+                title.className = 'flex items-start gap-3';
+                title.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold flex items-center justify-center">${questionIndex + 1}</div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold">Domanda</p>
+                        <h3 class="text-base font-semibold text-white leading-snug">${question.question}</h3>
+                    </div>
+                `;
+
+                const optionsWrapper = document.createElement('div');
+                optionsWrapper.className = 'grid grid-cols-1 gap-2';
+
+                question.options.forEach((option, optionIndex) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'quiz-option interactive-surface w-full text-left px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm font-semibold text-slate-200';
+                    button.innerHTML = `
+                        <span class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center text-[11px] text-slate-400">${String.fromCharCode(65 + optionIndex)}</span>
+                            <span>${option}</span>
+                        </span>
+                    `;
+
+                    button.addEventListener('click', () => handleQuizAnswer(questionIndex, optionIndex, button));
+                    optionsWrapper.appendChild(button);
+                });
+
+                card.appendChild(title);
+                card.appendChild(optionsWrapper);
+
+                attachRippleEffect(Array.from(optionsWrapper.querySelectorAll('button')));
+
+                container.appendChild(card);
+            });
+        }
+
 let selectedRadarReferees = [];
 
         const PLAYER_SCATTER_ROLE_COLORS = {
@@ -8917,7 +9222,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             resetMatchesPaging(); 
 
             // Update Active State (Desktop)
-            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players'].forEach(id => {
+            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players', 'nav-quiz'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     if(id === `nav-${view === 'playingTime' ? 'time' : view}`) el.classList.add('active');
@@ -8925,7 +9230,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 }
             });
             // Mobile State
-             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players'].forEach(id => {
+             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players', 'mob-nav-quiz'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
                      if(id === `mob-nav-${view === 'playingTime' ? 'time' : view}`) {
@@ -8944,11 +9249,13 @@ const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card');
+const quizView      = document.getElementById('quiz-view');
 
         if (view === 'analytics') {
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
+            hideSection(quizView);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
@@ -8962,6 +9269,7 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
             hideSection(tableView);
             hideSection(analyticsView);
             showSection(playersView);
+            hideSection(quizView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -8974,12 +9282,26 @@ const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
+        } else if (view === 'quiz') {
+            hideSection(tableView);
+            hideSection(analyticsView);
+            hideSection(playersView);
+            showSection(quizView);
+    if (sidebar)       sidebar.classList.add('hidden');
+    if (seasonCard)    seasonCard.classList.add('hidden');
+    if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
+    if (mainContent) {
+        mainContent.classList.remove('lg:col-span-9');
+        mainContent.classList.add('lg:col-span-12');
+    }
+            if (!quizRound.length) prepareQuizRound();
 } else {
 
     // stats, matches, playingTime, teams
     showSection(tableView);
     hideSection(analyticsView);
     hideSection(playersView);
+    hideSection(quizView);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -10040,6 +10362,9 @@ function renderPlayersPassingTable() {
                     ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
 
                     node.appendChild(ripple);
+                    node.classList.remove('click-energize');
+                    void node.offsetWidth;
+                    node.classList.add('click-energize');
                     ripple.addEventListener('animationend', () => ripple.remove());
                 });
             });
@@ -10048,6 +10373,10 @@ function renderPlayersPassingTable() {
         document.addEventListener('DOMContentLoaded', () => {
             const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
             attachRippleEffect(Array.from(interactiveTargets));
+
+            const refreshQuizBtn = document.getElementById('quiz-refresh');
+            if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
+            if (quizQuestionsPool.length) prepareQuizRound();
         });
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
