@@ -1551,10 +1551,18 @@ html, body {
                             <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('effTot','2023-24', this)">23/24</button>
                             <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('effTot','2022-23', this)">22/23</button>
                         </div>
-                        <div class="relative w-full sm:w-64 lg:w-72">
-
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-                            <input type="text" id="analyticsSearchEffTot" oninput="debounceRenderAnalytics()" placeholder="Filtra per squadra..." class="w-full bg-slate-900 text-xs text-white pl-8 pr-2 py-1.5 rounded border border-slate-700 focus:border-yellow-500 focus:ring-0 outline-none placeholder-slate-600">
+                        <div class="flex flex-col gap-2 w-full sm:w-72 lg:w-80">
+                            <div class="flex gap-2">
+                                <select id="analyticsEffTotTeamSelect" class="chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded pl-3 pr-8 py-1.5 focus:border-yellow-500 outline-none cursor-pointer flex-grow">
+                                    <option value="">Seleziona una squadra...</option>
+                                </select>
+                                <button onclick="addEffTotTeam()" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold text-xs px-3 py-1.5 rounded transition-colors">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="analytics-efftot-team-chips" class="flex flex-wrap gap-2 min-h-[30px]">
+                                <span class="text-[10px] text-slate-500 italic py-1">Seleziona fino a 2 squadre da confrontare.</span>
+                            </div>
                         </div>
                     </div>
                     <div id="chart-eff-total" class="w-full h-[350px] relative"></div>
@@ -6159,6 +6167,7 @@ let chartRadar = null;
         let quizQuestionsPool = [];
         let quizRound = [];
         let quizScore = 0;
+        let quizCurrentIndex = 0;
 
         function normalizeQuizQuestion(question) {
             if (!question) return null;
@@ -6186,6 +6195,7 @@ let chartRadar = null;
 
             quizRound = poolCopy.slice(0, QUIZ_LENGTH).map(normalizeQuizQuestion).filter(Boolean);
             quizScore = 0;
+            quizCurrentIndex = 0;
             updateQuizScore();
             renderQuizQuestions();
         }
@@ -6220,6 +6230,16 @@ let chartRadar = null;
 
             if (optionIndex === question.answer) quizScore += 1;
             updateQuizScore();
+
+            const nextBtn = document.getElementById('quiz-next-btn');
+            if (nextBtn) {
+                if (quizCurrentIndex >= quizRound.length - 1) {
+                    nextBtn.textContent = 'Quiz completato';
+                    nextBtn.disabled = true;
+                } else {
+                    nextBtn.disabled = false;
+                }
+            }
         }
 
         function renderQuizQuestions() {
@@ -6228,45 +6248,84 @@ let chartRadar = null;
 
             container.innerHTML = '';
 
-            quizRound.forEach((question, questionIndex) => {
-                const card = document.createElement('div');
-                card.className = 'pro-card rounded-lg p-4 space-y-3 border border-slate-800 bg-slate-900/60 interactive-surface';
+            const question = quizRound[quizCurrentIndex];
+            if (!question) return;
 
-                const title = document.createElement('div');
-                title.className = 'flex items-start gap-3';
-                title.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold flex items-center justify-center">${questionIndex + 1}</div>
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold">Domanda</p>
-                        <h3 class="text-base font-semibold text-white leading-snug">${question.question}</h3>
-                    </div>
+            const card = document.createElement('div');
+            card.className = 'pro-card rounded-lg p-4 space-y-4 border border-slate-800 bg-slate-900/60 interactive-surface';
+
+            const title = document.createElement('div');
+            title.className = 'flex items-start gap-3';
+            title.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold flex items-center justify-center">${quizCurrentIndex + 1}</div>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.16em] text-slate-500 font-semibold">Domanda ${quizCurrentIndex + 1} di ${QUIZ_LENGTH}</p>
+                    <h3 class="text-base font-semibold text-white leading-snug">${question.question}</h3>
+                </div>
+            `;
+
+            const optionsWrapper = document.createElement('div');
+            optionsWrapper.className = 'grid grid-cols-1 gap-2';
+
+            question.options.forEach((option, optionIndex) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'quiz-option interactive-surface w-full text-left px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm font-semibold text-slate-200';
+                button.innerHTML = `
+                    <span class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center text-[11px] text-slate-400">${String.fromCharCode(65 + optionIndex)}</span>
+                        <span>${option}</span>
+                    </span>
                 `;
 
-                const optionsWrapper = document.createElement('div');
-                optionsWrapper.className = 'grid grid-cols-1 gap-2';
+                if (question.selected !== null) {
+                    button.disabled = true;
+                    button.classList.remove('bg-slate-900', 'border-slate-800');
+                    if (optionIndex === question.answer) {
+                        button.classList.add('correct', 'border-emerald-400', 'bg-emerald-500/10');
+                    } else if (optionIndex === question.selected) {
+                        button.classList.add('wrong', 'border-rose-400', 'bg-rose-500/10');
+                    } else {
+                        button.classList.add('bg-slate-800/60', 'border-slate-700/70', 'text-slate-300');
+                    }
+                }
 
-                question.options.forEach((option, optionIndex) => {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'quiz-option interactive-surface w-full text-left px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm font-semibold text-slate-200';
-                    button.innerHTML = `
-                        <span class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center text-[11px] text-slate-400">${String.fromCharCode(65 + optionIndex)}</span>
-                            <span>${option}</span>
-                        </span>
-                    `;
-
-                    button.addEventListener('click', () => handleQuizAnswer(questionIndex, optionIndex, button));
-                    optionsWrapper.appendChild(button);
-                });
-
-                card.appendChild(title);
-                card.appendChild(optionsWrapper);
-
-                attachRippleEffect(Array.from(optionsWrapper.querySelectorAll('button')));
-
-                container.appendChild(card);
+                button.addEventListener('click', () => handleQuizAnswer(quizCurrentIndex, optionIndex, button));
+                optionsWrapper.appendChild(button);
             });
+
+            const actions = document.createElement('div');
+            actions.className = 'flex items-center justify-between pt-2 border-t border-slate-800';
+
+            const helper = document.createElement('p');
+            helper.className = 'text-[11px] text-slate-400';
+            helper.textContent = quizCurrentIndex < quizRound.length - 1
+                ? 'Rispondi per sbloccare la prossima domanda.'
+                : 'Ultima domanda del quiz.';
+
+            const nextBtn = document.createElement('button');
+            nextBtn.id = 'quiz-next-btn';
+            nextBtn.type = 'button';
+            nextBtn.className = 'interactive-surface bg-yellow-500 text-slate-900 font-semibold text-sm px-4 py-2 rounded-lg shadow-glow hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed';
+            nextBtn.textContent = quizCurrentIndex < quizRound.length - 1 ? 'Passa alla successiva' : 'Quiz completato';
+            nextBtn.disabled = question.selected === null || quizCurrentIndex >= quizRound.length - 1;
+            nextBtn.addEventListener('click', () => {
+                if (quizCurrentIndex < quizRound.length - 1) {
+                    quizCurrentIndex += 1;
+                    renderQuizQuestions();
+                }
+            });
+
+            actions.appendChild(helper);
+            actions.appendChild(nextBtn);
+
+            card.appendChild(title);
+            card.appendChild(optionsWrapper);
+            card.appendChild(actions);
+
+            attachRippleEffect(Array.from(optionsWrapper.querySelectorAll('button')));
+
+            container.appendChild(card);
         }
 
 let selectedRadarReferees = [];
@@ -6285,6 +6344,7 @@ let selectedRadarReferees = [];
 
         let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
         let analyticsViewMode = 'refs';
+        let selectedEffTotTeams = [];
 
         // Cache per i dataset pesanti usati nei grafici analytics
         const DATA_CACHE = {
@@ -6363,6 +6423,71 @@ function getTeamLogo(teamName) {
     const lower = normalized.toLowerCase();
     const key = Object.keys(TEAM_LOGOS).find(k => lower.includes(k.toLowerCase()));
     return key ? TEAM_LOGOS[key] : "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
+}
+
+function getTeamsFromMatchName(matchName) {
+    if (!matchName || !matchName.includes('-')) return [];
+    return matchName.split('-').map(s => s.trim()).filter(Boolean);
+}
+
+function populateEffTotTeamSelect(matches) {
+    const select = document.getElementById('analyticsEffTotTeamSelect');
+    if (!select) return;
+
+    const current = select.value;
+    const teams = Array.from(new Set(
+        (matches || []).flatMap(m => getTeamsFromMatchName(m.match))
+    )).sort((a, b) => a.localeCompare(b));
+
+    select.innerHTML = '<option value="">Seleziona una squadra...</option>';
+    teams.forEach(team => {
+        const opt = document.createElement('option');
+        opt.value = team;
+        opt.textContent = team;
+        select.appendChild(opt);
+    });
+
+    select.value = teams.includes(current) ? current : '';
+}
+
+function renderEffTotTeamChips() {
+    const container = document.getElementById('analytics-efftot-team-chips');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (!selectedEffTotTeams.length) {
+        container.innerHTML = '<span class="text-[10px] text-slate-500 italic py-1">Seleziona fino a 2 squadre da confrontare.</span>';
+        return;
+    }
+
+    selectedEffTotTeams.forEach(team => {
+        const div = document.createElement('div');
+        div.className = 'ref-chip';
+        div.innerHTML = `<span>${team}</span><button onclick="removeEffTotTeam('${team}')"><i class="fa-solid fa-times"></i></button>`;
+        container.appendChild(div);
+    });
+}
+
+function addEffTotTeam() {
+    const select = document.getElementById('analyticsEffTotTeamSelect');
+    const team = select?.value;
+    if (!team) return;
+    if (selectedEffTotTeams.includes(team)) return;
+    if (selectedEffTotTeams.length >= 2) {
+        console.warn('Puoi confrontare al massimo 2 squadre.');
+        return;
+    }
+
+    selectedEffTotTeams.push(team);
+    renderEffTotTeamChips();
+    renderAnalyticsWithFilters();
+}
+
+function removeEffTotTeam(team) {
+    selectedEffTotTeams = selectedEffTotTeams.filter(t => t !== team);
+    renderEffTotTeamChips();
+    renderAnalyticsWithFilters();
 }
 
         // --- DEBOUNCE FUNCTION ---
@@ -7141,7 +7266,6 @@ if(q && result.length && currentView !== 'analytics') {
         function renderAnalyticsWithFilters() {
             // 1. Applica filtri locali ai dati globali
             const qSeverity = document.getElementById('analyticsSearchSeverity')?.value?.toLowerCase() || '';
-            const qEffTot = document.getElementById('analyticsSearchEffTot')?.value?.toLowerCase() || '';
 
             const severitySeasons = analyticsSeasonFilters.severity || ANALYTICS_SEASON_DEFAULT;
             const radarSeasons = analyticsSeasonFilters.refRadar || ANALYTICS_SEASON_DEFAULT;
@@ -7166,11 +7290,17 @@ if(q && result.length && currentView !== 'analytics') {
 
             radarData = radarData.filter(r => getRefereeSurname(r.name).toLowerCase().includes(qSeverity));
 
+
             const effMatches = processMatchesViewData(effSeasons);
             const effTotMatches = processMatchesViewData(effTotSeasons);
-            const filteredEffTotData = effTotMatches.filter(m =>
-                m.match.toLowerCase().includes(qEffTot)
-            );
+            const filteredEffTotData = effTotMatches.filter(m => {
+                if (!selectedEffTotTeams.length) return true;
+                const teams = getTeamsFromMatchName(m.match);
+                return teams.some(t => selectedEffTotTeams.includes(t));
+            });
+
+            populateEffTotTeamSelect(effTotMatches);
+            renderEffTotTeamChips();
 
             // Aggiorna i dataset globali usati dai grafici radar e scatter
             currentAnalyticsData = radarData;
@@ -7199,7 +7329,7 @@ if(q && result.length && currentView !== 'analytics') {
 
             // 2. Renderizza i grafici con i dati filtrati
             renderSeverityScatter(filteredRefData);
-            renderEffVsTotalScatter(filteredEffTotData, effTotMatches, effTotSeasons);
+            renderEffVsTotalScatter(filteredEffTotData, effTotMatches, effTotSeasons, selectedEffTotTeams);
             updateRadarChart();
             renderEffDistributionChart(effMatches); // Passiamo i dati delle partite
             renderFoulsByMatchdayChart();
@@ -7534,7 +7664,7 @@ grid: {
     chartMatchCorrelation.render();
 }
 
-function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
+function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride, selectedTeams = []) {
     const seasons = (seasonsOverride && seasonsOverride.length)
         ? seasonsOverride
         : ANALYTICS_SEASON_OPTIONS;
@@ -7580,16 +7710,29 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
         return;
     }
 
-    const series = seasons.map(season => ({
-        name: season,
-        data: validFiltered
-            .filter(m => m.season === season)
-            .map(m => ({
-                x: +(m.effectiveTimeSec / 60).toFixed(2),
-                y: +(m.totalTimeSec / 60).toFixed(2),
-                matchName: m.match
-            }))
-    }));
+    const useTeamsMode = Array.isArray(selectedTeams) && selectedTeams.length > 0;
+
+    const series = useTeamsMode
+        ? selectedTeams.map(team => ({
+            name: team,
+            data: validFiltered
+                .filter(m => getTeamsFromMatchName(m.match).includes(team))
+                .map(m => ({
+                    x: +(m.effectiveTimeSec / 60).toFixed(2),
+                    y: +(m.totalTimeSec / 60).toFixed(2),
+                    matchName: m.match
+                }))
+        })).filter(s => s.data.length)
+        : seasons.map(season => ({
+            name: season,
+            data: validFiltered
+                .filter(m => m.season === season)
+                .map(m => ({
+                    x: +(m.effectiveTimeSec / 60).toFixed(2),
+                    y: +(m.totalTimeSec / 60).toFixed(2),
+                    matchName: m.match
+                }))
+        }));
 
     const X_MIN = 40;
     const X_MAX = 68;
@@ -7602,11 +7745,13 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
     const xMin = X_MIN;
     const xMax = X_MAX;
 
-    const avgEff = validBase.length
-        ? +(validBase.reduce((sum, m) => sum + m.effectiveTimeSec, 0) / validBase.length / 60).toFixed(2)
+    const reference = useTeamsMode ? validFiltered : validBase;
+
+    const avgEff = reference.length
+        ? +(reference.reduce((sum, m) => sum + m.effectiveTimeSec, 0) / reference.length / 60).toFixed(2)
         : ((xMin + xMax) / 2);
-    const avgTotal = validBase.length
-        ? +(validBase.reduce((sum, m) => sum + m.totalTimeSec, 0) / validBase.length / 60).toFixed(2)
+    const avgTotal = reference.length
+        ? +(reference.reduce((sum, m) => sum + m.totalTimeSec, 0) / reference.length / 60).toFixed(2)
         : ((Y_MIN + Y_MAX) / 2);
 
     const options = {
@@ -7638,13 +7783,13 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
             }
         ],
         legend: {
-            show: seasons.length > 1,
+            show: useTeamsMode ? series.length > 0 : seasons.length > 1,
             position: 'top',
             horizontalAlign: 'left',
             labels: { colors: '#cbd5e1' },
             fontSize: '11px'
         },
-        colors: ['#3b82f6', '#22c55e', '#eab308', '#f97316'],
+        colors: useTeamsMode ? ['#eab308', '#38bdf8'] : ['#3b82f6', '#22c55e', '#eab308', '#f97316'],
         xaxis: {
             title: { text: 'Tempo Effettivo (min)', style: { color: '#94a3b8' } },
             min: xMin,
