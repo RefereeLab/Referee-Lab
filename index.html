@@ -5993,13 +5993,8 @@ let refereeData = [];
 let chartRadar = null;
 
         const QUIZ_LENGTH = 10;
-        const QUIZ_REFEREE_POOL = [
-            'Daniele Orsato', 'Davide Massa', 'Fabio Maresca', 'Michael Fabbri', 'Simone Sozza', 'Marco Di Bello', 'Luca Pairetto',
-            'Marco Guida', 'Rosario Abisso', 'Livio Marinelli', 'Ivano Pezzuto', 'Antonio Rapuano', 'Maurizio Mariani', 'Paolo Valeri',
-            'Daniele Doveri', 'Marco Piccinini', 'Juan Luca Sacchi', 'Gianluca Aureliano', 'Federico La Penna', 'Matteo Marchetti',
-            'Massimiliano Irrati', 'Gianluca Manganiello', 'Giovanni Ayroldi', 'Alberto Santoro', 'Matteo Gariglio', 'Riccardo Ros',
-            'Francesco Fourneau', 'Antonio Giua', 'Gianluca Rocchi', 'Luca Massimi', 'Luca Marinelli'
-        ];
+        const QUIZ_RECENT_SEASONS = ANALYTICS_SEASON_OPTIONS.slice(0, 2);
+        const QUIZ_LATEST_SEASON = ANALYTICS_SEASON_OPTIONS[0];
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i -= 1) {
@@ -6009,94 +6004,119 @@ let chartRadar = null;
             return array;
         }
 
-        function buildQuizOptions(correct) {
-            const alternatives = QUIZ_REFEREE_POOL.filter(name => name !== correct);
-            shuffleArray(alternatives);
-            const options = [correct, ...alternatives.slice(0, 3)];
-            return shuffleArray(options);
+        function buildOptionsFromCandidates(candidates, correctLabel) {
+            const uniqueOptions = Array.from(new Set(candidates.filter(Boolean)));
+            if (uniqueOptions.length < 4) return null;
+
+            const shortlist = uniqueOptions.slice(0, 4);
+            const options = shuffleArray(shortlist);
+            const answer = options.indexOf(correctLabel);
+
+            return answer === -1 ? null : { options, answer };
         }
 
-        const baseQuizQuestions = [
-            { question: 'Quale arbitro è indicato come il riferimento internazionale italiano più esperto?', options: ['Daniele Orsato', 'Giovanni Ayroldi', 'Riccardo Ros', 'Matteo Marchetti'], answer: 0 },
-            { question: 'Chi viene considerato l emergente più interessante tra i direttori di gara under 35?', options: ['Giovanni Ayroldi', 'Paolo Valeri', 'Marco Guida', 'Massimiliano Irrati'], answer: 0 },
-            { question: 'Quale arbitro è famoso per il fischio deciso e poche spiegazioni in campo?', options: ['Davide Massa', 'Luca Pairetto', 'Antonio Giua', 'Livio Marinelli'], answer: 0 },
-            { question: 'Chi viene scelto spesso per match molto fisici grazie alla tolleranza nei contatti?', options: ['Marco Guida', 'Daniele Doveri', 'Rosario Abisso', 'Alberto Santoro'], answer: 0 },
-            { question: 'Quale direttore di gara ha una reputazione di severità sui cartellini rossi?', options: ['Fabio Maresca', 'Luca Massimi', 'Matteo Gariglio', 'Antonio Rapuano'], answer: 0 },
-            { question: 'Chi predilige lasciare correre il vantaggio prima di fermare il gioco?', options: ['Marco Di Bello', 'Gianluca Aureliano', 'Antonio Giua', 'Riccardo Ros'], answer: 0 },
-            { question: 'Quale arbitro comunica di più con i capitani durante i big match?', options: ['Daniele Doveri', 'Luca Pairetto', 'Paolo Valeri', 'Matteo Marchetti'], answer: 0 },
-            { question: 'Chi è noto per l uso di spiegazioni dettagliate ai giocatori dopo ogni decisione?', options: ['Luca Pairetto', 'Davide Massa', 'Marco Piccinini', 'Antonio Rapuano'], answer: 0 },
-            { question: 'Quale direttore di gara viene spesso chiamato per i derby grazie al controllo emotivo?', options: ['Maurizio Mariani', 'Juan Luca Sacchi', 'Rosario Abisso', 'Antonio Giua'], answer: 0 },
-            { question: 'Chi è riconosciuto per la collaborazione molto stretta con il VAR in campo?', options: ['Michael Fabbri', 'Marco Guida', 'Giovanni Ayroldi', 'Matteo Marchetti'], answer: 0 },
-            { question: 'Quale arbitro è visto come specialista nella gestione del tempo effettivo?', options: ['Simone Sozza', 'Federico La Penna', 'Antonio Rapuano', 'Riccardo Ros'], answer: 0 },
-            { question: 'Chi mantiene un approccio dialogante anche nelle partite più tese?', options: ['Luca Pairetto', 'Rosario Abisso', 'Davide Massa', 'Antonio Giua'], answer: 0 },
-            { question: 'Quale direttore di gara tende a richiamare poco i giocatori per proteste?', options: ['Marco Piccinini', 'Fabio Maresca', 'Paolo Valeri', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Chi è spesso scelto per le prime giornate grazie al ritmo di gioco elevato?', options: ['Gianluca Manganiello', 'Luca Marinelli', 'Matteo Marchetti', 'Riccardo Ros'], answer: 0 },
-            { question: 'Quale arbitro appare di frequente nelle gare salvezza per la gestione dei duelli?', options: ['Ivano Pezzuto', 'Daniele Doveri', 'Marco Di Bello', 'Maurizio Mariani'], answer: 0 },
-            { question: 'Chi viene indicato come profilo affidabile per la comunicazione con le panchine?', options: ['Paolo Valeri', 'Antonio Rapuano', 'Rosario Abisso', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Quale direttore di gara è associato a pochi rigori concessi in media?', options: ['Massimiliano Irrati', 'Marco Guida', 'Fabio Maresca', 'Antonio Giua'], answer: 0 },
-            { question: 'Chi utilizza più spesso il cartellino giallo per calmare i momenti accesi?', options: ['Rosario Abisso', 'Daniele Orsato', 'Simone Sozza', 'Marco Piccinini'], answer: 0 },
-            { question: 'Quale arbitro predilige l uso del richiamo verbale rispetto ai cartellini?', options: ['Luca Pairetto', 'Marco Di Bello', 'Matteo Marchetti', 'Riccardo Ros'], answer: 0 },
-            { question: 'Chi ha fama di intervenire rapidamente sul gioco duro a centrocampo?', options: ['Antonio Giua', 'Juan Luca Sacchi', 'Marco Piccinini', 'Giovanni Ayroldi'], answer: 0 },
-            { question: 'Quale direttore di gara viene visto come molto attento alla postura dei difensori in area?', options: ['Marco Piccinini', 'Daniele Doveri', 'Maurizio Mariani', 'Antonio Rapuano'], answer: 0 },
-            { question: 'Chi è noto per la grande gestualità durante le spiegazioni ai giocatori?', options: ['Juan Luca Sacchi', 'Fabio Maresca', 'Paolo Valeri', 'Riccardo Ros'], answer: 0 },
-            { question: 'Quale arbitro gestisce spesso gare con pubblico molto caldo mantenendo serenità?', options: ['Daniele Orsato', 'Michael Fabbri', 'Alberto Santoro', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Chi è ritenuto puntuale nel fischiare i falli di mano in area?', options: ['Federico La Penna', 'Livio Marinelli', 'Antonio Giua', 'Rosario Abisso'], answer: 0 },
-            { question: 'Quale direttore di gara riduce al minimo le pause per perdite di tempo?', options: ['Simone Sozza', 'Marco Di Bello', 'Giovanni Ayroldi', 'Matteo Marchetti'], answer: 0 },
-            { question: 'Chi viene spesso scelto come quarto ufficiale nei big match europei?', options: ['Massimiliano Irrati', 'Luca Pairetto', 'Riccardo Ros', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Quale arbitro ha fama di leggere bene i movimenti degli attaccanti in area?', options: ['Marco Guida', 'Antonio Rapuano', 'Juan Luca Sacchi', 'Alberto Santoro'], answer: 0 },
-            { question: 'Chi tende a usare un linguaggio semplice con i capitani stranieri?', options: ['Paolo Valeri', 'Daniele Orsato', 'Luca Massimi', 'Antonio Giua'], answer: 0 },
-            { question: 'Quale direttore di gara viene percepito come molto rapido nel posizionarsi sulla ripartenza?', options: ['Giovanni Ayroldi', 'Maurizio Mariani', 'Marco Piccinini', 'Fabio Maresca'], answer: 0 },
-            { question: 'Chi comunica con gesti ampi per far capire il vantaggio concesso?', options: ['Antonio Rapuano', 'Marco Guida', 'Simone Sozza', 'Riccardo Ros'], answer: 0 },
-            { question: 'Quale arbitro viene abbinato a basso numero di ammonizioni per simulazione?', options: ['Marco Piccinini', 'Livio Marinelli', 'Fabio Maresca', 'Antonio Giua'], answer: 0 },
-            { question: 'Chi è apprezzato per la capacità di spiegare rapidamente i check VAR allo stadio?', options: ['Daniele Doveri', 'Michael Fabbri', 'Marco Di Bello', 'Alberto Santoro'], answer: 0 },
-            { question: 'Quale direttore di gara è indicato come molto attento ai minuti di recupero?', options: ['Maurizio Mariani', 'Daniele Orsato', 'Paolo Valeri', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Chi gestisce con calma i giocatori dopo reti annullate?', options: ['Luca Pairetto', 'Rosario Abisso', 'Antonio Rapuano', 'Livio Marinelli'], answer: 0 },
-            { question: 'Quale arbitro mostra spesso segnali di vantaggio con largo anticipo?', options: ['Simone Sozza', 'Marco Guida', 'Riccardo Ros', 'Matteo Marchetti'], answer: 0 },
-            { question: 'Chi è riconosciuto per una voce sempre ferma nel richiamare i calciatori?', options: ['Paolo Valeri', 'Antonio Giua', 'Marco Piccinini', 'Giovanni Ayroldi'], answer: 0 },
-            { question: 'Quale direttore di gara viene scelto spesso per match con molte palle inattive?', options: ['Massimiliano Irrati', 'Fabio Maresca', 'Antonio Rapuano', 'Riccardo Ros'], answer: 0 },
-            { question: 'Chi preferisce mantenere il gioco verticale senza rallentare con falli minori?', options: ['Livio Marinelli', 'Marco Di Bello', 'Rosario Abisso', 'Matteo Gariglio'], answer: 0 },
-            { question: 'Quale arbitro viene descritto come molto preciso nel posizionare le barriere?', options: ['Antonio Giua', 'Marco Piccinini', 'Maurizio Mariani', 'Michael Fabbri'], answer: 0 }
-        ];
+        function buildTopEntityQuestion({ items, metricAccessor, labelAccessor, question, order = 'desc' }) {
+            const scored = (items || [])
+                .map(item => ({ item, value: metricAccessor(item), label: labelAccessor(item) }))
+                .filter(entry => Number.isFinite(entry.value) && entry.label);
 
-        const quizMetricPrompts = [
-            'ha la media di tempo effettivo più alta',
-            'mostra il minor numero di cartellini gialli estratti',
-            'viene considerato il più comunicativo con i capitani',
-            'fa ripartire il gioco più rapidamente dopo i falli',
-            'gestisce meglio la pressione dei tifosi',
-            'accetta più spesso il gioco fisico',
-            'è tra i più rapidi a richiamare il VAR',
-            'si distingue per una corsa sempre verticale',
-            'usa meno il cartellino rosso',
-            'lascia correre il vantaggio con continuità'
-        ];
+            const sorted = scored.sort((a, b) => (order === 'asc' ? a.value - b.value : b.value - a.value));
+            const uniqueLabels = [];
 
-        const quizSeasonPrompts = [
-            'nel 2025/26',
-            'nel 2024/25',
-            'considerando le ultime due stagioni',
-            'nei derby di alta classifica',
-            'nelle gare salvezza',
-            'nelle competizioni internazionali',
-            'nelle prime giornate di campionato',
-            'dopo la pausa invernale'
-        ];
-
-        const generatedQuizQuestions = [];
-        quizMetricPrompts.forEach((metricPrompt, idxMetric) => {
-            quizSeasonPrompts.forEach((seasonPrompt, idxSeason) => {
-                const correct = QUIZ_REFEREE_POOL[(idxMetric + idxSeason) % QUIZ_REFEREE_POOL.length];
-                const options = buildQuizOptions(correct);
-
-                generatedQuizQuestions.push({
-                    question: `Quale arbitro ${metricPrompt} ${seasonPrompt}?`,
-                    options,
-                    answer: options.indexOf(correct),
-                });
+            sorted.forEach(row => {
+                if (!uniqueLabels.includes(row.label)) uniqueLabels.push(row.label);
             });
-        });
 
-        const quizQuestionsPool = [...baseQuizQuestions, ...generatedQuizQuestions];
+            if (uniqueLabels.length < 4 || !sorted.length) return null;
+
+            const correctLabel = sorted[0].label;
+            const optionSet = buildOptionsFromCandidates(uniqueLabels, correctLabel);
+            if (!optionSet) return null;
+
+            return {
+                question,
+                options: optionSet.options,
+                answer: optionSet.answer,
+            };
+        }
+
+        function buildDynamicQuizQuestions() {
+            const questions = [];
+            const recentMatches = processMatchesViewData(QUIZ_RECENT_SEASONS);
+            const recentRefs = processCombinedStats(QUIZ_RECENT_SEASONS);
+            const latestTeams = processTeamsData([QUIZ_LATEST_SEASON]);
+
+            const matchLabel = m => `${m.match} (${m.season})`;
+            const effRatio = m => Number.isFinite(m.effRatio) ? m.effRatio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec);
+
+            const builders = [
+                buildTopEntityQuestion({
+                    items: recentMatches,
+                    metricAccessor: m => m.effectiveTimeSec,
+                    labelAccessor: matchLabel,
+                    question: 'Quale partita ha avuto il maggior tempo effettivo nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentMatches,
+                    metricAccessor: m => m.totalTimeSec,
+                    labelAccessor: matchLabel,
+                    question: 'Quale partita ha avuto il maggior tempo totale nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentMatches,
+                    metricAccessor: m => effRatio(m),
+                    labelAccessor: matchLabel,
+                    question: 'Quale partita ha registrato la percentuale di tempo effettivo più alta nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentMatches,
+                    metricAccessor: m => m.fouls,
+                    labelAccessor: matchLabel,
+                    question: 'Quale partita ha avuto più falli fischiati nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentRefs,
+                    metricAccessor: r => r.avgFouls,
+                    labelAccessor: r => r.name,
+                    question: 'Quale arbitro ha la media falli più alta nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentRefs,
+                    metricAccessor: r => r.avgYellows,
+                    labelAccessor: r => r.name,
+                    question: 'Quale arbitro estrae più cartellini gialli in media nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentRefs,
+                    metricAccessor: r => r.avgPens,
+                    labelAccessor: r => r.name,
+                    question: 'Quale arbitro ha assegnato più rigori in media nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: recentRefs,
+                    metricAccessor: r => r.avgEffSec,
+                    labelAccessor: r => r.name,
+                    question: 'Quale arbitro gestisce le gare con il maggior tempo effettivo medio nelle ultime 2 stagioni?'
+                }),
+                buildTopEntityQuestion({
+                    items: latestTeams,
+                    metricAccessor: t => t.avgEff,
+                    labelAccessor: t => t.name,
+                    question: `Quale squadra ha la media tempo effettivo più alta in ${QUIZ_LATEST_SEASON}?`
+                }),
+                buildTopEntityQuestion({
+                    items: latestTeams,
+                    metricAccessor: t => t.avgFouls,
+                    labelAccessor: t => t.name,
+                    question: `Quale squadra registra più falli medi a partita in ${QUIZ_LATEST_SEASON}?`
+                })
+            ];
+
+            builders.filter(Boolean).forEach(q => questions.push(q));
+            return questions;
+        }
+
+        let quizQuestionsPool = [];
         let quizRound = [];
         let quizScore = 0;
 
@@ -6118,6 +6138,7 @@ let chartRadar = null;
         }
 
         function prepareQuizRound() {
+            quizQuestionsPool = buildDynamicQuizQuestions();
             if (!quizQuestionsPool.length) return;
 
             const poolCopy = [...quizQuestionsPool];
@@ -10376,7 +10397,7 @@ function renderPlayersPassingTable() {
 
             const refreshQuizBtn = document.getElementById('quiz-refresh');
             if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
-            if (quizQuestionsPool.length) prepareQuizRound();
+            prepareQuizRound();
         });
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
