@@ -9331,11 +9331,13 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             resetMatchesPaging(); 
 
             // Update Active State (Desktop)
+            const targetNavId = `nav-${view === 'playingTime' ? 'time' : view}`;
             ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players', 'nav-quiz'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
-                    if(id === `nav-${view === 'playingTime' ? 'time' : view}`) el.classList.add('active');
-                    else el.classList.remove('active');
+                    const isActiveNav = id === targetNavId;
+                    el.classList.toggle('active', isActiveNav);
+                    if(!isActiveNav) el.classList.remove('nav-pill-boost');
                 }
             });
             // Mobile State
@@ -9554,16 +9556,22 @@ const quizView      = document.getElementById('quiz-view');
                     btn.classList.remove('opacity-40', 'cursor-not-allowed', 'text-slate-500');
                 }
 
+                const shouldHighlight = isSelected && !shouldBeBlocked;
+
+                btn.classList.toggle('active', isSelected);
+                btn.classList.toggle('bg-slate-800', shouldHighlight);
+                btn.classList.toggle('shadow-glow', shouldHighlight);
+                btn.classList.toggle('text-yellow-500', shouldHighlight);
+                btn.classList.toggle('text-slate-500', !isSelected || shouldBeBlocked);
+
                 // Gestione Active State e Spunta Gialla
                 if(isSelected) {
-                    btn.classList.add('active');
                     // La spunta deve essere visibile solo se selezionata
                     if(icon) {
                         icon.classList.remove('opacity-0');
                         icon.classList.add('opacity-100');
                     }
                 } else {
-                    btn.classList.remove('active');
                     // La spunta deve essere invisibile se non selezionata
                     if(icon) {
                         icon.classList.remove('opacity-100');
