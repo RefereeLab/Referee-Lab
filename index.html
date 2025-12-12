@@ -9289,6 +9289,32 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             return 'stats';
         }
 
+        function resetVisualStatesForViewChange() {
+            document.querySelectorAll('.nav-pill').forEach(btn => {
+                btn.classList.remove('active', 'nav-pill-boost');
+            });
+
+            document.querySelectorAll('[id^="mob-nav-"]').forEach(btn => {
+                btn.classList.remove('text-yellow-500', 'bg-slate-700');
+                btn.classList.add('text-slate-400');
+            });
+
+            document.querySelectorAll('.season-item').forEach(btn => {
+                btn.classList.remove('active', 'bg-slate-800', 'shadow-glow', 'text-yellow-500');
+                btn.classList.add('text-slate-500');
+
+                const icon = btn.querySelector('.check-icon');
+                if (icon) {
+                    icon.classList.add('opacity-0');
+                    icon.classList.remove('opacity-100');
+                }
+            });
+
+            document.querySelectorAll('.analytics-season-chip').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
         function resetSeasonSelections() {
             activeSeasons = ['2025-26'];
 
@@ -9315,6 +9341,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             const { updateHistory = true, replaceHistory = false } = options;
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
+                resetVisualStatesForViewChange();
                 resetSeasonSelections();
                 // Reset analytics filter to avoid confusing behavior on switch
                 analyticsMinMatchesFilter = 0;
