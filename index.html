@@ -10522,6 +10522,7 @@ function renderPlayersPassingTable() {
                     node.classList.remove('click-energize');
                     void node.offsetWidth;
                     node.classList.add('click-energize');
+                    setTimeout(() => node.classList.remove('click-energize'), 400);
                     ripple.addEventListener('animationend', () => ripple.remove());
                 });
             });
