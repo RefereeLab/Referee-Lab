@@ -9289,6 +9289,17 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             return 'stats';
         }
 
+        function resetSeasonSelections() {
+            activeSeasons = ['2025-26'];
+
+            Object.keys(analyticsSeasonFilters).forEach((key) => {
+                analyticsSeasonFilters[key] = [...ANALYTICS_SEASON_DEFAULT];
+            });
+
+            updateSeasonButtonsUI();
+            refreshAllAnalyticsSeasonChips();
+        }
+
         function updateHistoryState(view, { replace = false } = {}) {
             const slug = VIEW_ROUTE_MAP[view];
             if (!slug) return;
@@ -9304,7 +9315,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             const { updateHistory = true, replaceHistory = false } = options;
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
-                activeSeasons = ['2025-26'];
+                resetSeasonSelections();
                 // Reset analytics filter to avoid confusing behavior on switch
                 analyticsMinMatchesFilter = 0;
                 const analyticsMinMatchesEl = document.getElementById('analyticsMinMatches');
@@ -9336,18 +9347,20 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const el = document.getElementById(id);
                 if(el) {
                     const isActiveNav = id === targetNavId;
-                    el.classList.toggle('active', isActiveNav);
-                    if(!isActiveNav) el.classList.remove('nav-pill-boost');
+                    el.classList.remove('active', 'nav-pill-boost');
+                    if (isActiveNav) el.classList.add('active');
                 }
             });
             // Mobile State
              ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players', 'mob-nav-quiz'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
-                     if(id === `mob-nav-${view === 'playingTime' ? 'time' : view}`) {
-                         el.classList.add('text-yellow-500', 'bg-slate-700'); el.classList.remove('text-slate-400');
-                     } else {
-                         el.classList.remove('text-yellow-500', 'bg-slate-700'); el.classList.add('text-slate-400');
+                     const isActiveNav = id === `mob-nav-${view === 'playingTime' ? 'time' : view}`;
+                     el.classList.remove('text-yellow-500', 'bg-slate-700');
+                     el.classList.add('text-slate-400');
+                     if (isActiveNav) {
+                         el.classList.add('text-yellow-500', 'bg-slate-700');
+                         el.classList.remove('text-slate-400');
                      }
                  }
             });
