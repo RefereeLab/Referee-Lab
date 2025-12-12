@@ -3084,6 +3084,389 @@ let playerComparisonSelections = { first: '', second: '' };
 let playerComparisonOptions = [];
 
         // --- DATA SECTION (Empty as requested) ---
+
+        const MATCHES_DB_2122 = `Verona-Sassuolo	101,20	51,11	50,5%	23	11	12
+Inter-Genoa	97,28	52,49	54,2%	25	18	7
+Torino-Atalanta	96,21	45,19	47,0%	30	17	13
+Empoli-Lazio	94,27	63,21	67,1%	23	13	10
+Udinese-Juventus	99,50	47,52	47,9%	27	13	14
+Bologna-Salernitana	98,51	40,33	41,0%	28	13	15
+Roma-Fiorentina	97,00	47,16	48,7%	26	12	14
+Napoli-Venezia	95,06	49,32	52,1%	27	5	22
+Cagliari-Spezia	97,17	49,43	51,1%	34	17	17
+Sampdoria-Milan	96,09	49,39	51,6%	30	16	14
+Udinese-Venezia	94,48	50,09	52,9%	19	11	8
+Verona-Inter	95,44	46,51	48,9%	25	13	12
+Lazio-Spezia	93,11	54,52	58,9%	21	12	9
+Atalanta-Bologna	100,27	51,33	51,3%	25	11	14
+Juventus-Empoli	96,08	48,57	50,9%	17	11	6
+Fiorentina-Torino	99,36	40,12	40,4%	41	13	28
+Sassuolo-Sampdoria	94,05	51,38	54,9%	23	9	14
+Genoa-Napoli	97,30	49,18	50,6%	32	17	15
+Salernitana-Roma	93,50	45,53	48,9%	23	12	11
+Milan-Cagliari	93,58	48,54	52,0%	23	12	11
+Empoli-Venezia	102,18	58,11	56,9%	33	12	21
+Napoli-Juventus	96,01	48,32	50,5%	30	14	16
+Atalanta-Fiorentina	98,21	48,16	49,1%	33	14	19
+Sampdoria-Inter	99,04	55,25	55,9%	25	12	13
+Torino-Salernitana	99,01	54,14	54,8%	21	10	11
+Spezia-Udinese	101,34	47,05	46,4%	26	12	14
+Cagliari-Genoa	97,15	52,13	53,7%	30	15	15
+Milan-Lazio	100,14	51,43	51,6%	27	9	18
+Roma-Sassuolo	97,36	54,33	55,9%	18	7	11
+Bologna-Verona	97,39	45,28	46,6%	35	14	21
+Sassuolo-Torino	96,16	50,17	52,2%	27	7	20
+Genoa-Fiorentina	103,03	51,48	50,3%	29	13	16
+Inter-Bologna	91,58	58,00	63,1%	19	10	9
+Salernitana-Atalanta	95,19	43,50	46,0%	34	21	13
+Empoli-Sampdoria	94,22	56,37	60,0%	20	10	10
+Venezia-Spezia	97,39	44,46	45,8%	23	13	10
+Verona-Roma	96,58	49,54	51,5%	27	14	13
+Lazio-Cagliari	97,13	51,40	53,1%	14	3	11
+Juventus-Milan	95,10	48,25	50,9%	29	13	16
+Udinese-Napoli	93,57	50,59	54,3%	21	10	11
+Bologna-Genoa	96,51	45,10	46,6%	29	14	15
+Fiorentina-Inter	93,58	45,55	48,9%	26	11	15
+Atalanta-Sassuolo	94,04	50,27	53,6%	33	17	16
+Spezia-Juventus	96,36	55,08	57,1%	24	14	10
+Salernitana-Verona	97,51	43,05	44,0%	30	13	17
+Milan-Venezia	94,53	52,42	55,5%	25	12	13
+Cagliari-Empoli	96,05	52,29	54,6%	28	15	13
+Torino-Lazio	96,22	45,42	47,4%	28	19	9
+Sampdoria-Napoli	91,00	55,16	60,7%	17	10	7
+Roma-Udinese	95,59	53,05	55,3%	30	22	8
+Spezia-Milan	94,22	47,29	50,3%	23	12	11
+Inter-Atalanta	96,07	42,24	44,1%	24	13	11
+Genoa-Verona	97,02	46,09	47,6%	26	13	13
+Juventus-Sampdoria	96,12	47,51	49,7%	38	22	16
+Udinese-Fiorentina	98,30	57,23	58,3%	25	14	11
+Sassuolo-Salernitana	99,29	44,25	44,6%	32	16	16
+Empoli-Bologna	96,03	54,18	56,5%	37	15	22
+Lazio-Roma	96,49	50,27	52,1%	25	12	13
+Napoli-Cagliari	93,11	55,53	60,0%	22	12	10
+Venezia-Torino	96,47	48,28	50,1%	27	9	18
+Cagliari-Venezia	96,12	48,19	50,2%	34	15	19
+Salernitana-Genoa	99,19	38,46	39,0%	32	15	17
+Torino-Juventus	94,18	48,05	51,0%	34	20	14
+Sassuolo-Inter	95,03	51,03	53,7%	29	10	19
+Bologna-Lazio	95,50	57,27	59,9%	21	5	16
+Verona-Spezia	93,06	51,03	54,8%	26	15	11
+Sampdoria-Udinese	96,06	42,49	44,6%	27	12	15
+Roma-Empoli	94,02	55,33	59,1%	27	11	16
+Fiorentina-Napoli	95,16	47,00	49,3%	28	16	12
+Atalanta-Milan	97,03	48,45	50,2%	28	13	15
+Spezia-Salernitana	100,33	47,40	47,4%	28	13	15
+Lazio-Inter	97,10	57,00	58,7%	24	12	12
+Milan-Verona	96,34	46,51	48,5%	31	11	20
+Cagliari-Sampdoria	97,53	42,17	43,2%	32	14	18
+Udinese-Bologna	95,17	47,21	49,7%	26	15	11
+Genoa-Sassuolo	100,34	45,04	44,8%	29	11	18
+Empoli-Atalanta	94,59	58,46	61,9%	26	10	16
+Napoli-Torino	97,55	34,20	35,1%	26	6	20
+Juventus-Roma	97,31	49,49	51,1%	31	18	13
+Venezia-Fiorentina	95,09	48,50	51,3%	28	17	11
+Torino-Genoa	94,01	46,52	49,8%	38	20	18
+Sampdoria-Spezia	96,59	54,54	56,6%	18	9	9
+Salernitana-Empoli	97,11	45,09	46,5%	27	11	16
+Sassuolo-Venezia	95,03	57,51	60,9%	26	11	15
+Bologna-Milan	95,47	45,28	47,5%	22	7	15
+Atalanta-Udinese	97,27	52,16	53,6%	30	15	15
+Verona-Lazio	96,11	51,07	53,1%	27	12	15
+Fiorentina-Cagliari	95,05	51,20	54,0%	26	11	15
+Roma-Napoli	100,13	49,40	49,6%	24	14	10
+Inter-Juventus	98,45	49,02	49,7%	29	14	15
+Venezia-Salernitana	100,00	47,50	47,8%	30	17	13
+Spezia-Genoa	94,38	50,28	53,3%	28	12	16
+Milan-Torino	95,03	50,49	53,5%	35	14	21
+Udinese-Verona	96,41	43,41	45,2%	25	13	12
+Sampdoria-Atalanta	96,21	52,25	54,4%	34	15	19
+Juventus-Sassuolo	96,41	52,48	54,6%	36	21	15
+Lazio-Fiorentina	94,28	57,40	61,0%	27	16	11
+Empoli-Inter	94,17	60,14	63,9%	35	20	15
+Cagliari-Roma	98,29	45,43	46,4%	32	16	16
+Napoli-Bologna	91,10	48,21	53,0%	25	20	5
+Atalanta-Lazio	96,55	57,03	58,9%	26	13	13
+Verona-Juventus	95,09	49,50	52,4%	30	22	8
+Torino-Sampdoria	93,28	46,16	49,5%	27	19	8
+Inter-Udinese	94,02	56,12	59,8%	20	9	11
+Sassuolo-Empoli	94,31	50,19	53,2%	28	16	12
+Genoa-Venezia	94,08	44,54	47,7%	27	14	13
+Fiorentina-Spezia	95,00	59,15	62,4%	29	9	20
+Salernitana-Napoli	99,54	40,03	40,1%	24	11	13
+Roma-Milan	98,35	48,10	48,9%	32	19	13
+Bologna-Cagliari	98,00	54,46	55,9%	20	11	9
+Empoli-Genoa	96,15	58,05	60,3%	29	8	21
+Spezia-Torino	96,40	43,32	45,0%	32	15	17
+Juventus-Fiorentina	98,28	46,08	46,9%	30	15	15
+Cagliari-Atalanta	95,57	50,22	52,5%	20	11	9
+Venezia-Roma	97,40	43,30	44,5%	30	12	18
+Udinese-Sassuolo	99,00	50,37	51,1%	29	14	15
+Sampdoria-Bologna	96,33	47,28	49,2%	26	14	12
+Napoli-Verona	95,20	44,32	46,7%	35	16	19
+Lazio-Salernitana	90,05	56,03	62,2%	21	7	14
+Milan-Inter	94,43	47,02	49,7%	27	16	11
+Atalanta-Spezia	95,03	54,13	57,0%	21	10	11
+Lazio-Juventus	99,43	59,48	60,0%	27	12	15
+Fiorentina-Milan	98,18	59,57	61,0%	16	6	10
+Sassuolo-Cagliari	94,05	47,04	50,0%	23	13	10
+Salernitana-Sampdoria	95,54	45,51	47,8%	29	10	19
+Bologna-Venezia	95,04	62,48	66,1%	15	6	9
+Inter-Napoli	99,01	46,32	47,0%	31	15	16
+Genoa-Roma	95,02	53,37	56,4%	26	13	13
+Verona-Empoli	98,11	48,17	49,2%	20	7	13
+Torino-Udinese	94,59	49,08	51,7%	36	19	17
+Cagliari-Salernitana	101,45	43,50	43,1%	23	13	10
+Sampdoria-Verona	97,18	44,16	45,5%	29	13	16
+Empoli-Fiorentina	98,25	57,28	58,4%	25	15	10
+Juventus-Atalanta	96,11	49,03	51,0%	33	13	20
+Venezia-Inter	97,00	53,42	55,4%	13	9	4
+Udinese-Genoa	98,04	51,35	52,6%	29	18	11
+Spezia-Bologna	95,25	48,10	50,5%	27	15	12
+Milan-Sassuolo	94,57	43,09	45,4%	22	15	7
+Roma-Torino	102,00	49,55	48,9%	18	7	11
+Napoli-Lazio	91,03	58,08	63,8%	23	10	13
+Fiorentina-Sampdoria	94,13	52,28	55,7%	22	6	16
+Atalanta-Venezia	90,30	54,58	60,7%	20	11	9
+Verona-Cagliari	94,02	47,47	50,8%	27	15	12
+Salernitana-Juventus	97,27	53,10	54,6%	23	14	9
+Inter-Spezia	94,06	52,56	56,3%	28	18	10
+Bologna-Roma	98,02	52,25	53,5%	27	9	18
+Sassuolo-Napoli	96,23	60,18	62,6%	29	10	19
+Genoa-Milan	97,03	50,36	52,1%	27	11	16
+Torino-Empoli	97,02	48,55	50,4%	24	9	15
+Lazio-Udinese	102,13	48,49	47,8%	22	11	11
+Milan-Salernitana	94,49	53,04	56,0%	20	11	9
+Roma-Inter	93,58	62,07	66,1%	15	9	6
+Napoli-Atalanta	94,07	50,26	53,6%	34	16	18
+Bologna-Fiorentina	95,14	49,49	52,3%	27	12	15
+Venezia-Verona	96,18	41,36	43,2%	27	13	14
+Spezia-Sassuolo	97,02	57,09	58,9%	20	11	9
+Sampdoria-Lazio	95,09	56,46	59,7%	22	13	9
+Juventus-Genoa	93,11	55,24	59,5%	22	15	7
+Empoli-Udinese	97,00	56,36	58,4%	30	12	18
+Cagliari-Torino	95,09	41,34	43,7%	36	12	24
+Genoa-Sampdoria	99,07	49,48	50,2%	32	15	17
+Fiorentina-Salernitana	96,07	51,30	53,6%	20	9	11
+Venezia-Juventus	95,07	53,53	56,6%	30	20	10
+Udinese-Milan	97,27	53,21	54,7%	27	17	10
+Torino-Bologna	93,22	47,22	50,7%	34	16	18
+Verona-Atalanta	93,16	44,30	47,7%	22	12	10
+Sassuolo-Lazio	96,24	55,49	57,9%	20	9	11
+Napoli-Empoli	98,51	53,01	53,6%	19	8	11
+Inter-Cagliari	90,52	55,35	61,2%	22	9	13
+Roma-Spezia	96,02	53,25	55,6%	20	13	7
+Lazio-Genoa	96,07	59,50	62,3%	17	9	8
+Salernitana-Inter	90,03	49,05	54,5%	20	10	10
+Atalanta-Roma	96,04	55,20	57,6%	26	11	15
+Bologna-Juventus	93,01	52,59	57,0%	26	7	19
+Cagliari-Udinese	92,13	52,15	56,7%	26	12	14
+Fiorentina-Sassuolo	97,19	58,34	60,2%	21	7	14
+Spezia-Empoli	95,33	43,15	45,3%	29	20	9
+Torino-Verona	96,39	46,58	48,6%	22	15	7
+Sampdoria-Venezia	95,11	46,37	49,0%	25	8	17
+Milan-Napoli	96,13	57,26	59,7%	32	14	18
+Juventus-Cagliari	94,59	50,46	53,4%	28	16	12
+Genoa-Atalanta	96,02	51,15	53,4%	28	13	15
+Venezia-Lazio	97,24	56,43	58,2%	21	11	10
+Sassuolo-Bologna	94,05	44,58	47,8%	25	13	12
+Verona-Fiorentina	96,05	47,56	49,9%	20	15	5
+Roma-Sampdoria	98,06	56,38	57,7%	14	6	8
+Inter-Torino	94,13	53,10	56,4%	27	10	17
+Napoli-Spezia	98,33	50,49	51,6%	26	14	12
+Empoli-Milan	96,45	56,42	58,6%	28	18	10
+Udinese-Salernitana	97,02	43,50	45,2%	34	20	14
+Sampdoria-Cagliari	95,09	51,57	54,6%	29	12	17
+Spezia-Verona	94,36	46,34	49,2%	25	14	11
+Lazio-Empoli	100,04	48,31	48,5%	24	13	11
+Sassuolo-Genoa	94,06	51,45	55,0%	19	8	11
+Milan-Roma	99,10	39,57	40,3%	26	6	20
+Juventus-Napoli	97,30	55,31	56,9%	19	8	11
+Fiorentina-Udinese	96,31	56,51	58,9%	34	12	22
+Bologna-Inter	99,30	49,38	49,9%	20	11	9
+Atalanta-Torino	96,03	47,46	49,7%	23	12	11
+Salernitana-Venezia	97,24	41,13	42,3%	29	12	17
+Venezia-Milan	93,03	54,28	58,5%	22	11	11
+Empoli-Sassuolo	95,08	60,54	64,0%	25	10	15
+Udinese-Atalanta	94,00	58,56	62,7%	21	9	12
+Napoli-Sampdoria	96,04	49,28	51,5%	23	12	11
+Roma-Juventus	100,19	45,26	45,3%	23	11	12
+Genoa-Spezia	94,17	50,45	53,8%	33	17	16
+Verona-Salernitana	98,02	43,56	44,8%	25	13	12
+Inter-Lazio	95,23	54,51	57,5%	25	11	14
+Torino-Fiorentina	91,04	48,28	53,2%	28	16	12
+Cagliari-Bologna	99,13	45,31	45,9%	27	12	15
+Sampdoria-Torino	97,45	45,27	46,5%	27	13	14
+Salernitana-Lazio	96,00	56,55	59,3%	27	11	16
+Juventus-Udinese	95,11	52,48	55,5%	23	13	10
+Sassuolo-Verona	97,00	42,57	44,3%	24	6	18
+Venezia-Empoli	95,13	45,38	47,9%	30	13	17
+Roma-Cagliari	99,07	50,44	51,2%	30	13	17
+Atalanta-Inter	93,12	53,50	57,8%	22	12	10
+Milan-Spezia	98,48	48,03	48,6%	28	11	17
+Bologna-Napoli	95,40	51,40	54,0%	19	9	10
+Fiorentina-Genoa	92,14	58,42	63,6%	21	10	11
+Verona-Bologna	97,05	48,59	50,5%	30	21	9
+Genoa-Udinese	95,20	30,27	31,9%	44	27	17
+Inter-Venezia	97,17	58,06	59,7%	22	13	9
+Lazio-Atalanta	93,08	58,52	63,2%	27	10	17
+Cagliari-Fiorentina	97,37	40,57	41,9%	37	21	16
+Torino-Sassuolo	94,01	43,30	46,3%	36	21	15
+Spezia-Sampdoria	94,03	46,24	49,3%	36	24	12
+Napoli-Salernitana	93,29	56,01	59,9%	23	9	14
+Empoli-Roma	98,14	53,17	54,2%	27	13	14
+Milan-Juventus	94,59	56,58	60,0%	35	16	19
+Roma-Genoa	99,43	44,29	44,6%	31	8	23
+Inter-Milan	98,04	44,03	44,9%	34	20	14
+Fiorentina-Lazio	93,57	54,02	57,5%	28	13	15
+Atalanta-Cagliari	99,01	47,28	47,9%	27	13	14
+Venezia-Napoli	101,09	55,15	54,6%	23	12	11
+Sampdoria-Sassuolo	98,35	49,34	50,3%	31	15	16
+Bologna-Empoli	94,02	56,30	60,1%	25	9	16
+Udinese-Torino	96,49	40,50	42,2%	33	12	21
+Juventus-Verona	94,10	49,45	52,8%	22	11	11
+Salernitana-Spezia	98,51	48,52	49,4%	31	12	19
+Lazio-Bologna	95,27	54,47	57,4%	29	13	16
+Napoli-Inter	97,16	54,57	56,5%	21	8	13
+Torino-Venezia	105,37	43,38	41,3%	26	14	12
+Milan-Sampdoria	98,01	52,34	53,6%	24	13	11
+Verona-Udinese	95,04	43,43	46,0%	25	18	7
+Genoa-Salernitana	96,02	42,08	43,9%	27	17	10
+Empoli-Cagliari	104,15	48,29	46,5%	27	14	13
+Sassuolo-Roma	99,15	47,59	48,3%	26	13	13
+Atalanta-Juventus	95,21	53,53	56,5%	22	13	9
+Spezia-Fiorentina	95,16	44,21	46,6%	27	17	10
+Juventus-Torino	95,01	47,46	50,3%	35	16	19
+Sampdoria-Empoli	92,58	51,02	54,9%	27	15	12
+Roma-Verona	97,27	46,43	47,9%	32	18	14
+Salernitana-Milan	97,56	46,55	47,9%	26	14	12
+Fiorentina-Atalanta	97,50	53,44	54,9%	37	17	20
+Venezia-Genoa	96,54	45,37	47,1%	29	14	15
+Inter-Sassuolo	98,19	53,32	54,4%	24	12	12
+Udinese-Lazio	96,03	46,20	48,2%	31	22	9
+Cagliari-Napoli	98,57	45,08	45,6%	39	17	22
+Bologna-Spezia	99,10	46,43	47,1%	20	7	13
+Milan-Udinese	96,13	45,38	47,4%	30	13	17
+Genoa-Inter	95,53	44,02	45,9%	20	11	9
+Salernitana-Bologna	96,07	43,15	45,0%	38	13	25
+Empoli-Juventus	96,30	47,31	49,2%	24	16	8
+Sassuolo-Fiorentina	96,16	45,14	47,0%	24	12	12
+Torino-Cagliari	100,00	48,45	48,8%	36	16	20
+Verona-Venezia	97,04	43,30	44,8%	23	13	10
+Spezia-Roma	103,41	51,12	49,4%	24	13	11
+Lazio-Napoli	98,57	57,50	58,4%	27	13	14
+Napoli-Sampdoria	92,06	53,53	58,5%	25	16	9
+Inter-Salernitana	91,05	48,50	53,6%	18	11	7
+Udinese-Sampdoria	97,00	40,36	41,9%	34	20	14
+Roma-Atalanta	98,20	50,49	51,7%	33	17	16
+Cagliari-Lazio	98,50	52,26	53,1%	23	10	13
+Genoa-Empoli	96,17	44,21	46,1%	34	15	19
+Venezia-Sassuolo	97,12	48,25	49,8%	32	18	14
+Fiorentina-Verona	93,06	50,44	54,5%	30	15	15
+Bologna-Torino	94,25	40,24	42,8%	39	23	16
+Juventus-Spezia	93,07	57,43	62,0%	25	14	11
+Napoli-Milan	98,54	49,45	50,3%	22	7	15
+Spezia-Cagliari	99,33	52,11	52,4%	28	10	18
+Salernitana-Sassuolo	96,13	55,16	57,4%	28	13	15
+Sampdoria-Juventus	94,11	56,45	60,3%	22	7	15
+Milan-Empoli	96,53	55,48	57,6%	18	6	12
+Fiorentina-Bologna	96,05	52,53	55,0%	25	9	16
+Verona-Napoli	99,27	40,30	40,7%	28	19	9
+Udinese-Roma	97,00	53,58	55,6%	28	16	12
+Atalanta-Genoa	94,27	45,13	47,9%	29	12	17
+Torino-Inter	97,05	48,56	50,4%	32	15	17
+Lazio-Venezia	94,06	51,20	54,6%	24	11	13
+Sassuolo-Spezia	93,04	50,26	54,2%	30	14	16
+Genoa-Torino	94,30	49,56	52,8%	30	13	17
+Napoli-Udinese	97,22	46,44	48,0%	22	10	12
+Inter-Fiorentina	94,59	52,34	55,3%	26	14	12
+Cagliari-Milan	93,56	44,47	47,7%	27	13	14
+Venezia-Sampdoria	96,18	42,44	44,4%	45	28	17
+Juventus-Salernitana	95,42	50,46	53,0%	23	10	13
+Empoli-Verona	93,12	51,37	55,4%	30	17	13
+Roma-Lazio	96,58	49,56	51,5%	28	16	12
+Bologna-Atalanta	104,00	50,50	48,9%	21	9	12
+Spezia-Venezia	96,08	44,55	46,7%	27	15	12
+Lazio-Sassuolo	95,33	61,09	64,0%	19	11	8
+Salernitana-Torino	100,06	37,56	37,9%	36	15	21
+Fiorentina-Empoli	99,24	56,27	56,8%	30	10	20
+Udinese-Cagliari	93,00	46,51	50,4%	34	19	15
+Atalanta-Napoli	99,00	55,48	56,4%	26	15	11
+Sampdoria-Roma	96,28	48,38	50,4%	28	15	13
+Juventus-Inter	106,32	51,35	48,4%	28	9	19
+Verona-Genoa	94,06	39,31	42,0%	31	16	15
+Milan-Bologna	99,19	49,03	49,4%	17	10	7
+Empoli-Spezia	96,03	55,48	58,1%	29	11	18
+Inter-Verona	94,10	49,23	52,4%	17	10	7
+Cagliari-Juventus	96,20	45,34	47,3%	29	19	10
+Genoa-Lazio	92,04	49,30	53,8%	15	7	8
+Venezia-Udinese	97,14	38,26	39,5%	26	15	11
+Sassuolo-Atalanta	94,29	54,39	57,8%	32	18	14
+Napoli-Fiorentina	97,10	53,21	54,9%	27	10	17
+Roma-Salernitana	98,07	45,50	46,7%	39	16	23
+Torino-Milan	97,20	52,10	53,6%	24	18	6
+Bologna-Sampdoria	96,06	50,28	52,5%	22	11	11
+Spezia-Inter	96,24	52,29	54,4%	20	9	11
+Milan-Genoa	97,33	47,05	48,3%	29	10	19
+Cagliari-Sassuolo	101,03	47,59	47,5%	27	16	11
+Udinese-Empoli	96,04	43,22	45,1%	32	19	13
+Sampdoria-Salernitana	98,27	52,28	53,3%	41	18	23
+Fiorentina-Venezia	96,01	44,05	45,9%	32	15	17
+Juventus-Bologna	98,49	44,47	45,3%	22	11	11
+Lazio-Torino	96,28	54,00	56,0%	22	10	12
+Napoli-Roma	102,30	50,10	48,9%	33	21	12
+Atalanta-Verona	98,40	51,52	52,6%	26	13	13
+Venezia-Atalanta	96,03	52,21	54,5%	25	12	13
+Torino-Spezia	97,18	47,52	49,2%	22	9	13
+Inter-Roma	95,10	60,22	63,4%	24	11	13
+Verona-Sampdoria	95,28	41,14	43,2%	30	15	15
+Salernitana-Fiorentina	98,46	50,03	50,7%	27	15	12
+Empoli-Napoli	96,59	55,09	56,9%	23	14	9
+Bologna-Udinese	94,00	45,18	48,2%	31	9	22
+Genoa-Cagliari	95,11	39,14	41,2%	39	21	18
+Lazio-Milan	97,59	49,37	50,6%	28	13	15
+Sassuolo-Juventus	96,16	54,51	57,0%	23	15	8
+Napoli-Sassuolo	91,15	52,45	57,8%	19	10	9
+Cagliari-Verona	97,38	48,18	49,5%	33	16	17
+Sampdoria-Genoa	101,41	37,12	36,6%	36	13	23
+Spezia-Lazio	95,03	43,55	46,2%	25	15	10
+Juventus-Venezia	96,09	46,21	48,2%	29	17	12
+Milan-Fiorentina	96,11	53,02	55,1%	34	17	17
+Empoli-Torino	96,56	50,21	51,9%	25	14	11
+Udinese-Inter	98,27	50,30	51,3%	22	12	10
+Roma-Bologna	95,36	51,56	54,3%	19	10	9
+Atalanta-Salernitana	95,11	49,56	52,5%	22	13	9
+Inter-Empoli	97,49	49,25	50,5%	19	10	9
+Genoa-Juventus	96,57	47,46	49,3%	28	13	15
+Torino-Napoli	96,04	47,50	49,8%	29	18	11
+Sassuolo-Udinese	93,58	46,16	49,2%	28	10	18
+Lazio-Sampdoria	95,00	58,55	62,0%	18	9	9
+Spezia-Atalanta	99,45	55,05	55,2%	22	10	12
+Venezia-Bologna	98,20	45,03	45,8%	23	10	13
+Salernitana-Cagliari	101,07	44,54	44,4%	29	12	17
+Verona-Milan	97,28	46,42	47,9%	22	15	7
+Fiorentina-Roma	98,40	60,34	61,4%	27	16	11
+Empoli-Salernitana	96,33	53,15	55,2%	26	18	8
+Verona-Torino	98,22	42,31	43,2%	35	17	18
+Udinese-Spezia	99,12	46,37	47,0%	29	19	10
+Roma-Venezia	101,18	50,37	50,0%	25	11	14
+Bologna-Sassuolo	98,09	60,50	62,0%	19	9	10
+Napoli-Genoa	95,47	43,11	45,1%	28	13	15
+Milan-Atalanta	95,57	50,02	52,1%	22	8	14
+Cagliari-Inter	97,20	52,43	54,2%	27	12	15
+Sampdoria-Fiorentina	97,29	50,52	52,2%	27	18	9
+Juventus-Lazio	97,55	55,27	56,6%	29	16	13
+Torino-Roma	96,00	46,55	48,9%	20	10	10
+Genoa-Bologna	94,58	46,41	49,2%	27	17	10
+Lazio-Verona	99,19	41,06	41,4%	28	9	19
+Fiorentina-Juventus	96,12	58,34	60,9%	27	13	14
+Atalanta-Empoli	95,01	57,26	60,4%	13	6	7
+Spezia-Napoli	100,32	50,26	50,2%	19	10	9
+Sassuolo-Milan	95,09	47,48	50,2%	21	8	13
+Inter-Sampdoria	90,18	62,03	68,7%	18	6	12
+Venezia-Cagliari	100,09	49,25	49,3%	25	6	19
+Salernitana-Udinese	101,27	56,45	55,9%	23	11	12`;
+
+
         const MATCHES_DB_2223 = `Sampdoria-Atalanta	98,53	51,55	52,5%	34	13	21
 Milan-Udinese	100,25	52,44	52,5%	29	16	13
 Monza-Torino	95,55	57,57	60,4%	23	6	17
@@ -5671,7 +6054,390 @@ Maresca	52,48
 Guida	55,59'
 `, 
 
-            "2021-22": ``, "2020-21": ``
+            "2021-22": `Volpi	51,11
+Marini	52,49
+Chiffi	45,19
+Sozza	63,21
+Pezzuto	47,52
+Rapuano	40,33
+Pairetto	47,16
+Aureliano	49,32
+Fourneau	49,43
+Guida	49,39
+Marinelli	50,09
+Manganiello	46,51
+Dionisi	54,52
+Orsato	51,33
+Ghersini	48,57
+Mariani	40,12
+Sacchi	51,38
+Di Bello	49,18
+Abisso	45,53
+Serra	48,54
+Rapuano	58,11
+Irrati	48,32
+Marini	48,16
+Orsato	55,25
+Aureliano	54,14
+Guida	47,05
+Pairetto	52,13
+Chiffi	51,43
+Sozza	54,33
+Pezzuto	45,28
+Piccinini	50,17
+Marinelli	51,48
+Ayroldi	58,00
+Valeri	43,50
+Mariani	56,37
+Abisso	44,46
+Maresca	49,54
+Ghersini	51,40
+Doveri	48,25
+Manganiello	50,59
+Fourneau	45,10
+Fabbri	45,55
+Massa	50,27
+Aureliano	55,08
+Irrati	43,05
+Pezzuto	52,42
+Di Bello	52,29
+Abisso	45,42
+Valeri	55,16
+Rapuano	53,05
+Manganiello	47,29
+Maresca	42,24
+Doveri	46,09
+Ayroldi	47,51
+Ghersini	57,23
+Giua	44,25
+Giacomelli	54,18
+Guida	50,27
+Piccinini	55,53
+Maggioni	48,28
+Volpi	48,19
+Mariani	38,46
+Valeri	48,05
+Pairetto	51,03
+Massa	57,27
+Camplone	51,03
+Orsato	42,49
+Ayroldi	55,33
+Sozza	47,00
+Di Bello	48,45
+Massa	47,40
+Irrati	57,00
+Prontera	46,51
+Marchetti	42,17
+Abisso	47,21
+Chiffi	45,04
+Serra	58,46
+Sacchi	34,20
+Orsato	49,49
+Massimi	48,50
+Giacomelli	46,52
+Fabbri	54,54
+Doveri	45,09
+Di Martino	57,51
+Valeri	45,28
+Marinelli	52,16
+Piccinini	51,07
+Rapuano	51,20
+Massa	49,40
+Mariani	49,02
+Di Bello	47,50
+Sozza	50,28
+Aureliano	50,49
+Marchetti	43,41
+Prontera	52,25
+Sacchi	52,48
+Ayroldi	57,40
+Chiffi	60,14
+Pezzuto	45,43
+Serra	48,21
+Guida	57,03
+Marinelli	49,50
+Fourneau	46,16
+Sacchi	56,12
+Massimi	50,19
+Mariani	44,54
+Giua	59,15
+Fabbri	40,03
+Maresca	48,10
+Massa	54,46
+Pairetto	58,05
+Orsato	43,32
+Sozza	46,08
+Piccinini	50,22
+Aureliano	43,30
+Dionisi	50,37
+Manganiello	47,28
+Ayroldi	44,32
+Rapuano	56,03
+Doveri	47,02
+Abisso	54,13
+Di Bello	59,48
+Guida	59,57
+Baroni	47,04
+Giacomelli	45,51
+Chiffi	62,48
+Valeri	46,32
+Irrati	53,37
+Gariglio	48,17
+Pezzuto	49,08
+Doveri	43,50
+Maggioni	44,16
+Sacchi	57,28
+Ayroldi	49,03
+Marinelli	53,42
+Meraviglia	51,35
+Massimi	48,10
+Manganiello	43,09
+Chiffi	49,55
+Orsato	58,08
+Dionisi	52,28
+Santoro	54,58
+Marcenaro	47,47
+Fourneau	53,10
+Ghersini	52,56
+Pairetto	52,25
+Pezzuto	60,18
+Sacchi	50,36
+Colombo	48,55
+Piccinini	48,49
+Giua	53,04
+Di Bello	62,07
+Mariani	50,26
+Irrati	49,49
+Prontera	41,36
+Maresca	57,09
+Fabbri	56,46
+Chiffi	55,24
+Paterna	56,36
+Massimi	41,34
+Doveri	49,48
+Ghersini	51,30
+Valeri	53,53
+Fourneau	53,21
+Dionisi	47,22
+Sacchi	44,30
+Sozza	55,49
+Marinelli	53,01
+Marchetti	55,35
+Prontera	53,25
+Pairetto	59,50
+Mariani	49,05
+Irrati	55,20
+Orsato	52,59
+Maresca	52,15
+Serra	58,34
+Maggioni	43,15
+Fabbri	46,58
+Abisso	46,37
+Massa	57,26
+Dionisi	50,46
+Valeri	51,15
+Maresca	56,43
+Fabbri	44,58
+Doveri	47,56
+Giacomelli	56,38
+Guida	53,10
+Massimi	50,49
+Di Bello	56,42
+Sozza	43,50
+Camplone	51,57
+Mariani	46,34
+Giua	48,31
+Manganiello	51,45
+Chiffi	39,57
+Sozza	55,31
+Pezzuto	56,51
+Doveri	49,38
+Abisso	47,46
+Mariani	41,13
+Irrati	54,28
+Volpi	60,54
+Fabbri	58,56
+Di Bello	49,28
+Massa	45,26
+Guida	50,45
+Dionisi	43,56
+Pairetto	54,51
+Marinelli	48,28
+Ghersini	45,31
+Massimi	45,27
+Abisso	56,55
+Giua	52,48
+Prontera	42,57
+Giacomelli	45,38
+Maggioni	50,44
+Massa	53,50
+Serra	48,03
+Marinelli	51,40
+Maresca	58,42
+Gariglio	48,59
+Doveri	30,27
+Marchetti	58,06
+Sozza	58,52
+Aureliano	40,57
+Fourneau	43,30
+Manganiello	46,24
+Pairetto	56,01
+Fabbri	53,17
+Di Bello	56,58
+Abisso	44,29
+Guida	44,03
+Orsato	54,02
+Prontera	47,28
+Mariani	55,15
+Maresca	49,34
+Cosso	56,30
+Rapuano	40,50
+Massimi	49,45
+Valeri	48,52
+Piccinini	54,47
+Doveri	54,57
+Giua	43,38
+Chiffi	52,34
+Colombo	43,43
+Di Bello	42,08
+Dionisi	48,29
+Guida	47,59
+Mariani	53,53
+Marchetti	44,21
+Massa	47,46
+Rapuano	51,02
+Pairetto	46,43
+Fabbri	46,55
+Doveri	53,44
+Orsato	45,37
+Fourneau	53,32
+Massimi	46,20
+Sozza	45,08
+Marinelli	46,43
+Marchetti	45,38
+Chiffi	44,02
+Ayroldi	43,15
+Maresca	47,31
+Prontera	45,14
+Volpi	48,45
+Sacchi	43,30
+Fabbri	51,12
+Di Bello	57,50
+Sozza	53,53
+Marinelli	48,50
+Irrati	40,36
+Massa	50,49
+Maresca	52,26
+Aureliano	44,21
+Pairetto	48,25
+Manganiello	50,44
+Massimi	40,24
+Fourneau	57,43
+Orsato	49,45
+Orsato	52,11
+Massimi	55,16
+Valeri	56,45
+Chiffi	55,48
+Sacchi	52,53
+Doveri	40,30
+Di Bello	53,58
+Abisso	45,13
+Guida	48,56
+Manganiello	51,20
+Volpi	50,26
+Mariani	49,56
+Fourneau	46,44
+Chiffi	52,34
+Di Bello	44,47
+Orsato	42,44
+Ayroldi	50,46
+Marcenaro	51,37
+Irrati	49,56
+Maresca	50,50
+Doveri	44,55
+Rapuano	61,09
+Piccinini	37,56
+Massimi	56,27
+Abisso	46,51
+Di Bello	55,48
+Manganiello	48,38
+Irrati	51,35
+Fourneau	39,31
+Marinelli	49,03
+Ayroldi	55,48
+Marinelli	49,23
+Chiffi	45,34
+Manganiello	49,30
+Guida	38,26
+Sacchi	54,39
+Mariani	53,21
+Volpi	45,50
+Doveri	52,10
+Pairetto	50,28
+Maresca	52,29
+Chiffi	47,05
+Massa	47,59
+Marchetti	43,22
+Valeri	52,28
+Abisso	44,05
+Sacchi	44,47
+Prontera	54,00
+Di Bello	50,10
+Piccinini	51,52
+Fourneau	52,21
+Ghersini	47,52
+Sozza	60,22
+Ayroldi	41,14
+Massa	50,03
+Marinelli	55,09
+Santoro	45,18
+Valeri	39,14
+Guida	49,37
+Maresca	54,51
+Rapuano	52,45
+Orsato	48,18
+Maresca	37,12
+Pairetto	43,55
+Prontera	46,21
+Valeri	53,02
+Cosso	50,21
+Chiffi	50,30
+Fabbri	51,56
+Guida	49,56
+Manganiello	49,25
+Sozza	47,46
+Prontera	47,50
+Marcenaro	46,16
+Massa	58,55
+Maresca	55,05
+Marinelli	45,03
+Di Bello	44,54
+Doveri	46,42
+Guida	60,34
+Massa	53,15
+Camplone	42,31
+Aureliano	46,37
+Sozza	50,37
+Ghersini	60,50
+Fabbri	43,11
+Orsato	50,02
+Doveri	52,43
+Mariani	50,52
+Ayroldi	55,27
+Irrati	46,55
+Miele	46,41
+Colombo	41,06
+Chiffi	58,34
+Abisso	57,26
+Marchetti	50,26
+Doveri	47,48
+Di Bello	62,03
+Maresca	49,25
+Orsato	56,45'
+`, 
+
+
+          "2020-21": ``
         };
         
 
