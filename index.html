@@ -335,14 +335,20 @@ html, body {
             align-items: center;
             justify-content: center;
             pointer-events: none;
-            opacity: 0.35;
+            opacity: 0.42;
         }
 
         .record-referee-portrait {
             height: 110%;
             object-fit: contain;
-            filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.55));
+            filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55));
             mix-blend-mode: screen;
+            -webkit-mask-image: radial-gradient(circle 68% at 50% 55%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+            mask-image: radial-gradient(circle 68% at 50% 55%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: contain;
+            mask-size: contain;
         }
 
         .record-card::after {
@@ -7272,9 +7278,9 @@ const REFEREE_SOFASCORE_IDS = {
     "crezzini": "788387"
 };
 
-const REFEREE_PORTRAITS = {
+const REFEREE_PORTRAIT_FALLBACKS = {
     "daniele orsato": "https://cdn.sportface.it/wp-content/uploads/2020/09/Daniele-Orsato.png",
-    "daniele doveri": "https://img.sofascore.com/api/v1/referee/79484/image",
+    "daniele doveri": "https://cdn.sportface.it/wp-content/uploads/2019/08/daniele-doveri.jpg",
     "davide massa": "https://cdn.sportface.it/wp-content/uploads/2024/01/13102639/Davide-Massa.png",
     "marco guida": "https://cdn.sportface.it/wp-content/uploads/2024/02/12113213/Marco-Guida.png",
     "simone sozza": "https://cdn.sportface.it/wp-content/uploads/2024/05/19172806/Simone-Sozza.png",
@@ -7289,7 +7295,7 @@ const REFEREE_PORTRAITS = {
     "luca crezzini": "https://img.sofascore.com/api/v1/referee/788387/image",
     // Surnames fallback
     "orsato": "https://cdn.sportface.it/wp-content/uploads/2020/09/Daniele-Orsato.png",
-    "doveri": "https://img.sofascore.com/api/v1/referee/79484/image",
+    "doveri": "https://cdn.sportface.it/wp-content/uploads/2019/08/daniele-doveri.jpg",
     "massa": "https://cdn.sportface.it/wp-content/uploads/2024/01/13102639/Davide-Massa.png",
     "guida": "https://cdn.sportface.it/wp-content/uploads/2024/02/12113213/Marco-Guida.png",
     "sozza": "https://cdn.sportface.it/wp-content/uploads/2024/05/19172806/Simone-Sozza.png",
@@ -7301,8 +7307,122 @@ const REFEREE_PORTRAITS = {
     "ayroldi": "https://cdn.sportface.it/wp-content/uploads/2023/12/17174748/Giovanni-Ayroldi.png",
     "la penna": "https://cdn.sportface.it/wp-content/uploads/2024/05/19173140/Federico-La-Penna.png",
     "chiffi": "https://cdn.sportface.it/wp-content/uploads/2023/12/17174450/Daniele-Chiffi.png",
+    "mariani": "https://img.sofascore.com/api/v1/referee/130916/image",
     "crezzini": "https://img.sofascore.com/api/v1/referee/788387/image"
 };
+
+const REFEREE_PORTRAITS = {};
+const REFEREE_PORTRAIT_LOOKUPS = new Map();
+
+
+function buildSofascorePortraitUrl(refId) {
+    return refId ? `https://img.sofascore.com/api/v1/referee/${refId}/image` : '';
+}
+
+function registerRefereePortrait(name, url) {
+    if (!name || !url) return;
+    const normalized = name.toLowerCase();
+    REFEREE_PORTRAITS[normalized] = url;
+
+    const surname = getRefereeSurname(name).toLowerCase();
+    if (surname && !REFEREE_PORTRAITS[surname]) {
+        REFEREE_PORTRAITS[surname] = url;
+    }
+}
+
+function seedRefereePortraits() {
+    Object.entries(REFEREE_SOFASCORE_IDS).forEach(([key, id]) => registerRefereePortrait(key, buildSofascorePortraitUrl(id)));
+    Object.entries(REFEREE_PORTRAIT_FALLBACKS).forEach(([key, url]) => {
+        if (!REFEREE_PORTRAITS[key]) registerRefereePortrait(key, url);
+    });
+}
+
+seedRefereePortraits();
+
+function prefetchRefereePortraits() {
+    const pool = new Set([
+        ...REFEREES_2425,
+        ...REFEREES_2526,
+        ...HISTORICAL_SURNAMES,
+        ...PRESET_RADAR_REFEREES
+    ]);
+
+    pool.forEach(name => ensureSofascorePortrait(name));
+}
+
+prefetchRefereePortraits();
+
+async function lookupRefereeOnSofascore(query) {
+    if (!query || typeof fetch !== 'function') return null;
+    if (REFEREE_PORTRAIT_LOOKUPS.has(query)) return REFEREE_PORTRAIT_LOOKUPS.get(query);
+
+    const promise = (async () => {
+        const response = await fetch(`https://api.sofascore.com/api/v1/search/all?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error('Sofascore search failed');
+        const payload = await response.json();
+        const candidates = payload?.referees || payload?.results?.referees || [];
+        const normalizedQuery = query.toLowerCase();
+        const surnameQuery = getRefereeSurname(query).toLowerCase();
+
+        const best = candidates.find(r => {
+            const name = (r.name || '').toLowerCase();
+            return name === normalizedQuery || name.includes(normalizedQuery) || name.includes(surnameQuery);
+        }) || candidates[0];
+
+        return best?.id || null;
+    })()
+    .catch(err => {
+        console.warn('Sofascore lookup failed for', query, err);
+        return null;
+    })
+    .finally(() => REFEREE_PORTRAIT_LOOKUPS.delete(query));
+
+    REFEREE_PORTRAIT_LOOKUPS.set(query, promise);
+    return promise;
+}
+
+function refreshRefereePortraitInDom(surnameKey, url) {
+    if (!url) return;
+    const surname = (surnameKey || '').toLowerCase();
+    const images = document.querySelectorAll('.record-referee-portrait');
+
+    images.forEach(img => {
+        const alt = (img.getAttribute('alt') || '').toLowerCase();
+        if (alt.includes(surname)) {
+            img.src = url;
+        }
+    });
+}
+
+function ensureSofascorePortrait(refName) {
+    const normalized = (refName || '').trim();
+    if (!normalized) return '';
+
+    const lower = normalized.toLowerCase();
+    const surname = getRefereeSurname(normalized).toLowerCase();
+
+    if (REFEREE_PORTRAITS[lower]) return REFEREE_PORTRAITS[lower];
+    if (REFEREE_PORTRAITS[surname]) return REFEREE_PORTRAITS[surname];
+
+    const sofaId = REFEREE_SOFASCORE_IDS[lower] || REFEREE_SOFASCORE_IDS[surname];
+    if (sofaId) {
+        const url = buildSofascorePortraitUrl(sofaId);
+        registerRefereePortrait(normalized, url);
+        return url;
+    }
+
+    const fallback = REFEREE_PORTRAIT_FALLBACKS[lower] || REFEREE_PORTRAIT_FALLBACKS[surname];
+    if (fallback) registerRefereePortrait(normalized, fallback);
+
+    lookupRefereeOnSofascore(normalized).then(id => {
+        if (!id) return;
+        const url = buildSofascorePortraitUrl(id);
+        registerRefereePortrait(normalized, url);
+        refreshRefereePortraitInDom(surname, url);
+    });
+
+    return REFEREE_PORTRAITS[lower] || REFEREE_PORTRAITS[surname] || '';
+}
 
 
 
@@ -7347,14 +7467,7 @@ function getTeamLogo(teamName) {
 }
 
 function getRefereePortrait(refName) {
-    const normalized = (refName || '').trim();
-    if (!normalized) return '';
-
-    const exactKey = normalized.toLowerCase();
-    if (REFEREE_PORTRAITS[exactKey]) return REFEREE_PORTRAITS[exactKey];
-
-    const surname = getRefereeSurname(normalized).toLowerCase();
-    return REFEREE_PORTRAITS[surname] || '';
+    return ensureSofascorePortrait(refName);
 }
 
         // --- DEBOUNCE FUNCTION ---
