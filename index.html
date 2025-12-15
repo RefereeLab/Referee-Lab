@@ -1479,10 +1479,18 @@ html, body {
                                     <thead class="bg-slate-900 text-slate-400">
                                         <tr>
                                             <th class="p-2 text-left">Squadra</th>
-                                            <th class="p-2 text-center">Gare</th>
-                                            <th class="p-2 text-center">Falli medi</th>
-                                            <th class="p-2 text-center">Eff. medio</th>
-                                            <th class="p-2 text-center">Tot. medio</th>
+                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('matches')">
+                                                <span class="inline-flex items-center gap-1 justify-center">Gare <span id="referee-team-sort-matches"></span></span>
+                                            </th>
+                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgFouls')">
+                                                <span class="inline-flex items-center gap-1 justify-center">Falli medi <span id="referee-team-sort-avgFouls"></span></span>
+                                            </th>
+                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgEffSec')">
+                                                <span class="inline-flex items-center gap-1 justify-center">Eff. medio <span id="referee-team-sort-avgEffSec"></span></span>
+                                            </th>
+                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgTotSec')">
+                                                <span class="inline-flex items-center gap-1 justify-center">Tot. medio <span id="referee-team-sort-avgTotSec"></span></span>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody id="referee-team-balance" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
@@ -6942,6 +6950,7 @@ Orsato	56,45'
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = ['2020-21'];
         const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22'];
+        const REFEREE_PROFILE_SEASONS = [...ANALYTICS_SEASON_OPTIONS];
         const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
         let analyticsSeasonFilters = {
             ritmo: [...ANALYTICS_SEASON_DEFAULT],
@@ -6967,8 +6976,10 @@ Orsato	56,45'
         let activeSeasons = ['2025-26'];
         let sortColumn = 'matches';
         let sortDirection = 'desc';
+        let refereeTeamBalanceData = [];
+        let refereeTeamSort = { column: 'matches', direction: 'desc' };
         let minMatchesFilterStats = 0;
-	let minMatchesFilterPT = 0;
+        let minMatchesFilterPT = 0;
         let analyticsMinMatchesFilter = 0; // NUOVA VARIABILE PER IL FILTRO ANALYTICS
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
@@ -8078,6 +8089,69 @@ function getRefereePortrait(refName) {
             renderRefereeProfile(value);
         }
 
+        function getRefereeTeamSortIcon(col) {
+            if (refereeTeamSort.column !== col) return '<i class="fa-solid fa-sort text-slate-500 text-[10px]"></i>';
+            return refereeTeamSort.direction === 'asc'
+                ? '<i class="fa-solid fa-sort-up text-yellow-500 text-[10px]"></i>'
+                : '<i class="fa-solid fa-sort-down text-yellow-500 text-[10px]"></i>';
+        }
+
+        function updateRefereeTeamSortIcons() {
+            const columns = ['matches', 'avgFouls', 'avgEffSec', 'avgTotSec'];
+            columns.forEach(col => {
+                const el = document.getElementById(`referee-team-sort-${col}`);
+                if (el) el.innerHTML = getRefereeTeamSortIcon(col);
+            });
+        }
+
+        function changeRefereeTeamSort(col) {
+            if (refereeTeamSort.column === col) {
+                refereeTeamSort.direction = refereeTeamSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                refereeTeamSort = { column: col, direction: col === 'name' ? 'asc' : 'desc' };
+            }
+            renderRefereeTeamBalanceTable();
+        }
+
+        function renderRefereeTeamBalanceTable() {
+            const teamTable = document.getElementById('referee-team-balance');
+            if (!teamTable) return;
+
+            if (!refereeTeamBalanceData.length) {
+                teamTable.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">Nessuna squadra trovata con i filtri attuali.</td></tr>`;
+                updateRefereeTeamSortIcons();
+                return;
+            }
+
+            const sorted = refereeTeamBalanceData.slice().sort((a, b) => {
+                const dir = refereeTeamSort.direction === 'asc' ? 1 : -1;
+                const getValue = (item, key) => item[key];
+                const va = getValue(a, refereeTeamSort.column);
+                const vb = getValue(b, refereeTeamSort.column);
+
+                const isNumber = (v) => typeof v === 'number' && !isNaN(v);
+                if (isNumber(va) && isNumber(vb)) return (va - vb) * dir || a.name.localeCompare(b.name) * dir;
+                if (isNumber(va)) return -1 * dir;
+                if (isNumber(vb)) return 1 * dir;
+                return a.name.localeCompare(b.name) * dir;
+            });
+
+            teamTable.innerHTML = sorted.map(team => {
+                const avgFoulsLabel = Number.isFinite(team.avgFouls) ? team.avgFouls.toFixed(1) : '—';
+                const avgEffLabel = Number.isFinite(team.avgEffSec) ? formatSecondsToTime(team.avgEffSec) : '—';
+                const avgTotLabel = Number.isFinite(team.avgTotSec) ? formatSecondsToTime(team.avgTotSec) : '—';
+                return `<tr>
+                            <td class="p-2 font-semibold text-white">${team.name}</td>
+                            <td class="p-2 text-center font-mono text-slate-200">${team.matches}</td>
+                            <td class="p-2 text-center font-mono text-yellow-400">${avgFoulsLabel}</td>
+                            <td class="p-2 text-center font-mono text-green-400">${avgEffLabel}</td>
+                            <td class="p-2 text-center font-mono text-blue-400">${avgTotLabel}</td>
+                        </tr>`;
+            }).join('');
+
+            updateRefereeTeamSortIcons();
+        }
+
         function renderRefereeProfile(rawName, displayName = rawName) {
             const content = document.getElementById('referee-profile-content');
             const placeholder = document.getElementById('referee-profile-placeholder');
@@ -8086,7 +8160,6 @@ function getRefereePortrait(refName) {
             const coverageEl = document.getElementById('referee-profile-coverage');
             const statsEl = document.getElementById('referee-profile-stats');
             const accordion = document.getElementById('referee-season-accordion');
-            const teamTable = document.getElementById('referee-team-balance');
 
             if (!content || !placeholder) return;
 
@@ -8102,7 +8175,7 @@ function getRefereePortrait(refName) {
                 return;
             }
 
-            const matches = processMatchesViewData(activeSeasons)
+            const matches = processMatchesViewData(REFEREE_PROFILE_SEASONS)
                 .filter(m => {
                     const refereeName = (m.referee || '').toLowerCase();
                     return refereeName === normalizedName
@@ -8124,7 +8197,7 @@ function getRefereePortrait(refName) {
 
             const seasons = new Set(matches.map(m => m.season));
             const totalGames = matches.length;
-            if (metaEl) metaEl.textContent = `${totalGames} partite arbitrate nelle stagioni selezionate`;
+            if (metaEl) metaEl.textContent = `${totalGames} partite arbitrate nelle stagioni disponibili`;
             if (coverageEl) coverageEl.textContent = `${seasons.size} stagioni`;
             if (statsEl) statsEl.textContent = `Media stagionale: ${(totalGames / seasons.size).toFixed(1)} gare`;
 
@@ -8187,22 +8260,15 @@ function getRefereePortrait(refName) {
                 });
             });
 
-            const teamRows = Array.from(teamMap.values())
-                .sort((a, b) => b.matches - a.matches || a.name.localeCompare(b.name))
-                .map(team => {
-                    const avgFouls = team.matches ? (team.fouls / team.matches).toFixed(1) : '—';
-                    const avgEff = team.effCount ? formatSecondsToTime(team.eff / team.effCount) : '—';
-                    const avgTot = team.totCount ? formatSecondsToTime(team.tot / team.totCount) : '—';
-                    return `<tr>
-                                <td class="p-2 font-semibold text-white">${team.name}</td>
-                                <td class="p-2 text-center font-mono text-slate-200">${team.matches}</td>
-                                <td class="p-2 text-center font-mono text-yellow-400">${avgFouls}</td>
-                                <td class="p-2 text-center font-mono text-green-400">${avgEff}</td>
-                                <td class="p-2 text-center font-mono text-blue-400">${avgTot}</td>
-                            </tr>`;
-                }).join('');
+            refereeTeamBalanceData = Array.from(teamMap.values()).map(team => ({
+                name: team.name,
+                matches: team.matches,
+                avgFouls: team.matches ? (team.fouls / team.matches) : null,
+                avgEffSec: team.effCount ? (team.eff / team.effCount) : null,
+                avgTotSec: team.totCount ? (team.tot / team.totCount) : null,
+            }));
 
-            if (teamTable) teamTable.innerHTML = teamRows || `<tr><td colspan="5" class="p-3 text-center text-slate-500">Nessuna squadra trovata con i filtri attuali.</td></tr>`;
+            renderRefereeTeamBalanceTable();
 
             placeholder.classList.add('hidden');
             content.classList.remove('hidden');
