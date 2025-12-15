@@ -8055,13 +8055,15 @@ function getRefereePortrait(refName) {
             const input = document.getElementById('referee-profile-input');
             if (!modal) return;
 
+            const searchName = name ? getRefereeSurname(name) : input?.value?.trim();
+
             modal.classList.remove('hidden');
 
-            if (input && name) {
-                input.value = formatTitleCase(name);
+            if (input && searchName) {
+                input.value = formatTitleCase(searchName);
             }
 
-            renderRefereeProfile(name || input?.value?.trim());
+            renderRefereeProfile(searchName, name || searchName);
         }
 
         function closeRefereeProfileModal() {
@@ -8072,10 +8074,11 @@ function getRefereePortrait(refName) {
         function renderRefereeProfileFromInput() {
             const input = document.getElementById('referee-profile-input');
             if (!input) return;
-            renderRefereeProfile(input.value.trim());
+            const value = input.value.trim();
+            renderRefereeProfile(value);
         }
 
-        function renderRefereeProfile(rawName) {
+        function renderRefereeProfile(rawName, displayName = rawName) {
             const content = document.getElementById('referee-profile-content');
             const placeholder = document.getElementById('referee-profile-placeholder');
             const nameEl = document.getElementById('referee-profile-name');
@@ -8088,6 +8091,7 @@ function getRefereePortrait(refName) {
             if (!content || !placeholder) return;
 
             const normalizedName = rawName?.toLowerCase();
+            const normalizedSurname = getRefereeSurname(rawName || '').toLowerCase();
             if (!normalizedName) {
                 content.classList.add('hidden');
                 placeholder.classList.remove('hidden');
@@ -8099,9 +8103,14 @@ function getRefereePortrait(refName) {
             }
 
             const matches = processMatchesViewData(activeSeasons)
-                .filter(m => (m.referee || '').toLowerCase() === normalizedName);
+                .filter(m => {
+                    const refereeName = (m.referee || '').toLowerCase();
+                    return refereeName === normalizedName
+                        || refereeName === normalizedSurname
+                        || (!!normalizedSurname && refereeName.includes(normalizedSurname));
+                });
 
-            const prettyName = formatTitleCase(rawName);
+            const prettyName = formatTitleCase(displayName || rawName);
             if (nameEl) nameEl.textContent = prettyName || rawName;
 
             if (!matches.length) {
