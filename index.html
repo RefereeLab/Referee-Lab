@@ -1405,82 +1405,90 @@ html, body {
         <div id="matches-title" class="hidden"></div>
         <div id="insights-container" class="hidden"></div>
 
-        <div id="referee-profile-card" class="hidden pro-card rounded-lg p-4 space-y-4">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                <div>
-                    <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
-                        <i class="fa-solid fa-id-badge text-yellow-400"></i>
-                        <span>Profilo arbitro</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400">Digita un nome per vedere partite per stagione e bilanci contro le squadre.</p>
-                </div>
-                <div class="flex items-center gap-2 text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/30 uppercase font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                    <span>Nuovo insight</span>
-                </div>
-            </div>
+        <div id="referee-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm p-4 overflow-y-auto flex items-start justify-center">
+            <div class="max-w-6xl w-full mx-auto mt-6">
+                <div id="referee-profile-card" class="pro-card rounded-lg p-4 space-y-4 relative">
+                    <button type="button" class="absolute top-3 right-3 text-slate-500 hover:text-white transition" onclick="closeRefereeProfileModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div class="lg:col-span-1 space-y-2">
-                    <label for="referee-profile-input" class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Cerca arbitro</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-sm"></i>
-                        <input id="referee-profile-input" list="referee-profile-options" type="text" placeholder="Es. Orsato, Marchetti..." class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none" />
-                        <datalist id="referee-profile-options"></datalist>
-                    </div>
-                    <p class="text-[11px] text-slate-500">Rispetta il filtro stagioni in alto: cambia anni per restringere i dati.</p>
-                </div>
-                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-                        <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Arbitro</div>
-                        <div id="referee-profile-name" class="text-lg font-bold text-white">—</div>
-                        <div id="referee-profile-meta" class="text-[11px] text-slate-400">Nessuna selezione</div>
-                    </div>
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-                        <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Copertura</div>
-                        <div id="referee-profile-coverage" class="text-sm font-semibold text-white">—</div>
-                        <div id="referee-profile-stats" class="text-[11px] text-slate-400">Seleziona un arbitro per vedere numero di partite.</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="referee-profile-placeholder" class="text-center text-slate-400 text-sm py-6 bg-slate-900/40 border border-dashed border-slate-800 rounded-lg">
-                <i class="fa-regular fa-rectangle-list text-3xl text-slate-600"></i>
-                <p class="mt-2">Seleziona un arbitro per vedere elenco partite e bilancio per squadra.</p>
-            </div>
-
-            <div id="referee-profile-content" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <div class="xl:col-span-2 space-y-3">
-                    <div class="flex items-center justify-between text-xs text-slate-300">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                            <span class="font-semibold">Partite per stagione</span>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 pr-8">
+                        <div>
+                            <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
+                                <i class="fa-solid fa-id-badge text-yellow-400"></i>
+                                <span>Profilo arbitro</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Digita un nome per vedere partite per stagione e bilanci contro le squadre.</p>
                         </div>
-                        <span class="text-slate-500">Expand per vedere i dettagli gara</span>
-                    </div>
-                    <div id="referee-season-accordion" class="space-y-3"></div>
-                </div>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between text-xs text-slate-300">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                            <span class="font-semibold">Bilancio per squadra</span>
+                        <div class="flex items-center gap-2 text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/30 uppercase font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                            <span>Nuovo insight</span>
                         </div>
-                        <span class="text-slate-500">Ordinato per numero di gare</span>
                     </div>
-                    <div class="border border-slate-800 rounded-lg overflow-hidden">
-                        <table class="w-full text-[11px] text-slate-200">
-                            <thead class="bg-slate-900 text-slate-400">
-                                <tr>
-                                    <th class="p-2 text-left">Squadra</th>
-                                    <th class="p-2 text-center">Gare</th>
-                                    <th class="p-2 text-center">Falli medi</th>
-                                    <th class="p-2 text-center">Eff. medio</th>
-                                    <th class="p-2 text-center">Tot. medio</th>
-                                </tr>
-                            </thead>
-                            <tbody id="referee-team-balance" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-                        </table>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div class="lg:col-span-1 space-y-2">
+                            <label for="referee-profile-input" class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Cerca arbitro</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-sm"></i>
+                                <input id="referee-profile-input" list="referee-profile-options" type="text" placeholder="Es. Orsato, Marchetti..." class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none" />
+                                <datalist id="referee-profile-options"></datalist>
+                            </div>
+                            <p class="text-[11px] text-slate-500">Rispetta il filtro stagioni in alto: cambia anni per restringere i dati.</p>
+                        </div>
+                        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
+                                <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Arbitro</div>
+                                <div id="referee-profile-name" class="text-lg font-bold text-white">—</div>
+                                <div id="referee-profile-meta" class="text-[11px] text-slate-400">Nessuna selezione</div>
+                            </div>
+                            <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
+                                <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Copertura</div>
+                                <div id="referee-profile-coverage" class="text-sm font-semibold text-white">—</div>
+                                <div id="referee-profile-stats" class="text-[11px] text-slate-400">Seleziona un arbitro per vedere numero di partite.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="referee-profile-placeholder" class="text-center text-slate-400 text-sm py-6 bg-slate-900/40 border border-dashed border-slate-800 rounded-lg">
+                        <i class="fa-regular fa-rectangle-list text-3xl text-slate-600"></i>
+                        <p class="mt-2">Seleziona un arbitro per vedere elenco partite e bilancio per squadra.</p>
+                    </div>
+
+                    <div id="referee-profile-content" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-4">
+                        <div class="xl:col-span-2 space-y-3">
+                            <div class="flex items-center justify-between text-xs text-slate-300">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                                    <span class="font-semibold">Partite per stagione</span>
+                                </div>
+                                <span class="text-slate-500">Expand per vedere i dettagli gara</span>
+                            </div>
+                            <div id="referee-season-accordion" class="space-y-3"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-xs text-slate-300">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                                    <span class="font-semibold">Bilancio per squadra</span>
+                                </div>
+                                <span class="text-slate-500">Ordinato per numero di gare</span>
+                            </div>
+                            <div class="border border-slate-800 rounded-lg overflow-hidden">
+                                <table class="w-full text-[11px] text-slate-200">
+                                    <thead class="bg-slate-900 text-slate-400">
+                                        <tr>
+                                            <th class="p-2 text-left">Squadra</th>
+                                            <th class="p-2 text-center">Gare</th>
+                                            <th class="p-2 text-center">Falli medi</th>
+                                            <th class="p-2 text-center">Eff. medio</th>
+                                            <th class="p-2 text-center">Tot. medio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="referee-team-balance" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -7688,6 +7696,7 @@ function getRefereePortrait(refName) {
         }
 
         function formatRefereeNameHTML(fullName) {
+            const prettyName = formatTitleCase(fullName);
             const upperName = fullName.toUpperCase();
             const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
             const matches = allSurnames.filter(s => {
@@ -7706,10 +7715,10 @@ function getRefereePortrait(refName) {
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
-            return `<div class="flex items-center truncate">
+            return `<button type="button" class="referee-link flex items-center truncate hover:text-yellow-400 transition-colors" data-referee-name="${prettyName}">
                         <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline">${firstname.toLowerCase()}</span> 
                         <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm">${surname}</span>
-                    </div>`;
+                    </button>`;
         }
         
         function getRefereeSurname(fullName) {
@@ -8041,6 +8050,25 @@ function getRefereePortrait(refName) {
             datalist.innerHTML = names.map(n => `<option value="${formatTitleCase(n)}"></option>`).join('');
         }
 
+        function openRefereeProfileModal(name = '') {
+            const modal = document.getElementById('referee-profile-modal');
+            const input = document.getElementById('referee-profile-input');
+            if (!modal) return;
+
+            modal.classList.remove('hidden');
+
+            if (input && name) {
+                input.value = formatTitleCase(name);
+            }
+
+            renderRefereeProfile(name || input?.value?.trim());
+        }
+
+        function closeRefereeProfileModal() {
+            const modal = document.getElementById('referee-profile-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
         function renderRefereeProfileFromInput() {
             const input = document.getElementById('referee-profile-input');
             if (!input) return;
@@ -8106,20 +8134,16 @@ function getRefereePortrait(refName) {
                         const eff = Number.isFinite(m.effectiveTimeSec) ? formatSecondsToTime(m.effectiveTimeSec) : '—';
                         const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
                         const fouls = Number.isFinite(m.fouls) ? m.fouls : '—';
-                        const yellows = Number.isFinite(m.yellows) ? m.yellows : '—';
-                        const pens = Number.isFinite(m.pens) ? m.pens : '—';
 
                         return `<div class="flex flex-col gap-1 p-2 rounded bg-slate-900/60 border border-slate-800">
                                     <div class="flex items-center justify-between text-sm text-white font-semibold">
                                         <span>${m.match || 'Match n/d'}</span>
                                         <span class="text-[11px] text-slate-400">${season.replace('-', '/')}</span>
                                     </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-slate-300">
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[11px] text-slate-300">
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Falli:</span> <span class="font-mono text-yellow-400">${fouls}</span></div>
-                                        <div class="flex items-center gap-1"><span class="text-slate-500">Gialli:</span> <span class="font-mono text-amber-300">${yellows}</span></div>
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Eff.:</span> <span class="font-mono text-green-400">${eff}</span></div>
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Tot.:</span> <span class="font-mono text-blue-400">${tot}</span></div>
-                                        <div class="flex items-center gap-1"><span class="text-slate-500">Rigori:</span> <span class="font-mono text-pink-300">${pens}</span></div>
                                     </div>
                                 </div>`;
                     }).join('');
@@ -10957,7 +10981,7 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
             showSection(analyticsView);
             hideSection(playersView);
             hideSection(quizView);
-            hideSection(refereeProfileCard);
+            hideSection(refereeProfileModal);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
@@ -10972,7 +10996,7 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
             hideSection(analyticsView);
             showSection(playersView);
             hideSection(quizView);
-            hideSection(refereeProfileCard);
+            hideSection(refereeProfileModal);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -10990,7 +11014,7 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
             hideSection(analyticsView);
             hideSection(playersView);
             showSection(quizView);
-            hideSection(refereeProfileCard);
+            hideSection(refereeProfileModal);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -12103,6 +12127,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!refereeInput) return;
     refereeInput.addEventListener('change', renderRefereeProfileFromInput);
     refereeInput.addEventListener('input', renderRefereeProfileFromInput);
+});
+
+document.addEventListener('click', (event) => {
+    const target = event.target.closest('.referee-link');
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const name = target.dataset.refereeName || target.textContent.trim();
+    openRefereeProfileModal(name);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('referee-profile-modal');
+    if (!modal) return;
+    modal.addEventListener('click', (event) => {
+        if (event.target.id === 'referee-profile-modal') closeRefereeProfileModal();
+    });
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeRefereeProfileModal();
 });
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
