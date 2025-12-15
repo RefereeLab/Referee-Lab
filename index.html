@@ -1646,56 +1646,6 @@ html, body {
                 </div>
             </div>
 
-            <div id="analytics-records-wrapper" class="hidden space-y-4">
-                <div class="pro-card rounded-lg p-4 space-y-4 border border-slate-800">
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
-                                <i class="fa-solid fa-trophy text-yellow-400"></i>
-                                <span>Top Partite — Record</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400">Scegli stagioni, metrica e ordinamento per scoprire le partite estreme.</p>
-                        </div>
-                        <div class="flex flex-wrap gap-3 text-xs items-center">
-                            <div class="flex flex-col gap-1">
-                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Stagioni</span>
-                                <div class="flex flex-wrap gap-2" id="record-season-chips">
-                                    <button type="button" class="analytics-season-chip active record-season-chip" data-season="2025-26" onclick="toggleRecordSeason('2025-26', this)">25/26</button>
-                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2024-25" onclick="toggleRecordSeason('2024-25', this)">24/25</button>
-                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2023-24" onclick="toggleRecordSeason('2023-24', this)">23/24</button>
-                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2022-23" onclick="toggleRecordSeason('2022-23', this)">22/23</button>
-                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2021-22" onclick="toggleRecordSeason('2021-22', this)">21/22</button>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label for="record-metric" class="text-slate-400 text-[10px] uppercase font-semibold">Metrica</label>
-                                <select id="record-metric" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
-                                    <option value="effectiveTimeSec">Tempo Effettivo</option>
-                                    <option value="totalTimeSec">Tempo Totale</option>
-                                    <option value="fouls">Numero di Falli</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label for="record-order" class="text-slate-400 text-[10px] uppercase font-semibold">Ordina</label>
-                                <select id="record-order" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
-                                    <option value="max">Più alto (Max)</option>
-                                    <option value="min">Più basso (Min)</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Top</span>
-                                <div class="flex bg-slate-900 rounded-full p-1 border border-slate-800">
-                                    <button type="button" id="record-top-3" onclick="setRecordLimit(3)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow">3</button>
-                                    <button type="button" id="record-top-5" onclick="setRecordLimit(5)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700">5</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 gap-4" id="record-cards-container"></div>
-            </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div id="analytics-section-radar" class="pro-card rounded-lg p-4">
                     <div class="flex flex-col gap-2 mb-4 border-b border-slate-800 pb-2">
@@ -1913,6 +1863,56 @@ html, body {
         </div>
     </div>
     </div>
+            </div>
+
+            <div id="analytics-records-wrapper" class="hidden space-y-4">
+                <div class="pro-card rounded-lg p-4 space-y-4 border border-slate-800">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
+                                <i class="fa-solid fa-trophy text-yellow-400"></i>
+                                <span>Top Partite — Record</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Scegli stagioni, metrica e ordinamento per scoprire le partite estreme.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 text-xs items-center">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Stagioni</span>
+                                <div class="flex flex-wrap gap-2" id="record-season-chips">
+                                    <button type="button" class="analytics-season-chip active record-season-chip" data-season="2025-26" onclick="toggleRecordSeason('2025-26', this)">25/26</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2024-25" onclick="toggleRecordSeason('2024-25', this)">24/25</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2023-24" onclick="toggleRecordSeason('2023-24', this)">23/24</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2022-23" onclick="toggleRecordSeason('2022-23', this)">22/23</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2021-22" onclick="toggleRecordSeason('2021-22', this)">21/22</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label for="record-metric" class="text-slate-400 text-[10px] uppercase font-semibold">Metrica</label>
+                                <select id="record-metric" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
+                                    <option value="effectiveTimeSec">Tempo Effettivo</option>
+                                    <option value="totalTimeSec">Tempo Totale</option>
+                                    <option value="fouls">Numero di Falli</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label for="record-order" class="text-slate-400 text-[10px] uppercase font-semibold">Ordina</label>
+                                <select id="record-order" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
+                                    <option value="max">Più alto (Max)</option>
+                                    <option value="min">Più basso (Min)</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Top</span>
+                                <div class="flex bg-slate-900 rounded-full p-1 border border-slate-800">
+                                    <button type="button" id="record-top-3" onclick="setRecordLimit(3)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow">3</button>
+                                    <button type="button" id="record-top-5" onclick="setRecordLimit(5)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700">5</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4" id="record-cards-container"></div>
             </div>
 
             <div id="analytics-players-wrapper" class="hidden space-y-6">
@@ -10636,6 +10636,7 @@ const quizView      = document.getElementById('quiz-view');
 
             updateButtonState(btnRefs, mode === 'refs');
             updateButtonState(btnPlayers, mode === 'players');
+            updateButtonState(btnRecords, mode === 'records');
 
             if (shortcutsCard) shortcutsCard.classList.toggle('hidden', mode !== 'refs');
 
