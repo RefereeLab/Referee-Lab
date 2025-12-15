@@ -1405,6 +1405,87 @@ html, body {
         <div id="matches-title" class="hidden"></div>
         <div id="insights-container" class="hidden"></div>
 
+        <div id="referee-profile-card" class="hidden pro-card rounded-lg p-4 space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div>
+                    <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
+                        <i class="fa-solid fa-id-badge text-yellow-400"></i>
+                        <span>Profilo arbitro</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Digita un nome per vedere partite per stagione e bilanci contro le squadre.</p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/30 uppercase font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                    <span>Nuovo insight</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="lg:col-span-1 space-y-2">
+                    <label for="referee-profile-input" class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Cerca arbitro</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-sm"></i>
+                        <input id="referee-profile-input" list="referee-profile-options" type="text" placeholder="Es. Orsato, Marchetti..." class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none" />
+                        <datalist id="referee-profile-options"></datalist>
+                    </div>
+                    <p class="text-[11px] text-slate-500">Rispetta il filtro stagioni in alto: cambia anni per restringere i dati.</p>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Arbitro</div>
+                        <div id="referee-profile-name" class="text-lg font-bold text-white">—</div>
+                        <div id="referee-profile-meta" class="text-[11px] text-slate-400">Nessuna selezione</div>
+                    </div>
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Copertura</div>
+                        <div id="referee-profile-coverage" class="text-sm font-semibold text-white">—</div>
+                        <div id="referee-profile-stats" class="text-[11px] text-slate-400">Seleziona un arbitro per vedere numero di partite.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="referee-profile-placeholder" class="text-center text-slate-400 text-sm py-6 bg-slate-900/40 border border-dashed border-slate-800 rounded-lg">
+                <i class="fa-regular fa-rectangle-list text-3xl text-slate-600"></i>
+                <p class="mt-2">Seleziona un arbitro per vedere elenco partite e bilancio per squadra.</p>
+            </div>
+
+            <div id="referee-profile-content" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-4">
+                <div class="xl:col-span-2 space-y-3">
+                    <div class="flex items-center justify-between text-xs text-slate-300">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                            <span class="font-semibold">Partite per stagione</span>
+                        </div>
+                        <span class="text-slate-500">Expand per vedere i dettagli gara</span>
+                    </div>
+                    <div id="referee-season-accordion" class="space-y-3"></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between text-xs text-slate-300">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                            <span class="font-semibold">Bilancio per squadra</span>
+                        </div>
+                        <span class="text-slate-500">Ordinato per numero di gare</span>
+                    </div>
+                    <div class="border border-slate-800 rounded-lg overflow-hidden">
+                        <table class="w-full text-[11px] text-slate-200">
+                            <thead class="bg-slate-900 text-slate-400">
+                                <tr>
+                                    <th class="p-2 text-left">Squadra</th>
+                                    <th class="p-2 text-center">Gare</th>
+                                    <th class="p-2 text-center">Falli medi</th>
+                                    <th class="p-2 text-center">Eff. medio</th>
+                                    <th class="p-2 text-center">Tot. medio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referee-team-balance" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 <!-- ===============================
      PLAYERS VIEW (GIOCATORI 25/26)
@@ -7945,6 +8026,155 @@ function getRefereePortrait(refName) {
             });
         }
 
+        // --- Referee Profile (matches by season + team balance) ---
+        function getRefereeProfileList() {
+            const matches = processMatchesViewData(['2025-26', '2024-25', '2023-24', '2022-23', '2021-22']);
+            const names = matches.map(m => m.referee).filter(Boolean);
+            return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b, 'it', { sensitivity: 'base' }));
+        }
+
+        function populateRefereeProfileOptions() {
+            const datalist = document.getElementById('referee-profile-options');
+            if (!datalist) return;
+
+            const names = getRefereeProfileList();
+            datalist.innerHTML = names.map(n => `<option value="${formatTitleCase(n)}"></option>`).join('');
+        }
+
+        function renderRefereeProfileFromInput() {
+            const input = document.getElementById('referee-profile-input');
+            if (!input) return;
+            renderRefereeProfile(input.value.trim());
+        }
+
+        function renderRefereeProfile(rawName) {
+            const content = document.getElementById('referee-profile-content');
+            const placeholder = document.getElementById('referee-profile-placeholder');
+            const nameEl = document.getElementById('referee-profile-name');
+            const metaEl = document.getElementById('referee-profile-meta');
+            const coverageEl = document.getElementById('referee-profile-coverage');
+            const statsEl = document.getElementById('referee-profile-stats');
+            const accordion = document.getElementById('referee-season-accordion');
+            const teamTable = document.getElementById('referee-team-balance');
+
+            if (!content || !placeholder) return;
+
+            const normalizedName = rawName?.toLowerCase();
+            if (!normalizedName) {
+                content.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                if (nameEl) nameEl.textContent = '—';
+                if (metaEl) metaEl.textContent = 'Nessuna selezione';
+                if (coverageEl) coverageEl.textContent = '—';
+                if (statsEl) statsEl.textContent = 'Seleziona un arbitro per vedere numero di partite.';
+                return;
+            }
+
+            const matches = processMatchesViewData(activeSeasons)
+                .filter(m => (m.referee || '').toLowerCase() === normalizedName);
+
+            const prettyName = formatTitleCase(rawName);
+            if (nameEl) nameEl.textContent = prettyName || rawName;
+
+            if (!matches.length) {
+                content.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                if (metaEl) metaEl.textContent = 'Nessuna partita trovata con i filtri attuali.';
+                if (coverageEl) coverageEl.textContent = '0 gare';
+                if (statsEl) statsEl.textContent = 'Prova ad attivare più stagioni.';
+                return;
+            }
+
+            const seasons = new Set(matches.map(m => m.season));
+            const totalGames = matches.length;
+            if (metaEl) metaEl.textContent = `${totalGames} partite arbitrate nelle stagioni selezionate`;
+            if (coverageEl) coverageEl.textContent = `${seasons.size} stagioni`;
+            if (statsEl) statsEl.textContent = `Media stagionale: ${(totalGames / seasons.size).toFixed(1)} gare`;
+
+            const grouped = matches.reduce((acc, m) => {
+                const s = m.season || 'N/D';
+                if (!acc[s]) acc[s] = [];
+                acc[s].push(m);
+                return acc;
+            }, {});
+
+            const seasonBlocks = Object.entries(grouped)
+                .sort((a, b) => b[0].localeCompare(a[0]))
+                .map(([season, list]) => {
+                    const sorted = list.slice().sort((a, b) => (a.match || '').localeCompare(b.match || ''));
+                    const rows = sorted.map(m => {
+                        const eff = Number.isFinite(m.effectiveTimeSec) ? formatSecondsToTime(m.effectiveTimeSec) : '—';
+                        const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
+                        const fouls = Number.isFinite(m.fouls) ? m.fouls : '—';
+                        const yellows = Number.isFinite(m.yellows) ? m.yellows : '—';
+                        const pens = Number.isFinite(m.pens) ? m.pens : '—';
+
+                        return `<div class="flex flex-col gap-1 p-2 rounded bg-slate-900/60 border border-slate-800">
+                                    <div class="flex items-center justify-between text-sm text-white font-semibold">
+                                        <span>${m.match || 'Match n/d'}</span>
+                                        <span class="text-[11px] text-slate-400">${season.replace('-', '/')}</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-slate-300">
+                                        <div class="flex items-center gap-1"><span class="text-slate-500">Falli:</span> <span class="font-mono text-yellow-400">${fouls}</span></div>
+                                        <div class="flex items-center gap-1"><span class="text-slate-500">Gialli:</span> <span class="font-mono text-amber-300">${yellows}</span></div>
+                                        <div class="flex items-center gap-1"><span class="text-slate-500">Eff.:</span> <span class="font-mono text-green-400">${eff}</span></div>
+                                        <div class="flex items-center gap-1"><span class="text-slate-500">Tot.:</span> <span class="font-mono text-blue-400">${tot}</span></div>
+                                        <div class="flex items-center gap-1"><span class="text-slate-500">Rigori:</span> <span class="font-mono text-pink-300">${pens}</span></div>
+                                    </div>
+                                </div>`;
+                    }).join('');
+
+                    return `<details class="rounded-lg border border-slate-800 overflow-hidden bg-slate-900/60" open>
+                                <summary class="cursor-pointer select-none flex items-center justify-between gap-2 px-3 py-2 text-sm text-white bg-slate-900/80">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-calendar-days text-yellow-400"></i>
+                                        <span>${season.replace('-', '/')}</span>
+                                    </div>
+                                    <span class="text-xs text-slate-400">${list.length} gare</span>
+                                </summary>
+                                <div class="space-y-2 p-3 bg-slate-900/50">${rows}</div>
+                            </details>`;
+                }).join('');
+
+            if (accordion) accordion.innerHTML = seasonBlocks;
+
+            const teamMap = new Map();
+            matches.forEach(m => {
+                if (!m.match || !m.match.includes('-')) return;
+                const [home, away] = m.match.split('-').map(t => t.trim());
+                [home, away].forEach(team => {
+                    if (!teamMap.has(team)) {
+                        teamMap.set(team, { name: team, matches: 0, fouls: 0, eff: 0, tot: 0, effCount: 0, totCount: 0 });
+                    }
+                    const entry = teamMap.get(team);
+                    entry.matches += 1;
+                    if (Number.isFinite(m.fouls)) entry.fouls += m.fouls;
+                    if (Number.isFinite(m.effectiveTimeSec)) { entry.eff += m.effectiveTimeSec; entry.effCount++; }
+                    if (Number.isFinite(m.totalTimeSec)) { entry.tot += m.totalTimeSec; entry.totCount++; }
+                });
+            });
+
+            const teamRows = Array.from(teamMap.values())
+                .sort((a, b) => b.matches - a.matches || a.name.localeCompare(b.name))
+                .map(team => {
+                    const avgFouls = team.matches ? (team.fouls / team.matches).toFixed(1) : '—';
+                    const avgEff = team.effCount ? formatSecondsToTime(team.eff / team.effCount) : '—';
+                    const avgTot = team.totCount ? formatSecondsToTime(team.tot / team.totCount) : '—';
+                    return `<tr>
+                                <td class="p-2 font-semibold text-white">${team.name}</td>
+                                <td class="p-2 text-center font-mono text-slate-200">${team.matches}</td>
+                                <td class="p-2 text-center font-mono text-yellow-400">${avgFouls}</td>
+                                <td class="p-2 text-center font-mono text-green-400">${avgEff}</td>
+                                <td class="p-2 text-center font-mono text-blue-400">${avgTot}</td>
+                            </tr>`;
+                }).join('');
+
+            if (teamTable) teamTable.innerHTML = teamRows || `<tr><td colspan="5" class="p-3 text-center text-slate-500">Nessuna squadra trovata con i filtri attuali.</td></tr>`;
+
+            placeholder.classList.add('hidden');
+            content.classList.remove('hidden');
+        }
+
         // --- Aggregation & UI Update ---
         function aggregateData() {
             // Nasconde i messaggi di stato
@@ -8151,6 +8381,9 @@ if(q && result.length && currentView !== 'analytics') {
                     document.getElementById('empty-state-msg').classList.remove('hidden');
                 }
             }
+
+            populateRefereeProfileOptions();
+            renderRefereeProfileFromInput();
 
             updateSeasonButtonsUI();
             updatePageTitleUI();
@@ -10717,12 +10950,14 @@ const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card');
 const quizView      = document.getElementById('quiz-view');
+const refereeProfileCard = document.getElementById('referee-profile-card');
 
         if (view === 'analytics') {
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
             hideSection(quizView);
+            hideSection(refereeProfileCard);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
@@ -10737,6 +10972,7 @@ const quizView      = document.getElementById('quiz-view');
             hideSection(analyticsView);
             showSection(playersView);
             hideSection(quizView);
+            hideSection(refereeProfileCard);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -10754,6 +10990,7 @@ const quizView      = document.getElementById('quiz-view');
             hideSection(analyticsView);
             hideSection(playersView);
             showSection(quizView);
+            hideSection(refereeProfileCard);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -10769,6 +11006,7 @@ const quizView      = document.getElementById('quiz-view');
     hideSection(analyticsView);
     hideSection(playersView);
     hideSection(quizView);
+    showSection(refereeProfileCard);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -11859,6 +12097,13 @@ function renderPlayersPassingTable() {
             if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
             prepareQuizRound();
         });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const refereeInput = document.getElementById('referee-profile-input');
+    if (!refereeInput) return;
+    refereeInput.addEventListener('change', renderRefereeProfileFromInput);
+    refereeInput.addEventListener('input', renderRefereeProfileFromInput);
+});
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
 document.addEventListener('DOMContentLoaded', () => {
