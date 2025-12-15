@@ -316,6 +316,61 @@ html, body {
             transform: translateY(-1px) scale(1.01);
         }
 
+        /* Record cards */
+        .record-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+            background: linear-gradient(135deg, #0f172a, #111827);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 10px 30px -16px rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            animation: recordFade 0.6s ease forwards;
+        }
+
+        .record-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), transparent 45%);
+            pointer-events: none;
+        }
+
+        .record-hero {
+            min-height: 220px;
+        }
+
+        .record-compact {
+            min-height: 120px;
+        }
+
+        .record-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 9999px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 6px 10px;
+            box-shadow: 0 10px 30px -12px rgba(0,0,0,0.6);
+        }
+
+        .record-logos img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 16px rgba(0,0,0,0.5));
+        }
+
+        .record-logos img:first-child { transform: translateY(-6px) rotate(-4deg); }
+        .record-logos img:last-child { transform: translateY(6px) rotate(4deg); }
+
+        @keyframes recordFade {
+            0% { opacity: 0; transform: translateY(14px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         @keyframes navBoost {
             0% { transform: translateY(0) scale(1); box-shadow: 0 0 0 rgba(234, 179, 8, 0.0); }
             35% { transform: translateY(-2px) scale(1.03); }
@@ -1526,13 +1581,14 @@ html, body {
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-lg font-bold text-white">Analytics — Arbitri & Squadre</h2>
-                    <p class="text-[11px] text-slate-400 max-w-xl">Analizza ritmo, severità e profili arbitro con i grafici interattivi qui sotto.</p>
+                    <h2 class="text-lg font-bold text-white">Analytics — Arbitri, Squadre & Record</h2>
+                    <p class="text-[11px] text-slate-400 max-w-xl">Analizza ritmo, severità e i record partita con i grafici interattivi qui sotto.</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Vista</div>
                     <div class="flex bg-slate-900 rounded-full p-1 border border-slate-800 shadow-inner">
                         <button id="analytics-mode-refs" type="button" onclick="setAnalyticsViewMode('refs')" class="px-4 py-2 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow transition-colors">Arbitri/Squadre</button>
+                        <button id="analytics-mode-records" type="button" onclick="setAnalyticsViewMode('records')" class="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 transition-colors">Record</button>
                         <button id="analytics-mode-players" type="button" onclick="setAnalyticsViewMode('players')" class="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 transition-colors">Giocatori</button>
                     </div>
                 </div>
@@ -1588,6 +1644,56 @@ html, body {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div id="analytics-records-wrapper" class="hidden space-y-4">
+                <div class="pro-card rounded-lg p-4 space-y-4 border border-slate-800">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
+                                <i class="fa-solid fa-trophy text-yellow-400"></i>
+                                <span>Top Partite — Record</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Scegli stagioni, metrica e ordinamento per scoprire le partite estreme.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-3 text-xs items-center">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Stagioni</span>
+                                <div class="flex flex-wrap gap-2" id="record-season-chips">
+                                    <button type="button" class="analytics-season-chip active record-season-chip" data-season="2025-26" onclick="toggleRecordSeason('2025-26', this)">25/26</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2024-25" onclick="toggleRecordSeason('2024-25', this)">24/25</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2023-24" onclick="toggleRecordSeason('2023-24', this)">23/24</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2022-23" onclick="toggleRecordSeason('2022-23', this)">22/23</button>
+                                    <button type="button" class="analytics-season-chip record-season-chip" data-season="2021-22" onclick="toggleRecordSeason('2021-22', this)">21/22</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label for="record-metric" class="text-slate-400 text-[10px] uppercase font-semibold">Metrica</label>
+                                <select id="record-metric" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
+                                    <option value="effectiveTimeSec">Tempo Effettivo</option>
+                                    <option value="totalTimeSec">Tempo Totale</option>
+                                    <option value="fouls">Numero di Falli</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label for="record-order" class="text-slate-400 text-[10px] uppercase font-semibold">Ordina</label>
+                                <select id="record-order" class="bg-slate-900 border border-slate-800 text-white text-xs rounded px-3 py-1.5">
+                                    <option value="max">Più alto (Max)</option>
+                                    <option value="min">Più basso (Min)</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-slate-400 text-[10px] uppercase font-semibold">Top</span>
+                                <div class="flex bg-slate-900 rounded-full p-1 border border-slate-800">
+                                    <button type="button" id="record-top-3" onclick="setRecordLimit(3)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-500 text-slate-900 shadow-glow">3</button>
+                                    <button type="button" id="record-top-5" onclick="setRecordLimit(5)" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700">5</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4" id="record-cards-container"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -7061,6 +7167,10 @@ let selectedRadarReferees = [];
 
         let analyticsPlayerRoles = new Set(['DF', 'CC', 'ATT']);
         let analyticsViewMode = 'refs';
+        let recordSeasonFilter = [...ANALYTICS_SEASON_DEFAULT];
+        let recordMetric = 'effectiveTimeSec';
+        let recordOrder = 'max';
+        let recordLimit = 3;
 
         // Cache per i dataset pesanti usati nei grafici analytics
         const DATA_CACHE = {
@@ -7131,6 +7241,36 @@ const TEAM_LOGOS = {
     "Udinese": "https://images.fotmob.com/image_resources/logo/teamlogo/8600.png",
     "Venezia": "https://images.fotmob.com/image_resources/logo/teamlogo/7881.png",
     "Verona": "https://images.fotmob.com/image_resources/logo/teamlogo/9876.png"
+};
+
+const TEAM_COLORS = {
+    "Atalanta": ["#0a2c5c", "#5fb0ff"],
+    "Bologna": ["#0b1f3a", "#ad1d35"],
+    "Cagliari": ["#0c1b2e", "#bf1e2e"],
+    "Como": ["#0b2e6d", "#7ab8ff"],
+    "Cremonese": ["#2d2d2d", "#d53131"],
+    "Empoli": ["#0b3b80", "#79a7ff"],
+    "Fiorentina": ["#2e1d63", "#9c4bff"],
+    "Genoa": ["#0b1c2c", "#c32a2a"],
+    "Inter": ["#001e50", "#64b5ff"],
+    "Juventus": ["#0c0c0c", "#f5f5f5"],
+    "Lazio": ["#8bc6ff", "#1f4e7a"],
+    "Lecce": ["#0f1d42", "#d22a2a"],
+    "Milan": ["#0c0b0b", "#c8102e"],
+    "Monza": ["#7b0c1d", "#f04957"],
+    "Napoli": ["#0070c0", "#7ed3ff"],
+    "Parma": ["#0a2b78", "#ffcf00"],
+    "Pisa": ["#0a2148", "#3f7fff"],
+    "Roma": ["#7d1a0c", "#f7a400"],
+    "Salernitana": ["#5a0c0c", "#d46c6c"],
+    "Sampdoria": ["#0d3b8a", "#e43f3f"],
+    "Sassuolo": ["#0c2f1c", "#37c77c"],
+    "Spezia": ["#1f1f1f", "#c9a45a"],
+    "Frosinone": ["#1b3b90", "#f6d400"],
+    "Torino": ["#5a0c1f", "#b26363"],
+    "Udinese": ["#0d1117", "#c4c4c4"],
+    "Venezia": ["#0b1f14", "#f7a21b"],
+    "Verona": ["#0f1e3a", "#f4d35e"],
 };
 
 // Funzione helper per ottenere il logo (o uno scudetto grigio se manca)
@@ -7205,6 +7345,59 @@ function getTeamLogo(teamName) {
             const count = seasons.length;
             if (count === 1) return `nella stagione ${seasons[0]}`;
             return `nelle ultime ${count} stagioni`;
+        }
+
+        function splitMatchTeams(matchName = '') {
+            const parts = matchName.split('-');
+            return {
+                homeTeam: (parts[0] || '').trim(),
+                awayTeam: (parts[1] || '').trim()
+            };
+        }
+
+        function getTeamColors(teamName = '') {
+            const key = Object.keys(TEAM_COLORS).find(k => teamName.toLowerCase().includes(k.toLowerCase()));
+            return key ? TEAM_COLORS[key] : ['#0f172a', '#1e293b'];
+        }
+
+        function buildMatchGradient(home, away) {
+            const [c1a, c1b] = getTeamColors(home);
+            const [c2a, c2b] = getTeamColors(away);
+            return `linear-gradient(135deg, ${c1a} 0%, ${c1b} 40%, ${c2a} 60%, ${c2b} 100%)`;
+        }
+
+        function formatRecordValue(metricKey, value) {
+            if (metricKey === 'fouls') return `${Math.round(value)} falli`;
+            return `${formatSecondsToTime(value)}`;
+        }
+
+        function formatRecordDelta(metricKey, delta) {
+            if (!Number.isFinite(delta)) return '';
+            const sign = delta > 0 ? '+' : delta < 0 ? '−' : '±';
+            const abs = Math.abs(delta);
+            if (metricKey === 'fouls') {
+                return `${sign}${abs.toFixed(1)} falli`;
+            }
+            return `${sign}${(abs / 60).toFixed(1)} min`;
+        }
+
+        function animateCounters() {
+            document.querySelectorAll('[data-count-target]').forEach(el => {
+                const target = parseFloat(el.dataset.countTarget);
+                const metric = el.dataset.metric;
+                if (!Number.isFinite(target)) return;
+
+                const duration = 900;
+                const startTime = performance.now();
+
+                const step = (now) => {
+                    const progress = Math.min(1, (now - startTime) / duration);
+                    const current = target * progress;
+                    el.textContent = formatRecordValue(metric, current);
+                    if (progress < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
+            });
         }
 
         function parseItalianFloat(str) {
@@ -7837,7 +8030,148 @@ if(q && result.length && currentView !== 'analytics') {
         function updateAnalyticsMinMatches(val) {
             analyticsMinMatchesFilter = parseInt(val);
             document.getElementById('analyticsMinMatchesValue').innerText = val;
-            debounceRenderAnalytics(); 
+            debounceRenderAnalytics();
+        }
+
+        function updateRecordControlsUI() {
+            document.querySelectorAll('.record-season-chip').forEach(btn => {
+                const season = btn.dataset.season;
+                const isActive = recordSeasonFilter.includes(season);
+                btn.classList.toggle('active', isActive);
+            });
+
+            const top3 = document.getElementById('record-top-3');
+            const top5 = document.getElementById('record-top-5');
+            if (top3 && top5) {
+                const toggleBtn = (btn, active) => {
+                    btn.classList.toggle('bg-yellow-500', active);
+                    btn.classList.toggle('text-slate-900', active);
+                    btn.classList.toggle('shadow-glow', active);
+                    btn.classList.toggle('bg-slate-900', !active);
+                    btn.classList.toggle('text-slate-300', !active);
+                    btn.classList.toggle('border', !active);
+                    btn.classList.toggle('border-slate-700', !active);
+                };
+                toggleBtn(top3, recordLimit === 3);
+                toggleBtn(top5, recordLimit === 5);
+            }
+        }
+
+        function toggleRecordSeason(season, btn) {
+            const set = new Set(recordSeasonFilter);
+            if (set.has(season)) {
+                set.delete(season);
+            } else {
+                set.add(season);
+            }
+            if (!set.size) set.add(season);
+            recordSeasonFilter = Array.from(set);
+            updateRecordControlsUI();
+            renderRecordHighlights();
+        }
+
+        function setRecordLimit(limit) {
+            recordLimit = limit;
+            updateRecordControlsUI();
+            renderRecordHighlights();
+        }
+
+        function setRecordMetric(metric) {
+            recordMetric = metric;
+            renderRecordHighlights();
+        }
+
+        function setRecordOrder(order) {
+            recordOrder = order;
+            renderRecordHighlights();
+        }
+
+        function renderRecordHighlights() {
+            const metricKey = recordMetric;
+            const order = recordOrder;
+            const seasons = recordSeasonFilter.length ? recordSeasonFilter : ANALYTICS_SEASON_DEFAULT;
+            const matches = processMatchesViewData(seasons);
+
+            const accessor = (m) => {
+                if (metricKey === 'fouls') return m.fouls;
+                if (metricKey === 'totalTimeSec') return m.totalTimeSec;
+                return m.effectiveTimeSec;
+            };
+
+            const validMatches = matches.filter(m => Number.isFinite(accessor(m)) && accessor(m) > 0);
+            const cardsContainer = document.getElementById('record-cards-container');
+            if (!cardsContainer) return;
+
+            if (!validMatches.length) {
+                cardsContainer.innerHTML = `<div class="text-sm text-slate-400 text-center py-6">Nessun dato disponibile per i filtri selezionati.</div>`;
+                return;
+            }
+
+            const sorted = [...validMatches].sort((a, b) => {
+                const va = accessor(a);
+                const vb = accessor(b);
+                return order === 'min' ? va - vb : vb - va;
+            });
+
+            const topMatches = sorted.slice(0, recordLimit);
+            const avg = validMatches.reduce((acc, m) => acc + accessor(m), 0) / validMatches.length;
+
+            const medals = [
+                { icon: 'fa-crown', label: 'Oro', class: 'bg-yellow-400/90 text-slate-900' },
+                { icon: 'fa-medal', label: 'Argento', class: 'bg-slate-200 text-slate-800' },
+                { icon: 'fa-medal', label: 'Bronzo', class: 'bg-amber-700 text-white' }
+            ];
+
+            const buildCard = (match, index, isHero = false) => {
+                const { homeTeam, awayTeam } = splitMatchTeams(match.match || '');
+                const gradient = buildMatchGradient(homeTeam, awayTeam);
+                const logoHome = getTeamLogo(homeTeam);
+                const logoAway = getTeamLogo(awayTeam);
+                const value = accessor(match);
+                const delta = value - avg;
+                const badge = medals[index] || null;
+
+                return `
+                    <div class="record-card ${isHero ? 'record-hero' : 'record-compact'} rounded-xl border border-slate-800/70" style="background:${gradient}; animation-delay:${index * 120}ms;">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-slate-900/40 to-slate-900/70"></div>
+                        <div class="relative p-4 h-full flex flex-col justify-between gap-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center gap-3 record-logos">
+                                    <img src="${logoHome}" alt="${homeTeam}">
+                                    <img src="${logoAway}" alt="${awayTeam}">
+                                </div>
+                                ${badge ? `<span class="record-badge ${badge.class}"><i class="fa-solid ${badge.icon}"></i>${badge.label}</span>` : ''}
+                            </div>
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <div class="text-[11px] uppercase tracking-[0.08em] text-slate-200 font-semibold">${match.match || 'Match ND'}</div>
+                                    <div class="text-[11px] text-slate-300">Arbitro: <span class="text-white font-semibold">${match.referee || 'ND'}</span></div>
+                                    <div class="text-[10px] text-slate-300">Stagione ${match.season}</div>
+                                    ${isHero ? `<div class="text-[10px] text-emerald-200 mt-1">vs Media: <span class="font-semibold">${formatRecordDelta(metricKey, delta)}</span></div>` : ''}
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[11px] uppercase text-slate-300 font-semibold mb-1">${metricKey === 'fouls' ? 'Falli' : (metricKey === 'totalTimeSec' ? 'Tempo Totale' : 'Tempo Effettivo')}</div>
+                                    <div class="text-2xl font-black text-white drop-shadow" data-count-target="${value}" data-metric="${metricKey}">${formatRecordValue(metricKey, value)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const hero = topMatches[0];
+            const tail = topMatches.slice(1);
+
+            let html = '';
+            if (hero) {
+                html += `<div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+                    <div class="lg:col-span-3">${buildCard(hero, 0, true)}</div>
+                    <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">${tail.map((m, idx) => buildCard(m, idx + 1, false)).join('')}</div>
+                </div>`;
+            }
+
+            cardsContainer.innerHTML = html;
+            animateCounters();
         }
 
         /**
@@ -10273,18 +10607,21 @@ const quizView      = document.getElementById('quiz-view');
         }
 
         function setAnalyticsViewMode(mode) {
-            if (!['refs', 'players'].includes(mode)) return;
+            if (!['refs', 'players', 'records'].includes(mode)) return;
 
             analyticsViewMode = mode;
 
             const refsWrapper = document.getElementById('analytics-refs-wrapper');
             const playersWrapper = document.getElementById('analytics-players-wrapper');
+            const recordsWrapper = document.getElementById('analytics-records-wrapper');
             const btnRefs = document.getElementById('analytics-mode-refs');
             const btnPlayers = document.getElementById('analytics-mode-players');
+            const btnRecords = document.getElementById('analytics-mode-records');
             const shortcutsCard = document.getElementById('analytics-shortcuts-card');
 
             if (refsWrapper) refsWrapper.classList.toggle('hidden', mode !== 'refs');
             if (playersWrapper) playersWrapper.classList.toggle('hidden', mode !== 'players');
+            if (recordsWrapper) recordsWrapper.classList.toggle('hidden', mode !== 'records');
 
             const updateButtonState = (btn, isActive) => {
                 if (!btn) return;
@@ -10304,6 +10641,9 @@ const quizView      = document.getElementById('quiz-view');
 
             if (mode === 'players') {
                 renderPlayerScatterChart();
+            }
+            if (mode === 'records') {
+		renderRecordHighlights();
             }
         }
 
@@ -11354,6 +11694,15 @@ document.addEventListener('DOMContentLoaded', () => {
         heatmapPinnedCell = null;
         renderTeamHeatmap();
     });
+});
+
+// --- EVENTI RECORD PARTITE ---
+document.addEventListener('DOMContentLoaded', () => {
+    updateRecordControlsUI();
+    const metricSelect = document.getElementById('record-metric');
+    const orderSelect = document.getElementById('record-order');
+    if (metricSelect) metricSelect.addEventListener('change', () => setRecordMetric(metricSelect.value));
+    if (orderSelect) orderSelect.addEventListener('change', () => setRecordOrder(orderSelect.value));
 });
 
         window.addEventListener('popstate', (event) => {
