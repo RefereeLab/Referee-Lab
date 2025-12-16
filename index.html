@@ -8213,15 +8213,22 @@ function getRefereePortrait(refName) {
                 .sort((a, b) => b[0].localeCompare(a[0]))
                 .map(([season, list]) => {
                     const sorted = list.slice().sort((a, b) => (a.match || '').localeCompare(b.match || ''));
-                    const rows = sorted.map(m => {
+                    const rows = sorted.map((m, idx) => {
                         const eff = Number.isFinite(m.effectiveTimeSec) ? formatSecondsToTime(m.effectiveTimeSec) : '—';
                         const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
                         const fouls = Number.isFinite(m.fouls) ? m.fouls : '—';
 
+                        const matchday = Number.isFinite(m.matchday)
+                            ? m.matchday
+                            : (Math.floor(idx / 10) + 1);
+                        const matchdayLabel = Number.isFinite(matchday)
+                            ? `Giornata ${matchday}`
+                            : 'Giornata —';
+
                         return `<div class="flex items-center gap-3 p-2 rounded bg-slate-900/60 border border-slate-800">
                                     <div class="flex items-center gap-2 min-w-0 flex-1">
                                         <span class="text-sm font-semibold text-white truncate">${m.match || 'Match n/d'}</span>
-                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">${season.replace('-', '/')}</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">${matchdayLabel}</span>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-300">
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Falli:</span> <span class="font-mono text-yellow-400">${fouls}</span></div>
