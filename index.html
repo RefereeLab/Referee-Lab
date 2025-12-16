@@ -8217,12 +8217,12 @@ function getRefereePortrait(refName) {
                         const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
                         const fouls = Number.isFinite(m.fouls) ? m.fouls : '—';
 
-                        return `<div class="flex flex-col gap-1 p-2 rounded bg-slate-900/60 border border-slate-800">
-                                    <div class="flex items-center justify-between text-sm text-white font-semibold">
-                                        <span>${m.match || 'Match n/d'}</span>
-                                        <span class="text-[11px] text-slate-400">${season.replace('-', '/')}</span>
+                        return `<div class="flex items-center gap-3 p-2 rounded bg-slate-900/60 border border-slate-800">
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        <span class="text-sm font-semibold text-white truncate">${m.match || 'Match n/d'}</span>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">${season.replace('-', '/')}</span>
                                     </div>
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[11px] text-slate-300">
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-300">
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Falli:</span> <span class="font-mono text-yellow-400">${fouls}</span></div>
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Eff.:</span> <span class="font-mono text-green-400">${eff}</span></div>
                                         <div class="flex items-center gap-1"><span class="text-slate-500">Tot.:</span> <span class="font-mono text-blue-400">${tot}</span></div>
