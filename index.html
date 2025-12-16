@@ -1618,7 +1618,7 @@ html, body {
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-white">Referee Predictor — prossima giornata</h2>
-                        <p class="text-[11px] text-slate-400">Seleziona l'arbitro designabile per ciascuna partita, poi invia le tue scelte per vedere come vota la community.</p>
+                        <p class="text-[11px] text-slate-400">Seleziona l'arbitro che secondo te verrà designato per ciascuna partita, poi invia le tue scelte.</p>
                     </div>
                     <button onclick="resetPredictorSelections()" class="interactive-surface bg-slate-800 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg text-xs font-semibold hover:border-yellow-500">
                         <i class="fa-solid fa-eraser mr-2"></i>Pulisci scelte
@@ -1627,7 +1627,7 @@ html, body {
                 <div class="flex flex-col gap-2 text-[11px] text-slate-300 bg-slate-900/60 border border-slate-800 rounded-lg p-3">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                        <span>Lista arbitri aggiornata alla stagione 2025/26. Completa tutte le partite prima di inviare.</span>
+                        <span>COMPLETA TUTTE LE PARTITE PRIMA DI INVIARE.</span>
                     </div>
                     <div id="predictor-feedback" class="text-yellow-400 font-semibold hidden"></div>
                 </div>
@@ -1642,7 +1642,7 @@ html, body {
                 </button>
             </div>
 
-            <div class="pro-card rounded-lg p-4 space-y-3">
+            <div id="predictor-results-card" class="pro-card rounded-lg p-4 space-y-3 hidden">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                     <div>
                         <h3 class="text-lg font-bold text-white">Voti raccolti</h3>
@@ -6992,6 +6992,14 @@ let chartRadar = null;
         let predictorSelections = {};
         let predictorTallies = {};
 
+        const predictorAdminParam = new URLSearchParams(window.location.search).get('predictorAdmin');
+        if (predictorAdminParam === 'true') {
+            localStorage.setItem('predictorAdmin', 'true');
+        } else if (predictorAdminParam === 'false') {
+            localStorage.removeItem('predictorAdmin');
+        }
+        const isPredictorAdmin = localStorage.getItem('predictorAdmin') === 'true';
+
         function ensurePredictorData() {
             if (!Object.keys(predictorTallies).length) {
                 predictorTallies = JSON.parse(JSON.stringify(PREDICTOR_DEFAULT_TALLIES));
@@ -7041,12 +7049,11 @@ let chartRadar = null;
                         <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 font-bold">Partita</div>
                         <div class="text-lg font-bold text-white">${match.label}</div>
                     </div>
-                    <div class="text-[11px] text-slate-400">Voti raccolti: <span class="font-mono text-yellow-400">${Object.values(predictorTallies[match.id] || {}).reduce((a,b)=>a+b,0)}</span></div>
                 `;
 
                 const selectLabel = document.createElement('label');
                 selectLabel.className = 'text-xs text-slate-400 block mb-2';
-                selectLabel.innerText = 'Scegli l\'arbitro che immagini verrà designato';
+                selectLabel.innerText = 'Scegli l\'arbitro che pensi verrà designato';
 
                 const select = document.createElement('select');
                 select.className = 'predictor-select w-full bg-slate-900 border border-slate-800 text-white text-sm rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none';
@@ -7068,8 +7075,16 @@ let chartRadar = null;
         function renderPredictorResults() {
             ensurePredictorData();
             const container = document.getElementById('predictor-results');
-            if (!container) return;
+            const resultsCard = document.getElementById('predictor-results-card');
+            if (!container || !resultsCard) return;
 
+            if (!isPredictorAdmin) {
+                resultsCard.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            resultsCard.classList.remove('hidden');
             container.innerHTML = '';
 
             PREDICTOR_MATCHES.forEach((match) => {
