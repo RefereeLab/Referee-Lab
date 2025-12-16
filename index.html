@@ -1368,7 +1368,7 @@ html, body {
 
         <div id="analytics-shortcuts-card" class="hidden pro-card rounded-lg p-4 space-y-4 lg:sticky lg:top-24">
             <div class="space-y-1">
-                <div class="text-xs font-bold uppercase tracking-[0.14em] text-slate-300">VAI AL GRAFICO</div>
+                <div class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-bold">Vai al grafico</div>
                 <p class="text-xs text-slate-400">Shortcut rapidi per raggiungere ogni visual senza scroll infinito.</p>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -1404,103 +1404,6 @@ html, body {
         <div id="playing-time-title" class="hidden"></div>
         <div id="matches-title" class="hidden"></div>
         <div id="insights-container" class="hidden"></div>
-
-        <div id="referee-profile-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm p-4 overflow-y-auto flex items-start justify-center">
-            <div class="max-w-6xl w-full mx-auto mt-6">
-                <div id="referee-profile-card" class="pro-card rounded-lg p-4 space-y-4 relative">
-                    <button type="button" class="absolute top-3 right-3 text-slate-500 hover:text-white transition" onclick="closeRefereeProfileModal()">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 pr-8">
-                        <div>
-                            <div class="flex items-center gap-2 text-sm font-bold text-white uppercase tracking-wider">
-                                <i class="fa-solid fa-id-badge text-yellow-400"></i>
-                                <span>Profilo arbitro</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400">Digita un nome per vedere partite per stagione e bilanci contro le squadre.</p>
-                        </div>
-                        <div class="flex items-center gap-2 text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/30 uppercase font-semibold">
-                            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                            <span>Nuovo insight</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div class="lg:col-span-1 space-y-2">
-                            <label for="referee-profile-input" class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Cerca arbitro</label>
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-sm"></i>
-                                <input id="referee-profile-input" list="referee-profile-options" type="text" placeholder="Es. Orsato, Marchetti..." class="w-full pl-10 pr-3 py-2 rounded bg-slate-900 border border-slate-700 text-slate-200 focus:border-yellow-500 focus:ring-0 outline-none" />
-                                <datalist id="referee-profile-options"></datalist>
-                            </div>
-                            <p class="text-[11px] text-slate-500">Rispetta il filtro stagioni in alto: cambia anni per restringere i dati.</p>
-                        </div>
-                        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-                                <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Arbitro</div>
-                                <div id="referee-profile-name" class="text-lg font-bold text-white">—</div>
-                                <div id="referee-profile-meta" class="text-[11px] text-slate-400">Nessuna selezione</div>
-                            </div>
-                            <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-                                <div class="text-[10px] uppercase tracking-[0.14em] text-slate-500 font-semibold">Copertura</div>
-                                <div id="referee-profile-coverage" class="text-sm font-semibold text-white">—</div>
-                                <div id="referee-profile-stats" class="text-[11px] text-slate-400">Seleziona un arbitro per vedere numero di partite.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="referee-profile-placeholder" class="text-center text-slate-400 text-sm py-6 bg-slate-900/40 border border-dashed border-slate-800 rounded-lg">
-                        <i class="fa-regular fa-rectangle-list text-3xl text-slate-600"></i>
-                        <p class="mt-2">Seleziona un arbitro per vedere elenco partite e bilancio per squadra.</p>
-                    </div>
-
-                    <div id="referee-profile-content" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-4">
-                        <div class="xl:col-span-2 space-y-3">
-                            <div class="flex items-center justify-between text-xs text-slate-300">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-green-400 rounded-full"></span>
-                                    <span class="font-semibold">Partite per stagione</span>
-                                </div>
-                                <span class="text-slate-500">Expand per vedere i dettagli gara</span>
-                            </div>
-                            <div id="referee-season-accordion" class="space-y-3"></div>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between text-xs text-slate-300">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
-                                    <span class="font-semibold">Bilancio per squadra</span>
-                                </div>
-                                <span class="text-slate-500">Ordinato per numero di gare</span>
-                            </div>
-                            <div class="border border-slate-800 rounded-lg overflow-hidden">
-                                <table class="w-full text-[11px] text-slate-200">
-                                    <thead class="bg-slate-900 text-slate-400">
-                                        <tr>
-                                            <th class="p-2 text-left">Squadra</th>
-                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('matches')">
-                                                <span class="inline-flex items-center gap-1 justify-center">Gare <span id="referee-team-sort-matches"></span></span>
-                                            </th>
-                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgFouls')">
-                                                <span class="inline-flex items-center gap-1 justify-center">Falli medi <span id="referee-team-sort-avgFouls"></span></span>
-                                            </th>
-                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgEffSec')">
-                                                <span class="inline-flex items-center gap-1 justify-center">Eff. medio <span id="referee-team-sort-avgEffSec"></span></span>
-                                            </th>
-                                            <th class="p-2 text-center cursor-pointer select-none" onclick="changeRefereeTeamSort('avgTotSec')">
-                                                <span class="inline-flex items-center gap-1 justify-center">Tot. medio <span id="referee-team-sort-avgTotSec"></span></span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="referee-team-balance" class="divide-y divide-slate-800 bg-slate-900/40"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
 
 <!-- ===============================
@@ -5009,7 +4912,7 @@ Torino-Milan	99,30	56,25	56,7%	23	16	7`;
                 "Pisa-Fiorentina": "Manganiello",
                 "Roma-Verona": "Feliciani",
                 "Lecce-Bologna": "Fourneau",
-                "Milan-Napoli": "Chiffi",
+                "Milan-Napoli": "Collu",
                 "Genoa-Lazio": "Ayroldi",
                 "Parma-Torino": "Collu",
                 "Napoli-Genoa": "La Penna",
@@ -6950,9 +6853,7 @@ Orsato	56,45'
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = ['2020-21'];
         const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22'];
-        const LATEST_SEASON = ANALYTICS_SEASON_OPTIONS[0];
-        const REFEREE_PROFILE_SEASONS = [...ANALYTICS_SEASON_OPTIONS];
-        const ANALYTICS_SEASON_DEFAULT = [LATEST_SEASON];
+        const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
         let analyticsSeasonFilters = {
             ritmo: [...ANALYTICS_SEASON_DEFAULT],
             severity: [...ANALYTICS_SEASON_DEFAULT],
@@ -6974,13 +6875,11 @@ Orsato	56,45'
 
         // --- LOGIC SECTION ---
         let currentView = 'stats';
-        let activeSeasons = [...ANALYTICS_SEASON_DEFAULT];
+        let activeSeasons = ['2025-26'];
         let sortColumn = 'matches';
         let sortDirection = 'desc';
-        let refereeTeamBalanceData = [];
-        let refereeTeamSort = { column: 'matches', direction: 'desc' };
         let minMatchesFilterStats = 0;
-        let minMatchesFilterPT = 0;
+	let minMatchesFilterPT = 0;
         let analyticsMinMatchesFilter = 0; // NUOVA VARIABILE PER IL FILTRO ANALYTICS
         let hideInactive = false;
         let isSeasonDropdownOpen = false;
@@ -7708,7 +7607,6 @@ function getRefereePortrait(refName) {
         }
 
         function formatRefereeNameHTML(fullName) {
-            const prettyName = formatTitleCase(fullName);
             const upperName = fullName.toUpperCase();
             const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
             const matches = allSurnames.filter(s => {
@@ -7727,10 +7625,10 @@ function getRefereePortrait(refName) {
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
-            return `<button type="button" class="referee-link flex items-center truncate hover:text-yellow-400 transition-colors" data-referee-name="${prettyName}">
+            return `<div class="flex items-center truncate">
                         <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline">${firstname.toLowerCase()}</span> 
                         <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm">${surname}</span>
-                    </button>`;
+                    </div>`;
         }
         
         function getRefereeSurname(fullName) {
@@ -7770,7 +7668,7 @@ function getRefereePortrait(refName) {
 
         function parseMatchesDB(dbString, season) {
             if(!dbString || dbString.trim() === '') return [];
-            return dbString.trim().split('\n').map((line, index) => {
+            return dbString.trim().split('\n').map(line => {
                 const p = line.trim().split(/\t+/);
                 if (p.length < 5) return null;
 
@@ -7803,8 +7701,7 @@ function getRefereePortrait(refName) {
                     ratio: parseItalianFloat(p[3]), foulsTot: foulsTot, fouls: foulsTot,
                     foulsHome: foulsHome, foulsAway: foulsAway,
                     yellows: yellows, reds: reds, pens: pens,
-                    season: season, rawTotal: p[1], rawEff: p[2], referee: null,
-                    matchday: Math.floor(index / 10) + 1
+                    season: season, rawTotal: p[1], rawEff: p[2], referee: null
                 };
             }).filter(x => x);
         }
@@ -8048,247 +7945,6 @@ function getRefereePortrait(refName) {
             });
         }
 
-        // --- Referee Profile (matches by season + team balance) ---
-        function getRefereeProfileList() {
-            const matches = processMatchesViewData(['2025-26', '2024-25', '2023-24', '2022-23', '2021-22']);
-            const names = matches.map(m => m.referee).filter(Boolean);
-            return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b, 'it', { sensitivity: 'base' }));
-        }
-
-        function populateRefereeProfileOptions() {
-            const datalist = document.getElementById('referee-profile-options');
-            if (!datalist) return;
-
-            const names = getRefereeProfileList();
-            datalist.innerHTML = names.map(n => `<option value="${formatTitleCase(n)}"></option>`).join('');
-        }
-
-        function openRefereeProfileModal(name = '') {
-            const modal = document.getElementById('referee-profile-modal');
-            const input = document.getElementById('referee-profile-input');
-            if (!modal) return;
-
-            const searchName = name ? getRefereeSurname(name) : input?.value?.trim();
-
-            modal.classList.remove('hidden');
-
-            if (input && searchName) {
-                input.value = formatTitleCase(searchName);
-            }
-
-            renderRefereeProfile(searchName, name || searchName);
-        }
-
-        function closeRefereeProfileModal() {
-            const modal = document.getElementById('referee-profile-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function renderRefereeProfileFromInput() {
-            const input = document.getElementById('referee-profile-input');
-            if (!input) return;
-            const value = input.value.trim();
-            renderRefereeProfile(value);
-        }
-
-        function getRefereeTeamSortIcon(col) {
-            if (refereeTeamSort.column !== col) return '<i class="fa-solid fa-sort text-slate-500 text-[10px]"></i>';
-            return refereeTeamSort.direction === 'asc'
-                ? '<i class="fa-solid fa-sort-up text-yellow-500 text-[10px]"></i>'
-                : '<i class="fa-solid fa-sort-down text-yellow-500 text-[10px]"></i>';
-        }
-
-        function updateRefereeTeamSortIcons() {
-            const columns = ['matches', 'avgFouls', 'avgEffSec', 'avgTotSec'];
-            columns.forEach(col => {
-                const el = document.getElementById(`referee-team-sort-${col}`);
-                if (el) el.innerHTML = getRefereeTeamSortIcon(col);
-            });
-        }
-
-        function changeRefereeTeamSort(col) {
-            if (refereeTeamSort.column === col) {
-                refereeTeamSort.direction = refereeTeamSort.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                refereeTeamSort = { column: col, direction: col === 'name' ? 'asc' : 'desc' };
-            }
-            renderRefereeTeamBalanceTable();
-        }
-
-        function renderRefereeTeamBalanceTable() {
-            const teamTable = document.getElementById('referee-team-balance');
-            if (!teamTable) return;
-
-            if (!refereeTeamBalanceData.length) {
-                teamTable.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">Nessuna squadra trovata con i filtri attuali.</td></tr>`;
-                updateRefereeTeamSortIcons();
-                return;
-            }
-
-            const sorted = refereeTeamBalanceData.slice().sort((a, b) => {
-                const dir = refereeTeamSort.direction === 'asc' ? 1 : -1;
-                const getValue = (item, key) => item[key];
-                const va = getValue(a, refereeTeamSort.column);
-                const vb = getValue(b, refereeTeamSort.column);
-
-                const isNumber = (v) => typeof v === 'number' && !isNaN(v);
-                if (isNumber(va) && isNumber(vb)) return (va - vb) * dir || a.name.localeCompare(b.name) * dir;
-                if (isNumber(va)) return -1 * dir;
-                if (isNumber(vb)) return 1 * dir;
-                return a.name.localeCompare(b.name) * dir;
-            });
-
-            teamTable.innerHTML = sorted.map(team => {
-                const avgFoulsLabel = Number.isFinite(team.avgFouls) ? team.avgFouls.toFixed(1) : '—';
-                const avgEffLabel = Number.isFinite(team.avgEffSec) ? formatSecondsToTime(team.avgEffSec) : '—';
-                const avgTotLabel = Number.isFinite(team.avgTotSec) ? formatSecondsToTime(team.avgTotSec) : '—';
-                return `<tr>
-                            <td class="p-2 font-semibold text-white">${team.name}</td>
-                            <td class="p-2 text-center font-mono text-slate-200">${team.matches}</td>
-                            <td class="p-2 text-center font-mono text-yellow-400">${avgFoulsLabel}</td>
-                            <td class="p-2 text-center font-mono text-green-400">${avgEffLabel}</td>
-                            <td class="p-2 text-center font-mono text-blue-400">${avgTotLabel}</td>
-                        </tr>`;
-            }).join('');
-
-            updateRefereeTeamSortIcons();
-        }
-
-        function renderRefereeProfile(rawName, displayName = rawName) {
-            const content = document.getElementById('referee-profile-content');
-            const placeholder = document.getElementById('referee-profile-placeholder');
-            const nameEl = document.getElementById('referee-profile-name');
-            const metaEl = document.getElementById('referee-profile-meta');
-            const coverageEl = document.getElementById('referee-profile-coverage');
-            const statsEl = document.getElementById('referee-profile-stats');
-            const accordion = document.getElementById('referee-season-accordion');
-
-            if (!content || !placeholder) return;
-
-            const normalizedName = rawName?.toLowerCase();
-            const normalizedSurname = getRefereeSurname(rawName || '').toLowerCase();
-            if (!normalizedName) {
-                content.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                if (nameEl) nameEl.textContent = '—';
-                if (metaEl) metaEl.textContent = 'Nessuna selezione';
-                if (coverageEl) coverageEl.textContent = '—';
-                if (statsEl) statsEl.textContent = 'Seleziona un arbitro per vedere numero di partite.';
-                return;
-            }
-
-            const matches = processMatchesViewData(REFEREE_PROFILE_SEASONS)
-                .filter(m => {
-                    const refereeName = (m.referee || '').toLowerCase();
-                    return refereeName === normalizedName
-                        || refereeName === normalizedSurname
-                        || (!!normalizedSurname && refereeName.includes(normalizedSurname));
-                });
-
-            const prettyName = formatTitleCase(displayName || rawName);
-            if (nameEl) nameEl.textContent = prettyName || rawName;
-
-            if (!matches.length) {
-                content.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                if (metaEl) metaEl.textContent = 'Nessuna partita trovata con i filtri attuali.';
-                if (coverageEl) coverageEl.textContent = '0 gare';
-                if (statsEl) statsEl.textContent = 'Prova ad attivare più stagioni.';
-                return;
-            }
-
-            const seasons = new Set(matches.map(m => m.season));
-            const totalGames = matches.length;
-            if (metaEl) metaEl.textContent = `${totalGames} partite arbitrate nelle stagioni disponibili`;
-            if (coverageEl) coverageEl.textContent = `${seasons.size} stagioni`;
-            if (statsEl) statsEl.textContent = `Media stagionale: ${(totalGames / seasons.size).toFixed(1)} gare`;
-
-            const grouped = matches.reduce((acc, m) => {
-                const s = m.season || 'N/D';
-                if (!acc[s]) acc[s] = [];
-                acc[s].push(m);
-                return acc;
-            }, {});
-
-            const seasonBlocks = Object.entries(grouped)
-                .sort((a, b) => b[0].localeCompare(a[0]))
-                .map(([season, list]) => {
-                    const sorted = list.slice().sort((a, b) => {
-                        const mdA = Number.isFinite(a.matchday) ? a.matchday : Number.POSITIVE_INFINITY;
-                        const mdB = Number.isFinite(b.matchday) ? b.matchday : Number.POSITIVE_INFINITY;
-
-                        if (mdA !== mdB) return mdA - mdB;
-                        return (a.match || '').localeCompare(b.match || '');
-                    });
-                    const rows = sorted.map((m, idx) => {
-                        const eff = Number.isFinite(m.effectiveTimeSec) ? formatSecondsToTime(m.effectiveTimeSec) : '—';
-                        const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
-                        const fouls = Number.isFinite(m.fouls) ? m.fouls : '—';
-
-                        const matchday = Number.isFinite(m.matchday)
-                            ? m.matchday
-                            : (Math.floor(idx / 10) + 1);
-                        const matchdayLabel = Number.isFinite(matchday)
-                            ? `Giornata ${matchday}`
-                            : 'Giornata —';
-
-                        return `<div class="flex items-center gap-3 p-2 rounded bg-slate-900/60 border border-slate-800">
-                                    <div class="flex items-center gap-2 min-w-0 flex-1">
-                                        <span class="text-sm font-semibold text-white truncate">${m.match || 'Match n/d'}</span>
-                                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">${matchdayLabel}</span>
-                                    </div>
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-300">
-                                        <div class="flex items-center gap-1"><span class="text-slate-500">Falli:</span> <span class="font-mono text-yellow-400">${fouls}</span></div>
-                                        <div class="flex items-center gap-1"><span class="text-slate-500">Eff.:</span> <span class="font-mono text-green-400">${eff}</span></div>
-                                        <div class="flex items-center gap-1"><span class="text-slate-500">Tot.:</span> <span class="font-mono text-blue-400">${tot}</span></div>
-                                    </div>
-                                </div>`;
-                    }).join('');
-
-                    return `<details class="rounded-lg border border-slate-800 overflow-hidden bg-slate-900/60" open>
-                                <summary class="cursor-pointer select-none flex items-center justify-between gap-2 px-3 py-2 text-sm text-white bg-slate-900/80">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-calendar-days text-yellow-400"></i>
-                                        <span>${season.replace('-', '/')}</span>
-                                    </div>
-                                    <span class="text-xs text-slate-400">${list.length} gare</span>
-                                </summary>
-                                <div class="space-y-2 p-3 bg-slate-900/50">${rows}</div>
-                            </details>`;
-                }).join('');
-
-            if (accordion) accordion.innerHTML = seasonBlocks;
-
-            const teamMap = new Map();
-            matches.forEach(m => {
-                if (!m.match || !m.match.includes('-')) return;
-                const [home, away] = m.match.split('-').map(t => t.trim());
-                [home, away].forEach(team => {
-                    if (!teamMap.has(team)) {
-                        teamMap.set(team, { name: team, matches: 0, fouls: 0, eff: 0, tot: 0, effCount: 0, totCount: 0 });
-                    }
-                    const entry = teamMap.get(team);
-                    entry.matches += 1;
-                    if (Number.isFinite(m.fouls)) entry.fouls += m.fouls;
-                    if (Number.isFinite(m.effectiveTimeSec)) { entry.eff += m.effectiveTimeSec; entry.effCount++; }
-                    if (Number.isFinite(m.totalTimeSec)) { entry.tot += m.totalTimeSec; entry.totCount++; }
-                });
-            });
-
-            refereeTeamBalanceData = Array.from(teamMap.values()).map(team => ({
-                name: team.name,
-                matches: team.matches,
-                avgFouls: team.matches ? (team.fouls / team.matches) : null,
-                avgEffSec: team.effCount ? (team.eff / team.effCount) : null,
-                avgTotSec: team.totCount ? (team.tot / team.totCount) : null,
-            }));
-
-            renderRefereeTeamBalanceTable();
-
-            placeholder.classList.add('hidden');
-            content.classList.remove('hidden');
-        }
-
         // --- Aggregation & UI Update ---
         function aggregateData() {
             // Nasconde i messaggi di stato
@@ -8495,9 +8151,6 @@ if(q && result.length && currentView !== 'analytics') {
                     document.getElementById('empty-state-msg').classList.remove('hidden');
                 }
             }
-
-            populateRefereeProfileOptions();
-            renderRefereeProfileFromInput();
 
             updateSeasonButtonsUI();
             updatePageTitleUI();
@@ -10682,13 +10335,11 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Media T.E.', 'avgEffSec', 'text-center text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-center text-blue-400') : ''}${th('Media % T.Eff', 'effRatio', 'text-center text-yellow-400')}<th class="w-10"></th></tr>`;
                 data.forEach((r, i) => {
                     tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-bold text-green-400 font-mono text-base">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium text-blue-400 font-mono">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono text-yellow-400 font-semibold">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
-                    const matchesHeader = `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500"><span class="text-left">Partita</span><span class="text-center">G</span><span class="text-center">Stagione</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
+                    const matchesHeader = `<div class="grid grid-cols-${showTot ? '5' : '4'} gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
                     const matchesHtml = r.matchList.map(m => {
                         const ratioDisplay = formatEffRatio(Number.isFinite(m.effRatio) ? m.effRatio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
-                        const matchdayLabel = Number.isFinite(m.matchday) ? m.matchday : '—';
-                        return `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 py-2 px-4 border-b border-slate-800/50 text-xs hover:bg-slate-800 items-center">`+
+                        return `<div class="grid grid-cols-${showTot ? '5' : '4'} gap-2 py-2 px-4 border-b border-slate-800/50 text-xs hover:bg-slate-800 items-center">`+
                             `<span class="text-white font-bold truncate">${m.match}</span>`+
-                            `<span class="text-center text-slate-500 font-mono">${matchdayLabel}</span>`+
                             `<span class="text-center text-slate-500 font-mono">${m.season || '-'}</span>`+
                             `<span class="text-center font-mono ${m.effectiveTimeSec ? 'text-green-400' : 'text-slate-600'}">${formatSecondsToTime(m.effectiveTimeSec)}</span>`+
                             `${showTot ? `<span class="text-center font-mono text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span>` : ''}`+
@@ -10733,7 +10384,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         }
 
         function renderMatchesHeader(thead, th, getSortIcon) {
-             thead.innerHTML = `<tr>${th('Partita', 'match', 'sticky-col')}${th('G', 'matchday', 'text-center')}${th('Arbitro', 'referee', 'text-center text-green-400')}${th('Stagione', 'season', 'text-center')}${th('Tempo Tot', 'totalTimeSec', 'text-center text-blue-400')}${th('Tempo Eff', 'effectiveTimeSec', 'text-center text-green-400')}${th('% Eff', 'ratio', 'text-center')}${th('Falli Tot', 'fouls', 'text-center text-red-400')}${th('Falli Casa', 'foulsHome', 'text-center text-red-300')}${th('Falli Trasf', 'foulsAway', 'text-center text-red-300')}</tr>`;
+             thead.innerHTML = `<tr>${th('Partita', 'match', 'sticky-col')}${th('Arbitro', 'referee', 'text-center text-green-400')}${th('Stagione', 'season', 'text-center')}${th('Tempo Tot', 'totalTimeSec', 'text-center text-blue-400')}${th('Tempo Eff', 'effectiveTimeSec', 'text-center text-green-400')}${th('% Eff', 'ratio', 'text-center')}${th('Falli Tot', 'fouls', 'text-center text-red-400')}${th('Falli Casa', 'foulsHome', 'text-center text-red-300')}${th('Falli Trasf', 'foulsAway', 'text-center text-red-300')}</tr>`;
         }
 
         function renderMatchesRows(data, clearTbody = true) {
@@ -10756,7 +10407,6 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const colRat = getColorForValue(r.ratio, minRat, maxRat);
 
                 const matchLabel = (r.match || '').toUpperCase();
-                const matchdayLabel = Number.isFinite(r.matchday) ? r.matchday : '—';
                 const refereeName = formatTitleCase(r.referee);
 
                 const foulsTot = Number.isFinite(r.fouls) ? r.fouls : '-';
@@ -10765,7 +10415,6 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
 
                 rowsHtml += `<tr>
                     <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none uppercase" title="${matchLabel}">${matchLabel}</td>
-                    <td class="text-center text-slate-500 text-xs">${matchdayLabel}</td>
                     <td class="text-center text-green-400 bg-slate-800/10 rounded font-sans">${refereeName || '-'}</td>
                     <td class="text-center text-slate-500 text-xs">${r.season}</td>
                     <td class="text-center font-mono" style="color: ${colTot}">${formatSecondsToTime(r.totalTimeSec)}</td>
@@ -10804,12 +10453,11 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
 
                  // Container per il pulsante "Carica altro" PRIMA della riga medie
                  const loadMoreRow = document.createElement('tr');
-                 loadMoreRow.innerHTML = `<td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td>`;
+                 loadMoreRow.innerHTML = `<td colspan="9" class="p-3 text-center" id="loadMoreContainer"></td>`;
                  tfoot.appendChild(loadMoreRow);
 
                  tfoot.innerHTML += `<tr class="avg-row">
                     <td class="sticky-col">MEDIE (${countMatches} partite)</td>
-                    <td class="text-center">-</td>
                     <td class="text-center">-</td>
                     <td class="text-center">-</td>
                     <td class="text-center font-mono text-blue-300">${formatSecondsToTime(avgTot)}</td>
@@ -10821,7 +10469,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                  </tr>`;
             } else {
                  // Container per il pulsante "Carica altro"
-                tfoot.innerHTML += `<tr><td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
+                tfoot.innerHTML += `<tr><td colspan="9" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
             }
 
         }
@@ -10984,7 +10632,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         }
 
         function resetSeasonSelections() {
-            activeSeasons = [...ANALYTICS_SEASON_DEFAULT];
+            activeSeasons = ['2025-26'];
 
             Object.keys(analyticsSeasonFilters).forEach((key) => {
                 analyticsSeasonFilters[key] = [...ANALYTICS_SEASON_DEFAULT];
@@ -11069,31 +10717,26 @@ const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card');
 const quizView      = document.getElementById('quiz-view');
-const refereeProfileCard = document.getElementById('referee-profile-card');
 
         if (view === 'analytics') {
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
             hideSection(quizView);
-            hideSection(refereeProfileModal);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
-            if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
-            if (mainContent) {
-                mainContent.classList.remove('lg:col-span-12');
-                mainContent.classList.add('lg:col-span-9');
-            }
+    if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
+    if (mainContent) {
+        mainContent.classList.remove('lg:col-span-12');
+        mainContent.classList.add('lg:col-span-9');
+    }
             setAnalyticsViewMode('refs');
-            ensureAnalyticsSeasonDefaults();
-            refreshAllAnalyticsSeasonChips();
             scheduleAnalyticsRender();
         } else if (view === 'players') {
             hideSection(tableView);
             hideSection(analyticsView);
             showSection(playersView);
             hideSection(quizView);
-            hideSection(refereeProfileModal);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -11111,7 +10754,6 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
             hideSection(analyticsView);
             hideSection(playersView);
             showSection(quizView);
-            hideSection(refereeProfileModal);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -11127,7 +10769,6 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
     hideSection(analyticsView);
     hideSection(playersView);
     hideSection(quizView);
-    showSection(refereeProfileCard);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -11333,15 +10974,6 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
 
         function refreshAllAnalyticsSeasonChips() {
             Object.keys(analyticsSeasonFilters).forEach(updateAnalyticsSeasonChipsUI);
-        }
-
-        function ensureAnalyticsSeasonDefaults() {
-            Object.keys(analyticsSeasonFilters).forEach((key) => {
-                const seasons = analyticsSeasonFilters[key];
-                if (!Array.isArray(seasons) || !seasons.length) {
-                    analyticsSeasonFilters[key] = [...ANALYTICS_SEASON_DEFAULT];
-                }
-            });
         }
 
         function scrollToAnalyticsSection(targetId) {
@@ -12228,34 +11860,6 @@ function renderPlayersPassingTable() {
             prepareQuizRound();
         });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const refereeInput = document.getElementById('referee-profile-input');
-    if (!refereeInput) return;
-    refereeInput.addEventListener('change', renderRefereeProfileFromInput);
-    refereeInput.addEventListener('input', renderRefereeProfileFromInput);
-});
-
-document.addEventListener('click', (event) => {
-    const target = event.target.closest('.referee-link');
-    if (!target) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const name = target.dataset.refereeName || target.textContent.trim();
-    openRefereeProfileModal(name);
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('referee-profile-modal');
-    if (!modal) return;
-    modal.addEventListener('click', (event) => {
-        if (event.target.id === 'referee-profile-modal') closeRefereeProfileModal();
-    });
-});
-
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeRefereeProfileModal();
-});
-
 // --- EVENTO CAMBIO METRICA HEATMAP ---
 document.addEventListener('DOMContentLoaded', () => {
     const metricSelect = document.getElementById('heatmap-metric');
@@ -12304,7 +11908,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         window.onload = function() {
-            ensureAnalyticsSeasonDefaults();
             updateSeasonButtonsUI();
             refreshAllAnalyticsSeasonChips();
             const initialView = getViewFromLocation();
