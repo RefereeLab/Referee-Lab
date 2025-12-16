@@ -5009,7 +5009,7 @@ Torino-Milan	99,30	56,25	56,7%	23	16	7`;
                 "Pisa-Fiorentina": "Manganiello",
                 "Roma-Verona": "Feliciani",
                 "Lecce-Bologna": "Fourneau",
-                "Milan-Napoli": "Collu",
+                "Milan-Napoli": "Chiffi",
                 "Genoa-Lazio": "Ayroldi",
                 "Parma-Torino": "Collu",
                 "Napoli-Genoa": "La Penna",
@@ -8212,7 +8212,13 @@ function getRefereePortrait(refName) {
             const seasonBlocks = Object.entries(grouped)
                 .sort((a, b) => b[0].localeCompare(a[0]))
                 .map(([season, list]) => {
-                    const sorted = list.slice().sort((a, b) => (a.match || '').localeCompare(b.match || ''));
+                    const sorted = list.slice().sort((a, b) => {
+                        const mdA = Number.isFinite(a.matchday) ? a.matchday : Number.POSITIVE_INFINITY;
+                        const mdB = Number.isFinite(b.matchday) ? b.matchday : Number.POSITIVE_INFINITY;
+
+                        if (mdA !== mdB) return mdA - mdB;
+                        return (a.match || '').localeCompare(b.match || '');
+                    });
                     const rows = sorted.map((m, idx) => {
                         const eff = Number.isFinite(m.effectiveTimeSec) ? formatSecondsToTime(m.effectiveTimeSec) : '—';
                         const tot = Number.isFinite(m.totalTimeSec) ? formatSecondsToTime(m.totalTimeSec) : '—';
