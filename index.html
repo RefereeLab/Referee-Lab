@@ -7557,6 +7557,97 @@ function getRefereePortrait(refName) {
             return SEASON_TINTS[season] || 'bg-slate-900/30';
         }
 
+        let refereeBalanceRows = [];
+        let refereeBalanceSort = { key: 'matches', dir: 'desc' };
+
+        function getBalanceSortIndicator(key) {
+            if (refereeBalanceSort.key !== key) return '';
+            return refereeBalanceSort.dir === 'asc' ? '<i class="fa-solid fa-arrow-up-long text-[10px]"></i>' : '<i class="fa-solid fa-arrow-down-long text-[10px]"></i>';
+        }
+
+        function sortRefereeBalanceRows() {
+            const { key, dir } = refereeBalanceSort;
+            const factor = dir === 'asc' ? 1 : -1;
+
+            return [...refereeBalanceRows].sort((a, b) => {
+                const valA = a[key];
+                const valB = b[key];
+
+                if (key === 'team') return factor * valA.localeCompare(valB, 'it', { sensitivity: 'base' });
+
+                const numA = Number.isFinite(valA) ? valA : -Infinity;
+                const numB = Number.isFinite(valB) ? valB : -Infinity;
+                if (numA === numB) return factor * a.team.localeCompare(b.team, 'it', { sensitivity: 'base' });
+                return factor * (numA - numB);
+            });
+        }
+
+        function handleRefereeBalanceSort(event) {
+            const btn = event.target.closest('[data-sort-key]');
+            if (!btn) return;
+
+            const key = btn.dataset.sortKey;
+            if (!key) return;
+
+            if (refereeBalanceSort.key === key) {
+                refereeBalanceSort.dir = refereeBalanceSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                refereeBalanceSort = { key, dir: key === 'team' ? 'asc' : 'desc' };
+            }
+
+            renderRefereeBalanceTable();
+        }
+
+        function renderRefereeBalanceTable() {
+            const container = document.getElementById('referee-profile-balance');
+            if (!container) return;
+
+            if (!refereeBalanceRows.length) {
+                container.innerHTML = '<p class="text-xs text-slate-500">Nessuna squadra trovata.</p>';
+                return;
+            }
+
+            const sortedRows = sortRefereeBalanceRows();
+
+            const headerButton = (label, key) => `
+                <button type="button" data-sort-key="${key}" class="flex items-center gap-1 text-[11px] uppercase tracking-wide text-slate-300 hover:text-yellow-300 transition-colors">
+                    <span>${label}</span>
+                    <span class="text-yellow-400">${getBalanceSortIndicator(key)}</span>
+                </button>`;
+
+            const rowsHtml = sortedRows.map((entry, idx) => {
+                const effDisplay = entry.avgEffSec !== null ? formatSecondsToTime(entry.avgEffSec) : 'ND';
+                const totDisplay = entry.avgTotSec !== null ? formatSecondsToTime(entry.avgTotSec) : 'ND';
+                const foulsDisplay = Number.isFinite(entry.avgFouls) ? entry.avgFouls.toFixed(1) : '-';
+
+                return `
+                    <div class="grid grid-cols-5 items-center px-3 py-2 ${idx % 2 === 0 ? 'bg-slate-950/40' : 'bg-slate-900/30'} border-b border-slate-800 last:border-b-0">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <span class="w-2 h-2 rounded-full bg-yellow-400/80"></span>
+                            <span class="text-white font-semibold uppercase text-xs truncate">${entry.team}</span>
+                        </div>
+                        <div class="text-[11px] text-slate-200 font-mono text-center">${entry.matches}</div>
+                        <div class="text-[11px] text-slate-200 font-mono text-center">${foulsDisplay}</div>
+                        <div class="text-[11px] text-slate-200 font-mono text-center">${effDisplay}</div>
+                        <div class="text-[11px] text-slate-200 font-mono text-center">${totDisplay}</div>
+                    </div>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="rounded-xl border border-slate-800 overflow-hidden shadow-card bg-slate-900/60">
+                    <div class="grid grid-cols-5 items-center px-3 py-2 bg-slate-950/70 border-b border-slate-800" id="referee-balance-sort-bar">
+                        ${headerButton('Squadra', 'team')}
+                        <div class="flex justify-center">${headerButton('Gare', 'matches')}</div>
+                        <div class="flex justify-center">${headerButton('Falli medi', 'avgFouls')}</div>
+                        <div class="flex justify-center">${headerButton('Eff medio', 'avgEffSec')}</div>
+                        <div class="flex justify-center">${headerButton('Tot medio', 'avgTotSec')}</div>
+                    </div>
+                    <div class="divide-y divide-slate-800">${rowsHtml}</div>
+                </div>`;
+
+            container.querySelector('#referee-balance-sort-bar').addEventListener('click', handleRefereeBalanceSort);
+        }
+
         function formatRecordValue(metricKey, value) {
             if (metricKey === 'fouls') return `${Math.round(value)} falli`;
             return `${formatSecondsToTime(value)}`;
@@ -7741,22 +7832,22 @@ function getRefereePortrait(refName) {
                                 if (mdA !== mdB) return mdA - mdB;
                                 return (a.match || '').localeCompare(b.match || '');
                             })
-                            .map(m => {
+                            .map((m, idx) => {
                                 const ratioDisplay = formatEffRatio(Number.isFinite(m.ratio) ? m.ratio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
                                 const matchdayLabel = Number.isFinite(m.matchday) ? `Giornata ${m.matchday}` : 'Giornata -';
-                                return `<div class="p-3 rounded-xl border border-slate-800 bg-slate-900/70 flex flex-col gap-2">`
-                                    + `<div class="flex items-center justify-between gap-2">`
-                                        + `<div class="flex items-center gap-2 text-white font-semibold text-sm uppercase tracking-wide leading-tight">`
+                                return `<div class="flex flex-wrap items-center justify-between gap-3 px-3 py-2 rounded-lg border border-slate-800 ${idx % 2 === 0 ? 'bg-slate-900/60' : 'bg-slate-900/40'}">`
+                                    + `<div class="flex items-center gap-2 min-w-0">`
+                                        + `<span class="px-2 py-1 text-[10px] font-semibold rounded-full bg-slate-800 text-slate-200 border border-slate-700">${matchdayLabel}</span>`
+                                        + `<div class="flex items-center gap-2 text-white font-semibold text-sm uppercase tracking-wide leading-tight truncate">`
                                             + `<i class="fa-solid fa-futbol text-yellow-400 text-xs"></i>`
                                             + `<span class="truncate">${(m.match || '').toUpperCase()}</span>`
                                         + `</div>`
-                                        + `<span class="px-2 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-200 border border-slate-700">${matchdayLabel}</span>`
                                     + `</div>`
-                                    + `<div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-slate-200 font-mono">`
-                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">T.Eff</span><span class="text-green-400">${formatSecondsToTime(m.effectiveTimeSec)}</span></div>`
-                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">T.Tot</span><span class="text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span></div>`
-                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">% Eff</span><span class="text-yellow-300">${ratioDisplay}</span></div>`
-                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">Falli</span><span class="text-red-300">${Number.isFinite(m.fouls) ? m.fouls : '-'}</span></div>`
+                                    + `<div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-200 font-mono">`
+                                        + `<span class="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-950/50 border border-slate-800"><span class="text-slate-500">T.Eff</span><span class="text-green-400">${formatSecondsToTime(m.effectiveTimeSec)}</span></span>`
+                                        + `<span class="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-950/50 border border-slate-800"><span class="text-slate-500">T.Tot</span><span class="text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span></span>`
+                                        + `<span class="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-950/50 border border-slate-800"><span class="text-slate-500">% Eff</span><span class="text-yellow-300">${ratioDisplay}</span></span>`
+                                        + `<span class="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-950/50 border border-slate-800"><span class="text-slate-500">Falli</span><span class="text-red-300">${Number.isFinite(m.fouls) ? m.fouls : '-'}</span></span>`
                                     + `</div>`
                                 + `</div>`;
                             }).join('');
@@ -7775,41 +7866,35 @@ function getRefereePortrait(refName) {
                 const balanceMap = refereeMatches.reduce((acc, m) => {
                     const { homeTeam, awayTeam } = splitMatchTeams(m.match || '');
                     const eff = Number.isFinite(m.effectiveTimeSec) ? m.effectiveTimeSec : null;
+                    const total = Number.isFinite(m.totalTimeSec) ? m.totalTimeSec : null;
                     const fouls = Number.isFinite(m.fouls) ? m.fouls : null;
 
                     [homeTeam, awayTeam].forEach(team => {
                         if (!team) return;
-                        if (!acc.has(team)) acc.set(team, { team, matches: 0, totalEff: 0, effCount: 0, totalFouls: 0, foulsCount: 0 });
+                        if (!acc.has(team)) acc.set(team, { team, matches: 0, totalEff: 0, effCount: 0, totalTot: 0, totCount: 0, totalFouls: 0, foulsCount: 0 });
                         const entry = acc.get(team);
                         entry.matches += 1;
                         if (eff !== null) { entry.totalEff += eff; entry.effCount += 1; }
+                        if (total !== null) { entry.totalTot += total; entry.totCount += 1; }
                         if (fouls !== null) { entry.totalFouls += fouls; entry.foulsCount += 1; }
                     });
                     return acc;
                 }, new Map());
 
-                const balanceList = Array.from(balanceMap.values())
-                    .sort((a, b) => b.matches - a.matches || a.team.localeCompare(b.team))
-                    .map(entry => {
-                        const avgEff = entry.effCount ? formatSecondsToTime(entry.totalEff / entry.effCount) : 'ND';
-                        const avgFouls = entry.foulsCount ? (entry.totalFouls / entry.foulsCount).toFixed(1) : '-';
-                        return `<div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[12px]">`
-                            + `<div class="flex flex-col leading-tight">
-                                    <span class="text-white font-semibold uppercase">${entry.team}</span>
-                                    <span class="text-slate-400 text-[11px]">${entry.matches} direzioni</span>
-                               </div>`
-                            + `<div class="flex flex-col text-right leading-tight text-[11px] font-mono">
-                                    <span class="text-green-400">T.Eff: ${avgEff}</span>
-                                    <span class="text-red-300">Falli: ${avgFouls}</span>
-                               </div>`
-                        + `</div>`;
-                    })
-                    .join('');
+                refereeBalanceRows = Array.from(balanceMap.values()).map(entry => ({
+                    team: entry.team,
+                    matches: entry.matches,
+                    avgFouls: entry.foulsCount ? entry.totalFouls / entry.foulsCount : null,
+                    avgEffSec: entry.effCount ? entry.totalEff / entry.effCount : null,
+                    avgTotSec: entry.totCount ? entry.totalTot / entry.totCount : null
+                }));
 
-                balanceContainer.innerHTML = balanceList || '<p class="text-xs text-slate-500">Nessuna squadra trovata.</p>';
+                refereeBalanceSort = { key: 'matches', dir: 'desc' };
+                renderRefereeBalanceTable();
             } else {
                 matchesContainer.innerHTML = '<p class="text-xs text-slate-500">Nessuna partita disponibile.</p>';
-                balanceContainer.innerHTML = '<p class="text-xs text-slate-500">Nessuna squadra trovata.</p>';
+                refereeBalanceRows = [];
+                renderRefereeBalanceTable();
             }
 
             modal.classList.remove('hidden');
