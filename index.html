@@ -7625,10 +7625,11 @@ function getRefereePortrait(refName) {
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
-            return `<div class="flex items-center truncate">
-                        <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline">${firstname.toLowerCase()}</span> 
-                        <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm">${surname}</span>
-                    </div>`;
+            const clickHandler = `openRefereeProfile(${JSON.stringify(fullName)}, event)`;
+            return `<button type="button" onclick="${clickHandler}" class="flex items-center truncate group/referee">
+                        <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline group-hover/referee:text-white">${firstname.toLowerCase()}</span>
+                        <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm group-hover/referee:text-yellow-400 transition-colors">${surname}</span>
+                    </button>`;
         }
         
         function getRefereeSurname(fullName) {
@@ -7636,6 +7637,101 @@ function getRefereePortrait(refName) {
             const allSurnames = [...REFEREES_2526, ...REFEREES_2425, ...ACTIVE_EXCEPTIONS, ...HISTORICAL_SURNAMES];
             const matches = allSurnames.filter(s => upperName.includes(s.toUpperCase()));
             return matches.length > 0 ? matches.sort((a, b) => b.length - a.length)[0] : fullName.split(' ').pop();
+        }
+
+        function openRefereeProfile(fullName, event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('referee-profile-modal');
+            if (!modal) return;
+
+            const matchesContainer = document.getElementById('referee-profile-matches');
+            const balanceContainer = document.getElementById('referee-profile-balance');
+            const metaEl = document.getElementById('referee-profile-meta');
+            const surname = getRefereeSurname(fullName).toLowerCase();
+
+            const allMatches = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
+            const refereeMatches = allMatches.filter(m => {
+                const refName = (m.referee || '').toLowerCase();
+                const refSurname = getRefereeSurname(m.referee || '').toLowerCase();
+                return refName.includes(fullName.toLowerCase()) || refSurname === surname;
+            });
+
+            document.getElementById('referee-profile-name').textContent = formatTitleCase(fullName);
+
+            const seasonsPlayed = Array.from(new Set(refereeMatches.map(m => m.season))).sort().reverse();
+            metaEl.textContent = refereeMatches.length
+                ? `${refereeMatches.length} partite arbitrate in ${seasonsPlayed.length} stagioni`
+                : 'Nessuna partita trovata nelle stagioni disponibili';
+
+            if (refereeMatches.length) {
+                const matchesBySeason = refereeMatches.reduce((acc, m) => {
+                    acc[m.season] = acc[m.season] || [];
+                    acc[m.season].push(m);
+                    return acc;
+                }, {});
+
+                const seasonBlocks = Object.keys(matchesBySeason)
+                    .sort((a, b) => b.localeCompare(a))
+                    .map(season => {
+                        const rows = matchesBySeason[season]
+                            .sort((a, b) => (a.match || '').localeCompare(b.match || ''))
+                            .map(m => {
+                                const ratioDisplay = formatEffRatio(Number.isFinite(m.ratio) ? m.ratio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
+                                return `<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-3 rounded-lg border border-slate-800 bg-slate-900/60">`
+                                    + `<div class="flex items-center gap-2 text-white font-semibold"><i class="fa-solid fa-futbol text-yellow-400"></i><span class="uppercase">${(m.match || '').toUpperCase()}</span></div>`
+                                    + `<div class="flex flex-wrap gap-3 text-xs text-slate-300 font-mono">`
+                                    + `<span class="text-green-400">T.Eff: ${formatSecondsToTime(m.effectiveTimeSec)}</span>`
+                                    + `<span class="text-blue-400">T.Tot: ${formatSecondsToTime(m.totalTimeSec)}</span>`
+                                    + `<span class="text-yellow-300">%: ${ratioDisplay}</span>`
+                                    + `<span class="text-red-300">Falli: ${Number.isFinite(m.fouls) ? m.fouls : '-'}</span>`
+                                    + `</div>`
+                                    + `</div>`;
+                            }).join('');
+
+                        return `<div class="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">`
+                            + `<div class="px-4 py-2 bg-slate-900/70 border-b border-slate-800 flex items-center justify-between">`
+                            + `<span class="text-xs uppercase tracking-wide text-slate-400">${season}</span>`
+                            + `<span class="text-[10px] text-slate-500">${matchesBySeason[season].length} gare</span>`
+                            + `</div>`
+                            + `<div class="p-3 space-y-2">${rows}</div>`
+                            + `</div>`;
+                    }).join('');
+
+                matchesContainer.innerHTML = seasonBlocks;
+
+                const balanceMap = refereeMatches.reduce((acc, m) => {
+                    const { homeTeam, awayTeam } = splitMatchTeams(m.match || '');
+                    [homeTeam, awayTeam].forEach(team => {
+                        if (!team) return;
+                        if (!acc.has(team)) acc.set(team, { team, matches: 0 });
+                        acc.get(team).matches += 1;
+                    });
+                    return acc;
+                }, new Map());
+
+                const balanceList = Array.from(balanceMap.values())
+                    .sort((a, b) => b.matches - a.matches || a.team.localeCompare(b.team))
+                    .map(entry => `<div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800">
+                            <span class="text-white font-semibold uppercase">${entry.team}</span>
+                            <span class="text-yellow-400 font-bold">${entry.matches}</span>
+                        </div>`)
+                    .join('');
+
+                balanceContainer.innerHTML = balanceList || '<p class="text-xs text-slate-500">Nessuna squadra trovata.</p>';
+            } else {
+                matchesContainer.innerHTML = '<p class="text-xs text-slate-500">Nessuna partita disponibile.</p>';
+                balanceContainer.innerHTML = '<p class="text-xs text-slate-500">Nessuna squadra trovata.</p>';
+            }
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeRefereeProfile() {
+            const modal = document.getElementById('referee-profile-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
         }
 
         /**
@@ -11916,6 +12012,39 @@ updateRadarSelectOptions();
             if (window.innerWidth < 1024) document.getElementById('season-dropdown-content').classList.add('hidden');
         };
     </script>
+
+    <!-- Modal profilo arbitro -->
+    <div id="referee-profile-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70" onclick="closeRefereeProfile()"></div>
+        <div class="relative z-10 max-w-5xl mx-auto mt-12 mb-8 bg-slate-900 border border-yellow-500/40 shadow-2xl rounded-2xl overflow-hidden">
+            <div class="flex items-start justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.2em] text-yellow-400">Profilo arbitro</p>
+                    <h3 id="referee-profile-name" class="text-2xl font-extrabold text-white mt-1"></h3>
+                    <p id="referee-profile-meta" class="text-slate-400 text-xs"></p>
+                </div>
+                <button class="text-slate-400 hover:text-white transition-colors" onclick="closeRefereeProfile()">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
+                <div class="lg:col-span-2 border-r border-slate-800">
+                    <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wide">Partite per stagione</h4>
+                        <div id="referee-profile-matches" class="space-y-3"></div>
+                    </div>
+                </div>
+                <div class="p-6 bg-slate-950/60">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-scale-balanced text-yellow-400"></i>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wide">Bilancio per squadra</h4>
+                    </div>
+                    <div id="referee-profile-balance" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 
