@@ -10605,16 +10605,27 @@ window.addEventListener('resize', debounceRenderAnalytics);
 
             if (currentView === 'stats') {
                 thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Presenze', 'matches', 'text-center')}${th('Falli/P', 'avgFouls', 'text-center')}${th('Gialli Tot', 'yellows', 'text-center !text-yellow-500 font-bold')}${th('Gialli/P', 'avgYellows', 'text-center !text-yellow-500')}${th('Rossi Tot', 'reds', 'text-center !text-red-500 font-bold')}${th('Rossi/P', 'avgReds', 'text-center !text-red-500')}${th('Rigori/P', 'avgPens', 'text-center')}</tr>`;
+                const foulsValues = data.map(r => r.avgFouls).filter(v => Number.isFinite(v));
+                const [minFouls, maxFouls] = foulsValues.length ? [Math.min(...foulsValues), Math.max(...foulsValues)] : [0, 0];
                 let tM=0, tF=0, tY=0, tR=0, tP=0;
-                data.forEach((r) => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches; tbody.innerHTML += `<tr class="${r.isInactive?'opacity-50 grayscale':''}"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center font-bold text-white text-base">${r.matches}</td><td class="text-center text-slate-300">${r.avgFouls.toFixed(2)}</td><td class="text-center !text-yellow-500 font-bold">${r.yellows}</td><td class="text-center !text-yellow-500">${r.avgYellows.toFixed(2)}</td><td class="text-center !text-red-500 font-bold">${r.reds}</td><td class="text-center !text-red-500">${r.avgReds.toFixed(2)}</td><td class="text-center text-slate-400">${r.avgPens.toFixed(2)}</td></tr>`; });
+                data.forEach((r) => { tM+=r.matches; tF+=r.avgFouls*r.matches; tY+=r.yellows; tR+=r.reds; tP+=r.avgPens*r.matches; const foulsColor = getColorForValue(r.avgFouls, minFouls, maxFouls, true); tbody.innerHTML += `<tr class="${r.isInactive?'opacity-50 grayscale':''}"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name)}</td><td class="text-center font-bold text-white text-base">${r.matches}</td><td class="text-center" style="color: ${foulsColor}">${r.avgFouls.toFixed(2)}</td><td class="text-center !text-yellow-500 font-bold">${r.yellows}</td><td class="text-center !text-yellow-500">${r.avgYellows.toFixed(2)}</td><td class="text-center !text-red-500 font-bold">${r.reds}</td><td class="text-center !text-red-500">${r.avgReds.toFixed(2)}</td><td class="text-center text-slate-400">${r.avgPens.toFixed(2)}</td></tr>`; });
                 // Nota come ho cambiato tutti i 'p-3' in 'p-2'
-tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTALE</td><td class="text-center p-2 text-white">${tM}</td><td class="text-center p-2">${(tF/tM).toFixed(2)}</td><td class="text-center p-2 text-yellow-500 font-bold">${tY}</td><td class="text-center p-2 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-2 text-red-500 font-bold">${tR}</td><td class="text-center p-2 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-center p-2">${(tP/tM).toFixed(2)}</td></tr>`;
-            } 
+tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTALE</td><td class="text-center p-2 text-white">${tM}</td><td class="text-center p-2" style="color: ${getColorForValue(tF/tM, minFouls, maxFouls, true)}">${(tF/tM).toFixed(2)}</td><td class="text-center p-2 text-yellow-500 font-bold">${tY}</td><td class="text-center p-2 text-yellow-500">${(tY/tM).toFixed(2)}</td><td class="text-center p-2 text-red-500 font-bold">${tR}</td><td class="text-center p-2 text-red-500">${(tR/tM).toFixed(2)}</td><td class="text-center p-2">${(tP/tM).toFixed(2)}</td></tr>`;
+            }
             else if (currentView === 'playingTime') {
                 const showTot = activeSeasons.some(season => ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22'].includes(season));
                 thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Media T.E.', 'avgEffSec', 'text-center text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-center text-blue-400') : ''}${th('Media % T.Eff', 'effRatio', 'text-center text-yellow-400')}<th class="w-10"></th></tr>`;
+                const effValues = data.map(r => r.avgEffSec).filter(v => Number.isFinite(v));
+                const [minEff, maxEff] = effValues.length ? [Math.min(...effValues), Math.max(...effValues)] : [0, 0];
+                const totValues = data.map(r => r.avgTotSec).filter(v => Number.isFinite(v));
+                const [minTot, maxTot] = totValues.length ? [Math.min(...totValues), Math.max(...totValues)] : [0, 0];
+                const ratioValues = data.map(r => r.effRatio).filter(v => Number.isFinite(v));
+                const [minRatio, maxRatio] = ratioValues.length ? [Math.min(...ratioValues), Math.max(...ratioValues)] : [0, 0];
                 data.forEach((r, i) => {
-                    tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-bold text-green-400 font-mono text-base">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium text-blue-400 font-mono">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono text-yellow-400 font-semibold">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
+                    const effColor = getColorForValue(r.avgEffSec, minEff, maxEff, false);
+                    const totColor = getColorForValue(r.avgTotSec, minTot, maxTot, true);
+                    const ratioColor = getColorForValue(r.effRatio, minRatio, maxRatio, true);
+                    tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-bold font-mono text-base" style="color: ${effColor}">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium font-mono" style="color: ${totColor}">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono font-semibold" style="color: ${ratioColor}">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
                     const multiSeason = activeSeasons.length > 1;
                     const matchesHeader = `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
                     const matchesHtml = r.matchList.map(m => {
@@ -10679,16 +10690,23 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             const validTots = matchesDataAll.map(d=>d.totalTimeSec).filter(v=>!isNaN(v));
             const validEffs = matchesDataAll.map(d=>d.effectiveTimeSec).filter(v=>!isNaN(v));
             const validRatios = matchesDataAll.map(d=>d.ratio).filter(v=>!isNaN(v));
-            
-            const minTot = Math.min(...validTots); const maxTot = Math.max(...validTots);
-            const minEff = Math.min(...validEffs); const maxEff = Math.max(...validEffs);
-            const minRat = Math.min(...validRatios); const maxRat = Math.max(...validRatios);
+            const validFouls = matchesDataAll.map(d=>d.fouls).filter(v=>Number.isFinite(v));
+            const validFoulsHome = matchesDataAll.map(d=>d.foulsHome).filter(v=>Number.isFinite(v));
+            const validFoulsAway = matchesDataAll.map(d=>d.foulsAway).filter(v=>Number.isFinite(v));
+
+            const getRange = (arr) => arr.length ? [Math.min(...arr), Math.max(...arr)] : [0, 0];
+
+            const [minTot, maxTot] = getRange(validTots); const [minEff, maxEff] = getRange(validEffs); const [minRat, maxRat] = getRange(validRatios);
+            const [minFouls, maxFouls] = getRange(validFouls); const [minFoulsHome, maxFoulsHome] = getRange(validFoulsHome); const [minFoulsAway, maxFoulsAway] = getRange(validFoulsAway);
 
             let rowsHtml = '';
             data.forEach((r) => {
                 const colTot = getColorForValue(r.totalTimeSec, minTot, maxTot, true);
                 const colEff = getColorForValue(r.effectiveTimeSec, minEff, maxEff);
                 const colRat = getColorForValue(r.ratio, minRat, maxRat);
+                const colFoulsTot = getColorForValue(r.fouls, minFouls, maxFouls, true);
+                const colFoulsHome = getColorForValue(r.foulsHome, minFoulsHome, maxFoulsHome, true);
+                const colFoulsAway = getColorForValue(r.foulsAway, minFoulsAway, maxFoulsAway, true);
                 const matchdayLabel = Number.isFinite(r.matchday) ? r.matchday : '-';
 
                 const matchLabel = (r.match || '').toUpperCase();
@@ -10706,9 +10724,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     <td class="text-center font-mono" style="color: ${colTot}">${formatSecondsToTime(r.totalTimeSec)}</td>
                     <td class="text-center font-mono font-bold" style="color: ${colEff}">${formatSecondsToTime(r.effectiveTimeSec)}</td>
                     <td class="text-center font-mono font-bold" style="color: ${colRat}">${r.ratio ? r.ratio.toFixed(1) + '%' : '-'}</td>
-                    <td class="text-center font-bold text-white bg-slate-800/30 rounded">${foulsTot}</td>
-                    <td class="text-center text-red-200">${foulsHome}</td>
-                    <td class="text-center text-red-200">${foulsAway}</td>
+                    <td class="text-center font-bold bg-slate-800/30 rounded" style="color: ${colFoulsTot}">${foulsTot}</td>
+                    <td class="text-center" style="color: ${colFoulsHome}">${foulsHome}</td>
+                    <td class="text-center" style="color: ${colFoulsAway}">${foulsAway}</td>
                 </tr>`;
             });
             tbody.innerHTML += rowsHtml;
@@ -10742,6 +10760,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                  loadMoreRow.innerHTML = `<td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td>`;
                  tfoot.appendChild(loadMoreRow);
 
+                 const footerFoulsColor = getColorForValue(avgFouls, minFouls, maxFouls, true);
+                 const footerFoulsHomeColor = getColorForValue(avgFoulsHome, minFoulsHome, maxFoulsHome, true);
+                 const footerFoulsAwayColor = getColorForValue(avgFoulsAway, minFoulsAway, maxFoulsAway, true);
                  tfoot.innerHTML += `<tr class="avg-row">
                     <td class="sticky-col">MEDIE (${countMatches} partite)</td>
                     <td class="text-center">-</td>
@@ -10750,9 +10771,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     <td class="text-center font-mono text-blue-300">${formatSecondsToTime(avgTot)}</td>
                     <td class="text-center font-mono text-green-300">${formatSecondsToTime(avgEff)}</td>
                     <td class="text-center font-mono text-yellow-300">${avgRat.toFixed(1)}%</td>
-                    <td class="text-center text-white">${avgFouls.toFixed(1)}</td>
-                    <td class="text-center text-red-200">${avgFoulsHome !== null ? avgFoulsHome.toFixed(1) : '-'}</td>
-                    <td class="text-center text-red-200">${avgFoulsAway !== null ? avgFoulsAway.toFixed(1) : '-'}</td>
+                    <td class="text-center font-bold" style="color: ${footerFoulsColor}">${avgFouls.toFixed(1)}</td>
+                    <td class="text-center" style="color: ${footerFoulsHomeColor}">${avgFoulsHome !== null ? avgFoulsHome.toFixed(1) : '-'}</td>
+                    <td class="text-center" style="color: ${footerFoulsAwayColor}">${avgFoulsAway !== null ? avgFoulsAway.toFixed(1) : '-'}</td>
                  </tr>`;
             } else {
                  // Container per il pulsante "Carica altro"
