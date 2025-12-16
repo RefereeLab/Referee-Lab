@@ -7670,7 +7670,9 @@ function getRefereePortrait(refName) {
 
             const matchesContainer = document.getElementById('referee-profile-matches');
             const balanceContainer = document.getElementById('referee-profile-balance');
+            const summaryContainer = document.getElementById('referee-profile-summary');
             const metaEl = document.getElementById('referee-profile-meta');
+            const seasonsChipsEl = document.getElementById('referee-profile-season-chips');
             const surname = getRefereeSurname(fullName).toLowerCase();
 
             const allMatches = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
@@ -7687,6 +7689,40 @@ function getRefereePortrait(refName) {
                 ? `${refereeMatches.length} partite arbitrate in ${seasonsPlayed.length} stagioni`
                 : 'Nessuna partita trovata nelle stagioni disponibili';
 
+            seasonsChipsEl.innerHTML = seasonsPlayed.length
+                ? seasonsPlayed.map(season => `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-100 border border-slate-700">${season}</span>`).join('')
+                : '<span class="text-[11px] text-slate-500">Stagioni non disponibili</span>';
+
+            const effValues = refereeMatches.map(m => m.effectiveTimeSec).filter(v => Number.isFinite(v));
+            const foulsValues = refereeMatches.map(m => m.fouls).filter(v => Number.isFinite(v));
+            const ratioValues = refereeMatches.map(m => Number.isFinite(m.ratio) ? m.ratio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec)).filter(v => Number.isFinite(v));
+
+            const avgEff = effValues.length ? formatSecondsToTime(effValues.reduce((a, b) => a + b, 0) / effValues.length) : 'ND';
+            const avgFouls = foulsValues.length ? (foulsValues.reduce((a, b) => a + b, 0) / foulsValues.length).toFixed(1) : '-';
+            const avgRatio = ratioValues.length ? `${(ratioValues.reduce((a, b) => a + b, 0) / ratioValues.length).toFixed(1)}%` : '-';
+
+            summaryContainer.innerHTML = `
+                <div class="p-3 rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/70 shadow-card">
+                    <p class="text-[10px] uppercase tracking-wide text-slate-400">Totale gare</p>
+                    <p class="text-2xl font-extrabold text-white leading-tight">${refereeMatches.length}</p>
+                    <p class="text-[11px] text-slate-500">${seasonsPlayed.length} stagioni coperte</p>
+                </div>
+                <div class="p-3 rounded-xl border border-slate-800 bg-slate-900/70">
+                    <p class="text-[10px] uppercase tracking-wide text-slate-400">Media T. Effettivo</p>
+                    <p class="text-xl font-bold text-green-400 leading-tight">${avgEff}</p>
+                    <p class="text-[11px] text-slate-500">Tempo effettivo medio</p>
+                </div>
+                <div class="p-3 rounded-xl border border-slate-800 bg-slate-900/70">
+                    <p class="text-[10px] uppercase tracking-wide text-slate-400">Media falli</p>
+                    <p class="text-xl font-bold text-red-300 leading-tight">${avgFouls}</p>
+                    <p class="text-[11px] text-slate-500">Fischi per gara</p>
+                </div>
+                <div class="p-3 rounded-xl border border-slate-800 bg-slate-900/70">
+                    <p class="text-[10px] uppercase tracking-wide text-slate-400">Media % eff.</p>
+                    <p class="text-xl font-bold text-yellow-300 leading-tight">${avgRatio}</p>
+                    <p class="text-[11px] text-slate-500">Rapporto T.Eff/T.Tot</p>
+                </div>`;
+
             if (refereeMatches.length) {
                 const matchesBySeason = refereeMatches.reduce((acc, m) => {
                     acc[m.season] = acc[m.season] || [];
@@ -7698,23 +7734,31 @@ function getRefereePortrait(refName) {
                     .sort((a, b) => b.localeCompare(a))
                     .map(season => {
                         const rows = matchesBySeason[season]
-                            .sort((a, b) => (a.match || '').localeCompare(b.match || ''))
+                            .slice()
+                            .sort((a, b) => {
+                                const mdA = Number.isFinite(a.matchday) ? a.matchday : Infinity;
+                                const mdB = Number.isFinite(b.matchday) ? b.matchday : Infinity;
+                                if (mdA !== mdB) return mdA - mdB;
+                                return (a.match || '').localeCompare(b.match || '');
+                            })
                             .map(m => {
                                 const ratioDisplay = formatEffRatio(Number.isFinite(m.ratio) ? m.ratio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
-                                const matchdayLabel = Number.isFinite(m.matchday) ? `G${m.matchday}` : 'G-';
-                                return `<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 p-2 rounded-lg border border-slate-800 bg-slate-900/60">`
-                                    + `<div class="flex items-center gap-2 text-white font-semibold text-[12px] uppercase tracking-wide leading-tight">`
-                                        + `<i class="fa-solid fa-futbol text-yellow-400 text-xs"></i>`
-                                        + `<span class="truncate">${(m.match || '').toUpperCase()}</span>`
+                                const matchdayLabel = Number.isFinite(m.matchday) ? `Giornata ${m.matchday}` : 'Giornata -';
+                                return `<div class="p-3 rounded-xl border border-slate-800 bg-slate-900/70 flex flex-col gap-2">`
+                                    + `<div class="flex items-center justify-between gap-2">`
+                                        + `<div class="flex items-center gap-2 text-white font-semibold text-sm uppercase tracking-wide leading-tight">`
+                                            + `<i class="fa-solid fa-futbol text-yellow-400 text-xs"></i>`
+                                            + `<span class="truncate">${(m.match || '').toUpperCase()}</span>`
+                                        + `</div>`
+                                        + `<span class="px-2 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-200 border border-slate-700">${matchdayLabel}</span>`
                                     + `</div>`
-                                    + `<div class="flex flex-wrap gap-2 text-[11px] text-slate-300 font-mono leading-tight">`
-                                        + `<span class="text-slate-400">${matchdayLabel}</span>`
-                                        + `<span class="text-green-400">T.Eff: ${formatSecondsToTime(m.effectiveTimeSec)}</span>`
-                                        + `<span class="text-blue-400">T.Tot: ${formatSecondsToTime(m.totalTimeSec)}</span>`
-                                        + `<span class="text-yellow-300">%: ${ratioDisplay}</span>`
-                                        + `<span class="text-red-300">Falli: ${Number.isFinite(m.fouls) ? m.fouls : '-'}</span>`
+                                    + `<div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-slate-200 font-mono">`
+                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">T.Eff</span><span class="text-green-400">${formatSecondsToTime(m.effectiveTimeSec)}</span></div>`
+                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">T.Tot</span><span class="text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span></div>`
+                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">% Eff</span><span class="text-yellow-300">${ratioDisplay}</span></div>`
+                                        + `<div class="flex items-center gap-1 bg-slate-950/40 px-2 py-1 rounded-lg border border-slate-800"><span class="text-slate-500">Falli</span><span class="text-red-300">${Number.isFinite(m.fouls) ? m.fouls : '-'}</span></div>`
                                     + `</div>`
-                                    + `</div>`;
+                                + `</div>`;
                             }).join('');
 
                         return `<div class="bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden">`
@@ -12079,31 +12123,47 @@ updateRadarSelectOptions();
     <!-- Modal profilo arbitro -->
     <div id="referee-profile-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/70" onclick="closeRefereeProfile()"></div>
-        <div class="relative z-10 max-w-5xl mx-auto mt-12 mb-8 bg-slate-900 border border-yellow-500/40 shadow-2xl rounded-2xl overflow-hidden">
-            <div class="flex items-start justify-between px-5 py-3 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
-                <div>
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-yellow-400">Profilo arbitro</p>
-                    <h3 id="referee-profile-name" class="text-xl font-extrabold text-white mt-1 leading-tight"></h3>
-                    <p id="referee-profile-meta" class="text-slate-400 text-[11px]"></p>
+        <div class="relative z-10 max-w-6xl mx-auto mt-12 mb-8 bg-slate-900 border border-yellow-500/40 shadow-2xl rounded-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-yellow-400">
+                            <i class="fa-solid fa-id-card-clip text-yellow-400"></i>
+                            <span>Profilo arbitro</span>
+                        </div>
+                        <div>
+                            <h3 id="referee-profile-name" class="text-2xl font-extrabold text-white leading-tight"></h3>
+                            <p id="referee-profile-meta" class="text-slate-300 text-sm mt-1"></p>
+                        </div>
+                        <div id="referee-profile-season-chips" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <button class="text-slate-400 hover:text-white transition-colors" onclick="closeRefereeProfile()">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
                 </div>
-                <button class="text-slate-400 hover:text-white transition-colors" onclick="closeRefereeProfile()">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+
+                <div id="referee-profile-summary" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-0">
                 <div class="lg:col-span-2 border-r border-slate-800">
-                    <div class="p-5 space-y-3 max-h-[60vh] overflow-y-auto">
-                        <h4 class="text-[13px] font-semibold text-white uppercase tracking-wide">Partite per stagione</h4>
-                        <div id="referee-profile-matches" class="space-y-3"></div>
+                    <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto bg-slate-950/40">
+                        <div class="flex items-center gap-2 text-[12px] uppercase tracking-wide text-slate-400">
+                            <i class="fa-solid fa-calendar-days text-yellow-400"></i>
+                            <span>Partite per stagione</span>
+                        </div>
+                        <div id="referee-profile-matches" class="space-y-4"></div>
                     </div>
                 </div>
-                <div class="p-6 bg-slate-950/60">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-scale-balanced text-yellow-400"></i>
-                        <h4 class="text-[13px] font-semibold text-white uppercase tracking-wide">Bilancio per squadra</h4>
+                <div class="p-6 bg-slate-950/70 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-yellow-400"></i>
+                            <h4 class="text-[13px] font-semibold text-white uppercase tracking-wide">Bilancio per squadra</h4>
+                        </div>
+                        <span class="text-[10px] text-slate-500 uppercase">Medie</span>
                     </div>
-                    <div id="referee-profile-balance" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                    <div id="referee-profile-balance" class="space-y-3 max-h-[65vh] overflow-y-auto"></div>
                 </div>
             </div>
         </div>
