@@ -1176,9 +1176,6 @@ html, body {
                         <button onclick="switchView('analytics')" id="nav-analytics" class="nav-pill flex items-center">
                             <i class="fa-solid fa-chart-pie mr-2"></i>Grafici <span class="badge-new">NEW</span>
                         </button>
-                        <button onclick="switchView('predictor')" id="nav-predictor" class="nav-pill">
-                            <i class="fa-solid fa-crystal-ball mr-2"></i>Referee Predictor
-                        </button>
                         <button onclick="switchView('players')" id="nav-players" class="nav-pill">
                             <i class="fa-solid fa-user mr-2"></i>Giocatori 25/26
                         </button>
@@ -1200,9 +1197,6 @@ html, body {
                         <button onclick="switchView('analytics')" id="mob-nav-analytics" class="p-2 rounded text-slate-400 relative">
                             <i class="fa-solid fa-chart-pie"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                        </button>
-                        <button onclick="switchView('predictor')" id="mob-nav-predictor" class="p-2 rounded text-slate-400">
-                            <i class="fa-solid fa-crystal-ball"></i>
                         </button>
                         <button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
                             <i class="fa-solid fa-user"></i>
@@ -1611,47 +1605,6 @@ html, body {
 
             <div id="quiz-questions" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
 
-        </div>
-
-        <div id="predictor-view" class="hidden space-y-6 animate-fade-in">
-            <div class="pro-card rounded-lg p-4 space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-bold text-white">Referee Predictor — prossima giornata</h2>
-                        <p class="text-[11px] text-slate-400">Seleziona l'arbitro che secondo te verrà designato per ciascuna partita, poi invia le tue scelte.</p>
-                    </div>
-                    <button onclick="resetPredictorSelections()" class="interactive-surface bg-slate-800 text-slate-200 border border-slate-700 px-3 py-2 rounded-lg text-xs font-semibold hover:border-yellow-500">
-                        <i class="fa-solid fa-eraser mr-2"></i>Pulisci scelte
-                    </button>
-                </div>
-                <div class="flex flex-col gap-2 text-[11px] text-slate-300 bg-slate-900/60 border border-slate-800 rounded-lg p-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                        <span>COMPLETA TUTTE LE PARTITE PRIMA DI INVIARE.</span>
-                    </div>
-                    <div id="predictor-feedback" class="text-yellow-400 font-semibold hidden"></div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="predictor-matches"></div>
-
-            <div class="flex items-center justify-end gap-3">
-                <span class="text-[11px] text-slate-400">Assicurati di aver scelto un arbitro per tutte le 10 partite.</span>
-                <button onclick="submitPredictorVotes()" class="interactive-surface bg-yellow-500 text-slate-900 font-bold text-sm px-5 py-2 rounded-lg shadow-glow hover:bg-yellow-400">
-                    <i class="fa-solid fa-paper-plane mr-2"></i>Invia
-                </button>
-            </div>
-
-            <div id="predictor-results-card" class="pro-card rounded-lg p-4 space-y-3 hidden">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Voti raccolti</h3>
-                        <p class="text-[11px] text-slate-400">Conteggi locali basati sui contributi inviati da questo dispositivo.</p>
-                    </div>
-                    <span class="text-[11px] text-slate-500">Aggiornato in tempo reale</span>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" id="predictor-results"></div>
-            </div>
         </div>
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -6916,7 +6869,6 @@ Orsato	56,45'
             playingTime: 'playing-time',
             matches: 'matches',
             teams: 'teams',
-            predictor: 'predictor',
             players: 'players',
             quiz: 'quiz',
         };
@@ -6954,224 +6906,6 @@ let chartRadar = null;
         const QUIZ_SEASON_WINDOWS = ANALYTICS_SEASON_OPTIONS.map((_, idx) => ANALYTICS_SEASON_OPTIONS.slice(0, idx + 1));
         const QUIZ_LATEST_SEASON = ANALYTICS_SEASON_OPTIONS[0];
         const QUIZ_MIN_REF_MATCHES = 5;
-
-        const PREDICTOR_REFEREES = [
-            'Daniele Doveri', 'Maurizio Mariani', 'Marco Di Bello', 'Michael Fabbri', 'Simone Sozza', 'Daniele Orsato', 'Davide Massa',
-            'Daniele Chiffi', 'Luca Pairetto', 'Federico La Penna', 'Juan Luca Sacchi', 'Rosario Abisso', 'Fabio Maresca', 'Matteo Marchetti', 'Antonio Rapuano',
-            'Matteo Gariglio', 'Francesco Fourneau', 'Marco Guida', 'Federico Dionisi', 'Gianluca Manganiello', 'Livio Marinelli', 'Valerio Marini',
-            'Giacomo Camplone', 'Ivano Pezzuto', 'Luca Massimi', 'Antonio Giua', 'Matteo Gualtieri', 'Gianluca Aureliano', 'Gianpiero Miele',
-            'Alberto Santoro', 'Alessandro Prontera', 'Gianluca Serra'
-        ];
-
-        const PREDICTOR_MATCHES = [
-            { id: 'nap-int', label: 'Napoli vs Inter' },
-            { id: 'juv-fio', label: 'Juventus vs Fiorentina' },
-            { id: 'mil-laz', label: 'Milan vs Lazio' },
-            { id: 'rom-ata', label: 'Roma vs Atalanta' },
-            { id: 'bol-udn', label: 'Bologna vs Udinese' },
-            { id: 'tor-gen', label: 'Torino vs Genoa' },
-            { id: 'lec-emp', label: 'Lecce vs Empoli' },
-            { id: 'mon-cag', label: 'Monza vs Cagliari' },
-            { id: 'ver-par', label: 'Verona vs Parma' },
-            { id: 'sas-com', label: 'Sassuolo vs Como' },
-        ];
-
-        const PREDICTOR_DEFAULT_TALLIES = {
-            'nap-int': { 'Daniele Doveri': 10, 'Maurizio Mariani': 8, 'Daniele Chiffi': 7 },
-            'juv-fio': { 'Michael Fabbri': 6, 'Davide Massa': 5, 'Simone Sozza': 4 },
-            'mil-laz': { 'Marco Guida': 5, 'Daniele Orsato': 4, 'Federico La Penna': 3 },
-            'rom-ata': { 'Juan Luca Sacchi': 6, 'Fabio Maresca': 3 },
-            'bol-udn': { 'Valerio Marini': 4, 'Livio Marinelli': 3 },
-            'tor-gen': { 'Antonio Rapuano': 5, 'Federico Dionisi': 4 },
-            'lec-emp': { 'Gianluca Manganiello': 4, 'Giacomo Camplone': 3 },
-            'mon-cag': { 'Luca Pairetto': 3, 'Rosario Abisso': 3 },
-            'ver-par': { 'Alessandro Prontera': 5, 'Ivano Pezzuto': 2 },
-            'sas-com': { 'Matteo Marchetti': 4, 'Antonio Giua': 3 }
-        };
-
-        let predictorSelections = {};
-        let predictorTallies = {};
-
-        const predictorAdminParam = new URLSearchParams(window.location.search).get('predictorAdmin');
-        if (predictorAdminParam === 'true') {
-            localStorage.setItem('predictorAdmin', 'true');
-        } else if (predictorAdminParam === 'false') {
-            localStorage.removeItem('predictorAdmin');
-        }
-        const isPredictorAdmin = localStorage.getItem('predictorAdmin') === 'true';
-
-        function ensurePredictorData() {
-            if (!Object.keys(predictorTallies).length) {
-                predictorTallies = JSON.parse(JSON.stringify(PREDICTOR_DEFAULT_TALLIES));
-                const storedTallies = localStorage.getItem('predictorTallies');
-                if (storedTallies) {
-                    try {
-                        const parsed = JSON.parse(storedTallies) || {};
-                        Object.entries(parsed).forEach(([matchId, votes]) => {
-                            if (!predictorTallies[matchId]) predictorTallies[matchId] = {};
-                            Object.entries(votes || {}).forEach(([ref, count]) => {
-                                predictorTallies[matchId][ref] = (predictorTallies[matchId][ref] || 0) + Number(count || 0);
-                            });
-                        });
-                    } catch (e) {
-                        console.warn('Impossibile leggere i voti salvati localmente', e);
-                    }
-                }
-            }
-
-            if (!Object.keys(predictorSelections).length) {
-                const storedSelections = localStorage.getItem('predictorSelections');
-                if (storedSelections) {
-                    try {
-                        predictorSelections = JSON.parse(storedSelections) || {};
-                    } catch (e) {
-                        predictorSelections = {};
-                    }
-                }
-            }
-        }
-
-        function renderPredictorForm() {
-            ensurePredictorData();
-            const container = document.getElementById('predictor-matches');
-            if (!container) return;
-
-            container.innerHTML = '';
-
-            PREDICTOR_MATCHES.forEach((match) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'pro-card rounded-lg p-4 border border-slate-800 bg-slate-900/70';
-
-                const header = document.createElement('div');
-                header.className = 'flex items-center justify-between gap-3 border-b border-slate-800 pb-2 mb-3';
-                header.innerHTML = `
-                    <div>
-                        <div class="text-[11px] uppercase tracking-[0.2em] text-slate-500 font-bold">Partita</div>
-                        <div class="text-lg font-bold text-white">${match.label}</div>
-                    </div>
-                `;
-
-                const selectLabel = document.createElement('label');
-                selectLabel.className = 'text-xs text-slate-400 block mb-2';
-                selectLabel.innerText = 'Scegli l\'arbitro che pensi verrà designato';
-
-                const select = document.createElement('select');
-                select.className = 'predictor-select w-full bg-slate-900 border border-slate-800 text-white text-sm rounded px-3 py-2 focus:border-yellow-500 focus:ring-0 outline-none';
-                select.innerHTML = `<option value="">— Seleziona arbitro —</option>${PREDICTOR_REFEREES.map(ref => `<option value="${ref}">${ref}</option>`).join('')}`;
-                select.value = predictorSelections[match.id] || '';
-                select.onchange = (event) => {
-                    if (event.target.value) predictorSelections[match.id] = event.target.value;
-                    else delete predictorSelections[match.id];
-                    localStorage.setItem('predictorSelections', JSON.stringify(predictorSelections));
-                };
-
-                wrapper.appendChild(header);
-                wrapper.appendChild(selectLabel);
-                wrapper.appendChild(select);
-                container.appendChild(wrapper);
-            });
-        }
-
-        function renderPredictorResults() {
-            ensurePredictorData();
-            const container = document.getElementById('predictor-results');
-            const resultsCard = document.getElementById('predictor-results-card');
-            if (!container || !resultsCard) return;
-
-            if (!isPredictorAdmin) {
-                resultsCard.classList.add('hidden');
-                container.innerHTML = '';
-                return;
-            }
-
-            resultsCard.classList.remove('hidden');
-            container.innerHTML = '';
-
-            PREDICTOR_MATCHES.forEach((match) => {
-                const votes = predictorTallies[match.id] || {};
-                const total = Object.values(votes).reduce((sum, value) => sum + value, 0);
-                const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
-
-                const card = document.createElement('div');
-                card.className = 'rounded-lg border border-slate-800 bg-slate-900/60 p-3 flex flex-col gap-2';
-
-                card.innerHTML = `
-                    <div class="flex items-center justify-between text-sm font-semibold text-white">
-                        <span>${match.label}</span>
-                        <span class="text-[11px] text-slate-400">Totale voti: <span class="font-mono text-yellow-400">${total}</span></span>
-                    </div>
-                `;
-
-                if (!sortedVotes.length) {
-                    const empty = document.createElement('div');
-                    empty.className = 'text-[11px] text-slate-500 italic';
-                    empty.innerText = 'Nessun voto ancora inviato da questo dispositivo.';
-                    card.appendChild(empty);
-                } else {
-                    sortedVotes.forEach(([ref, count]) => {
-                        const percentage = total ? Math.round((count / total) * 100) : 0;
-                        const row = document.createElement('div');
-                        row.className = 'space-y-1';
-                        row.innerHTML = `
-                            <div class="flex items-center justify-between text-sm text-slate-200">
-                                <span>${ref}</span>
-                                <span class="font-mono text-yellow-400">${count} voti (${percentage}%)</span>
-                            </div>
-                            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-yellow-500 to-orange-400" style="width:${percentage}%;"></div>
-                            </div>
-                        `;
-                        card.appendChild(row);
-                    });
-                }
-
-                container.appendChild(card);
-            });
-        }
-
-        function resetPredictorSelections() {
-            predictorSelections = {};
-            localStorage.removeItem('predictorSelections');
-            const selects = document.querySelectorAll('.predictor-select');
-            selects.forEach((sel) => { sel.value = ''; });
-            const feedback = document.getElementById('predictor-feedback');
-            if (feedback) {
-                feedback.textContent = 'Selezioni azzerate.';
-                feedback.classList.remove('hidden');
-                setTimeout(() => feedback.classList.add('hidden'), 2800);
-            }
-        }
-
-        function submitPredictorVotes() {
-            ensurePredictorData();
-            const feedback = document.getElementById('predictor-feedback');
-            const missing = PREDICTOR_MATCHES.filter(match => !predictorSelections[match.id]);
-
-            if (missing.length) {
-                if (feedback) {
-                    feedback.textContent = `Seleziona un arbitro per ${missing.length} partita${missing.length > 1 ? 'e' : ''} prima di inviare.`;
-                    feedback.classList.remove('hidden');
-                }
-                return;
-            }
-
-            PREDICTOR_MATCHES.forEach((match) => {
-                const choice = predictorSelections[match.id];
-                if (!predictorTallies[match.id]) predictorTallies[match.id] = {};
-                predictorTallies[match.id][choice] = (predictorTallies[match.id][choice] || 0) + 1;
-            });
-
-            localStorage.setItem('predictorTallies', JSON.stringify(predictorTallies));
-
-            if (feedback) {
-                feedback.textContent = 'Voti registrati! Grazie per aver partecipato.';
-                feedback.classList.remove('hidden');
-                setTimeout(() => feedback.classList.add('hidden'), 3000);
-            }
-
-            renderPredictorResults();
-            renderPredictorForm();
-        }
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i -= 1) {
@@ -11260,7 +10994,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
 
             // Update Active State (Desktop)
             const targetNavId = `nav-${view === 'playingTime' ? 'time' : view}`;
-            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-predictor', 'nav-players', 'nav-quiz'].forEach(id => {
+            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players', 'nav-quiz'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     const isActiveNav = id === targetNavId;
@@ -11269,7 +11003,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 }
             });
             // Mobile State
-             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-predictor', 'mob-nav-players', 'mob-nav-quiz'].forEach(id => {
+             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players', 'mob-nav-quiz'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
                      const isActiveNav = id === `mob-nav-${view === 'playingTime' ? 'time' : view}`;
@@ -11286,7 +11020,6 @@ const searchInput   = document.getElementById('searchInput');
 const tableView     = document.getElementById('table-view');
 const analyticsView = document.getElementById('analytics-view');
 const playersView   = document.getElementById('players-view');
-const predictorView = document.getElementById('predictor-view');
 const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
@@ -11297,7 +11030,6 @@ const quizView      = document.getElementById('quiz-view');
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
-            hideSection(predictorView);
             hideSection(quizView);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -11312,7 +11044,6 @@ const quizView      = document.getElementById('quiz-view');
             hideSection(tableView);
             hideSection(analyticsView);
             showSection(playersView);
-            hideSection(predictorView);
             hideSection(quizView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -11326,26 +11057,10 @@ const quizView      = document.getElementById('quiz-view');
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
-        } else if (view === 'predictor') {
-            hideSection(tableView);
-            hideSection(analyticsView);
-            hideSection(playersView);
-            hideSection(quizView);
-            showSection(predictorView);
-    if (sidebar)       sidebar.classList.add('hidden');
-    if (seasonCard)    seasonCard.classList.add('hidden');
-    if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
-    if (mainContent) {
-        mainContent.classList.remove('lg:col-span-9');
-        mainContent.classList.add('lg:col-span-12');
-    }
-            renderPredictorForm();
-            renderPredictorResults();
         } else if (view === 'quiz') {
             hideSection(tableView);
             hideSection(analyticsView);
             hideSection(playersView);
-            hideSection(predictorView);
             showSection(quizView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -11361,7 +11076,6 @@ const quizView      = document.getElementById('quiz-view');
     showSection(tableView);
     hideSection(analyticsView);
     hideSection(playersView);
-    hideSection(predictorView);
     hideSection(quizView);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
