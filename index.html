@@ -1368,7 +1368,7 @@ html, body {
 
         <div id="analytics-shortcuts-card" class="hidden pro-card rounded-lg p-4 space-y-4 lg:sticky lg:top-24">
             <div class="space-y-1">
-                <div class="text-[10px] uppercase tracking-[0.16em] text-slate-500 font-bold">Vai al grafico</div>
+                <div class="text-xs font-bold uppercase tracking-[0.14em] text-slate-300">VAI AL GRAFICO</div>
                 <p class="text-xs text-slate-400">Shortcut rapidi per raggiungere ogni visual senza scroll infinito.</p>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -6950,8 +6950,9 @@ Orsato	56,45'
         const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = ['2020-21'];
         const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22'];
+        const LATEST_SEASON = ANALYTICS_SEASON_OPTIONS[0];
         const REFEREE_PROFILE_SEASONS = [...ANALYTICS_SEASON_OPTIONS];
-        const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
+        const ANALYTICS_SEASON_DEFAULT = [LATEST_SEASON];
         let analyticsSeasonFilters = {
             ritmo: [...ANALYTICS_SEASON_DEFAULT],
             severity: [...ANALYTICS_SEASON_DEFAULT],
@@ -6973,7 +6974,7 @@ Orsato	56,45'
 
         // --- LOGIC SECTION ---
         let currentView = 'stats';
-        let activeSeasons = ['2025-26'];
+        let activeSeasons = [...ANALYTICS_SEASON_DEFAULT];
         let sortColumn = 'matches';
         let sortDirection = 'desc';
         let refereeTeamBalanceData = [];
@@ -10983,7 +10984,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         }
 
         function resetSeasonSelections() {
-            activeSeasons = ['2025-26'];
+            activeSeasons = [...ANALYTICS_SEASON_DEFAULT];
 
             Object.keys(analyticsSeasonFilters).forEach((key) => {
                 analyticsSeasonFilters[key] = [...ANALYTICS_SEASON_DEFAULT];
@@ -11078,12 +11079,14 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
             hideSection(refereeProfileModal);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
-    if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
-    if (mainContent) {
-        mainContent.classList.remove('lg:col-span-12');
-        mainContent.classList.add('lg:col-span-9');
-    }
+            if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
+            if (mainContent) {
+                mainContent.classList.remove('lg:col-span-12');
+                mainContent.classList.add('lg:col-span-9');
+            }
             setAnalyticsViewMode('refs');
+            ensureAnalyticsSeasonDefaults();
+            refreshAllAnalyticsSeasonChips();
             scheduleAnalyticsRender();
         } else if (view === 'players') {
             hideSection(tableView);
@@ -11330,6 +11333,15 @@ const refereeProfileCard = document.getElementById('referee-profile-card');
 
         function refreshAllAnalyticsSeasonChips() {
             Object.keys(analyticsSeasonFilters).forEach(updateAnalyticsSeasonChipsUI);
+        }
+
+        function ensureAnalyticsSeasonDefaults() {
+            Object.keys(analyticsSeasonFilters).forEach((key) => {
+                const seasons = analyticsSeasonFilters[key];
+                if (!Array.isArray(seasons) || !seasons.length) {
+                    analyticsSeasonFilters[key] = [...ANALYTICS_SEASON_DEFAULT];
+                }
+            });
         }
 
         function scrollToAnalyticsSection(targetId) {
@@ -12292,6 +12304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         window.onload = function() {
+            ensureAnalyticsSeasonDefaults();
             updateSeasonButtonsUI();
             refreshAllAnalyticsSeasonChips();
             const initialView = getViewFromLocation();
