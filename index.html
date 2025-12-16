@@ -7625,8 +7625,13 @@ function getRefereePortrait(refName) {
                 surname = parts.pop();
                 firstname = parts.join(' ');
             }
-            const clickHandler = `openRefereeProfile(${JSON.stringify(fullName)}, event)`;
-            return `<button type="button" onclick="${clickHandler}" class="flex items-center truncate group/referee">
+            const safeFullNameAttr = String(fullName)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            return `<button type="button" data-referee-name="${safeFullNameAttr}" class="flex items-center truncate group/referee referee-profile-trigger">
                         <span class="text-slate-500 font-medium mr-1.5 capitalize text-xs hidden sm:inline group-hover/referee:text-white">${firstname.toLowerCase()}</span>
                         <span class="text-white font-bold uppercase tracking-wide text-xs sm:text-sm group-hover/referee:text-yellow-400 transition-colors">${surname}</span>
                     </button>`;
@@ -7733,6 +7738,14 @@ function getRefereePortrait(refName) {
             modal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
         }
+
+        document.addEventListener('click', (event) => {
+            const target = event.target.closest('.referee-profile-trigger');
+            if (!target) return;
+
+            const fullName = target.getAttribute('data-referee-name') || '';
+            openRefereeProfile(fullName, event);
+        });
 
         /**
          * Calcola il colore in base al valore.
@@ -12047,7 +12060,6 @@ updateRadarSelectOptions();
     </div>
 </body>
 </html>
-
 
 
 
