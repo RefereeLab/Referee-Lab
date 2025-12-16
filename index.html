@@ -7621,8 +7621,8 @@ function getRefereePortrait(refName) {
                 const foulsDisplay = Number.isFinite(entry.avgFouls) ? entry.avgFouls.toFixed(1) : '-';
 
                 return `
-                    <div class="grid grid-cols-5 items-center px-1 py-2 ${idx % 2 === 0 ? 'bg-slate-950/40' : 'bg-slate-900/30'} border-b border-slate-800 last:border-b-0">
-                        <div class="flex items-center gap-1 overflow-hidden">
+                    <div class="grid grid-cols-[1.6fr_repeat(4,_1fr)] items-center px-1 py-2 ${idx % 2 === 0 ? 'bg-slate-950/40' : 'bg-slate-900/30'} border-b border-slate-800 last:border-b-0">
+                        <div class="flex items-center gap-1 text-left whitespace-normal break-words leading-tight">
                             <span class="text-white font-semibold text-xs ">${entry.team}</span>
                         </div>
                         <div class="text-[10px] text-slate-200 font-mono text-center">${entry.matches}</div>
@@ -7634,7 +7634,7 @@ function getRefereePortrait(refName) {
 
             container.innerHTML = `
                 <div class="rounded-xl border border-slate-800 overflow-hidden shadow-card bg-slate-900/60">
-                    <div class="grid grid-cols-5 items-center px-2 py-2 bg-slate-950/70 border-b border-slate-800" id="referee-balance-sort-bar">
+                    <div class="grid grid-cols-[1.6fr_repeat(4,_1fr)] items-center px-2 py-2 bg-slate-950/70 border-b border-slate-800" id="referee-balance-sort-bar">
                         ${headerButton('Squadra', 'team')}
                         <div class="flex justify-center">${headerButton('Gare', 'matches')}</div>
                         <div class="flex justify-center">${headerButton('Falli medi', 'avgFouls')}</div>
