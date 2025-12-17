@@ -10763,6 +10763,11 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const matchdayLabel = Number.isFinite(r.matchday) ? r.matchday : '-';
 
                 const matchLabel = (r.match || '').toUpperCase();
+                const { homeTeam, awayTeam } = splitMatchTeams(r.match || '');
+                const logoHome = getTeamLogo(homeTeam);
+                const logoAway = getTeamLogo(awayTeam);
+                const homeLabel = (homeTeam || '').toUpperCase();
+                const awayLabel = (awayTeam || '').toUpperCase();
                 const refereeName = formatTitleCase(r.referee);
 
                 const foulsTot = Number.isFinite(r.fouls) ? r.fouls : '-';
@@ -10770,7 +10775,15 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const foulsAway = Number.isFinite(r.foulsAway) ? r.foulsAway : '—';
 
                 rowsHtml += `<tr>
-                    <td class="sticky-col border-b border-slate-800 font-bold text-white text-xs sm:text-sm truncate max-w-[180px] sm:max-w-none uppercase" title="${matchLabel}">${matchLabel}</td>
+                    <td class="sticky-col border-b border-slate-800 text-white text-xs sm:text-sm uppercase" title="${matchLabel}">
+                        <div class="flex items-center gap-2 min-w-[240px] sm:min-w-[280px]">
+                            <img src="${logoHome}" alt="${homeLabel || 'Sq. casa'}" class="w-6 h-6 object-contain drop-shadow rounded">
+                            <span class="font-extrabold">${homeLabel || '-'}</span>
+                            <span class="text-slate-500">-</span>
+                            <span class="font-extrabold">${awayLabel || '-'}</span>
+                            <img src="${logoAway}" alt="${awayLabel || 'Sq. trasf'}" class="w-6 h-6 object-contain drop-shadow rounded">
+                        </div>
+                    </td>
                     <td class="text-center text-green-400 bg-slate-800/10 rounded font-sans">${refereeName || '-'}</td>
                     <td class="text-center text-slate-500 text-xs">${r.season}</td>
                     <td class="text-center text-slate-200">${matchdayLabel}</td>
