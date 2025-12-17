@@ -546,6 +546,16 @@ html, body {
 }
         
         .sticky-head { position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .sticky-head th {
+            position: sticky;
+            top: 0;
+            z-index: 22;
+            background-color: #111827;
+        }
+        .sticky-head th.sticky-col,
+        .sticky-head th.sticky-col-name {
+            z-index: 30;
+        }
         .sticky-col { position: sticky; left: 0; z-index: 10; background-color: #0f172a; border-right: 1px solid #1e293b; }
         .sticky-col-name { left: var(--players-rank-col-width); z-index: 11; }
         #players-table th.sticky-col, #players-table th.sticky-col-name { background-color: #111827; }
@@ -1494,7 +1504,7 @@ html, body {
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-[11px] text-slate-300 pro-table players-table text-center" id="players-table">
-                                                <thead class="bg-slate-800 text-slate-300">
+                                                <thead class="bg-slate-800 text-slate-300 sticky-head">
                             <tr>
                                 <th class="p-2 sticky-col players-rank-col" title="Posizione in classifica dinamica rispetto all'ordinamento scelto">#</th>
                                 <th class="p-2 cursor-pointer select-none text-left whitespace-nowrap sticky-col sticky-col-name" data-sort-col="name" onclick="handlePlayersSort('name')" title="Cognome in evidenza e nome completo del giocatore">
@@ -10709,7 +10719,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     const footerRow = document.createElement('tr');
                     footerRow.innerHTML = `
                         <td class="sticky-col">MEDIE (${totMatches} partite)</td>
-                        <td class="text-center text-slate-200">${data.length}</td>
+                        <td class="text-center text-slate-200">-</td>
                         <td class="text-center font-bold text-red-400">${(sumFouls / totMatches).toFixed(1)}</td>
                         <td class="text-center font-bold text-red-300">${(sumTeamFouls / totMatches).toFixed(1)}</td>
                         <td class="text-center font-mono font-bold text-green-400">${formatSecondsToTime(sumEff / totMatches)}</td>
@@ -11664,7 +11674,7 @@ function renderPlayerComparisonTable() {
     const headerB = playerB ? formatPlayerName(playerB.name) : '—';
 
     table.innerHTML = `
-        <thead class="bg-slate-900/60 border-b border-slate-800">
+        <thead class="bg-slate-900/60 border-b border-slate-800 sticky-head">
             <tr>
                 <th class="p-2 text-left text-slate-400">STATS</th>
                 <th class="p-2 text-center text-white">${headerA}</th>
