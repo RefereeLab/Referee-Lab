@@ -8470,7 +8470,7 @@ if(q && result.length && currentView !== 'analytics') {
                     if (existingMsg) existingMsg.remove();
                     // Aggiungo un messaggio finale solo se non ci sono più match da caricare
                     const msgRow = document.createElement('tr');
-                    msgRow.innerHTML = `<td colspan="6" class="text-center p-3 text-slate-500 text-xs border-t border-slate-700/50 final-message">Tutte le ${totalAvailable} partite visualizzate.</td>`;
+                    msgRow.innerHTML = `<td colspan="10" class="text-center p-3 text-slate-500 text-xs border-t border-slate-700/50 final-message">Tutte le ${totalAvailable} partite visualizzate.</td>`;
                     tfoot.appendChild(msgRow);
                 }
             }
@@ -10726,8 +10726,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
         }
 
         function renderMatchesFooter(tfoot, dataLength) {
-            tfoot.innerHTML = '';
-            
+            // Pulisce il footer mantenendo una struttura consistente
+            while (tfoot.firstChild) tfoot.removeChild(tfoot.firstChild);
+
             const dataToCalculate = matchesDataAll;
             let sumTot=0, countTot=0, sumEff=0, countEff=0, sumRat=0, countRat=0, sumFouls=0, countFouls=0, sumFoulsHome=0, countFoulsHome=0, sumFoulsAway=0, countFoulsAway=0, countMatches=dataToCalculate.length;
 
@@ -10740,6 +10741,15 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 if(Number.isFinite(r.foulsAway)) { sumFoulsAway+=r.foulsAway; countFoulsAway++; }
             });
 
+            // Riga per il pulsante "Carica altre" (sempre presente)
+            const loadMoreRow = document.createElement('tr');
+            const loadMoreCell = document.createElement('td');
+            loadMoreCell.colSpan = 10;
+            loadMoreCell.id = 'loadMoreContainer';
+            loadMoreCell.className = 'p-3 text-center';
+            loadMoreRow.appendChild(loadMoreCell);
+            tfoot.appendChild(loadMoreRow);
+
             if(countMatches > 0) {
                  const avgTot = countTot > 0 ? sumTot / countTot : 0;
                  const avgEff = countEff > 0 ? sumEff / countEff : 0;
@@ -10748,15 +10758,13 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                  const avgFoulsHome = countFoulsHome > 0 ? sumFoulsHome / countFoulsHome : null;
                  const avgFoulsAway = countFoulsAway > 0 ? sumFoulsAway / countFoulsAway : null;
 
-                 // Container per il pulsante "Carica altro" PRIMA della riga medie
-                 const loadMoreRow = document.createElement('tr');
-                 loadMoreRow.innerHTML = `<td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td>`;
-                 tfoot.appendChild(loadMoreRow);
-
                  const footerFoulsColor = getColorForValue(avgFouls, minFouls, maxFouls, true);
                  const footerFoulsHomeColor = getColorForValue(avgFoulsHome, minFoulsHome, maxFoulsHome, true);
                  const footerFoulsAwayColor = getColorForValue(avgFoulsAway, minFoulsAway, maxFoulsAway, true);
-                 tfoot.innerHTML += `<tr class="avg-row">
+
+                 const avgRow = document.createElement('tr');
+                 avgRow.className = 'avg-row';
+                 avgRow.innerHTML = `
                     <td class="sticky-col">MEDIE (${countMatches} partite)</td>
                     <td class="text-center">-</td>
                     <td class="text-center">-</td>
@@ -10767,10 +10775,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     <td class="text-center font-bold" style="color: ${footerFoulsColor}">${avgFouls.toFixed(1)}</td>
                     <td class="text-center" style="color: ${footerFoulsHomeColor}">${avgFoulsHome !== null ? avgFoulsHome.toFixed(1) : '-'}</td>
                     <td class="text-center" style="color: ${footerFoulsAwayColor}">${avgFoulsAway !== null ? avgFoulsAway.toFixed(1) : '-'}</td>
-                 </tr>`;
-            } else {
-                 // Container per il pulsante "Carica altro"
-                tfoot.innerHTML += `<tr><td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td></tr>`;
+                 `;
+
+                 tfoot.appendChild(avgRow);
             }
 
         }
