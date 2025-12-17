@@ -10598,18 +10598,26 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             }
             else if (currentView === 'playingTime') {
                 const showTot = activeSeasons.some(season => ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22'].includes(season));
-                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Media T.E.', 'avgEffSec', 'text-center text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-center text-blue-400') : ''}${th('Media % T.Eff', 'effRatio', 'text-center text-yellow-400')}<th class="w-10"></th></tr>`;
+                thead.innerHTML = `<tr>${th('Arbitro', 'name', 'sticky-col')}${th('Match', 'matches', 'text-center')}${th('Falli/P', 'avgFouls', 'text-center text-red-400')}${th('Media T.E.', 'avgEffSec', 'text-center text-green-400')}${showTot ? th('Media T.Tot', 'avgTotSec', 'text-center text-blue-400') : ''}${th('Media % T.Eff', 'effRatio', 'text-center text-yellow-400')}<th class="w-10"></th></tr>`;
                 const effValues = data.map(r => r.avgEffSec).filter(v => Number.isFinite(v));
                 const [minEff, maxEff] = effValues.length ? [Math.min(...effValues), Math.max(...effValues)] : [0, 0];
                 const totValues = data.map(r => r.avgTotSec).filter(v => Number.isFinite(v));
                 const [minTot, maxTot] = totValues.length ? [Math.min(...totValues), Math.max(...totValues)] : [0, 0];
                 const ratioValues = data.map(r => r.effRatio).filter(v => Number.isFinite(v));
                 const [minRatio, maxRatio] = ratioValues.length ? [Math.min(...ratioValues), Math.max(...ratioValues)] : [0, 0];
+                const foulsValues = data.map(r => {
+                    const fouls = r.matchList?.map(m => m.fouls).filter(Number.isFinite) || [];
+                    return fouls.length ? fouls.reduce((a, b) => a + b, 0) / fouls.length : null;
+                }).filter(v => Number.isFinite(v));
+                const [minFouls, maxFouls] = foulsValues.length ? [Math.min(...foulsValues), Math.max(...foulsValues)] : [0, 0];
                 data.forEach((r, i) => {
                     const effColor = getColorForValue(r.avgEffSec, minEff, maxEff, false);
                     const totColor = getColorForValue(r.avgTotSec, minTot, maxTot, true);
                     const ratioColor = getColorForValue(r.effRatio, minRatio, maxRatio, false);
-                    tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-bold font-mono text-base" style="color: ${effColor}">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium font-mono" style="color: ${totColor}">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono font-semibold" style="color: ${ratioColor}">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
+                    const fouls = r.matchList?.map(m => m.fouls).filter(Number.isFinite) || [];
+                    const avgFouls = fouls.length ? fouls.reduce((a, b) => a + b, 0) / fouls.length : null;
+                    const foulsColor = getColorForValue(avgFouls, minFouls, maxFouls, true);
+                    tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-mono font-semibold" style="color:${foulsColor}">${avgFouls !== null ? avgFouls.toFixed(1) : '-'}</td><td class="text-center font-bold font-mono text-base" style="color: ${effColor}">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium font-mono" style="color: ${totColor}">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono font-semibold" style="color: ${ratioColor}">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
                     const multiSeason = activeSeasons.length > 1;
                     const matchesHeader = `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
                     const matchesHtml = r.matchList.map(m => {
@@ -10625,8 +10633,38 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                             `<span class="text-center font-mono text-yellow-400">${ratioDisplay}</span>`+
                         `</div>`;
                     }).join('');
-                    tbody.innerHTML += `<tr id="details-${i}" class="hidden bg-slate-900/50"><td colspan="${showTot ? 6 : 5}" class="p-0 border-b border-slate-800"><div class="py-2 bg-[#0b1120] shadow-inner">${matchesHeader}${matchesHtml}</div></td></tr>`;
+                    tbody.innerHTML += `<tr id="details-${i}" class="hidden bg-slate-900/50"><td colspan="${showTot ? 7 : 6}" class="p-0 border-b border-slate-800"><div class="py-2 bg-[#0b1120] shadow-inner">${matchesHeader}${matchesHtml}</div></td></tr>`;
                 });
+
+                // Footer con le medie complessive (tempi e falli) per le stagioni attive
+                const totalMatches = data.reduce((sum, r) => sum + (Number.isFinite(r.matches) ? r.matches : 0), 0);
+                let sumEff = 0, countEff = 0, sumTot = 0, countTot = 0, sumFouls = 0, countFouls = 0;
+                data.forEach(r => {
+                    if (Number.isFinite(r.totalEffectiveSec)) { sumEff += r.totalEffectiveSec; countEff += r.validEffMatches || 0; }
+                    if (Number.isFinite(r.totalTotalSec)) { sumTot += r.totalTotalSec; countTot += r.validTotMatches || 0; }
+                    (r.matchList || []).forEach(m => {
+                        if (Number.isFinite(m.fouls)) { sumFouls += m.fouls; countFouls += 1; }
+                    });
+                });
+
+                if (totalMatches > 0) {
+                    const avgEff = countEff ? sumEff / countEff : 0;
+                    const avgTot = countTot ? sumTot / countTot : 0;
+                    const avgRatio = calculateEffRatio(avgEff, avgTot);
+                    const avgFouls = countFouls ? (sumFouls / countFouls) : null;
+
+                    const footerRow = document.createElement('tr');
+                    footerRow.innerHTML = `
+                        <td class="sticky-col">MEDIE (${totalMatches} partite)</td>
+                        <td class="text-center text-slate-200">-</td>
+                        <td class="text-center font-mono font-semibold text-red-300">${avgFouls !== null ? avgFouls.toFixed(1) : '-'}</td>
+                        <td class="text-center font-mono font-bold text-green-300">${formatSecondsToTime(avgEff)}</td>
+                        ${showTot ? `<td class="text-center font-mono font-bold text-blue-300">${formatSecondsToTime(avgTot)}</td>` : ''}
+                        <td class="text-center font-mono font-semibold text-yellow-300">${formatEffRatio(avgRatio)}</td>
+                        <td></td>
+                    `;
+                    tfoot.appendChild(footerRow);
+                }
             } else if (currentView === 'matches') {
 
                 // Separated rendering logic for paging
@@ -12256,9 +12294,3 @@ updateRadarSelectOptions();
     </div>
 </body>
 </html>
-
-
-
-
-
-
