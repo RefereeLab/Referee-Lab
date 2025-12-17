@@ -6859,10 +6859,8 @@ Orsato	56,45'
         let isSeasonDropdownOpen = false;
         let debounceTimer; // Timer for debounce optimization
         
-        // Paging variables for 'matches' view
+        // Dati completi per la vista "matches"
         let matchesDataAll = [];
-        let matchesCurrentPage = 1;
-        const MATCHES_PER_PAGE = 50;
 
 
         // Chart Instances
@@ -8228,7 +8226,6 @@ function getRefereePortrait(refName) {
                 if (minMatchesContainer) minMatchesContainer.classList.remove('hidden');
                 if (activeFilterContainer) activeFilterContainer.classList.remove('hidden');
 
-                matchesCurrentPage = 1; 
                 result = processCombinedStats(); 
                 
                 if(result.length > 0) {
@@ -8244,8 +8241,6 @@ else if (currentView === 'playingTime') {
     if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
     if (statsControls) statsControls.classList.remove('hidden');
     if (minMatchesContainer) minMatchesContainer.classList.remove('hidden');
-
-    matchesCurrentPage = 1;
 
     result = processPlayingTimeViewData();
 
@@ -8264,9 +8259,6 @@ else if (currentView === 'matches') {
     if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
     if (statsControls) statsControls.classList.remove('hidden');
     if (matchesFiltersContainer) matchesFiltersContainer.classList.remove('hidden');
-
-    // Reset paging so that every fresh render starts from the first block
-    matchesCurrentPage = 1;
 
     result = processMatchesViewData();
     const minTot = parseInt(document.getElementById('filterMinTot').value) * 60 || 0;
@@ -8296,22 +8288,18 @@ else if (currentView === 'matches') {
         );
     }
     
-    matchesDataAll = result; 
-    result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
+    matchesDataAll = result;
 }
 
             else if (currentView === 'teams') {
                  if (globalSearchContainer) globalSearchContainer.classList.remove('hidden');
-                 matchesCurrentPage = 1;
                  result = processTeamsData();
             }
             else if (currentView === 'analytics') {
                  // NESSUNA RICERCA/FILTRO GLOBALE PER I GRAFICI (solo filtri interni)
-                 matchesCurrentPage = 1;
 
                  // Carica sempre tutte le stagioni disponibili per i grafici, poi i filtri locali gestiscono la selezione
                  result = processCombinedStats(ANALYTICS_SEASON_OPTIONS);
-                 matchResult = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
 
                  // Imposta il massimo per il filtro min presenze dell'analytics
                  if(result.length > 0) {
@@ -8356,7 +8344,7 @@ if(q && result.length && currentView !== 'analytics') {
                     if (typeof va === 'string') return sortDirection === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
                     return sortDirection === 'desc' ? vb - va : va - vb;
                  });
-                 result = matchesDataAll.slice(0, matchesCurrentPage * MATCHES_PER_PAGE);
+                 result = matchesDataAll;
             } else if (result.length && currentView !== 'analytics') {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
@@ -10645,7 +10633,6 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 renderMatchesHeader(thead, th, getSortIcon);
                 renderMatchesRows(data, true); // Pass true to clear tbody first
                 renderMatchesFooter(tfoot, data.length);
-                updateLoadMoreButton();
             } else if (currentView === 'teams') {
                 // Squadra, Partite, Falli Tot, Falli Squadra, T.Eff. Medio, T.Eff. Casa, T.Eff. Trasf.
 
@@ -10743,15 +10730,6 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 if(Number.isFinite(r.foulsHome)) { sumFoulsHome+=r.foulsHome; countFoulsHome++; }
                 if(Number.isFinite(r.foulsAway)) { sumFoulsAway+=r.foulsAway; countFoulsAway++; }
             });
-
-            // Riga per il pulsante "Carica altre" (sempre presente)
-            const loadMoreRow = document.createElement('tr');
-            const loadMoreCell = document.createElement('td');
-            loadMoreCell.colSpan = 10;
-            loadMoreCell.id = 'loadMoreContainer';
-            loadMoreCell.className = 'p-3 text-center';
-            loadMoreRow.appendChild(loadMoreCell);
-            tfoot.appendChild(loadMoreRow);
 
             if(countMatches > 0) {
                  const avgTot = countTot > 0 ? sumTot / countTot : 0;
@@ -12278,6 +12256,7 @@ updateRadarSelectOptions();
     </div>
 </body>
 </html>
+
 
 
 
