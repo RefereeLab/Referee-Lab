@@ -7253,6 +7253,15 @@ const TEAM_LOGOS = {
     "Verona": "https://images.fotmob.com/image_resources/logo/teamlogo/9876.png"
 };
 
+const TEAM_LOGOS_LOOKUP = Object.fromEntries(
+    Object.entries(TEAM_LOGOS).map(([name, url]) => [name.toLowerCase(), url])
+);
+
+function getTeamLogoUrl(teamName) {
+    if (!teamName) return null;
+    return TEAM_LOGOS_LOOKUP[teamName.trim().toLowerCase()] || null;
+}
+
 const REFEREE_SOFASCORE_IDS = {
 
     "luca crezzini": "788387",
@@ -10697,8 +10706,14 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 let totMatches = 0, sumFouls = 0, sumTeamFouls = 0, sumEff = 0, sumEffHome = 0, sumEffAway = 0;
                 data.forEach(t => {
                     const teamName = (t.name || '').toUpperCase();
+                    const logoUrl = getTeamLogoUrl(t.name);
+                    const initials = teamName.slice(0, 2) || '--';
+                    const teamBadge = logoUrl
+                        ? `<img src="${logoUrl}" alt="${teamName} logo" class="w-8 h-8 object-contain drop-shadow-[0_0_8px_rgba(0,0,0,0.45)]">`
+                        : `<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 flex items-center justify-center">${initials}</div>`;
+                    const teamCell = `<div class="flex items-center gap-3">${teamBadge}<span class="text-white font-bold uppercase">${teamName}</span></div>`;
                     tbody.innerHTML += `<tr>
-                        <td class="sticky-col border-b border-slate-800 font-bold text-white uppercase">${teamName}</td>
+                        <td class="sticky-col border-b border-slate-800">${teamCell}</td>
                         <td class="text-center text-slate-400">${t.matches}</td>
                         <td class="text-center font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
                         <td class="text-center font-bold text-red-300">${t.avgTeamFouls.toFixed(1)}</td>
