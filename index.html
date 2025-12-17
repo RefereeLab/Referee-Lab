@@ -10831,9 +10831,9 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     <td class="text-center font-mono text-blue-300">${formatSecondsToTime(avgTot)}</td>
                     <td class="text-center font-mono text-green-300">${formatSecondsToTime(avgEff)}</td>
                     <td class="text-center font-mono text-yellow-300">${avgRat.toFixed(1)}%</td>
-                    <td class="text-center font-bold" style="color: ${footerFoulsColor}">${avgFouls.toFixed(1)}</td>
-                    <td class="text-center" style="color: ${footerFoulsHomeColor}">${avgFoulsHome !== null ? avgFoulsHome.toFixed(1) : '-'}</td>
-                    <td class="text-center" style="color: ${footerFoulsAwayColor}">${avgFoulsAway !== null ? avgFoulsAway.toFixed(1) : '-'}</td>
+                    <td class="text-center font-bold text-yellow-300">${avgFouls.toFixed(2)}</td>
+                    <td class="text-center font-mono text-yellow-300">${avgFoulsHome !== null ? avgFoulsHome.toFixed(2) : '-'}</td>
+                    <td class="text-center font-mono text-yellow-300">${avgFoulsAway !== null ? avgFoulsAway.toFixed(2) : '-'}</td>
                  `;
 
                  tfoot.appendChild(avgRow);
