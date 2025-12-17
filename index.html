@@ -10684,6 +10684,7 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     ${th('T.Eff. Trasf', 'avgEffAway', 'text-center text-green-400/70', tooltipMap.avgEffAway)}
                     </tr>`;
 
+                let totMatches = 0, sumFouls = 0, sumTeamFouls = 0, sumEff = 0, sumEffHome = 0, sumEffAway = 0;
                 data.forEach(t => {
                     const teamName = (t.name || '').toUpperCase();
                     tbody.innerHTML += `<tr>
@@ -10695,7 +10696,28 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(t.avgEffHome)}</td>
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(t.avgEffAway)}</td>
                     </tr>`;
+
+                    totMatches += t.matches;
+                    sumFouls += t.avgFouls * t.matches;
+                    sumTeamFouls += t.avgTeamFouls * t.matches;
+                    sumEff += t.avgEff * t.matches;
+                    sumEffHome += t.avgEffHome * t.matches;
+                    sumEffAway += t.avgEffAway * t.matches;
                 });
+
+                if (totMatches > 0) {
+                    const footerRow = document.createElement('tr');
+                    footerRow.innerHTML = `
+                        <td class="sticky-col">MEDIE (${totMatches} partite)</td>
+                        <td class="text-center text-slate-200">${data.length}</td>
+                        <td class="text-center font-bold text-red-400">${(sumFouls / totMatches).toFixed(1)}</td>
+                        <td class="text-center font-bold text-red-300">${(sumTeamFouls / totMatches).toFixed(1)}</td>
+                        <td class="text-center font-mono font-bold text-green-400">${formatSecondsToTime(sumEff / totMatches)}</td>
+                        <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(sumEffHome / totMatches)}</td>
+                        <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(sumEffAway / totMatches)}</td>
+                    `;
+                    tfoot.appendChild(footerRow);
+                }
             }
         }
 
@@ -10759,6 +10781,14 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
 
             const dataToCalculate = matchesDataAll;
             let sumTot=0, countTot=0, sumEff=0, countEff=0, sumRat=0, countRat=0, sumFouls=0, countFouls=0, sumFoulsHome=0, countFoulsHome=0, sumFoulsAway=0, countFoulsAway=0, countMatches=dataToCalculate.length;
+
+            const getRange = (arr) => arr.length ? [Math.min(...arr), Math.max(...arr)] : [0, 0];
+            const [minTot, maxTot] = getRange(dataToCalculate.map(d=>d.totalTimeSec).filter(v=>!isNaN(v)));
+            const [minEff, maxEff] = getRange(dataToCalculate.map(d=>d.effectiveTimeSec).filter(v=>!isNaN(v)));
+            const [minRat, maxRat] = getRange(dataToCalculate.map(d=>d.ratio).filter(v=>!isNaN(v)));
+            const [minFouls, maxFouls] = getRange(dataToCalculate.map(d=>d.fouls).filter(v=>Number.isFinite(v)));
+            const [minFoulsHome, maxFoulsHome] = getRange(dataToCalculate.map(d=>d.foulsHome).filter(v=>Number.isFinite(v)));
+            const [minFoulsAway, maxFoulsAway] = getRange(dataToCalculate.map(d=>d.foulsAway).filter(v=>Number.isFinite(v)));
 
             dataToCalculate.forEach((r) => {
                 if(!isNaN(r.totalTimeSec)) { sumTot+=r.totalTimeSec; countTot++; }
