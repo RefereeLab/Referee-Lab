@@ -8430,8 +8430,27 @@ if(q && result.length && currentView !== 'analytics') {
             updateLoadMoreButton();
         }
 
+        function getOrCreateLoadMoreContainer() {
+            let btnContainer = document.getElementById('loadMoreContainer');
+
+            // In alcuni scenari il footer viene ricostruito (es. cambi vista/filtri)
+            // prima che il pulsante venga renderizzato, per cui rigeneriamo la riga
+            // se il container non è presente.
+            if (!btnContainer) {
+                const tfoot = document.getElementById('tableFooter');
+                if (!tfoot) return null;
+
+                const loadMoreRow = document.createElement('tr');
+                loadMoreRow.innerHTML = `<td colspan="10" class="p-3 text-center" id="loadMoreContainer"></td>`;
+                tfoot.prepend(loadMoreRow);
+                btnContainer = loadMoreRow.firstElementChild;
+            }
+
+            return btnContainer;
+        }
+
         function updateLoadMoreButton() {
-            const btnContainer = document.getElementById('loadMoreContainer');
+            const btnContainer = getOrCreateLoadMoreContainer();
             if(!btnContainer) return;
 
             const totalLoaded = matchesCurrentPage * MATCHES_PER_PAGE;
