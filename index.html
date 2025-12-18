@@ -499,7 +499,7 @@ html, body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
-    padding: 6px 8px; 
+    padding: 6px 8px;
     border-bottom: 1px solid #1e293b;
     white-space: nowrap;
 }
@@ -508,6 +508,26 @@ html, body {
     border-bottom: 1px solid #1e293b;
     font-size: 0.85rem;
 }        .pro-table tr:last-child td { border-bottom: none; }
+
+        /* Vista Partite: tabella compatta su desktop */
+        body.matches-view-active #mainTable.matches-compact th,
+        body.matches-view-active #mainTable.matches-compact td {
+            padding: 5px 6px;
+        }
+
+        body.matches-view-active #mainTable.matches-compact td {
+            font-size: 0.8rem;
+        }
+
+        body.matches-view-active #mainTable.matches-compact .match-teams {
+            min-width: 200px;
+            gap: 0.5rem;
+        }
+
+        body.matches-view-active #mainTable.matches-compact .match-result-badge {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+        }
         /* Table Styling */
         .pro-table tr:hover td { background-color: #1e293b; }
 
@@ -12513,11 +12533,11 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const foulsTot = Number.isFinite(r.fouls) ? r.fouls : '-';
                 const foulsHome = Number.isFinite(r.foulsHome) ? r.foulsHome : '—';
                 const foulsAway = Number.isFinite(r.foulsAway) ? r.foulsAway : '—';
-                const resultBadge = r.result ? `<span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-200 border border-slate-700 match-score-font font-semibold text-[12px]">${r.result}</span>` : '<span class="text-slate-500 text-xs">-</span>';
+                const resultBadge = r.result ? `<span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-200 border border-slate-700 match-score-font font-semibold text-[12px] match-result-badge">${r.result}</span>` : '<span class="text-slate-500 text-xs">-</span>';
 
                 rowsHtml += `<tr>
-                    <td class="sticky-col border-b border-slate-800 text-white text-xs sm:text-sm uppercase" title="${matchLabel}">
-                        <div class="flex items-center gap-2 min-w-[240px] sm:min-w-[280px]">
+                    <td class="sticky-col border-b border-slate-800 text-white text-xs sm:text-sm uppercase match-cell" title="${matchLabel}">
+                        <div class="flex items-center gap-2 match-teams min-w-[200px] sm:min-w-[220px]">
                             <img src="${logoHome}" alt="${homeLabel || 'Sq. casa'}" class="w-6 h-6 object-contain drop-shadow rounded">
                             <span class="font-extrabold">${homeLabel || '-'}</span>
                             <span class="text-slate-500">-</span>
@@ -12840,6 +12860,12 @@ const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
 const analyticsShortcutsCard = document.getElementById('analytics-shortcuts-card');
 const quizView      = document.getElementById('quiz-view');
+const mainTableEl   = document.getElementById('mainTable');
+
+document.body.classList.toggle('matches-view-active', view === 'matches');
+if (mainTableEl) {
+    mainTableEl.classList.toggle('matches-compact', view === 'matches');
+}
 
         if (view === 'analytics') {
             hideSection(tableView);
