@@ -9548,15 +9548,15 @@ function getRefereePortrait(refName) {
                             .map((m, idx) => {
                                 const ratioDisplay = formatEffRatio(Number.isFinite(m.ratio) ? m.ratio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
                                 const matchdayLabel = Number.isFinite(m.matchday) ? `Giorn. ${m.matchday}` : 'Giorn. -';
-                                const resultChip = m.result ? `<span class=\"px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] numeric-clean text-slate-100\">${m.result}</span>` : '';
+                                const resultChip = m.result ? `<span class=\"px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] numeric-clean text-slate-100 whitespace-nowrap\">${m.result}</span>` : '';
 
-                                return `<div class="grid grid-cols-[1.6fr_repeat(4,_0.9fr)] items-start sm:items-center gap-1 sm:gap-2 px-3 py-2 rounded-lg border border-slate-800 ${idx % 2 === 0 ? 'bg-slate-900/60' : 'bg-slate-900/40'}">`
+                                return `<div class="grid grid-cols-[minmax(0,_2fr)_repeat(4,_minmax(52px,_0.55fr))] items-start sm:items-center gap-1 sm:gap-2 px-3 py-2 rounded-lg border border-slate-800 ${idx % 2 === 0 ? 'bg-slate-900/60' : 'bg-slate-900/40'}">`
                                     + `<div class="flex items-start sm:items-center gap-2 min-w-0">`
                                         + `<span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-800 text-slate-200 border border-slate-700">${matchdayLabel}</span>`
                                         + `<div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 min-w-0">`
-                                            + `<div class="flex items-center gap-1 text-white font-semibold text-[8px] sm:text-xs uppercase tracking-wide leading-tight truncate">`
+                                            + `<div class="flex items-center gap-1 text-white font-semibold text-[8px] sm:text-xs uppercase tracking-wide leading-tight whitespace-nowrap">`
                                                 + `<i class="fa-solid fa-futbol text-yellow-400 text-[10px] sm:text-[11px]"></i>`
-                                                + `<span class="truncate">${(m.match || '').toUpperCase()}</span>`
+                                                + `<span class="whitespace-nowrap">${(m.match || '').toUpperCase()}</span>`
                                             + `</div>`
                                             + (resultChip ? '<span class=\\"mt-1 sm:mt-0 inline-flex\\">' + resultChip + '</span>' : '')
                                         + `</div>`
@@ -9569,7 +9569,7 @@ function getRefereePortrait(refName) {
                             }).join('');
 
                         const statsHeader = `
-                            <div class=\"grid grid-cols-[1.6fr_repeat(4,_0.9fr)] items-center px-3 py-2 rounded-lg border border-slate-800 bg-slate-950/70 text-[11px] uppercase tracking-wide text-slate-400\">
+                            <div class=\"grid grid-cols-[minmax(0,_2fr)_repeat(4,_minmax(52px,_0.55fr))] items-center px-3 py-2 rounded-lg border border-slate-800 bg-slate-950/70 text-[11px] uppercase tracking-wide text-slate-400\">
                                 <span class=\"pl-1\">Gara</span>
                                 <span class=\"text-center\">T. eff</span>
                                 <span class=\"text-center\">T. tot</span>
