@@ -659,6 +659,49 @@ html, body {
         .modal-content { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         #designations-modal.open .modal-content { transform: translateX(0); }
 
+        /* Referee vs Team Stats Modal */
+        #referee-stats-modal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        #referee-stats-modal[data-open="true"] {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #referee-stats-modal .ref-modal-panel {
+            transform: translateY(28px) scale(0.98);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.76));
+            backdrop-filter: blur(18px) saturate(140%);
+            box-shadow:
+                0 18px 60px -24px rgba(0, 0, 0, 0.75),
+                0 0 0 1px rgba(234, 179, 8, 0.08),
+                0 20px 80px -36px rgba(234, 179, 8, 0.35);
+        }
+
+        #referee-stats-modal[data-open="true"] .ref-modal-panel {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        #referee-stats-modal .metric-pill {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(120deg, rgba(148, 163, 184, 0.12), rgba(148, 163, 184, 0.05));
+            box-shadow: 0 10px 32px -18px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (max-width: 768px) {
+            #referee-stats-modal .ref-modal-panel {
+                width: calc(100% - 1.5rem);
+                margin: 0 0.75rem 0;
+                border-radius: 26px 26px 0 0;
+            }
+        }
+
         /* Custom Dropdown for Charts */
         .chart-select {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -1044,6 +1087,46 @@ html, body {
 
                     <div id="designations-mobile-list" class="space-y-3"></div>
                  </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referee vs Team Stats Modal -->
+    <div id="referee-stats-modal" class="fixed inset-0 z-[70] flex items-end lg:items-center justify-center bg-black/70 backdrop-blur-sm px-3 sm:px-6" data-open="false">
+        <div class="absolute inset-0" onclick="closeRefereeStats()"></div>
+        <div class="ref-modal-panel relative w-full max-w-5xl mx-auto rounded-2xl overflow-hidden border border-slate-700/60 bg-slate-900/80 p-1">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-slate-800">
+                <div>
+                    <p class="text-[11px] uppercase tracking-[0.22em] text-yellow-400 font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> Stats Storiche Arbitro
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                        <h3 id="ref-stats-title" class="text-xl font-extrabold text-white"></h3>
+                        <span id="ref-stats-meta" class="text-xs text-slate-400"></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="hidden sm:inline-flex text-[11px] px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700/80" id="ref-stats-matchup"></span>
+                    <button onclick="closeRefereeStats()" class="w-9 h-9 rounded-full bg-slate-800/80 border border-slate-700 text-slate-200 hover:text-white hover:border-yellow-400/70 transition shadow-glow flex items-center justify-center">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 p-5">
+                <div class="lg:col-span-2 space-y-3">
+                    <div class="flex items-center gap-2 text-[12px] uppercase tracking-wide text-slate-400">
+                        <i class="fa-solid fa-shield-halved text-yellow-400"></i>
+                        <span>Squadra di Casa</span>
+                    </div>
+                    <div id="ref-stats-home" class="space-y-3"></div>
+                </div>
+                <div class="lg:col-span-3 space-y-3">
+                    <div class="flex items-center gap-2 text-[12px] uppercase tracking-wide text-slate-400">
+                        <i class="fa-solid fa-plane-departure text-yellow-400"></i>
+                        <span>Squadra Ospite</span>
+                    </div>
+                    <div id="ref-stats-away" class="space-y-3"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -2027,24 +2110,245 @@ const designationsData = {
         className: 'bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase'
     },
     matches: [
-        { match: 'PARMA - FIORENTINA', time: 'SAB 12:30', referee: 'Guida', varOfficial: 'Ghersini' },
-        { match: 'LECCE - COMO', time: 'SAB 15:00', referee: 'Marchetti', varOfficial: 'Camplone' },
-        { match: 'TORINO - CAGLIARI', time: 'SAB 15:00', referee: 'Doveri', varOfficial: 'Baroni' },
-        { match: 'UDINESE - LAZIO', time: 'SAB 18:00', referee: 'Colombo', varOfficial: 'Gariglio' },
-        { match: 'PISA - JUVENTUS', time: 'SAB 20:45', referee: 'Maresca', varOfficial: 'Marini' },
-        { match: 'GENOA - ATALANTA', time: 'DOM 12:30', referee: 'Fabbri', varOfficial: 'Mazzoleni' },
-        { match: 'CREMONESE - NAPOLI', time: 'DOM 15:00', referee: 'Mariani', varOfficial: 'Maggioni' },
-        { match: 'BOLOGNA - SASSUOLO', time: 'DOM 18:00', referee: 'Sacchi', varOfficial: 'Di Paolo' },
-        { match: 'ATALANTA - INTER', time: 'DOM 20:45', referee: 'La Penna', varOfficial: 'Abisso' },
-        { match: 'ROMA - GENOA', time: 'LUN 20:45', referee: 'Di Bello', varOfficial: 'Prontera' }
+        {
+            match: 'PARMA - FIORENTINA',
+            time: 'SAB 12:30',
+            referee: 'Guida',
+            varOfficial: 'Ghersini',
+            stats: {
+                homeTeam: 'Parma',
+                awayTeam: 'Fiorentina',
+                referee: 'Guida',
+                history: {
+                    home: {
+                        fouls: { overall: 14.6, home: 15.2, away: 13.4 },
+                        effectiveTime: { overall: 53, home: 54, away: 51 },
+                        record: { overall: { w: 4, d: 2, l: 1 }, home: { w: 3, d: 1, l: 0 }, away: { w: 1, d: 1, l: 1 } }
+                    },
+                    away: {
+                        fouls: { overall: 12.8, home: 12.1, away: 13.6 },
+                        effectiveTime: { overall: 51, home: 50, away: 52 },
+                        record: { overall: { w: 2, d: 3, l: 2 }, home: { w: 1, d: 2, l: 1 }, away: { w: 1, d: 1, l: 1 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'LECCE - COMO',
+            time: 'SAB 15:00',
+            referee: 'Marchetti',
+            varOfficial: 'Camplone',
+            stats: {
+                homeTeam: 'Lecce',
+                awayTeam: 'Como',
+                referee: 'Marchetti',
+                history: {
+                    home: {
+                        fouls: { overall: 16.2, home: 16.9, away: 14.8 },
+                        effectiveTime: { overall: 48, home: 47, away: 49 },
+                        record: { overall: { w: 3, d: 1, l: 2 }, home: { w: 2, d: 0, l: 1 }, away: { w: 1, d: 1, l: 1 } }
+                    },
+                    away: {
+                        fouls: { overall: 11.4, home: 10.8, away: 12.2 },
+                        effectiveTime: { overall: 50, home: 51, away: 49 },
+                        record: { overall: { w: 1, d: 2, l: 2 }, home: { w: 0, d: 1, l: 1 }, away: { w: 1, d: 1, l: 1 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'TORINO - CAGLIARI',
+            time: 'SAB 15:00',
+            referee: 'Doveri',
+            varOfficial: 'Baroni',
+            stats: {
+                homeTeam: 'Torino',
+                awayTeam: 'Cagliari',
+                referee: 'Doveri',
+                history: {
+                    home: {
+                        fouls: { overall: 13.9, home: 14.4, away: 12.7 },
+                        effectiveTime: { overall: 52, home: 52, away: 51 },
+                        record: { overall: { w: 5, d: 2, l: 2 }, home: { w: 3, d: 1, l: 1 }, away: { w: 2, d: 1, l: 1 } }
+                    },
+                    away: {
+                        fouls: { overall: 15.1, home: 15.9, away: 14.2 },
+                        effectiveTime: { overall: 47, home: 46, away: 48 },
+                        record: { overall: { w: 2, d: 1, l: 5 }, home: { w: 1, d: 1, l: 2 }, away: { w: 1, d: 0, l: 3 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'UDINESE - LAZIO',
+            time: 'SAB 18:00',
+            referee: 'Colombo',
+            varOfficial: 'Gariglio',
+            stats: {
+                homeTeam: 'Udinese',
+                awayTeam: 'Lazio',
+                referee: 'Colombo',
+                history: {
+                    home: {
+                        fouls: { overall: 15.7, home: 16.1, away: 14.9 },
+                        effectiveTime: { overall: 49, home: 48, away: 50 },
+                        record: { overall: { w: 3, d: 2, l: 4 }, home: { w: 2, d: 1, l: 2 }, away: { w: 1, d: 1, l: 2 } }
+                    },
+                    away: {
+                        fouls: { overall: 12.3, home: 12.0, away: 12.8 },
+                        effectiveTime: { overall: 54, home: 53, away: 55 },
+                        record: { overall: { w: 5, d: 3, l: 1 }, home: { w: 2, d: 2, l: 1 }, away: { w: 3, d: 1, l: 0 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'PISA - JUVENTUS',
+            time: 'SAB 20:45',
+            referee: 'Maresca',
+            varOfficial: 'Marini',
+            stats: {
+                homeTeam: 'Pisa',
+                awayTeam: 'Juventus',
+                referee: 'Maresca',
+                history: {
+                    home: {
+                        fouls: { overall: 17.2, home: 17.9, away: 16.1 },
+                        effectiveTime: { overall: 47, home: 46, away: 48 },
+                        record: { overall: { w: 1, d: 2, l: 4 }, home: { w: 1, d: 1, l: 2 }, away: { w: 0, d: 1, l: 2 } }
+                    },
+                    away: {
+                        fouls: { overall: 10.8, home: 10.5, away: 11.0 },
+                        effectiveTime: { overall: 56, home: 55, away: 56 },
+                        record: { overall: { w: 6, d: 2, l: 1 }, home: { w: 3, d: 1, l: 1 }, away: { w: 3, d: 1, l: 0 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'GENOA - ATALANTA',
+            time: 'DOM 12:30',
+            referee: 'Fabbri',
+            varOfficial: 'Mazzoleni',
+            stats: {
+                homeTeam: 'Genoa',
+                awayTeam: 'Atalanta',
+                referee: 'Fabbri',
+                history: {
+                    home: {
+                        fouls: { overall: 14.1, home: 14.7, away: 13.2 },
+                        effectiveTime: { overall: 52, home: 52, away: 51 },
+                        record: { overall: { w: 4, d: 1, l: 3 }, home: { w: 2, d: 1, l: 1 }, away: { w: 2, d: 0, l: 2 } }
+                    },
+                    away: {
+                        fouls: { overall: 12.9, home: 13.4, away: 12.3 },
+                        effectiveTime: { overall: 55, home: 54, away: 56 },
+                        record: { overall: { w: 5, d: 2, l: 2 }, home: { w: 3, d: 1, l: 1 }, away: { w: 2, d: 1, l: 1 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'CREMONESE - NAPOLI',
+            time: 'DOM 15:00',
+            referee: 'Mariani',
+            varOfficial: 'Maggioni',
+            stats: {
+                homeTeam: 'Cremonese',
+                awayTeam: 'Napoli',
+                referee: 'Mariani',
+                history: {
+                    home: {
+                        fouls: { overall: 15.9, home: 16.5, away: 14.8 },
+                        effectiveTime: { overall: 48, home: 48, away: 49 },
+                        record: { overall: { w: 2, d: 2, l: 5 }, home: { w: 1, d: 1, l: 2 }, away: { w: 1, d: 1, l: 3 } }
+                    },
+                    away: {
+                        fouls: { overall: 11.6, home: 11.1, away: 12.0 },
+                        effectiveTime: { overall: 55, home: 54, away: 56 },
+                        record: { overall: { w: 6, d: 2, l: 1 }, home: { w: 3, d: 1, l: 0 }, away: { w: 3, d: 1, l: 1 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'BOLOGNA - SASSUOLO',
+            time: 'DOM 18:00',
+            referee: 'Sacchi',
+            varOfficial: 'Di Paolo',
+            stats: {
+                homeTeam: 'Bologna',
+                awayTeam: 'Sassuolo',
+                referee: 'Sacchi',
+                history: {
+                    home: {
+                        fouls: { overall: 13.5, home: 14.0, away: 12.8 },
+                        effectiveTime: { overall: 53, home: 53, away: 52 },
+                        record: { overall: { w: 4, d: 3, l: 2 }, home: { w: 3, d: 1, l: 1 }, away: { w: 1, d: 2, l: 1 } }
+                    },
+                    away: {
+                        fouls: { overall: 14.8, home: 15.3, away: 14.1 },
+                        effectiveTime: { overall: 50, home: 49, away: 51 },
+                        record: { overall: { w: 3, d: 2, l: 4 }, home: { w: 2, d: 1, l: 2 }, away: { w: 1, d: 1, l: 2 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'ATALANTA - INTER',
+            time: 'DOM 20:45',
+            referee: 'La Penna',
+            varOfficial: 'Abisso',
+            stats: {
+                homeTeam: 'Atalanta',
+                awayTeam: 'Inter',
+                referee: 'La Penna',
+                history: {
+                    home: {
+                        fouls: { overall: 12.7, home: 12.9, away: 12.3 },
+                        effectiveTime: { overall: 54, home: 54, away: 55 },
+                        record: { overall: { w: 3, d: 2, l: 3 }, home: { w: 2, d: 1, l: 1 }, away: { w: 1, d: 1, l: 2 } }
+                    },
+                    away: {
+                        fouls: { overall: 11.1, home: 11.4, away: 10.9 },
+                        effectiveTime: { overall: 58, home: 57, away: 59 },
+                        record: { overall: { w: 7, d: 1, l: 1 }, home: { w: 3, d: 1, l: 0 }, away: { w: 4, d: 0, l: 1 } }
+                    }
+                }
+            }
+        },
+        {
+            match: 'ROMA - GENOA',
+            time: 'LUN 20:45',
+            referee: 'Di Bello',
+            varOfficial: 'Prontera',
+            stats: {
+                homeTeam: 'Roma',
+                awayTeam: 'Genoa',
+                referee: 'Di Bello',
+                history: {
+                    home: {
+                        fouls: { overall: 12.9, home: 13.3, away: 12.1 },
+                        effectiveTime: { overall: 55, home: 55, away: 54 },
+                        record: { overall: { w: 6, d: 3, l: 1 }, home: { w: 4, d: 1, l: 0 }, away: { w: 2, d: 2, l: 1 } }
+                    },
+                    away: {
+                        fouls: { overall: 13.6, home: 14.2, away: 13.1 },
+                        effectiveTime: { overall: 52, home: 52, away: 52 },
+                        record: { overall: { w: 2, d: 2, l: 4 }, home: { w: 1, d: 1, l: 2 }, away: { w: 1, d: 1, l: 2 } }
+                    }
+                }
+            }
+        }
     ]
 };
 
-function createMobileDesignationCard(match) {
+function createMobileDesignationCard(match, index) {
     const timeLabel = match?.time || '';
     const referee = match?.referee || '';
     const varOfficial = match?.varOfficial || '';
     const matchLabel = match?.match || '';
+    const hasStats = !!match?.stats;
 
     return `
         <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
@@ -2052,9 +2356,11 @@ function createMobileDesignationCard(match) {
                 <span>${matchLabel}</span>
                 <span class="text-slate-500">${timeLabel}</span>
             </div>
-            <div class="flex justify-between items-center text-xs mb-1">
+            <div class="flex justify-between items-center text-xs mb-1 gap-2">
                 <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                <span class="text-green-400 font-mono font-bold"> ${referee.toUpperCase()} </span>
+                <button ${hasStats ? `onclick="openRefereeStats(${index})"` : ''} class="text-green-400 font-mono font-bold underline-offset-2 hover:underline disabled:opacity-60" ${hasStats ? '' : 'disabled'}>
+                    ${referee.toUpperCase()}
+                </button>
             </div>
             <div class="flex justify-between items-center text-xs">
                 <span class="text-violet-400 uppercase w-8">Var</span>
@@ -2063,11 +2369,12 @@ function createMobileDesignationCard(match) {
         </div>`;
 }
 
-function createDesktopDesignationCard(match) {
+function createDesktopDesignationCard(match, index) {
     const timeLabel = (match?.timeDesktop || match?.time || '').toLowerCase();
     const referee = match?.referee || '';
     const varOfficial = match?.varOfficial || '';
     const matchLabel = match?.match || '';
+    const hasStats = !!match?.stats;
 
     return `
         <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
@@ -2076,7 +2383,11 @@ function createDesktopDesignationCard(match) {
                 <span class="text-[10px] text-slate-500">${timeLabel}</span>
             </div>
             <div class="flex items-center justify-between text-[10px] text-green-400">
-                <span>ARBITRO: ${referee} </span>
+                <span class="flex items-center gap-1">ARBITRO:
+                    <button ${hasStats ? `onclick="openRefereeStats(${index})"` : ''} class="font-mono font-bold underline-offset-2 hover:underline disabled:opacity-60" ${hasStats ? '' : 'disabled'}>
+                        ${referee}
+                    </button>
+                </span>
                 <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: ${varOfficial} </span>
             </div>
         </div>`;
@@ -2105,13 +2416,122 @@ function renderDesignations() {
 
     if (mobileList) {
         mobileList.innerHTML = '';
-        matches.forEach((match) => mobileList.insertAdjacentHTML('beforeend', createMobileDesignationCard(match)));
+        matches.forEach((match, idx) => mobileList.insertAdjacentHTML('beforeend', createMobileDesignationCard(match, idx)));
     }
 
     if (desktopList) {
         desktopList.innerHTML = '';
-        matches.forEach((match) => desktopList.insertAdjacentHTML('beforeend', createDesktopDesignationCard(match)));
+        matches.forEach((match, idx) => desktopList.insertAdjacentHTML('beforeend', createDesktopDesignationCard(match, idx)));
     }
+}
+
+function formatValue(value) {
+    if (!Number.isFinite(value)) return '—';
+    return value.toFixed(1).replace('.', ',');
+}
+
+function formatRecordLabel(record = {}) {
+    const w = record?.w ?? 0;
+    const d = record?.d ?? 0;
+    const l = record?.l ?? 0;
+    return `${w}V / ${d}N / ${l}P`;
+}
+
+function buildMetricPill(title, value, subtitle) {
+    return `
+        <div class="metric-pill rounded-xl p-3 flex flex-col gap-1">
+            <span class="text-[11px] uppercase tracking-wide text-slate-400 font-semibold">${title}</span>
+            <span class="text-xl font-extrabold text-white">${value}</span>
+            <span class="text-[11px] text-slate-400">${subtitle}</span>
+        </div>`;
+}
+
+function buildRecordCard(record, label) {
+    return `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-3 flex items-center justify-between">
+            <div class="text-sm font-semibold text-white">${label}</div>
+            <div class="flex items-center gap-2 text-xs font-mono">
+                <span class="px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${record?.w ?? 0}V</span>
+                <span class="px-2 py-1 rounded-full bg-slate-500/20 text-slate-200 border border-slate-500/40">${record?.d ?? 0}N</span>
+                <span class="px-2 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">${record?.l ?? 0}P</span>
+            </div>
+        </div>`;
+}
+
+function renderRefereeTeamStats(teamName, stats) {
+    if (!stats) {
+        return `
+            <div class="rounded-2xl border border-dashed border-slate-700/70 bg-slate-900/40 p-4 text-slate-400 text-sm flex items-center gap-2">
+                <i class="fa-regular fa-circle-xmark text-rose-400"></i>
+                <span>Nessun precedente con ${teamName}.</span>
+            </div>`;
+    }
+
+    const fouls = stats?.fouls || {};
+    const eff = stats?.effectiveTime || {};
+    const record = stats?.record || {};
+
+    return `
+        <div class="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 to-slate-900/60 p-4 space-y-3 shadow-card">
+            <div class="flex items-center justify-between gap-2">
+                <div>
+                    <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">Storico con</p>
+                    <h4 class="text-lg font-extrabold text-white leading-tight">${teamName}</h4>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-yellow-500/15 border border-yellow-500/30 text-[11px] text-yellow-300 font-semibold">Arbitro</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                ${buildMetricPill('Falli fischiati', `${formatValue(fouls.overall)}`, 'Media complessiva')}
+                ${buildMetricPill('Casa', `${formatValue(fouls.home)}`, 'Media in casa')}
+                ${buildMetricPill('Trasferta', `${formatValue(fouls.away)}`, 'Media in trasferta')}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                ${buildMetricPill('Tempo effettivo', `${formatValue(eff.overall)}’`, 'Media complessiva')}
+                ${buildMetricPill('Casa', `${formatValue(eff.home)}’`, 'Partite in casa')}
+                ${buildMetricPill('Trasferta', `${formatValue(eff.away)}’`, 'Partite in trasferta')}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                ${buildRecordCard(record.overall, 'Totale')}
+                ${buildRecordCard(record.home, 'In casa')}
+                ${buildRecordCard(record.away, 'In trasferta')}
+            </div>
+        </div>`;
+}
+
+function openRefereeStats(matchIndex) {
+    const matches = Array.isArray(designationsData?.matches) ? designationsData.matches : [];
+    const match = matches[matchIndex];
+    const modal = document.getElementById('referee-stats-modal');
+    const homeWrapper = document.getElementById('ref-stats-home');
+    const awayWrapper = document.getElementById('ref-stats-away');
+    const title = document.getElementById('ref-stats-title');
+    const meta = document.getElementById('ref-stats-meta');
+    const matchup = document.getElementById('ref-stats-matchup');
+
+    if (!match || !modal || !homeWrapper || !awayWrapper) return;
+
+    const { stats } = match;
+    const homeTeamName = stats?.homeTeam || match.match?.split('-')?.[0]?.trim() || 'Casa';
+    const awayTeamName = stats?.awayTeam || match.match?.split('-')?.[1]?.trim() || 'Trasferta';
+
+    title.textContent = stats?.referee ? `${stats.referee}` : (match.referee || 'Arbitro');
+    meta.textContent = match.time ? `Giornata: ${designationsData.roundLabel} • ${match.time}` : designationsData.roundLabel;
+    if (matchup) matchup.textContent = `${homeTeamName} vs ${awayTeamName}`;
+
+    homeWrapper.innerHTML = renderRefereeTeamStats(homeTeamName, stats?.history?.home);
+    awayWrapper.innerHTML = renderRefereeTeamStats(awayTeamName, stats?.history?.away);
+
+    modal.dataset.open = 'true';
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeRefereeStats() {
+    const modal = document.getElementById('referee-stats-modal');
+    modal?.setAttribute('data-open', 'false');
+    document.body.classList.remove('overflow-hidden');
 }
 
 const playersRawData = `
