@@ -513,7 +513,17 @@ html, body {
     padding: 6px 8px;
     border-bottom: 1px solid #1e293b;
     font-size: 0.85rem;
-}        .pro-table tr:last-child td { border-bottom: none; }
+}
+
+#mainTable {
+    min-width: 1150px;
+}
+
+.team-name-cell {
+    min-width: 190px;
+}
+
+.pro-table tr:last-child td { border-bottom: none; }
 
         /* Vista Partite: tabella compatta su desktop */
         body.matches-view-active #mainTable.matches-compact th,
@@ -9805,6 +9815,7 @@ function getRefereePortrait(refName) {
                     if(!teamsMap.has(team)) teamsMap.set(team, { 
                         name: team, matches: 0, 
                         totalFoulsInGames: 0, teamFouls: 0,
+                        homeTeamFouls: 0, awayTeamFouls: 0,
                         homeGames: 0, awayGames: 0,
                         totalEffSec: 0, homeEffSec: 0, awayEffSec: 0,
                         validHomeEff: 0, validAwayEff: 0, validTotalEff: 0
@@ -9833,10 +9844,12 @@ function getRefereePortrait(refName) {
 
                     if(idx === 0) { // Home
                         t.homeGames++;
+                        t.homeTeamFouls += teamFouls;
                     } else { // Away
                         t.awayGames++;
+                        t.awayTeamFouls += teamFouls;
                     }
-
+                    
                     t.teamFouls += teamFouls;
                 });
             });
@@ -9847,9 +9860,13 @@ function getRefereePortrait(refName) {
                     matches: t.matches,
                     avgFouls: t.matches ? t.totalFoulsInGames/t.matches : 0,
                     avgTeamFouls: t.matches ? t.teamFouls/t.matches : 0,
+                    avgTeamFoulsHome: t.homeGames ? t.homeTeamFouls/t.homeGames : 0,
+                    avgTeamFoulsAway: t.awayGames ? t.awayTeamFouls/t.awayGames : 0,
                     avgEff: t.validTotalEff ? t.totalEffSec/t.validTotalEff : 0,
                     avgEffHome: t.validHomeEff ? t.homeEffSec/t.validHomeEff : 0,
-                    avgEffAway: t.validAwayEff ? t.awayEffSec/t.validAwayEff : 0
+                    avgEffAway: t.validAwayEff ? t.awayEffSec/t.validAwayEff : 0,
+                    homeGames: t.homeGames,
+                    awayGames: t.awayGames
                 };
             });
         }
@@ -10005,7 +10022,7 @@ if(q && result.length && currentView !== 'analytics') {
             } else if (result.length && currentView !== 'analytics') {
                 result.sort((a, b) => {
                     let va = a[sortColumn], vb = b[sortColumn];
-                    if (currentView === 'teams' && ['avgFouls', 'avgEff', 'avgTeamFouls'].includes(sortColumn)) {
+                    if (currentView === 'teams' && ['avgFouls', 'avgEff', 'avgTeamFouls', 'avgTeamFoulsHome', 'avgTeamFoulsAway'].includes(sortColumn)) {
                         const isInvalid = (v) => (typeof v === 'number' && isNaN(v)) || v === null || v === undefined || v === 0;
                         if (isInvalid(va) && isInvalid(vb)) return 0;
                         if (isInvalid(va)) return 1; 
@@ -12230,6 +12247,8 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 'matches': 'Partite giocate dalla squadra nella stagione selezionata.',
                 'avgFouls': 'Media falli totali fischiati nella partita che coinvolge la squadra.',
                 'avgTeamFouls': 'Media falli commessi dalla squadra per partita (casa/trasferta).',
+                'avgTeamFoulsHome': 'Media falli commessi dalla squadra nelle partite casalinghe.',
+                'avgTeamFoulsAway': 'Media falli commessi dalla squadra nelle partite in trasferta.',
                 'avgEffHome': 'Tempo effettivo medio delle partite casalinghe (in minuti e secondi).',
                 'avgEffAway': 'Tempo effettivo medio delle partite in trasferta (in minuti e secondi).',
                 'avgEff': 'Tempo effettivo medio totale (in minuti e secondi).'
@@ -12347,19 +12366,22 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 renderMatchesRows(data, true); // Pass true to clear tbody first
                 renderMatchesFooter(tfoot, data.length);
             } else if (currentView === 'teams') {
-                // Squadra, Partite, Falli Tot, Falli Squadra, T.Eff. Medio, T.Eff. Casa, T.Eff. Trasf.
+                // Squadra, Partite, Falli Tot, Falli Squadra, Falli Squadra Casa, Falli Squadra Trasf, T.Eff. Medio, T.Eff. Casa, T.Eff. Trasf.
 
                 thead.innerHTML = `<tr>
                     ${th('Squadra', 'name', 'sticky-col')}
                     ${th('Partite', 'matches', 'text-center', tooltipMap.matches)}
                     ${th('Falli Tot', 'avgFouls', 'text-center text-red-400', tooltipMap.avgFouls)}
                     ${th('Falli Squadra', 'avgTeamFouls', 'text-center text-red-400 font-semibold', tooltipMap.avgTeamFouls)}
+                    ${th('Falli Squadra Casa', 'avgTeamFoulsHome', 'text-center text-red-300', tooltipMap.avgTeamFoulsHome)}
+                    ${th('Falli Squadra Trasf', 'avgTeamFoulsAway', 'text-center text-red-300', tooltipMap.avgTeamFoulsAway)}
                     ${th('T.Eff. Medio', 'avgEff', 'text-center text-green-400 font-bold', tooltipMap.avgEff)}
                     ${th('T.Eff. Casa', 'avgEffHome', 'text-center text-green-400/70', tooltipMap.avgEffHome)}
                     ${th('T.Eff. Trasf', 'avgEffAway', 'text-center text-green-400/70', tooltipMap.avgEffAway)}
                     </tr>`;
 
-                let totMatches = 0, sumFouls = 0, sumTeamFouls = 0, sumEff = 0, sumEffHome = 0, sumEffAway = 0;
+                let totMatches = 0, sumFouls = 0, sumTeamFouls = 0, sumTeamFoulsHome = 0, sumTeamFoulsAway = 0, sumEff = 0, sumEffHome = 0, sumEffAway = 0;
+                let totHomeGames = 0, totAwayGames = 0;
                 data.forEach(t => {
                     const teamName = (t.name || '').toUpperCase();
                     const logoUrl = getTeamLogoUrl(t.name);
@@ -12369,10 +12391,12 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                         : `<div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-bold text-slate-300 flex items-center justify-center">${initials}</div>`;
                     const teamCell = `<div class="flex items-center gap-3">${teamBadge}<span class="text-white font-bold uppercase">${teamName}</span></div>`;
                     tbody.innerHTML += `<tr>
-                        <td class="sticky-col border-b border-slate-800">${teamCell}</td>
+                        <td class="sticky-col border-b border-slate-800 team-name-cell">${teamCell}</td>
                         <td class="text-center text-slate-400">${t.matches}</td>
                         <td class="text-center font-bold text-red-400">${t.avgFouls.toFixed(1)}</td>
                         <td class="text-center font-bold text-red-300">${t.avgTeamFouls.toFixed(1)}</td>
+                        <td class="text-center font-bold text-red-300">${t.avgTeamFoulsHome.toFixed(1)}</td>
+                        <td class="text-center font-bold text-red-300">${t.avgTeamFoulsAway.toFixed(1)}</td>
                         <td class="text-center font-mono font-bold text-green-400">${formatSecondsToTime(t.avgEff)}</td>
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(t.avgEffHome)}</td>
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(t.avgEffAway)}</td>
@@ -12381,6 +12405,10 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     totMatches += t.matches;
                     sumFouls += t.avgFouls * t.matches;
                     sumTeamFouls += t.avgTeamFouls * t.matches;
+                    sumTeamFoulsHome += t.avgTeamFoulsHome * t.homeGames;
+                    sumTeamFoulsAway += t.avgTeamFoulsAway * t.awayGames;
+                    totHomeGames += t.homeGames;
+                    totAwayGames += t.awayGames;
                     sumEff += t.avgEff * t.matches;
                     sumEffHome += t.avgEffHome * t.matches;
                     sumEffAway += t.avgEffAway * t.matches;
@@ -12393,10 +12421,13 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                         <td class="text-center text-slate-200">-</td>
                         <td class="text-center font-bold text-red-400">${(sumFouls / totMatches).toFixed(1)}</td>
                         <td class="text-center font-bold text-red-300">${(sumTeamFouls / totMatches).toFixed(1)}</td>
+                        <td class="text-center font-bold text-red-300">${totHomeGames ? (sumTeamFoulsHome / totHomeGames).toFixed(1) : '-'}</td>
+                        <td class="text-center font-bold text-red-300">${totAwayGames ? (sumTeamFoulsAway / totAwayGames).toFixed(1) : '-'}</td>
                         <td class="text-center font-mono font-bold text-green-400">${formatSecondsToTime(sumEff / totMatches)}</td>
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(sumEffHome / totMatches)}</td>
                         <td class="text-center font-mono text-green-400/70">${formatSecondsToTime(sumEffAway / totMatches)}</td>
                     `;
+
                     tfoot.appendChild(footerRow);
                 }
             }
