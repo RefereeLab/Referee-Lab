@@ -9846,6 +9846,8 @@ function getRefereePortrait(refName) {
                 r.avgEffSec = r.validEffMatches ? (r.totalEffectiveSec / r.validEffMatches) : 0;
                 r.avgTotSec = r.validTotMatches ? (r.totalTotalSec / r.validTotMatches) : 0;
                 r.effRatio = calculateEffRatio(r.avgEffSec, r.avgTotSec);
+                const foulsValues = (r.matchList || []).map(m => m.fouls).filter(Number.isFinite);
+                r.avgFouls = foulsValues.length ? foulsValues.reduce((a, b) => a + b, 0) / foulsValues.length : null;
                 return r;
             });
 
@@ -12383,24 +12385,20 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                 const [minTot, maxTot] = totValues.length ? [Math.min(...totValues), Math.max(...totValues)] : [0, 0];
                 const ratioValues = data.map(r => r.effRatio).filter(v => Number.isFinite(v));
                 const [minRatio, maxRatio] = ratioValues.length ? [Math.min(...ratioValues), Math.max(...ratioValues)] : [0, 0];
-                const foulsValues = data.map(r => {
-                    const fouls = r.matchList?.map(m => m.fouls).filter(Number.isFinite) || [];
-                    return fouls.length ? fouls.reduce((a, b) => a + b, 0) / fouls.length : null;
-                }).filter(v => Number.isFinite(v));
+                const foulsValues = data.map(r => r.avgFouls).filter(v => Number.isFinite(v));
                 const [minFouls, maxFouls] = foulsValues.length ? [Math.min(...foulsValues), Math.max(...foulsValues)] : [0, 0];
                 data.forEach((r, i) => {
                     const effColor = getColorForValue(r.avgEffSec, minEff, maxEff, false);
                     const totColor = getColorForValue(r.avgTotSec, minTot, maxTot, true);
                     const ratioColor = getColorForValue(r.effRatio, minRatio, maxRatio, false);
-                    const fouls = r.matchList?.map(m => m.fouls).filter(Number.isFinite) || [];
-                    const avgFouls = fouls.length ? fouls.reduce((a, b) => a + b, 0) / fouls.length : null;
+                    const avgFouls = Number.isFinite(r.avgFouls) ? r.avgFouls : null;
                     const foulsColor = getColorForValue(avgFouls, minFouls, maxFouls, true);
                     tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-mono font-semibold" style="color:${foulsColor}">${avgFouls !== null ? avgFouls.toFixed(1) : '-'}</td><td class="text-center font-bold font-mono text-base" style="color: ${effColor}">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium font-mono" style="color: ${totColor}">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono font-semibold" style="color: ${ratioColor}">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
                     const multiSeason = activeSeasons.length > 1;
                     const matchGridTemplate = showTot
-                        ? 'minmax(0, 2.6fr) minmax(0, 1fr) 56px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)'
-                        : 'minmax(0, 2.8fr) minmax(0, 1fr) 56px minmax(0, 1fr) minmax(0, 1fr)';
-                    const matchesHeader = `<div class="grid gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500" style="grid-template-columns:${matchGridTemplate};"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
+                        ? 'minmax(0, 2.6fr) minmax(0, 1fr) 56px 70px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)'
+                        : 'minmax(0, 2.8fr) minmax(0, 1fr) 56px 70px minmax(0, 1fr) minmax(0, 1fr)';
+                    const matchesHeader = `<div class="grid gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500" style="grid-template-columns:${matchGridTemplate};"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">Falli</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
                     const matchesHtml = r.matchList.map(m => {
                         const ratioDisplay = formatEffRatio(Number.isFinite(m.effRatio) ? m.effRatio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
                         const seasonTint = multiSeason ? getSeasonTintClass(m.season) : '';
@@ -12410,19 +12408,24 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                         const awayLabel = (awayTeam || '').toUpperCase();
                         const homeLogo = getTeamLogo(homeTeam);
                         const awayLogo = getTeamLogo(awayTeam);
+                        const foulsDisplay = Number.isFinite(m.fouls) ? m.fouls : '-';
                         return `<div class="grid gap-2 py-2 px-4 border-b border-slate-800/50 text-[11px] hover:bg-slate-800 items-center ${seasonTint}" style="grid-template-columns:${matchGridTemplate};">`+
                             `<span class="text-white font-semibold">`+
                                 `<span class="flex items-center gap-2 flex-wrap">`+
-                                    `<span class="whitespace-nowrap">${homeLabel || '-'}</span>`+
-                                    `<span class="text-slate-500">-</span>`+
-                                    `<span class="whitespace-nowrap">${awayLabel || '-'}</span>`+
-                                    `<span class="flex items-center gap-1 ml-1">`+
+                                    `<span class="flex items-center gap-1">`+
                                         `<img src="${homeLogo}" alt="${homeLabel || 'Sq. casa'}" class="w-6 h-6 object-contain drop-shadow rounded">`+
                                         `<img src="${awayLogo}" alt="${awayLabel || 'Sq. trasf'}" class="w-6 h-6 object-contain drop-shadow rounded">`+
+                                    `</span>`+
+                                    `<span class="flex items-center gap-1">`+
+                                        `<span class="whitespace-nowrap">${homeLabel || '-'}</span>`+
+                                        `<span class="text-slate-500">-</span>`+
+                                        `<span class="whitespace-nowrap">${awayLabel || '-'}</span>`+
                                     `</span>`+
                                 `</span>`+
                             `</span>`+
                             `<span class="text-center text-slate-500 font-mono">${m.season || '-'}</span>`+
+                            `<span class="text-center font-mono text-slate-200">${matchdayLabel}</span>`+
+                            `<span class="text-center font-mono font-semibold text-red-300">${foulsDisplay}</span>`+
                             `<span class="text-center font-mono text-slate-200">${matchdayLabel}</span>`+
                             `<span class="text-center font-mono ${m.effectiveTimeSec ? 'text-green-400' : 'text-slate-600'}">${formatSecondsToTime(m.effectiveTimeSec)}</span>`+
                             `${showTot ? `<span class="text-center font-mono text-blue-400">${formatSecondsToTime(m.totalTimeSec)}</span>` : ''}`+
