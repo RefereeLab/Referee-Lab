@@ -1011,8 +1011,7 @@ html, body {
     <div id="designations-modal" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden">
         <div class="modal-content absolute top-0 right-0 w-[85%] max-w-sm h-full bg-[#0f172a] shadow-2xl border-l border-slate-800 flex flex-col">
             <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800 bg-[#0b1120]">
-                <h2 class="text-white font-bold tracking-tight flex items-center gap-2">
-                </h2>
+                <h2 id="designations-modal-title" class="text-white font-bold tracking-tight flex items-center gap-2"></h2>
                 <button onclick="toggleDesignationsModal(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white">
                     <i class="fa-solid fa-times"></i>
                 </button>
@@ -1023,164 +1022,12 @@ html, body {
                     <div class="flex justify-between items-start mb-3">
                         <div>
                             <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Giornata in corso</span>
-                            <span class="text-lg font-bold text-white">17ª Giornata</span>
+                            <span id="designations-round" class="text-lg font-bold text-white"></span>
                         </div>
-                        <span class="bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase">LIVE</span>
+                        <span id="designations-status-badge" class="bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase"></span>
                     </div>
 
-                    <div class="space-y-3">
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>PARMA - FIORENTINA</span>
-                                <span class="text-slate-500">SAB 12:30</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> GUIDA </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Ghersini </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>LECCE - COMO</span>
-                                <span class="text-slate-500">SAB 15:00</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> MARCHETTI </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Camplone </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>TORINO - CAGLIARI</span>
-                                <span class="text-slate-500">SAB 15:00</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> DOVERI </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Baroni </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>UDINESE - LAZIO</span>
-                                <span class="text-slate-500">SAB 18:00</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> COLOMBO </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Gariglio </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>PISA - JUVENTUS</span>
-                                <span class="text-slate-500">SAB 20:45</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> MARESCA </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Marini </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>GENOA - ATALANTA</span>
-                                <span class="text-slate-500">DOM 12:30</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> FABBRI </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Mazzoleni </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>CREMONESE - NAPOLI</span>
-                                <span class="text-slate-500">DOM 15:00</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> MARIANI </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Maggioni </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>BOLOGNA - SASSUOLO</span>
-                                <span class="text-slate-500">DOM 18:00</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> SACCHI </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Di Paolo </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>ATALANTA - INTER</span>
-                                <span class="text-slate-500">DOM 20:45</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> LA PENNA </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Abisso </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
-                            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
-                                <span>ROMA - GENOA</span>
-                                <span class="text-slate-500">LUN 20:45</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs mb-1">
-                                <span class="text-green-500 uppercase font-bold">Arbitro</span>
-                                <span class="text-green-400 font-mono font-bold"> DI BELLO </span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-violet-400 uppercase w-8">Var</span>
-                                <span class="text-violet-400 font-mono"> Prontera </span>
-                            </div>
-                        </div>
-
-
-                    </div>
+                    <div id="designations-mobile-list" class="space-y-3"></div>
                  </div>
             </div>
         </div>
@@ -2078,120 +1925,8 @@ html, body {
         </div>
         <div class="p-0 max-h-64 overflow-y-auto hidden">
             <div class="p-3 space-y-2">
-                <div class="text-[10px] text-yellow-500 font-bold uppercase tracking-wider mb-2">17ª Giornata</div>
-                
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>PARMA - FIORENTINA</span>
-                        <span class="text-[10px] text-slate-500">sab 12:30</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Guida </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Maggioni </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>LECCE - COMO</span>
-                        <span class="text-[10px] text-slate-500">sab 15:00</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Marchetti </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Camplone </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>TORINO - CAGLIARI</span>
-                        <span class="text-[10px] text-slate-500">sab 15:00</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Doveri </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Baroni </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>UDINESE - LAZIO</span>
-                        <span class="text-[10px] text-slate-500">sab 18:00</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Colombo </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Gariglio </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>PISA - JUVENTUS</span>
-                        <span class="text-[10px] text-slate-500">sab 20:45</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Maresca </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Marini </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>MILAN - VERONA</span>
-                        <span class="text-[10px] text-slate-500">dom 12:30</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Fabbri </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Mazzoleni </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>CREMONESE - NAPOLI</span>
-                        <span class="text-[10px] text-slate-500">dom 15:00</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Mariani </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Maggioni </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>BOLOGNA - SASSUOLO</span>
-                        <span class="text-[10px] text-slate-500">dom 18:00</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Sacchi </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Di Paolo </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>ATALANTA - INTER</span>
-                        <span class="text-[10px] text-slate-500">dom 20:45</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: La Penna </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Abisso </span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
-                    <div class="flex justify-between text-white font-bold text-xs mb-1">
-                        <span>ROMA - GENOA</span>
-                        <span class="text-[10px] text-slate-500">lun 20:45</span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-green-400">
-                        <span>ARBITRO: Di Bello </span>
-                        <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: Prontera </span>
-                    </div>
-                </div>
-
-
-
+                <div id="designations-round-desktop" class="text-[10px] text-yellow-500 font-bold uppercase tracking-wider mb-2"></div>
+                <div id="designations-desktop-list" class="space-y-2"></div>
             </div>
         </div>
      </div>
@@ -2270,6 +2005,99 @@ html, body {
 
     <script>
 
+const designationsData = {
+    roundLabel: '17ª Giornata',
+    status: {
+        label: 'LIVE',
+        className: 'bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase'
+    },
+    matches: [
+        { match: 'PARMA - FIORENTINA', time: 'SAB 12:30', referee: 'Guida', varOfficial: 'Ghersini' },
+        { match: 'LECCE - COMO', time: 'SAB 15:00', referee: 'Marchetti', varOfficial: 'Camplone' },
+        { match: 'TORINO - CAGLIARI', time: 'SAB 15:00', referee: 'Doveri', varOfficial: 'Baroni' },
+        { match: 'UDINESE - LAZIO', time: 'SAB 18:00', referee: 'Colombo', varOfficial: 'Gariglio' },
+        { match: 'PISA - JUVENTUS', time: 'SAB 20:45', referee: 'Maresca', varOfficial: 'Marini' },
+        { match: 'GENOA - ATALANTA', time: 'DOM 12:30', referee: 'Fabbri', varOfficial: 'Mazzoleni' },
+        { match: 'CREMONESE - NAPOLI', time: 'DOM 15:00', referee: 'Mariani', varOfficial: 'Maggioni' },
+        { match: 'BOLOGNA - SASSUOLO', time: 'DOM 18:00', referee: 'Sacchi', varOfficial: 'Di Paolo' },
+        { match: 'ATALANTA - INTER', time: 'DOM 20:45', referee: 'La Penna', varOfficial: 'Abisso' },
+        { match: 'ROMA - GENOA', time: 'LUN 20:45', referee: 'Di Bello', varOfficial: 'Prontera' }
+    ]
+};
+
+function createMobileDesignationCard(match) {
+    const timeLabel = match?.time || '';
+    const referee = match?.referee || '';
+    const varOfficial = match?.varOfficial || '';
+    const matchLabel = match?.match || '';
+
+    return `
+        <div class="bg-slate-800/50 rounded p-3 border border-slate-700/50">
+            <div class="flex justify-between text-xs font-bold text-slate-200 mb-2 pb-2 border-b border-slate-700/50">
+                <span>${matchLabel}</span>
+                <span class="text-slate-500">${timeLabel}</span>
+            </div>
+            <div class="flex justify-between items-center text-xs mb-1">
+                <span class="text-green-500 uppercase font-bold">Arbitro</span>
+                <span class="text-green-400 font-mono font-bold"> ${referee.toUpperCase()} </span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-violet-400 uppercase w-8">Var</span>
+                <span class="text-violet-400 font-mono"> ${varOfficial} </span>
+            </div>
+        </div>`;
+}
+
+function createDesktopDesignationCard(match) {
+    const timeLabel = (match?.timeDesktop || match?.time || '').toLowerCase();
+    const referee = match?.referee || '';
+    const varOfficial = match?.varOfficial || '';
+    const matchLabel = match?.match || '';
+
+    return `
+        <div class="bg-slate-800/40 p-2 rounded border border-slate-700/50 hover:bg-slate-800 transition-colors group">
+            <div class="flex justify-between text-white font-bold text-xs mb-1">
+                <span>${matchLabel}</span>
+                <span class="text-[10px] text-slate-500">${timeLabel}</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-green-400">
+                <span>ARBITRO: ${referee} </span>
+                <span class="flex items-center justify-between text-[10px] text-violet-400">VAR: ${varOfficial} </span>
+            </div>
+        </div>`;
+}
+
+function renderDesignations() {
+    const roundLabel = designationsData?.roundLabel || '';
+    const matches = Array.isArray(designationsData?.matches) ? designationsData.matches : [];
+    const mobileList = document.getElementById('designations-mobile-list');
+    const desktopList = document.getElementById('designations-desktop-list');
+    const roundMobile = document.getElementById('designations-round');
+    const roundDesktop = document.getElementById('designations-round-desktop');
+    const statusBadge = document.getElementById('designations-status-badge');
+    const modalTitle = document.getElementById('designations-modal-title');
+
+    if (roundMobile) roundMobile.textContent = roundLabel;
+    if (roundDesktop) roundDesktop.textContent = roundLabel;
+
+    if (modalTitle) modalTitle.textContent = 'Designazioni';
+
+    if (statusBadge) {
+        const { className = '', label = '' } = designationsData?.status || {};
+        statusBadge.className = className;
+        statusBadge.textContent = label;
+    }
+
+    if (mobileList) {
+        mobileList.innerHTML = '';
+        matches.forEach((match) => mobileList.insertAdjacentHTML('beforeend', createMobileDesignationCard(match)));
+    }
+
+    if (desktopList) {
+        desktopList.innerHTML = '';
+        matches.forEach((match) => desktopList.insertAdjacentHTML('beforeend', createDesktopDesignationCard(match)));
+    }
+}
 
 const playersRawData = `
 Johan Vásquez	DF	Genoa	15,00	0,07	0,87	0,87	0,13
@@ -14083,14 +13911,15 @@ function renderPlayersPassingTable() {
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
-            attachRippleEffect(Array.from(interactiveTargets));
+document.addEventListener('DOMContentLoaded', () => {
+    const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
+    attachRippleEffect(Array.from(interactiveTargets));
 
-            const refreshQuizBtn = document.getElementById('quiz-refresh');
-            if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
-            prepareQuizRound();
-        });
+    const refreshQuizBtn = document.getElementById('quiz-refresh');
+    if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
+    prepareQuizRound();
+    renderDesignations();
+});
 
 // --- EVENTO CAMBIO METRICA HEATMAP ---
 document.addEventListener('DOMContentLoaded', () => {
