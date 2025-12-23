@@ -12397,13 +12397,31 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
                     const foulsColor = getColorForValue(avgFouls, minFouls, maxFouls, true);
                     tbody.innerHTML += `<tr class="cursor-pointer group" onclick="toggleDetails(${i})"><td class="sticky-col border-b border-slate-800">${formatRefereeNameHTML(r.name, false)}</td><td class="text-center text-white">${r.matches}</td><td class="text-center font-mono font-semibold" style="color:${foulsColor}">${avgFouls !== null ? avgFouls.toFixed(1) : '-'}</td><td class="text-center font-bold font-mono text-base" style="color: ${effColor}">${formatSecondsToTime(r.avgEffSec)}</td>${showTot ? `<td class="text-center font-medium font-mono" style="color: ${totColor}">${formatSecondsToTime(r.avgTotSec)}</td>` : ''}<td class="text-center font-mono font-semibold" style="color: ${ratioColor}">${formatEffRatio(r.effRatio)}</td><td class="text-center text-slate-600 group-hover:text-white transition-colors"><i class="fa-solid fa-chevron-down text-xs" id="icon-${i}"></i></td></tr>`;
                     const multiSeason = activeSeasons.length > 1;
-                    const matchesHeader = `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
+                    const matchGridTemplate = showTot
+                        ? 'minmax(0, 2.6fr) minmax(0, 1fr) 56px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)'
+                        : 'minmax(0, 2.8fr) minmax(0, 1fr) 56px minmax(0, 1fr) minmax(0, 1fr)';
+                    const matchesHeader = `<div class="grid gap-2 px-4 pb-2 text-[10px] uppercase tracking-wider text-slate-500" style="grid-template-columns:${matchGridTemplate};"><span class="text-left">Partita</span><span class="text-center">Stagione</span><span class="text-center">G</span><span class="text-center">T. Eff</span>${showTot ? '<span class="text-center">T. Tot</span>' : ''}<span class="text-center">% Eff</span></div>`;
                     const matchesHtml = r.matchList.map(m => {
                         const ratioDisplay = formatEffRatio(Number.isFinite(m.effRatio) ? m.effRatio : calculateEffRatio(m.effectiveTimeSec, m.totalTimeSec));
                         const seasonTint = multiSeason ? getSeasonTintClass(m.season) : '';
                         const matchdayLabel = Number.isFinite(m.matchday) ? m.matchday : '-';
-                        return `<div class="grid grid-cols-${showTot ? '6' : '5'} gap-2 py-2 px-4 border-b border-slate-800/50 text-[11px] hover:bg-slate-800 items-center ${seasonTint}">`+
-                            `<span class="text-white font-semibold truncate">${m.match}</span>`+
+                        const { homeTeam, awayTeam } = splitMatchTeams(m.match || '');
+                        const homeLabel = (homeTeam || '').toUpperCase();
+                        const awayLabel = (awayTeam || '').toUpperCase();
+                        const homeLogo = getTeamLogo(homeTeam);
+                        const awayLogo = getTeamLogo(awayTeam);
+                        return `<div class="grid gap-2 py-2 px-4 border-b border-slate-800/50 text-[11px] hover:bg-slate-800 items-center ${seasonTint}" style="grid-template-columns:${matchGridTemplate};">`+
+                            `<span class="text-white font-semibold">`+
+                                `<span class="flex items-center gap-2 flex-wrap">`+
+                                    `<span class="whitespace-nowrap">${homeLabel || '-'}</span>`+
+                                    `<span class="text-slate-500">-</span>`+
+                                    `<span class="whitespace-nowrap">${awayLabel || '-'}</span>`+
+                                    `<span class="flex items-center gap-1 ml-1">`+
+                                        `<img src="${homeLogo}" alt="${homeLabel || 'Sq. casa'}" class="w-6 h-6 object-contain drop-shadow rounded">`+
+                                        `<img src="${awayLogo}" alt="${awayLabel || 'Sq. trasf'}" class="w-6 h-6 object-contain drop-shadow rounded">`+
+                                    `</span>`+
+                                `</span>`+
+                            `</span>`+
                             `<span class="text-center text-slate-500 font-mono">${m.season || '-'}</span>`+
                             `<span class="text-center font-mono text-slate-200">${matchdayLabel}</span>`+
                             `<span class="text-center font-mono ${m.effectiveTimeSec ? 'text-green-400' : 'text-slate-600'}">${formatSecondsToTime(m.effectiveTimeSec)}</span>`+
