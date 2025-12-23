@@ -501,26 +501,31 @@ html, body {
 
 .pro-table th {
     background-color: #111827;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
-    padding: 6px 8px;
+    padding: 4px 6px;
     border-bottom: 1px solid #1e293b;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
 }
 .pro-table td {
-    padding: 6px 8px;
+    padding: 5px 6px;
     border-bottom: 1px solid #1e293b;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    line-height: 1.25;
 }
 
 #mainTable {
-    min-width: 1150px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .team-name-cell {
-    min-width: 190px;
+    min-width: 160px;
+    word-break: break-word;
 }
 
 .pro-table tr:last-child td { border-bottom: none; }
