@@ -1113,14 +1113,14 @@ html, body {
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 p-5">
-                <div class="lg:col-span-2 space-y-3">
+                <div class="space-y-3 min-w-0">
                     <div class="flex items-center gap-2 text-[12px] uppercase tracking-wide text-slate-400">
                         <i class="fa-solid fa-shield-halved text-yellow-400"></i>
                         <span>Squadra di Casa</span>
                     </div>
                     <div id="ref-stats-home" class="space-y-3"></div>
                 </div>
-                <div class="lg:col-span-3 space-y-3">
+                <div class="space-y-3 min-w-0">
                     <div class="flex items-center gap-2 text-[12px] uppercase tracking-wide text-slate-400">
                         <i class="fa-solid fa-plane-departure text-yellow-400"></i>
                         <span>Squadra Ospite</span>
@@ -2343,6 +2343,140 @@ const designationsData = {
     ]
 };
 
+function normalizeLabel(value) {
+    return (value || '').toString().trim().toLowerCase();
+}
+
+function parseMatchTeams(matchLabel) {
+    if (!matchLabel || !matchLabel.includes('-')) return null;
+    const parts = matchLabel.split('-').map(p => p.trim());
+    if (parts.length !== 2) return null;
+    return { home: parts[0], away: parts[1] };
+}
+
+function parseResultScore(resultStr) {
+    if (!resultStr || typeof resultStr !== 'string') return null;
+    const parts = resultStr.split('-').map(p => parseInt(p.trim(), 10));
+    if (parts.length !== 2 || parts.some(n => Number.isNaN(n))) return null;
+    return { homeGoals: parts[0], awayGoals: parts[1] };
+}
+
+function averageNumber(values = []) {
+    const numeric = values.filter(v => Number.isFinite(v));
+    if (!numeric.length) return NaN;
+    return numeric.reduce((sum, val) => sum + val, 0) / numeric.length;
+}
+
+function computeRefereeTeamHistory(refereeName, teamName, matches) {
+    if (!refereeName || !teamName || !Array.isArray(matches)) return null;
+    const refKey = normalizeLabel(refereeName);
+    const teamKey = normalizeLabel(teamName);
+
+    let matchesFound = 0;
+    const foulsOverall = [];
+    const foulsHome = [];
+    const foulsAway = [];
+    const effOverall = [];
+    const effHome = [];
+    const effAway = [];
+    const record = {
+        overall: { w: 0, d: 0, l: 0 },
+        home: { w: 0, d: 0, l: 0 },
+        away: { w: 0, d: 0, l: 0 }
+    };
+
+    const registerResult = (bucket, outcome) => {
+        if (outcome === 'win') bucket.w += 1;
+        else if (outcome === 'draw') bucket.d += 1;
+        else if (outcome === 'loss') bucket.l += 1;
+    };
+
+    matches.forEach(match => {
+        if (!match || normalizeLabel(match.referee) !== refKey || !match.match) return;
+        const teams = parseMatchTeams(match.match);
+        if (!teams) return;
+
+        const isHome = normalizeLabel(teams.home) === teamKey;
+        const isAway = normalizeLabel(teams.away) === teamKey;
+        if (!isHome && !isAway) return;
+
+        matchesFound += 1;
+
+        const foulsValue = Number.isFinite(match.fouls) ? match.fouls : Number.isFinite(match.foulsTot) ? match.foulsTot : NaN;
+        const effValue = Number.isFinite(match.effectiveTimeSec) ? match.effectiveTimeSec / 60 : NaN;
+
+        if (Number.isFinite(foulsValue)) foulsOverall.push(foulsValue);
+        if (Number.isFinite(effValue)) effOverall.push(effValue);
+
+        if (isHome) {
+            if (Number.isFinite(foulsValue)) foulsHome.push(foulsValue);
+            if (Number.isFinite(effValue)) effHome.push(effValue);
+        }
+        if (isAway) {
+            if (Number.isFinite(foulsValue)) foulsAway.push(foulsValue);
+            if (Number.isFinite(effValue)) effAway.push(effValue);
+        }
+
+        const parsedResult = parseResultScore(match.result);
+        if (parsedResult) {
+            const { homeGoals, awayGoals } = parsedResult;
+            const outcome = homeGoals === awayGoals
+                ? 'draw'
+                : (homeGoals > awayGoals ? (isHome ? 'win' : isAway ? 'loss' : null) : (isAway ? 'win' : isHome ? 'loss' : null));
+            if (outcome) {
+                registerResult(record.overall, outcome);
+                if (isHome) registerResult(record.home, outcome);
+                if (isAway) registerResult(record.away, outcome);
+            }
+        }
+    });
+
+    if (!matchesFound) return null;
+
+    return {
+        fouls: {
+            overall: averageNumber(foulsOverall),
+            home: averageNumber(foulsHome),
+            away: averageNumber(foulsAway)
+        },
+        effectiveTime: {
+            overall: averageNumber(effOverall),
+            home: averageNumber(effHome),
+            away: averageNumber(effAway)
+        },
+        record
+    };
+}
+
+function hydrateDesignationsStats() {
+    const matches = Array.isArray(designationsData?.matches) ? designationsData.matches : [];
+    if (!matches.length) return;
+    const dataset = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
+
+    matches.forEach(match => {
+        const teams = parseMatchTeams(match?.match);
+        const referee = match?.referee;
+        if (!teams || !referee) return;
+
+        const homeTeam = match?.stats?.homeTeam || teams.home;
+        const awayTeam = match?.stats?.awayTeam || teams.away;
+        const existingHomeHistory = match?.stats?.history?.home || null;
+        const existingAwayHistory = match?.stats?.history?.away || null;
+
+        const history = {
+            home: computeRefereeTeamHistory(referee, homeTeam, dataset) || existingHomeHistory,
+            away: computeRefereeTeamHistory(referee, awayTeam, dataset) || existingAwayHistory
+        };
+
+        match.stats = {
+            referee,
+            homeTeam,
+            awayTeam,
+            history
+        };
+    });
+}
+
 function createMobileDesignationCard(match, index) {
     const timeLabel = match?.time || '';
     const referee = match?.referee || '';
@@ -2394,6 +2528,7 @@ function createDesktopDesignationCard(match, index) {
 }
 
 function renderDesignations() {
+    hydrateDesignationsStats();
     const roundLabel = designationsData?.roundLabel || '';
     const matches = Array.isArray(designationsData?.matches) ? designationsData.matches : [];
     const mobileList = document.getElementById('designations-mobile-list');
@@ -2472,7 +2607,7 @@ function renderRefereeTeamStats(teamName, stats) {
     const record = stats?.record || {};
 
     return `
-        <div class="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 to-slate-900/60 p-4 space-y-3 shadow-card">
+        <div class="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 to-slate-900/60 p-4 space-y-3 shadow-card min-w-0">
             <div class="flex items-center justify-between gap-2">
                 <div>
                     <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold">Storico con</p>
@@ -2493,7 +2628,7 @@ function renderRefereeTeamStats(teamName, stats) {
                 ${buildMetricPill('Trasferta', `${formatValue(eff.away)}’`, 'Partite in trasferta')}
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 ${buildRecordCard(record.overall, 'Totale')}
                 ${buildRecordCard(record.home, 'In casa')}
                 ${buildRecordCard(record.away, 'In trasferta')}
