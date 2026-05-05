@@ -14751,15 +14751,15 @@ updateRadarSelectOptions();
 
     let noGolApexChart;
     let seasonResultsChart;
+    let zeroZeroTickAmount = 5;
+    let zeroZeroMax = 5;
     const seasonResultStats = getSeasonResultStats();
 
     function initNoGolChart() {
         const zeroZeroValues = seasonResultStats.map(s => s.zeroZeroCount);
         const maxZeroZero = Math.max(...zeroZeroValues, 0);
-        const zeroZeroTickAmount = 5;
         const zeroZeroStep = Math.max(1, Math.ceil(maxZeroZero / zeroZeroTickAmount));
-        const zeroZeroMax = zeroZeroStep * zeroZeroTickAmount;
-
+        zeroZeroMax = zeroZeroStep * zeroZeroTickAmount;
         const options = {
             series: [{
                 name: 'Partite 0-0',
