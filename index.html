@@ -1,67 +1,4 @@
 
-Fix chart issues for game statistics
-5 mag
-·
-Referee-Lab
-·
-main
-·
-+14891
--14859
-
-Archivia
-
-Condividi
-
-Crea PR
-
-
-per quanto riguarda il grafico Andamento del numero di 0-0 e di No-Gol, ci sono alcune cose da sistemare:
-1) per il grafico degli 0-0 , valori dell'asse x (0, 20, 40..) non sono coerenti con i valori delle barre, aggiusta i valori dell'asse x
-2) sia per il grafico 0-0 sia per quello dei NO GOL, le etichette dei valori devono stare a destra delle barre, all'esterno con un minimo di offset
-
-Per il grafico di distribuzoine dei risultati per stagione, ci sono le seguenti cose da aggiustare:
-1) ci deve essere un bug quando seleziono un'altra stagione diversa da quella attualmente in visione, perche si sovrappongono le barre di entrambe le annate
-2) le etichette devono contenere solo la percetnuale e messe sopra le barre con un minimo di offset, il risultato non c'è bisogno di metterlo nelle etichette perche sta gia riportato sull'asse orizzontale
-3) dai colori diversi alle barre a gradiente a seconda della percentuale
-Copia
-Summary
-Ho corretto il grafico Andamento 0-0 / No-Gol rendendolo orizzontale, così l’asse numerico è coerente con la lunghezza delle barre (risolvendo il disallineamento dei valori tipo 0,20,40 rispetto alle barre). Ho anche introdotto una configurazione dinamica dell’asse numerico per modalità 0-0 e % No-Gol. 
-
-Ho spostato le etichette valore a destra delle barre e all’esterno con offset nel grafico 0-0 / No-Gol, come richiesto. 
-
-Per il grafico di distribuzione (stagione), ho corretto la sovrapposizione barre quando si cambia stagione: ora il grafico precedente viene distrutto prima del nuovo render (fix lifecycle ApexCharts). 
-
-Ho mantenuto le etichette del grafico distribuzione con sola percentuale e le ho posizionate sopra le barre con offset. 
-
-Ho aggiunto colori barra a gradiente in funzione della percentuale (mappa rosso→verde in base al valore) e riempimento gradient per migliorare lettura visiva. 
-
-Testing
-
-✅ git status --short && git diff -- index.html | sed -n '1,260p'
-
-⚠️ node -c index.html (warning: node -c non supporta file .html, quindi non è un check sintattico valido per questo tipo di file)
-
-✅ git add index.html && git commit -m "Fix chart axes, labels, and seasonal distribution rendering"
-
-
-File (1)
-
-index.html
-index.html
-+14891
--14859
-
-
-
-Differenze
-Log
-
-index.html
-index.html
-+14891
--14859
-
 
 <!DOCTYPE html>
 <html lang="it" class="dark">
@@ -1838,6 +1775,16 @@ html, body {
     <p id="chart-nogol-desc" class="text-[10px] text-slate-400 italic mt-3 text-center">
         Mostra il numero totale di partite terminate 0-0 in ogni stagione.
     </p>
+
+    <div class="mt-6 border-t border-slate-800 pt-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-sky-300"></i> Distribuzione risultati per stagione
+            </h4>
+            <select id="results-season-select" class="bg-slate-900 border border-slate-700 text-slate-100 text-xs rounded px-2 py-1"></select>
+        </div>
+        <div id="chart-season-results-distribution" class="w-full h-[360px]"></div>
+    </div>
 </div>
 
 
@@ -11703,8 +11650,6 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
 }
 
 //NUOVO GRAFICO DITRIBUZIONE TEMPO EFFETTIVO
-let chartEffDistribution = null;
-
 function renderEffDistributionChart(matches) {
     // 1. Definiamo le fasce (Bins)
     const bins = {
@@ -11736,13 +11681,7 @@ function renderEffDistributionChart(matches) {
     
     // CALCOLO PERCENTUALI
     const dataPercentages = dataValues.map(val => {
-        return totalMatches > 0 ? +((val / totalMatches) * 100).toFixed(1) : 0;
-    });
-
-    const gradientColors = dataPercentages.map((pct) => {
-        const normalized = Math.max(0, Math.min(1, pct / 40));
-        const hue = 10 + (normalized * 120); // rosso -> verde
-        return `hsl(${hue.toFixed(0)}, 82%, 50%)`;
+        return totalMatches > 0 ? ((val / totalMatches) * 100).toFixed(1) : 0;
     });
 
     // 3. Configurazione Grafico
@@ -11764,23 +11703,10 @@ function renderEffDistributionChart(matches) {
                 distributed: true
             }
         },
-        colors: gradientColors,
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shade: 'dark',
-                type: 'vertical',
-                shadeIntensity: 0.15,
-                inverseColors: false,
-                opacityFrom: 0.95,
-                opacityTo: 0.65,
-                stops: [0, 100]
-            }
-        },
+        colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#00ff1a'],
         dataLabels: {
             enabled: true,
-            offsetY: -10,
-            style: { colors: ['#e2e8f0'] },
+            style: { colors: ['#fff'] },
             formatter: function (val) {
                 return val + "%"; // Aggiunge il simbolo % sulle barre
             }
@@ -11820,13 +11746,9 @@ min: 0, // <--- CORREZIONE FONDAMENTALE: Forza l'inizio a 0
     };
 
     const chartDiv = document.querySelector("#chart-eff-distribution");
-    if (chartEffDistribution) {
-        chartEffDistribution.destroy();
-        chartEffDistribution = null;
-    }
     chartDiv.innerHTML = "";
-    chartEffDistribution = new ApexCharts(chartDiv, options);
-    chartEffDistribution.render();
+    const chart = new ApexCharts(chartDiv, options);
+    chart.render();
 }
 
 function hexToRgba(hex, alpha = 1) {
@@ -14787,47 +14709,54 @@ updateRadarSelectOptions();
     </div>
 
 <script>
-    // 1. I tuoi dati aggregati (sostituisci questi valori con quelli calcolati dal tuo codice)
-    const statsNoGol = {
-    seasons: [
-        '2021/22',
-        '2022/23',
-        '2023/24',
-        '2024/25',
-        ['2025/26', '(alla 35 giornata)']
-    ],
-        zeroZero: [22, 20, 30, 28, 35],       // Numero totale di 0-0 per stagione
-        noGolPct: [42.6, 49.7, 47.6, 48.4, 54.9] // Percentuale di No Gol per stagione
-    };
-
-    let noGolApexChart;
-
-    function buildNoGolAxisConfig(values, isPercentage = false) {
-        const maxValue = Math.max(...values, 0);
-        const suggestedMax = isPercentage ? Math.ceil((maxValue + 3) / 5) * 5 : Math.ceil((maxValue + 2) / 5) * 5;
-        return {
-            min: 0,
-            max: suggestedMax,
-            tickAmount: Math.min(8, Math.max(4, Math.round(suggestedMax / 5))),
-            title: {
-                text: isPercentage ? "Percentuale (%)" : "Numero di 0-0",
-                style: { color: "#94a3b8", fontSize: "10px", fontWeight: 600 }
-            },
-            labels: {
-                style: { colors: "#94a3b8" },
-                formatter: function (val) {
-                    return isPercentage ? `${val.toFixed(0)}%` : Math.round(val);
-                }
-            }
-        };
+    function formatSeasonLabel(season) {
+        if (!season) return '';
+        const parts = season.split('-');
+        if (parts.length !== 2) return season;
+        return `${parts[0]}/${parts[1]}`;
     }
 
-    // 2. Funzione per inizializzare il grafico (richiamala al caricamento della pagina)
+    function getSeasonResultStats() {
+        const seasons = Object.keys(MATCH_RESULTS_BY_SEASON);
+        const stats = seasons.map((season) => {
+            const scores = Object.values(MATCH_RESULTS_BY_SEASON[season] || {});
+            const totalMatches = scores.length;
+            let zeroZeroCount = 0;
+            let noGolCount = 0;
+            const resultFrequency = {};
+
+            scores.forEach(score => {
+                const parsed = String(score).match(/^(\d+)-(\d+)$/);
+                if (!parsed) return;
+                const home = Number(parsed[1]);
+                const away = Number(parsed[2]);
+                if (home === 0 && away === 0) zeroZeroCount += 1;
+                if (home === 0 || away === 0) noGolCount += 1;
+                resultFrequency[score] = (resultFrequency[score] || 0) + 1;
+            });
+
+            return {
+                season,
+                seasonLabel: formatSeasonLabel(season),
+                totalMatches,
+                zeroZeroCount,
+                noGolPct: totalMatches ? (noGolCount / totalMatches) * 100 : 0,
+                resultFrequency
+            };
+        });
+
+        return stats.sort((a, b) => a.season.localeCompare(b.season));
+    }
+
+    let noGolApexChart;
+    let seasonResultsChart;
+    const seasonResultStats = getSeasonResultStats();
+
     function initNoGolChart() {
         const options = {
             series: [{
                 name: 'Partite 0-0',
-                data: statsNoGol.zeroZero
+                data: seasonResultStats.map(s => s.zeroZeroCount)
             }],
             chart: {
                 type: 'bar',
@@ -14836,118 +14765,137 @@ updateRadarSelectOptions();
                 fontFamily: 'Inter, sans-serif',
                 background: 'transparent'
             },
-            colors: ['#eab308'], // Giallo brand RefereeLab
+            colors: ['#eab308'],
             plotOptions: {
                 bar: {
-                    borderRadius: 4,
                     horizontal: true,
-                    barHeight: '58%',
-                    dataLabels: {
-                        position: 'right',
-                    },
+                    borderRadius: 4,
+                    barHeight: '45%',
+                    dataLabels: { position: 'right' }
                 }
             },
             dataLabels: {
                 enabled: true,
-                offsetX: 12,
-                style: {
-                    fontSize: '16px',
-                    colors: ['#cbd5e1']
-                },
-                formatter: function (val) {
-                    return val; // per il primo render mostra solo il numero
-                }
+                offsetX: 10,
+                style: { fontSize: '16px', colors: ['#cbd5e1'] },
+                formatter: function (val) { return val; }
             },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
+            stroke: { show: true, width: 2, colors: ['transparent'] },
             xaxis: {
-                ...buildNoGolAxisConfig(statsNoGol.zeroZero, false),
+                categories: seasonResultStats.map(s => s.seasonLabel),
+                labels: { style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 } },
                 axisBorder: { show: false },
                 axisTicks: { show: false }
             },
-            yaxis: {
-                categories: statsNoGol.seasons,
-                labels: {
-                    style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 }
-                }
-            },
-            grid: {
-                borderColor: '#1e293b',
-                strokeDashArray: 4,
-            },
+            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            grid: { borderColor: '#1e293b', strokeDashArray: 4 },
             theme: { mode: 'dark' },
-            tooltip: {
-                theme: 'dark',
-                y: {
-                    formatter: function (val) {
-                        return val + " partite";
-                    }
-                }
-            }
+            tooltip: { theme: 'dark', y: { formatter: function (val) { return val + ' partite'; } } }
         };
 
-        noGolApexChart = new ApexCharts(document.querySelector("#chart-zero-zero-nogol"), options);
+        noGolApexChart = new ApexCharts(document.querySelector('#chart-zero-zero-nogol'), options);
         noGolApexChart.render();
     }
 
-    // 3. Funzione per gestire lo switch dei bottoni e aggiornare il grafico
     function switchNoGolChart(type) {
         const btn00 = document.getElementById('btn-chart-00');
         const btnNogol = document.getElementById('btn-chart-nogol');
         const desc = document.getElementById('chart-nogol-desc');
 
         if (type === '0-0') {
-            // Stile bottone attivo per "Numero 0-0"
-            btn00.className = "px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm";
-            btnNogol.className = "px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors";
-            desc.innerHTML = "Mostra il numero totale di partite terminate 0-0 in ogni stagione.";
-            
-            // Aggiorna grafico
-            noGolApexChart.updateOptions({
-                colors: ['#eab308'], // Torna giallo
-                xaxis: buildNoGolAxisConfig(statsNoGol.zeroZero, false),
-                dataLabels: {
-                    formatter: function (val) { return val; }
-                },
-                tooltip: {
-                    y: { formatter: function (val) { return val + " partite"; } }
-                }
-            });
-            noGolApexChart.updateSeries([{
-                name: 'Partite 0-0',
-                data: statsNoGol.zeroZero
-            }]);
-            
-        } else if (type === 'nogol') {
-            // Stile bottone attivo per "% No Gol"
-            btnNogol.className = "px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm";
-            btn00.className = "px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors";
-            desc.innerHTML = "Mostra la percentuale di partite in cui ha segnato al massimo una squadra (No Gol).";
+            btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
+            btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            desc.innerHTML = 'Mostra il numero totale di partite terminate 0-0 in ogni stagione.';
 
-            // Aggiorna grafico
             noGolApexChart.updateOptions({
-                colors: ['#38bdf8'], // Azzurro per differenziarlo visivamente
-                xaxis: buildNoGolAxisConfig(statsNoGol.noGolPct, true),
-                dataLabels: {
-                    formatter: function (val) { return val + "%"; }
-                },
-                tooltip: {
-                    y: { formatter: function (val) { return val + "%"; } }
-                }
+                colors: ['#eab308'],
+                xaxis: { min: undefined, max: undefined },
+                dataLabels: { formatter: function (val) { return val; } },
+                tooltip: { y: { formatter: function (val) { return val + ' partite'; } } }
             });
-            noGolApexChart.updateSeries([{
-                name: '% No Gol',
-                data: statsNoGol.noGolPct
-            }]);
+            noGolApexChart.updateSeries([{ name: 'Partite 0-0', data: seasonResultStats.map(s => s.zeroZeroCount) }]);
+
+        } else if (type === 'nogol') {
+            btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
+            btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            desc.innerHTML = 'Mostra la percentuale di partite in cui ha segnato al massimo una squadra (No Gol).';
+
+            noGolApexChart.updateOptions({
+                colors: ['#38bdf8'],
+                xaxis: { min: 0, max: 100, tickAmount: 5 },
+                dataLabels: { formatter: function (val) { return val + '%'; } },
+                tooltip: { y: { formatter: function (val) { return val + '%'; } } }
+            });
+            noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => Number(s.noGolPct.toFixed(1))) }]);
         }
     }
 
-    // Inizializza al caricamento della pagina
+    function initSeasonResultsChart() {
+        const seasonSelect = document.getElementById('results-season-select');
+        if (!seasonSelect || !seasonResultStats.length) return;
+
+        seasonSelect.innerHTML = seasonResultStats.map(s => `<option value="${s.season}">${s.seasonLabel}</option>`).join('');
+        seasonSelect.value = seasonResultStats[seasonResultStats.length - 1].season;
+
+        const buildData = (season) => {
+            const entries = Object.entries(season.resultFrequency).sort((a, b) => b[1] - a[1]);
+            const total = season.totalMatches || 1;
+            return { entries, total };
+        };
+
+        let currentSeason = seasonResultStats.find(s => s.season === seasonSelect.value) || seasonResultStats[0];
+        let { entries, total } = buildData(currentSeason);
+
+        const options = {
+            series: [{ name: 'Partite', data: entries.map(([, count]) => count) }],
+            chart: { type: 'bar', height: 360, toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
+            colors: ['#60a5fa'],
+            plotOptions: { bar: { borderRadius: 4, columnWidth: '62%' } },
+            dataLabels: {
+                enabled: true,
+                style: { fontSize: '11px', colors: ['#e2e8f0'] },
+                formatter: function(val, opts) {
+                    const score = entries[opts.dataPointIndex][0];
+                    return `${score} · ${((val / total) * 100).toFixed(1)}%`;
+                }
+            },
+            xaxis: {
+                categories: entries.map(([score]) => score),
+                labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 600 } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            grid: { borderColor: '#1e293b', strokeDashArray: 4 },
+            theme: { mode: 'dark' },
+            tooltip: { theme: 'dark', y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
+        };
+
+        seasonResultsChart = new ApexCharts(document.querySelector('#chart-season-results-distribution'), options);
+        seasonResultsChart.render();
+
+        seasonSelect.addEventListener('change', function() {
+            const selected = seasonResultStats.find(s => s.season === this.value);
+            if (!selected || !seasonResultsChart) return;
+            ({ entries, total } = buildData(selected));
+
+            seasonResultsChart.updateOptions({
+                xaxis: { categories: entries.map(([score]) => score) },
+                dataLabels: {
+                    formatter: function(val, opts) {
+                        const score = entries[opts.dataPointIndex][0];
+                        return `${score} · ${((val / total) * 100).toFixed(1)}%`;
+                    }
+                },
+                tooltip: { y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
+            });
+            seasonResultsChart.updateSeries([{ name: 'Partite', data: entries.map(([, count]) => count) }]);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         initNoGolChart();
+        initSeasonResultsChart();
     });
 </script>
 
