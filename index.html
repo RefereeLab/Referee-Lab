@@ -14850,7 +14850,8 @@ updateRadarSelectOptions();
 
     function initSeasonResultsChart() {
         const seasonSelect = document.getElementById('results-season-select');
-        if (!seasonSelect || !seasonResultStats.length) return;
+        const seasonChartContainer = document.querySelector('#chart-season-results-distribution');
+        if (!seasonSelect || !seasonChartContainer || !seasonResultStats.length) return;
 
         seasonSelect.innerHTML = seasonResultStats.map(s => `<option value="${s.season}">${s.seasonLabel}</option>`).join('');
         seasonSelect.value = seasonResultStats[seasonResultStats.length - 1].season;
@@ -14868,57 +14869,60 @@ updateRadarSelectOptions();
             return { entries, total, percentages, colors };
         };
 
-        let currentSeason = seasonResultStats.find(s => s.season === seasonSelect.value) || seasonResultStats[0];
-        let { entries, total, percentages, colors } = buildData(currentSeason);
+        const renderSeasonResultsChart = (season) => {
+            const { entries, total, percentages, colors } = buildData(season);
 
-        const options = {
-            series: [{ name: 'Partite', data: entries.map(([, count]) => count) }],
-            chart: { type: 'bar', height: 360, toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
-            colors,
-            plotOptions: { bar: { borderRadius: 4, columnWidth: '62%', distributed: true, dataLabels: { position: 'top' } } },
-            dataLabels: {
-                enabled: true,
-                offsetY: -10,
-                style: { fontSize: '11px', colors: ['#e2e8f0'] },
-                formatter: function(val, opts) {
-                    return `${percentages[opts.dataPointIndex].toFixed(1)}%`;
-                }
-            },
-            xaxis: {
-                categories: entries.map(([score]) => score),
-                labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 600 } },
-                axisBorder: { show: false },
-                axisTicks: { show: false }
-            },
-            yaxis: { labels: { style: { colors: '#94a3b8' } } },
-            grid: { borderColor: '#1e293b', strokeDashArray: 4 },
-            theme: { mode: 'dark' },
-            tooltip: { theme: 'dark', y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
-        };
+            if (seasonResultsChart) {
+                seasonResultsChart.destroy();
+            }
 
-        const seasonChartContainer = document.querySelector('#chart-season-results-distribution');
-        if (!seasonChartContainer) return;
-
-        seasonResultsChart = new ApexCharts(seasonChartContainer, options);
-        seasonResultsChart.render();
-
-        seasonSelect.addEventListener('change', function() {
-            const selected = seasonResultStats.find(s => s.season === this.value);
-            if (!selected || !seasonResultsChart) return;
-            ({ entries, total, percentages, colors } = buildData(selected));
-
-            seasonResultsChart.updateOptions({
+            const options = {
+                series: [{ name: 'Partite', data: entries.map(([, count]) => count) }],
+                chart: { type: 'bar', height: 360, toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
                 colors,
-                xaxis: { categories: entries.map(([score]) => score) },
-                plotOptions: { bar: { borderRadius: 4, columnWidth: '62%', distributed: true, dataLabels: { position: 'top' } } },
+                legend: { show: false },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        columnWidth: '62%',
+                        distributed: true,
+                        dataLabels: { position: 'top' }
+                    }
+                },
                 dataLabels: {
+                    enabled: true,
+                    offsetY: -18,
+                    style: { fontSize: '10px', colors: ['#e2e8f0'] },
                     formatter: function(val, opts) {
                         return `${percentages[opts.dataPointIndex].toFixed(1)}%`;
                     }
                 },
-                tooltip: { y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
-            }, true, true);
-            seasonResultsChart.updateSeries([{ name: 'Partite', data: entries.map(([, count]) => count) }]);
+                xaxis: {
+                    categories: entries.map(([score]) => score),
+                    labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 600 } },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                yaxis: {
+                    labels: { style: { colors: '#94a3b8' } },
+                    forceNiceScale: true
+                },
+                grid: { borderColor: '#1e293b', strokeDashArray: 4 },
+                theme: { mode: 'dark' },
+                tooltip: { theme: 'dark', y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
+            };
+
+            seasonResultsChart = new ApexCharts(seasonChartContainer, options);
+            seasonResultsChart.render();
+        };
+
+        const defaultSeason = seasonResultStats.find(s => s.season === seasonSelect.value) || seasonResultStats[0];
+        renderSeasonResultsChart(defaultSeason);
+
+        seasonSelect.addEventListener('change', function() {
+            const selected = seasonResultStats.find(s => s.season === this.value);
+            if (!selected) return;
+            renderSeasonResultsChart(selected);
         });
     }
 
