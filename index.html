@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
@@ -14756,6 +14754,8 @@ updateRadarSelectOptions();
     const seasonResultStats = getSeasonResultStats();
 
     function initNoGolChart() {
+        const noGolContainer = document.querySelector('#chart-zero-zero-nogol');
+        if (!noGolContainer || !seasonResultStats.length) return;
         const zeroZeroValues = seasonResultStats.map(s => s.zeroZeroCount);
         const maxZeroZero = Math.max(...zeroZeroValues, 0);
         const zeroZeroStep = Math.max(1, Math.ceil(maxZeroZero / zeroZeroTickAmount));
@@ -14806,11 +14806,12 @@ updateRadarSelectOptions();
             tooltip: { theme: 'dark', y: { formatter: function (val) { return val + ' partite'; } } }
         };
 
-        noGolApexChart = new ApexCharts(document.querySelector('#chart-zero-zero-nogol'), options);
+        noGolApexChart = new ApexCharts(noGolContainer, options);
         noGolApexChart.render();
     }
 
     function switchNoGolChart(type) {
+        if (!noGolApexChart) return;
         const btn00 = document.getElementById('btn-chart-00');
         const btnNogol = document.getElementById('btn-chart-nogol');
         const desc = document.getElementById('chart-nogol-desc');
@@ -14837,17 +14838,17 @@ updateRadarSelectOptions();
             btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
             desc.innerHTML = 'Mostra la percentuale di partite in cui ha segnato al massimo una squadra (No Gol).';
 
-            noGolApexChart.updateOptions({␊
-                colors: ['#38bdf8'],␊
-                xaxis: { min: 0, max: 100, tickAmount: 5 },␊
+            noGolApexChart.updateOptions({
+                colors: ['#38bdf8'],
+                xaxis: { min: 0, max: 100, tickAmount: 5 },
                 dataLabels: { formatter: function (val) { return val + '%'; }, textAnchor: 'start', offsetX: 8 },
-                tooltip: { y: { formatter: function (val) { return val + '%'; } } }␊
-            });␊
+                tooltip: { y: { formatter: function (val) { return val + '%'; } } }
+            });
             noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => Number(s.noGolPct.toFixed(1))) }]);
         }
     }
 
-    function initSeasonResultsChart() {␊
+    function initSeasonResultsChart() {
         const seasonSelect = document.getElementById('results-season-select');
         if (!seasonSelect || !seasonResultStats.length) return;
 
@@ -14895,7 +14896,10 @@ updateRadarSelectOptions();
             tooltip: { theme: 'dark', y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
         };
 
-        seasonResultsChart = new ApexCharts(document.querySelector('#chart-season-results-distribution'), options);
+        const seasonChartContainer = document.querySelector('#chart-season-results-distribution');
+        if (!seasonChartContainer) return;
+
+        seasonResultsChart = new ApexCharts(seasonChartContainer, options);
         seasonResultsChart.render();
 
         seasonSelect.addEventListener('change', function() {
