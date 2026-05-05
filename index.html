@@ -1,4 +1,68 @@
 
+Fix chart issues for game statistics
+5 mag
+·
+Referee-Lab
+·
+main
+·
++14891
+-14859
+
+Archivia
+
+Condividi
+
+Crea PR
+
+
+per quanto riguarda il grafico Andamento del numero di 0-0 e di No-Gol, ci sono alcune cose da sistemare:
+1) per il grafico degli 0-0 , valori dell'asse x (0, 20, 40..) non sono coerenti con i valori delle barre, aggiusta i valori dell'asse x
+2) sia per il grafico 0-0 sia per quello dei NO GOL, le etichette dei valori devono stare a destra delle barre, all'esterno con un minimo di offset
+
+Per il grafico di distribuzoine dei risultati per stagione, ci sono le seguenti cose da aggiustare:
+1) ci deve essere un bug quando seleziono un'altra stagione diversa da quella attualmente in visione, perche si sovrappongono le barre di entrambe le annate
+2) le etichette devono contenere solo la percetnuale e messe sopra le barre con un minimo di offset, il risultato non c'è bisogno di metterlo nelle etichette perche sta gia riportato sull'asse orizzontale
+3) dai colori diversi alle barre a gradiente a seconda della percentuale
+Copia
+Summary
+Ho corretto il grafico Andamento 0-0 / No-Gol rendendolo orizzontale, così l’asse numerico è coerente con la lunghezza delle barre (risolvendo il disallineamento dei valori tipo 0,20,40 rispetto alle barre). Ho anche introdotto una configurazione dinamica dell’asse numerico per modalità 0-0 e % No-Gol. 
+
+Ho spostato le etichette valore a destra delle barre e all’esterno con offset nel grafico 0-0 / No-Gol, come richiesto. 
+
+Per il grafico di distribuzione (stagione), ho corretto la sovrapposizione barre quando si cambia stagione: ora il grafico precedente viene distrutto prima del nuovo render (fix lifecycle ApexCharts). 
+
+Ho mantenuto le etichette del grafico distribuzione con sola percentuale e le ho posizionate sopra le barre con offset. 
+
+Ho aggiunto colori barra a gradiente in funzione della percentuale (mappa rosso→verde in base al valore) e riempimento gradient per migliorare lettura visiva. 
+
+Testing
+
+✅ git status --short && git diff -- index.html | sed -n '1,260p'
+
+⚠️ node -c index.html (warning: node -c non supporta file .html, quindi non è un check sintattico valido per questo tipo di file)
+
+✅ git add index.html && git commit -m "Fix chart axes, labels, and seasonal distribution rendering"
+
+
+File (1)
+
+index.html
+index.html
++14891
+-14859
+
+
+
+Differenze
+Log
+
+index.html
+index.html
++14891
+-14859
+
+
 <!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
@@ -11639,6 +11703,8 @@ function renderEffVsTotalScatter(matchData, fullMatchData, seasonsOverride) {
 }
 
 //NUOVO GRAFICO DITRIBUZIONE TEMPO EFFETTIVO
+let chartEffDistribution = null;
+
 function renderEffDistributionChart(matches) {
     // 1. Definiamo le fasce (Bins)
     const bins = {
@@ -11670,7 +11736,13 @@ function renderEffDistributionChart(matches) {
     
     // CALCOLO PERCENTUALI
     const dataPercentages = dataValues.map(val => {
-        return totalMatches > 0 ? ((val / totalMatches) * 100).toFixed(1) : 0;
+        return totalMatches > 0 ? +((val / totalMatches) * 100).toFixed(1) : 0;
+    });
+
+    const gradientColors = dataPercentages.map((pct) => {
+        const normalized = Math.max(0, Math.min(1, pct / 40));
+        const hue = 10 + (normalized * 120); // rosso -> verde
+        return `hsl(${hue.toFixed(0)}, 82%, 50%)`;
     });
 
     // 3. Configurazione Grafico
@@ -11692,10 +11764,23 @@ function renderEffDistributionChart(matches) {
                 distributed: true
             }
         },
-        colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#00ff1a'],
+        colors: gradientColors,
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                type: 'vertical',
+                shadeIntensity: 0.15,
+                inverseColors: false,
+                opacityFrom: 0.95,
+                opacityTo: 0.65,
+                stops: [0, 100]
+            }
+        },
         dataLabels: {
             enabled: true,
-            style: { colors: ['#fff'] },
+            offsetY: -10,
+            style: { colors: ['#e2e8f0'] },
             formatter: function (val) {
                 return val + "%"; // Aggiunge il simbolo % sulle barre
             }
@@ -11735,9 +11820,13 @@ min: 0, // <--- CORREZIONE FONDAMENTALE: Forza l'inizio a 0
     };
 
     const chartDiv = document.querySelector("#chart-eff-distribution");
+    if (chartEffDistribution) {
+        chartEffDistribution.destroy();
+        chartEffDistribution = null;
+    }
     chartDiv.innerHTML = "";
-    const chart = new ApexCharts(chartDiv, options);
-    chart.render();
+    chartEffDistribution = new ApexCharts(chartDiv, options);
+    chartEffDistribution.render();
 }
 
 function hexToRgba(hex, alpha = 1) {
@@ -14713,6 +14802,26 @@ updateRadarSelectOptions();
 
     let noGolApexChart;
 
+    function buildNoGolAxisConfig(values, isPercentage = false) {
+        const maxValue = Math.max(...values, 0);
+        const suggestedMax = isPercentage ? Math.ceil((maxValue + 3) / 5) * 5 : Math.ceil((maxValue + 2) / 5) * 5;
+        return {
+            min: 0,
+            max: suggestedMax,
+            tickAmount: Math.min(8, Math.max(4, Math.round(suggestedMax / 5))),
+            title: {
+                text: isPercentage ? "Percentuale (%)" : "Numero di 0-0",
+                style: { color: "#94a3b8", fontSize: "10px", fontWeight: 600 }
+            },
+            labels: {
+                style: { colors: "#94a3b8" },
+                formatter: function (val) {
+                    return isPercentage ? `${val.toFixed(0)}%` : Math.round(val);
+                }
+            }
+        };
+    }
+
     // 2. Funzione per inizializzare il grafico (richiamala al caricamento della pagina)
     function initNoGolChart() {
         const options = {
@@ -14731,15 +14840,16 @@ updateRadarSelectOptions();
             plotOptions: {
                 bar: {
                     borderRadius: 4,
-                    columnWidth: '60%',
+                    horizontal: true,
+                    barHeight: '58%',
                     dataLabels: {
-                        position: 'top', // posiziona i numeri sopra la barra
+                        position: 'right',
                     },
                 }
             },
             dataLabels: {
                 enabled: true,
-                offsetY: -28,
+                offsetX: 12,
                 style: {
                     fontSize: '16px',
                     colors: ['#cbd5e1']
@@ -14754,20 +14864,14 @@ updateRadarSelectOptions();
                 colors: ['transparent']
             },
             xaxis: {
-                categories: statsNoGol.seasons,
-                labels: {
-                    style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 }
-                },
+                ...buildNoGolAxisConfig(statsNoGol.zeroZero, false),
                 axisBorder: { show: false },
                 axisTicks: { show: false }
             },
             yaxis: {
-                title: {
-                    text: 'Numero di 0-0',
-                    style: { color: '#94a3b8', fontSize: '10px', fontWeight: 600 }
-                },
+                categories: statsNoGol.seasons,
                 labels: {
-                    style: { colors: '#94a3b8' }
+                    style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 }
                 }
             },
             grid: {
@@ -14804,10 +14908,7 @@ updateRadarSelectOptions();
             // Aggiorna grafico
             noGolApexChart.updateOptions({
                 colors: ['#eab308'], // Torna giallo
-                yaxis: { 
-                    title: { text: 'Numero di 0-0' },
-                    max: undefined // resetta il massimo automatico
-                },
+                xaxis: buildNoGolAxisConfig(statsNoGol.zeroZero, false),
                 dataLabels: {
                     formatter: function (val) { return val; }
                 },
@@ -14829,12 +14930,7 @@ updateRadarSelectOptions();
             // Aggiorna grafico
             noGolApexChart.updateOptions({
                 colors: ['#38bdf8'], // Azzurro per differenziarlo visivamente
-                yaxis: { 
-title: { text: 'Percentuale (%)' },
-            min: 20,   // Assicura che parta da zero
-            max: 60,  // <--- MODIFICA QUESTO VALORE DA 100 A 60
-            tickAmount: 8 // Opzionale: crea linee ogni n unità
-                },
+                xaxis: buildNoGolAxisConfig(statsNoGol.noGolPct, true),
                 dataLabels: {
                     formatter: function (val) { return val + "%"; }
                 },
