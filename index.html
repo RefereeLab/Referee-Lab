@@ -14727,6 +14727,7 @@ updateRadarSelectOptions();
 
             scores.forEach(score => {
                 const parsed = String(score).match(/^(\d+)-(\d+)$/);
+
                 if (!parsed) return;
                 const home = Number(parsed[1]);
                 const away = Number(parsed[2]);
@@ -14753,10 +14754,16 @@ updateRadarSelectOptions();
     const seasonResultStats = getSeasonResultStats();
 
     function initNoGolChart() {
+        const zeroZeroValues = seasonResultStats.map(s => s.zeroZeroCount);
+        const maxZeroZero = Math.max(...zeroZeroValues, 0);
+        const zeroZeroTickAmount = 5;
+        const zeroZeroStep = Math.max(1, Math.ceil(maxZeroZero / zeroZeroTickAmount));
+        const zeroZeroMax = zeroZeroStep * zeroZeroTickAmount;
+
         const options = {
             series: [{
                 name: 'Partite 0-0',
-                data: seasonResultStats.map(s => s.zeroZeroCount)
+                data: zeroZeroValues
             }],
             chart: {
                 type: 'bar',
@@ -14776,18 +14783,24 @@ updateRadarSelectOptions();
             },
             dataLabels: {
                 enabled: true,
-                offsetX: 10,
+                textAnchor: 'start',
+                offsetX: 8,
                 style: { fontSize: '16px', colors: ['#cbd5e1'] },
                 formatter: function (val) { return val; }
             },
             stroke: { show: true, width: 2, colors: ['transparent'] },
             xaxis: {
-                categories: seasonResultStats.map(s => s.seasonLabel),
+                min: 0,
+                max: zeroZeroMax,
+                tickAmount: zeroZeroTickAmount,
                 labels: { style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 } },
                 axisBorder: { show: false },
                 axisTicks: { show: false }
             },
-            yaxis: { labels: { style: { colors: '#94a3b8' } } },
+            yaxis: {
+                categories: seasonResultStats.map(s => s.seasonLabel),
+                labels: { style: { colors: '#94a3b8' } }
+            },
             grid: { borderColor: '#1e293b', strokeDashArray: 4 },
             theme: { mode: 'dark' },
             tooltip: { theme: 'dark', y: { formatter: function (val) { return val + ' partite'; } } }
@@ -14809,7 +14822,11 @@ updateRadarSelectOptions();
 
             noGolApexChart.updateOptions({
                 colors: ['#eab308'],
-                xaxis: { min: undefined, max: undefined },
+                xaxis: {
+                    min: 0,
+                    max: zeroZeroMax,
+                    tickAmount: zeroZeroTickAmount
+                },
                 dataLabels: { formatter: function (val) { return val; } },
                 tooltip: { y: { formatter: function (val) { return val + ' partite'; } } }
             });
@@ -14820,17 +14837,17 @@ updateRadarSelectOptions();
             btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
             desc.innerHTML = 'Mostra la percentuale di partite in cui ha segnato al massimo una squadra (No Gol).';
 
-            noGolApexChart.updateOptions({
-                colors: ['#38bdf8'],
-                xaxis: { min: 0, max: 100, tickAmount: 5 },
-                dataLabels: { formatter: function (val) { return val + '%'; } },
-                tooltip: { y: { formatter: function (val) { return val + '%'; } } }
-            });
+            noGolApexChart.updateOptions({␊
+                colors: ['#38bdf8'],␊
+                xaxis: { min: 0, max: 100, tickAmount: 5 },␊
+                dataLabels: { formatter: function (val) { return val + '%'; }, textAnchor: 'start', offsetX: 8 },
+                tooltip: { y: { formatter: function (val) { return val + '%'; } } }␊
+            });␊
             noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => Number(s.noGolPct.toFixed(1))) }]);
         }
     }
 
-    function initSeasonResultsChart() {
+    function initSeasonResultsChart() {␊
         const seasonSelect = document.getElementById('results-season-select');
         if (!seasonSelect || !seasonResultStats.length) return;
 
@@ -14840,23 +14857,30 @@ updateRadarSelectOptions();
         const buildData = (season) => {
             const entries = Object.entries(season.resultFrequency).sort((a, b) => b[1] - a[1]);
             const total = season.totalMatches || 1;
-            return { entries, total };
+            const percentages = entries.map(([, count]) => Number(((count / total) * 100).toFixed(1)));
+            const maxPct = Math.max(...percentages, 1);
+            const colors = percentages.map((pct) => {
+                const ratio = Math.max(0, Math.min(1, pct / maxPct));
+                const hue = 0 + (120 * ratio); // rosso -> verde
+                return `hsl(${hue}, 80%, 52%)`;
+            });
+            return { entries, total, percentages, colors };
         };
 
         let currentSeason = seasonResultStats.find(s => s.season === seasonSelect.value) || seasonResultStats[0];
-        let { entries, total } = buildData(currentSeason);
+        let { entries, total, percentages, colors } = buildData(currentSeason);
 
         const options = {
             series: [{ name: 'Partite', data: entries.map(([, count]) => count) }],
             chart: { type: 'bar', height: 360, toolbar: { show: false }, fontFamily: 'Inter, sans-serif', background: 'transparent' },
-            colors: ['#60a5fa'],
-            plotOptions: { bar: { borderRadius: 4, columnWidth: '62%' } },
+            colors,
+            plotOptions: { bar: { borderRadius: 4, columnWidth: '62%', distributed: true, dataLabels: { position: 'top' } } },
             dataLabels: {
                 enabled: true,
+                offsetY: -10,
                 style: { fontSize: '11px', colors: ['#e2e8f0'] },
                 formatter: function(val, opts) {
-                    const score = entries[opts.dataPointIndex][0];
-                    return `${score} · ${((val / total) * 100).toFixed(1)}%`;
+                    return `${percentages[opts.dataPointIndex].toFixed(1)}%`;
                 }
             },
             xaxis: {
@@ -14877,18 +14901,19 @@ updateRadarSelectOptions();
         seasonSelect.addEventListener('change', function() {
             const selected = seasonResultStats.find(s => s.season === this.value);
             if (!selected || !seasonResultsChart) return;
-            ({ entries, total } = buildData(selected));
+            ({ entries, total, percentages, colors } = buildData(selected));
 
             seasonResultsChart.updateOptions({
+                colors,
                 xaxis: { categories: entries.map(([score]) => score) },
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '62%', distributed: true, dataLabels: { position: 'top' } } },
                 dataLabels: {
                     formatter: function(val, opts) {
-                        const score = entries[opts.dataPointIndex][0];
-                        return `${score} · ${((val / total) * 100).toFixed(1)}%`;
+                        return `${percentages[opts.dataPointIndex].toFixed(1)}%`;
                     }
                 },
                 tooltip: { y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
-            });
+            }, true, true);
             seasonResultsChart.updateSeries([{ name: 'Partite', data: entries.map(([, count]) => count) }]);
         });
     }
