@@ -14763,7 +14763,7 @@ updateRadarSelectOptions();
         const options = {
             series: [{
                 name: 'Partite 0-0',
-                data: zeroZeroValues
+                data: seasonResultStats.map(s => ({ x: s.seasonLabel, y: s.zeroZeroCount }))
             }],
             chart: {
                 type: 'bar',
@@ -14798,7 +14798,6 @@ updateRadarSelectOptions();
                 axisTicks: { show: false }
             },
             yaxis: {
-                categories: seasonResultStats.map(s => s.seasonLabel),
                 labels: { style: { colors: '#94a3b8' } }
             },
             grid: { borderColor: '#1e293b', strokeDashArray: 4 },
@@ -14831,7 +14830,7 @@ updateRadarSelectOptions();
                 dataLabels: { formatter: function (val) { return val; } },
                 tooltip: { y: { formatter: function (val) { return val + ' partite'; } } }
             });
-            noGolApexChart.updateSeries([{ name: 'Partite 0-0', data: seasonResultStats.map(s => s.zeroZeroCount) }]);
+            noGolApexChart.updateSeries([{ name: 'Partite 0-0', data: seasonResultStats.map(s => ({ x: s.seasonLabel, y: s.zeroZeroCount })) }]);
 
         } else if (type === 'nogol') {
             btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
@@ -14844,7 +14843,7 @@ updateRadarSelectOptions();
                 dataLabels: { formatter: function (val) { return val + '%'; }, textAnchor: 'start', offsetX: 8 },
                 tooltip: { y: { formatter: function (val) { return val + '%'; } } }
             });
-            noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => Number(s.noGolPct.toFixed(1))) }]);
+            noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => ({ x: s.seasonLabel, y: Number(s.noGolPct.toFixed(1)) })) }]);
         }
     }
 
