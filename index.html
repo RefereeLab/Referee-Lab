@@ -1977,7 +1977,7 @@ html, body {
         <div class="bg-slate-900 p-3 flex justify-between items-center border-b border-slate-800 cursor-pointer hover:bg-slate-800 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden')">
             <h3 class="text-xs font-bold text-white flex items-center gap-2">
                 <span class="w-3 h-3 bg-red-500 rounded-full animate-flash"></span>
-                DESIGNAZIONI 36ª GIORN. IN ARRIVO  </h3>
+                DESIGNAZIONI della 36ª GIORNATA  </h3>
             <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
         </div>
         <div class="p-0 max-h-64 overflow-y-auto hidden">
@@ -2069,16 +2069,16 @@ const designationsData = {
         className: 'bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase'
     },
     matches: [
-        { match: 'TORINO - SASSUOLO', time: 'VEN 20:45', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ..........' },
-        { match: 'CAGLIARI - UDINESE', time: 'SAB 15:00', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'LAZIO - INTER', time: 'SAB 18:00', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'LECCE - JUVENTUS', time: 'SAB 20:45', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'VERONA - COMO', time: 'DOM 12:30', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'CREMONESE - PISA', time: 'DOM 15:00', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'FIORENTINA - GENOA', time: 'DOM 15:00', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'PARMA - ROMA', time: 'DOM 18:00', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'MILAN - ATALANTA', time: 'DOM 20:45', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' },
-        { match: 'NAPOLI - BOLOGNA', time: 'LUN 20:45', referee: '<strong>........</strong>', varOfficial: '........... <br> AVAR: ...........' }
+        { match: 'TORINO - SASSUOLO', time: 'VEN 20:45', referee: '<strong>GALIPÒ</strong>', varOfficial: 'Meraviglia <br> AVAR: Prontera' },
+        { match: 'CAGLIARI - UDINESE', time: 'SAB 15:00', referee: '<strong>DIONISI</strong>', varOfficial: 'Di Paolo <br> AVAR: Cosso' },
+        { match: 'LAZIO - INTER', time: 'SAB 18:00', referee: '<strong>ABISSO</strong>', varOfficial: 'Meraviglia <br> AVAR: Massa' },
+        { match: 'LECCE - JUVENTUS', time: 'SAB 20:45', referee: '<strong>COLOMBO</strong>', varOfficial: 'Mariani <br> AVAR: Mazzoleni' },
+        { match: 'VERONA - COMO', time: 'DOM 12:30', referee: '<strong>DI BELLO</strong>', varOfficial: 'Camplone <br> AVAR: La Penna' },
+        { match: 'CREMONESE - PISA', time: 'DOM 15:00', referee: '<strong>AYROLDI</strong>', varOfficial: 'Gariglio <br> AVAR: Pezzuto' },
+        { match: 'FIORENTINA - GENOA', time: 'DOM 15:00', referee: '<strong>MASSIMI</strong>', varOfficial: 'Massa <br> AVAR: Pairetto' },
+        { match: 'PARMA - ROMA', time: 'DOM 18:00', referee: '<strong>CHIFFI</strong>', varOfficial: 'Mazzoleni <br> AVAR: Paganessi' },
+        { match: 'MILAN - ATALANTA', time: 'DOM 20:45', referee: '<strong>ZUFFERLI</strong>', varOfficial: 'Di Paolo <br> AVAR: Mariani' },
+        { match: 'NAPOLI - BOLOGNA', time: 'LUN 20:45', referee: '<strong>PICCININI</strong>', varOfficial: 'Marini <br> AVAR: Giua' }
     ]
 };
 
@@ -14824,8 +14824,8 @@ updateRadarSelectOptions();
                 colors: ['#eab308'],
                 xaxis: {
                     min: 0,
-                    max: zeroZeroMax,
-                    tickAmount: zeroZeroTickAmount
+                    max: 40,
+                    tickAmount: 8
                 },
                 dataLabels: { formatter: function (val) { return val; } },
                 tooltip: { y: { formatter: function (val) { return val + ' partite'; } } }
@@ -14839,7 +14839,7 @@ updateRadarSelectOptions();
 
             noGolApexChart.updateOptions({
                 colors: ['#38bdf8'],
-                xaxis: { min: 0, max: 100, tickAmount: 5 },
+                xaxis: { min: 20, max: 80, tickAmount: 6 },
                 dataLabels: { formatter: function (val) { return val + '%'; }, textAnchor: 'start', offsetX: 8 },
                 tooltip: { y: { formatter: function (val) { return val + '%'; } } }
             });
@@ -14899,13 +14899,23 @@ updateRadarSelectOptions();
                 xaxis: {
                     categories: entries.map(([score]) => score),
                     labels: { style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 600 } },
-                    axisBorder: { show: false },
+                    axisBorder: { show: true },
                     axisTicks: { show: false }
                 },
                 yaxis: {
                     labels: { style: { colors: '#94a3b8' } },
                     forceNiceScale: true
                 },
+                yaxis: {
+                    min: 0,
+                    max: 60,
+                    tickAmount: 12,
+                    labels: { 
+                    style: { colors: '#94a3b8' } 
+                },
+                forceNiceScale: true
+                },
+
                 grid: { borderColor: '#1e293b', strokeDashArray: 4 },
                 theme: { mode: 'dark' },
                 tooltip: { theme: 'dark', y: { formatter: function(val) { return `${val} partite (${((val / total) * 100).toFixed(1)}%)`; } } }
