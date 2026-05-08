@@ -1764,6 +1764,9 @@ html, body {
             <button onclick="switchNoGolChart('nogol')" id="btn-chart-nogol" class="px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors">
                 % No Gol
             </button>
+            <button onclick="switchNoGolChart('under25')" id="btn-chart-under25" class="px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors">
+                % Under 2.5
+            </button>
         </div>
     </div>
 
@@ -14721,6 +14724,7 @@ updateRadarSelectOptions();
             const totalMatches = scores.length;
             let zeroZeroCount = 0;
             let noGolCount = 0;
+            let under25Count = 0;
             const resultFrequency = {};
 
             scores.forEach(score => {
@@ -14731,6 +14735,7 @@ updateRadarSelectOptions();
                 const away = Number(parsed[2]);
                 if (home === 0 && away === 0) zeroZeroCount += 1;
                 if (home === 0 || away === 0) noGolCount += 1;
+                if ((home + away) <= 2) under25Count += 1;
                 resultFrequency[score] = (resultFrequency[score] || 0) + 1;
             });
 
@@ -14740,6 +14745,7 @@ updateRadarSelectOptions();
                 totalMatches,
                 zeroZeroCount,
                 noGolPct: totalMatches ? (noGolCount / totalMatches) * 100 : 0,
+                under25Pct: totalMatches ? (under25Count / totalMatches) * 100 : 0,
                 resultFrequency
             };
         });
@@ -14756,10 +14762,7 @@ updateRadarSelectOptions();
     function initNoGolChart() {
         const noGolContainer = document.querySelector('#chart-zero-zero-nogol');
         if (!noGolContainer || !seasonResultStats.length) return;
-        const zeroZeroValues = seasonResultStats.map(s => s.zeroZeroCount);
-        const maxZeroZero = Math.max(...zeroZeroValues, 0);
-        const zeroZeroStep = Math.max(1, Math.ceil(maxZeroZero / zeroZeroTickAmount));
-        zeroZeroMax = zeroZeroStep * zeroZeroTickAmount;
+        zeroZeroMax = 40;
         const options = {
             series: [{
                 name: 'Partite 0-0',
@@ -14792,7 +14795,7 @@ updateRadarSelectOptions();
             xaxis: {
                 min: 0,
                 max: zeroZeroMax,
-                tickAmount: zeroZeroTickAmount,
+                tickAmount: 8,
                 labels: { style: { colors: '#94a3b8', fontSize: '12px', fontWeight: 600 } },
                 axisBorder: { show: false },
                 axisTicks: { show: false }
@@ -14813,11 +14816,13 @@ updateRadarSelectOptions();
         if (!noGolApexChart) return;
         const btn00 = document.getElementById('btn-chart-00');
         const btnNogol = document.getElementById('btn-chart-nogol');
+        const btnUnder25 = document.getElementById('btn-chart-under25');
         const desc = document.getElementById('chart-nogol-desc');
 
         if (type === '0-0') {
             btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
             btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            btnUnder25.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
             desc.innerHTML = 'Mostra il numero totale di partite terminate 0-0 in ogni stagione.';
 
             noGolApexChart.updateOptions({
@@ -14835,6 +14840,7 @@ updateRadarSelectOptions();
         } else if (type === 'nogol') {
             btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
             btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            btnUnder25.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
             desc.innerHTML = 'Mostra la percentuale di partite in cui ha segnato al massimo una squadra (No Gol).';
 
             noGolApexChart.updateOptions({
@@ -14844,6 +14850,20 @@ updateRadarSelectOptions();
                 tooltip: { y: { formatter: function (val) { return val + '%'; } } }
             });
             noGolApexChart.updateSeries([{ name: '% No Gol', data: seasonResultStats.map(s => ({ x: s.seasonLabel, y: Number(s.noGolPct.toFixed(1)) })) }]);
+
+        } else if (type === 'under25') {
+            btnUnder25.className = 'px-3 py-1.5 text-[11px] font-bold rounded bg-yellow-500 text-slate-900 transition-colors shadow-sm';
+            btn00.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            btnNogol.className = 'px-3 py-1.5 text-[11px] font-bold rounded text-slate-400 hover:text-white transition-colors';
+            desc.innerHTML = 'Mostra la percentuale di partite con al massimo 2 gol totali (Under 2.5).';
+
+            noGolApexChart.updateOptions({
+                colors: ['#22c55e'],
+                xaxis: { min: 20, max: 80, tickAmount: 6 },
+                dataLabels: { formatter: function (val) { return val + '%'; }, textAnchor: 'start', offsetX: 8 },
+                tooltip: { y: { formatter: function (val) { return val + '%'; } } }
+            });
+            noGolApexChart.updateSeries([{ name: '% Under 2.5', data: seasonResultStats.map(s => ({ x: s.seasonLabel, y: Number(s.under25Pct.toFixed(1)) })) }]);
         }
     }
 
