@@ -15087,7 +15087,15 @@ function renderPlayersPassingTable() {
         let selectedTieTeams = [...tieBreakerTeams];
         let tieMode = 'manual';
         const tieSimulationResults = {};
+        const tieTeamLookup = tieBreakerTeams.reduce((acc, team) => {
+            acc[team.toLowerCase()] = team;
+            return acc;
+        }, {});
 
+        function normalizeTieTeamName(teamName) {
+            if (!teamName) return null;
+            return tieTeamLookup[String(teamName).trim().toLowerCase()] || null;
+        }
 
         function parseMatchScore(score) {
             if (!score) return null;
@@ -15233,8 +15241,10 @@ function renderPlayersPassingTable() {
                 const key = `${match.home}-${match.away}`;
                 const parsed = parseMatchScore(tieSimulationResults[key] ?? '0-0') || [0, 0];
                 const [hg, ag] = parsed;
-                if (tieBreakerTeams.includes(match.home)) projected[match.home] += hg > ag ? 3 : hg === ag ? 1 : 0;
-                if (tieBreakerTeams.includes(match.away)) projected[match.away] += ag > hg ? 3 : hg === ag ? 1 : 0;
+                const homeTeam = normalizeTieTeamName(match.home);
+                const awayTeam = normalizeTieTeamName(match.away);
+                if (homeTeam) projected[homeTeam] += hg > ag ? 3 : hg === ag ? 1 : 0;
+                if (awayTeam) projected[awayTeam] += ag > hg ? 3 : hg === ag ? 1 : 0;
             });
             return projected;
         }
