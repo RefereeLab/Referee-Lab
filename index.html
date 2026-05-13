@@ -1,3 +1,4 @@
+
 ﻿<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
@@ -1548,6 +1549,14 @@ html, body {
                     </p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
+                <div class="flex flex-wrap gap-2" id="tie-mode-selector">
+                    <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità classifica avulsa (manuale)</button>
+                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione 2 giornate</button>
+                </div>
+                <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
+                    <p class="text-[11px] text-slate-400">Inserisci i risultati esatti dei match rimanenti (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
+                </div>
                 <div id="tie-breaker-alert" class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2 hidden"></div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-slate-300">
@@ -1555,7 +1564,7 @@ html, body {
                             <tr>
                                 <th class="p-2 text-left">#</th>
                                 <th class="p-2 text-left">Squadra</th>
-                                <th class="p-2 text-left">Punti avulsa</th>
+                                <th class="p-2 text-left">Punti classifica</th><th class="p-2 text-left">Punti avulsa</th>
                                 <th class="p-2 text-left">Diff. reti scontri diretti</th>
                                 <th class="p-2 text-left">Diff. reti generale</th>
                                 <th class="p-2 text-left">Gol segnati</th>
@@ -15054,7 +15063,29 @@ function renderPlayersPassingTable() {
         }
 
         const tieBreakerTeams = ['Napoli', 'Juventus', 'Milan', 'Roma', 'Como'];
+        const tieTeamsInfo = {
+            Napoli: { points: 70, zone: 'cl' },
+            Juventus: { points: 68, zone: 'cl' },
+            Milan: { points: 67, zone: 'cl' },
+            Roma: { points: 67, zone: 'el' },
+            Como: { points: 65, zone: 'conf' }
+        };
+        const remainingMatches = [
+            { home: 'Roma', away: 'Lazio', label: '37ª: Roma-Lazio' },
+            { home: 'Genoa', away: 'Milan', label: '37ª: Genoa-Milan' },
+            { home: 'Juventus', away: 'Fiorentina', label: '37ª: Juventus-Fiorentina' },
+            { home: 'Como', away: 'Parma', label: '37ª: Como-Parma' },
+            { home: 'Pisa', away: 'Napoli', label: '37ª: Pisa-Napoli' },
+            { home: 'Cremonese', away: 'Como', label: '38ª: Cremonese-Como' },
+            { home: 'Milan', away: 'Cagliari', label: '38ª: Milan-Cagliari' },
+            { home: 'Napoli', away: 'Udinese', label: '38ª: Napoli-Udinese' },
+            { home: 'Torino', away: 'Juventus', label: '38ª: Torino-Juventus' },
+            { home: 'Verona', away: 'Roma', label: '38ª: Verona-Roma' }
+        ];
         let selectedTieTeams = [...tieBreakerTeams];
+        let tieMode = 'manual';
+        const tieSimulationResults = {};
+
 
         function parseMatchScore(score) {
             if (!score) return null;
@@ -15065,7 +15096,7 @@ function renderPlayersPassingTable() {
 
         function computeSeasonTotals(season, allowedTeams) {
             const totals = Object.fromEntries(allowedTeams.map((team) => [team, { gf: 0, ga: 0 }]));
-            const resultsMap = MATCH_RESULTS_BY_SEASON[season] || {};
+            const resultsMap = getResultsMapForMode();
 
             Object.entries(resultsMap).forEach(([matchName, score]) => {
                 const [homeTeam, awayTeam] = matchName.split('-').map((x) => x.trim());
@@ -15099,7 +15130,7 @@ function renderPlayersPassingTable() {
                 criteriaUsed: { h2hPoints: false, h2hGoalDiff: false, gdTotal: false, goalsFor: false }
             }));
             const map = Object.fromEntries(table.map((row) => [row.team, row]));
-            const resultsMap = MATCH_RESULTS_BY_SEASON[season] || {};
+            const resultsMap = getResultsMapForMode();
 
             for (let i = 0; i < selectedTeams.length; i++) {
                 for (let j = i + 1; j < selectedTeams.length; j++) {
@@ -15170,6 +15201,36 @@ function renderPlayersPassingTable() {
             return sorted;
         }
 
+        
+        function getZoneIcon(zone) {
+            if (zone === 'cl') return '<i class="fa-solid fa-trophy text-amber-300" title="Champions League"></i>';
+            if (zone === 'el') return '<i class="fa-solid fa-medal text-orange-300" title="Europa League"></i>';
+            return '<i class="fa-solid fa-star text-emerald-300" title="Conference League"></i>';
+        }
+
+        function getResultsMapForMode() {
+            const base = { ...(MATCH_RESULTS_BY_SEASON['2025-26'] || {}) };
+            if (tieMode !== 'simulation') return base;
+            remainingMatches.forEach((match) => {
+                const key = `${match.home}-${match.away}`;
+                if (tieSimulationResults[key]) base[key] = tieSimulationResults[key];
+            });
+            return base;
+        }
+
+        function computeProjectedPoints() {
+            const projected = Object.fromEntries(tieBreakerTeams.map((t) => [t, tieTeamsInfo[t].points]));
+            if (tieMode !== 'simulation') return projected;
+            remainingMatches.forEach((match) => {
+                const parsed = parseMatchScore(tieSimulationResults[`${match.home}-${match.away}`]);
+                if (!parsed) return;
+                const [hg, ag] = parsed;
+                if (tieBreakerTeams.includes(match.home)) projected[match.home] += hg > ag ? 3 : hg === ag ? 1 : 0;
+                if (tieBreakerTeams.includes(match.away)) projected[match.away] += ag > hg ? 3 : hg === ag ? 1 : 0;
+            });
+            return projected;
+        }
+
         function renderTieBreakerSection() {
             const selector = document.getElementById('tie-teams-selector');
             const tableBody = document.getElementById('tie-breaker-table-body');
@@ -15178,9 +15239,42 @@ function renderPlayersPassingTable() {
 
             selector.innerHTML = tieBreakerTeams.map((team) => `
                 <button type="button" class="tie-team-btn px-2 py-2 rounded border text-xs font-semibold transition ${selectedTieTeams.includes(team) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300'}" data-team="${team}">
-                    ${team}
+                    <span class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono">${tieTeamsInfo[team].points}</span>
+                        <span>${team}</span>
+                        <span>${getZoneIcon(tieTeamsInfo[team].zone)}</span>
+                    </span>
                 </button>
             `).join('');
+
+            const modeManualBtn = document.getElementById('tie-mode-manual');
+            const modeSimBtn = document.getElementById('tie-mode-sim');
+            const simulationPanel = document.getElementById('tie-simulation-panel');
+            const simulationMatches = document.getElementById('tie-simulation-matches');
+
+            if (modeManualBtn && modeSimBtn) {
+                modeManualBtn.className = `px-3 py-1.5 rounded text-xs font-semibold border ${tieMode === 'manual' ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' : 'border-slate-700 bg-slate-900 text-slate-300'}`;
+                modeSimBtn.className = `px-3 py-1.5 rounded text-xs font-semibold border ${tieMode === 'simulation' ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300' : 'border-slate-700 bg-slate-900 text-slate-300'}`;
+                modeManualBtn.onclick = () => { tieMode = 'manual'; renderTieBreakerSection(); };
+                modeSimBtn.onclick = () => { tieMode = 'simulation'; renderTieBreakerSection(); };
+            }
+
+            if (simulationPanel && simulationMatches) {
+                simulationPanel.classList.toggle('hidden', tieMode !== 'simulation');
+                simulationMatches.innerHTML = remainingMatches.map((match) => {
+                    const key = `${match.home}-${match.away}`;
+                    return `<label class="text-xs text-slate-300 flex items-center justify-between gap-2 border border-slate-700 rounded px-2 py-1.5">
+                        <span>${match.label}</span>
+                        <input data-match-key="${key}" value="${tieSimulationResults[key] || ''}" placeholder="es. 2-1" class="w-20 bg-slate-950 border border-slate-600 rounded px-2 py-1 text-right"/>
+                    </label>`;
+                }).join('');
+                simulationMatches.querySelectorAll('input[data-match-key]').forEach((input) => {
+                    input.addEventListener('input', () => {
+                        tieSimulationResults[input.dataset.matchKey] = input.value.trim();
+                        renderTieBreakerSection();
+                    });
+                });
+            }
 
             selector.querySelectorAll('.tie-team-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
@@ -15202,11 +15296,13 @@ function renderPlayersPassingTable() {
             }
             alertBox.classList.add('hidden');
             const rows = computeTieTable(selectedTieTeams);
+            const projectedPoints = computeProjectedPoints();
+            rows.sort((a,b) => (projectedPoints[b.team]-projectedPoints[a.team]) || (b.points-a.points) || (b.h2hGoalDiff-a.h2hGoalDiff) || (b.gdTotal-a.gdTotal) || (b.goalsFor-a.goalsFor));
             tableBody.innerHTML = rows.map((row, idx) => `
                 <tr class="border-b border-slate-800/70">
                     <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
                     <td class="p-2 font-semibold text-white">${row.team}</td>
-                    <td class="p-2">${row.points}</td>
+                    <td class="p-2 font-mono">${projectedPoints[row.team]}</td><td class="p-2">${row.points}</td>
                     <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
                     <td class="p-2 ${row.criteriaUsed.gdTotal ? '' : 'text-slate-500'}">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
                     <td class="p-2 ${row.criteriaUsed.goalsFor ? '' : 'text-slate-500'}">${row.goalsFor}</td>
