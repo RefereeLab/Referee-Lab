@@ -15237,10 +15237,32 @@ function renderPlayersPassingTable() {
         }
 
         function buildTieRanking(teams) {
-            const rows = computeTieTable(teams);
             const projectedPoints = computeProjectedPoints();
-            rows.sort((a,b) => (projectedPoints[b.team]-projectedPoints[a.team]) || (b.points-a.points) || (b.h2hGoalDiff-a.h2hGoalDiff) || (b.gdTotal-a.gdTotal) || (b.goalsFor-a.goalsFor));
-            return { rows, projectedPoints };
+
+            if (tieMode !== 'simulation') {
+                const rows = computeTieTable(teams);
+                return { rows, projectedPoints };
+            }
+
+            const sortedTeams = [...teams].sort((a, b) => (projectedPoints[b] - projectedPoints[a]) || a.localeCompare(b));
+            const finalRows = [];
+
+            let groupStart = 0;
+            while (groupStart < sortedTeams.length) {
+                let groupEnd = groupStart + 1;
+                while (groupEnd < sortedTeams.length && projectedPoints[sortedTeams[groupEnd]] === projectedPoints[sortedTeams[groupStart]]) groupEnd++;
+
+                const groupTeams = sortedTeams.slice(groupStart, groupEnd);
+                if (groupTeams.length === 1) {
+                    finalRows.push(...computeTieTable(groupTeams));
+                } else {
+                    finalRows.push(...computeTieTable(groupTeams));
+                }
+
+                groupStart = groupEnd;
+            }
+
+            return { rows: finalRows, projectedPoints };
         }
 
         function renderTieBreakerSection() {
@@ -15252,9 +15274,11 @@ function renderPlayersPassingTable() {
             const { rows: globalRanking } = buildTieRanking(tieBreakerTeams);
             const rankingIndex = Object.fromEntries(globalRanking.map((row, idx) => [row.team, idx + 1]));
 
-            selector.innerHTML = globalRanking.map((row) => {
-                const team = row.team;
-                return `
+            selector.classList.toggle('hidden', tieMode === 'simulation');
+            if (tieMode === 'manual') {
+                selector.innerHTML = globalRanking.map((row) => {
+                    const team = row.team;
+                    return `
                 <button type="button" class="tie-team-btn px-2 py-2 rounded border text-xs font-semibold transition ${selectedTieTeams.includes(team) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300'}" data-team="${team}">
                     <span class="flex items-center justify-between gap-2">
                         <span class="text-[11px] font-mono text-slate-400">#${rankingIndex[team]}</span>
@@ -15264,7 +15288,11 @@ function renderPlayersPassingTable() {
                     </span>
                 </button>
             `;
-            }).join('');
+                }).join('');
+            } else {
+                selector.innerHTML = '';
+                selectedTieTeams = [...tieBreakerTeams];
+            }
 
             const modeManualBtn = document.getElementById('tie-mode-manual');
             const modeSimBtn = document.getElementById('tie-mode-sim');
@@ -15340,14 +15368,15 @@ function renderPlayersPassingTable() {
 
             const pointsClassificaCol = document.getElementById('tie-col-points-classifica');
             if (pointsClassificaCol) pointsClassificaCol.classList.toggle('hidden', tieMode !== 'simulation');
-            if (selectedTieTeams.length < 2) {
+            const teamsForRanking = tieMode === 'simulation' ? tieBreakerTeams : selectedTieTeams;
+            if (teamsForRanking.length < 2) {
                 alertBox.classList.remove('hidden');
                 alertBox.textContent = 'Seleziona almeno 2 squadre per calcolare la classifica avulsa.';
                 tableBody.innerHTML = '';
                 return;
             }
             alertBox.classList.add('hidden');
-            const { rows, projectedPoints } = buildTieRanking(selectedTieTeams);
+            const { rows, projectedPoints } = buildTieRanking(teamsForRanking);
             tableBody.innerHTML = rows.map((row, idx) => `
                 <tr class="border-b border-slate-800/70">
                     <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
