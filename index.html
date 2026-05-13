@@ -1,4 +1,3 @@
-
 ﻿<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
@@ -1551,10 +1550,10 @@ html, body {
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
                 <div class="flex flex-wrap gap-2" id="tie-mode-selector">
                     <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità classifica avulsa (manuale)</button>
-                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione 2 giornate</button>
+                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultime 2 giornate</button>
                 </div>
                 <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
-                    <p class="text-[11px] text-slate-400">Inserisci i risultati esatti dei match rimanenti (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
+                    <p class="text-[11px] text-slate-400">Imposta i gol con i pulsanti +/- per ogni squadra (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
                 </div>
                 <div id="tie-breaker-alert" class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2 hidden"></div>
@@ -1564,7 +1563,7 @@ html, body {
                             <tr>
                                 <th class="p-2 text-left">#</th>
                                 <th class="p-2 text-left">Squadra</th>
-                                <th class="p-2 text-left">Punti classifica</th><th class="p-2 text-left">Punti avulsa</th>
+                                <th id="tie-col-points-classifica" class="p-2 text-left">Punti classifica</th><th class="p-2 text-left">Punti avulsa</th>
                                 <th class="p-2 text-left">Diff. reti scontri diretti</th>
                                 <th class="p-2 text-left">Diff. reti generale</th>
                                 <th class="p-2 text-left">Gol segnati</th>
@@ -15070,6 +15069,11 @@ function renderPlayersPassingTable() {
             Roma: { points: 67, zone: 'el' },
             Como: { points: 65, zone: 'conf' }
         };
+        const competitionLogos = {
+            cl: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png',
+            el: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7f/UEFA_Europa_League_logo_%282024_version%29.svg/120px-UEFA_Europa_League_logo_%282024_version%29.svg.png',
+            conf: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/35/UEFA_Conference_League_logo.svg/120px-UEFA_Conference_League_logo.svg.png'
+        };
         const remainingMatches = [
             { home: 'Roma', away: 'Lazio', label: '37ª: Roma-Lazio' },
             { home: 'Genoa', away: 'Milan', label: '37ª: Genoa-Milan' },
@@ -15203,9 +15207,10 @@ function renderPlayersPassingTable() {
 
         
         function getZoneIcon(zone) {
-            if (zone === 'cl') return '<i class="fa-solid fa-trophy text-amber-300" title="Champions League"></i>';
-            if (zone === 'el') return '<i class="fa-solid fa-medal text-orange-300" title="Europa League"></i>';
-            return '<i class="fa-solid fa-star text-emerald-300" title="Conference League"></i>';
+            const titles = { cl: 'UEFA Champions League', el: 'UEFA Europa League', conf: 'UEFA Conference League' };
+            const src = competitionLogos[zone] || competitionLogos.conf;
+            const title = titles[zone] || titles.conf;
+            return `<img src="${src}" alt="${title}" title="${title}" class="w-4 h-4 object-contain">`;
         }
 
         function getResultsMapForMode() {
@@ -15261,21 +15266,61 @@ function renderPlayersPassingTable() {
 
             if (simulationPanel && simulationMatches) {
                 simulationPanel.classList.toggle('hidden', tieMode !== 'simulation');
-                simulationMatches.innerHTML = remainingMatches.map((match) => {
+                const groupedMatches = {
+                    37: remainingMatches.filter((m) => m.label.startsWith('37ª')),
+                    38: remainingMatches.filter((m) => m.label.startsWith('38ª'))
+                };
+
+                const renderMatchControl = (match) => {
                     const key = `${match.home}-${match.away}`;
-                    return `<label class="text-xs text-slate-300 flex items-center justify-between gap-2 border border-slate-700 rounded px-2 py-1.5">
-                        <span>${match.label}</span>
-                        <input data-match-key="${key}" value="${tieSimulationResults[key] || ''}" placeholder="es. 2-1" class="w-20 bg-slate-950 border border-slate-600 rounded px-2 py-1 text-right"/>
-                    </label>`;
-                }).join('');
-                simulationMatches.querySelectorAll('input[data-match-key]').forEach((input) => {
-                    input.addEventListener('input', () => {
-                        tieSimulationResults[input.dataset.matchKey] = input.value.trim();
+                    const parsed = parseMatchScore(tieSimulationResults[key]) || [0, 0];
+                    const [homeGoals, awayGoals] = parsed;
+                    return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-2 space-y-2">
+                        <div class="font-semibold text-slate-200">${match.label}</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-slate-950 rounded border border-slate-700 p-2">
+                                <div class="text-[11px] truncate">${match.home}</div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-2 py-0.5 rounded border border-slate-600">−</button>
+                                    <span class="font-mono text-sm">${homeGoals}</span>
+                                    <button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-2 py-0.5 rounded border border-slate-600">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950 rounded border border-slate-700 p-2">
+                                <div class="text-[11px] truncate">${match.away}</div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-2 py-0.5 rounded border border-slate-600">−</button>
+                                    <span class="font-mono text-sm">${awayGoals}</span>
+                                    <button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-2 py-0.5 rounded border border-slate-600">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                };
+
+                simulationMatches.innerHTML = `
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-200 mb-2">37ª giornata</h4>
+                        <div class="space-y-2">${groupedMatches[37].map(renderMatchControl).join('')}</div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-200 mb-2">38ª giornata</h4>
+                        <div class="space-y-2">${groupedMatches[38].map(renderMatchControl).join('')}</div>
+                    </div>`;
+
+                simulationMatches.querySelectorAll('button[data-match-key]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const key = btn.dataset.matchKey;
+                        const delta = Number(btn.dataset.delta || 0);
+                        const team = btn.dataset.goalTeam;
+                        const [hg, ag] = parseMatchScore(tieSimulationResults[key]) || [0, 0];
+                        const nextHome = team === 'home' ? Math.max(0, hg + delta) : hg;
+                        const nextAway = team === 'away' ? Math.max(0, ag + delta) : ag;
+                        tieSimulationResults[key] = `${nextHome}-${nextAway}`;
                         renderTieBreakerSection();
                     });
                 });
             }
-
             selector.querySelectorAll('.tie-team-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     const team = btn.dataset.team;
@@ -15288,6 +15333,9 @@ function renderPlayersPassingTable() {
                 });
             });
 
+
+            const pointsClassificaCol = document.getElementById('tie-col-points-classifica');
+            if (pointsClassificaCol) pointsClassificaCol.classList.toggle('hidden', tieMode !== 'simulation');
             if (selectedTieTeams.length < 2) {
                 alertBox.classList.remove('hidden');
                 alertBox.textContent = 'Seleziona almeno 2 squadre per calcolare la classifica avulsa.';
@@ -15300,9 +15348,9 @@ function renderPlayersPassingTable() {
             rows.sort((a,b) => (projectedPoints[b.team]-projectedPoints[a.team]) || (b.points-a.points) || (b.h2hGoalDiff-a.h2hGoalDiff) || (b.gdTotal-a.gdTotal) || (b.goalsFor-a.goalsFor));
             tableBody.innerHTML = rows.map((row, idx) => `
                 <tr class="border-b border-slate-800/70">
-                    <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
+                    <td class="p-2 font-mono text-slate-200">${idx + 2}</td>
                     <td class="p-2 font-semibold text-white">${row.team}</td>
-                    <td class="p-2 font-mono">${projectedPoints[row.team]}</td><td class="p-2">${row.points}</td>
+                    ${tieMode === 'simulation' ? `<td class="p-2 font-mono">${projectedPoints[row.team]}</td>` : ``}<td class="p-2">${row.points}</td>
                     <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
                     <td class="p-2 ${row.criteriaUsed.gdTotal ? '' : 'text-slate-500'}">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
                     <td class="p-2 ${row.criteriaUsed.goalsFor ? '' : 'text-slate-500'}">${row.goalsFor}</td>
@@ -15707,3 +15755,10 @@ updateRadarSelectOptions();
 
 </body>
 </html>
+    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultime 2 giornate</button>
+</div>
+<div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
+    <p class="text-[11px] text-slate-400">Imposta i gol con i pulsanti +/- per ogni squadra (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
+index.html
+Righe 1554-1558
