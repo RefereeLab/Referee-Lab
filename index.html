@@ -15205,12 +15205,16 @@ function renderPlayersPassingTable() {
         }
 
         
-        function getZoneIcon(zone) {
+        function getZoneIcon(zone, sizeClass = 'w-4 h-4') {
             const titles = { cl: 'UEFA Champions League', el: 'UEFA Europa League', conf: 'UEFA Conference League' };
             const src = competitionLogos[zone] || competitionLogos.conf;
             const title = titles[zone] || titles.conf;
             const fallback = zone === 'cl' ? 'CL' : zone === 'el' ? 'EL' : 'UECL';
-            return `<span class="inline-flex items-center justify-center w-4 h-4"><img src="${src}" alt="${title}" title="${title}" class="w-4 h-4 object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';"><span style="display:none" class="text-[8px] font-bold leading-none text-slate-200">${fallback}</span></span>`;
+            return `<span class="inline-flex items-center justify-center ${sizeClass}"><img src="${src}" alt="${title}" title="${title}" class="${sizeClass} object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';"><span style="display:none" class="text-[8px] font-bold leading-none text-slate-200">${fallback}</span></span>`;
+        }
+
+        function getTeamLabelWithLogo(teamName) {
+            return `<span class="inline-flex items-center gap-1.5"><img src="${getTeamLogo(teamName)}" alt="${teamName}" class="w-4 h-4 object-contain">${teamName}</span>`;
         }
 
         function getResultsMapForMode() {
@@ -15319,11 +15323,11 @@ function renderPlayersPassingTable() {
                     return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1.5 space-y-1.5 bg-slate-950/40">
                         <div class="font-semibold text-[11px] text-slate-300">${match.label}</div>
                         <div class="grid grid-cols-[1fr_auto_auto_auto_1fr] gap-1.5 items-center">
-                            <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${match.home}</div>
+                            <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${getTeamLabelWithLogo(match.home)}</div>
                             <div class="flex gap-1"><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
                             <span class="font-mono text-sm min-w-[2.5rem] text-center ${homeWin || awayWin ? 'text-white font-bold' : ''}">${homeGoals}-${awayGoals}</span>
                             <div class="flex gap-1"><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
-                            <div class="truncate text-right ${awayWin ? 'font-extrabold text-white' : 'text-slate-300'}">${match.away}</div>
+                            <div class="truncate text-right ${awayWin ? 'font-extrabold text-white' : 'text-slate-300'}"><span class="inline-flex items-center justify-end gap-1.5 w-full">${match.away}<img src="${getTeamLogo(match.away)}" alt="${match.away}" class="w-4 h-4 object-contain"></span></div>
                         </div>
                     </div>`;
                 };
@@ -15377,7 +15381,12 @@ function renderPlayersPassingTable() {
             tableBody.innerHTML = rows.map((row, idx) => `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20') 
     : ''
 }">
-                    <td class="p-2 font-semibold text-white">${row.team}</td>
+                    <td class="p-2 font-semibold text-white">
+                        <span class="flex items-center justify-between gap-2">
+                            ${getTeamLabelWithLogo(row.team)}
+                            ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
+                        </span>
+                    </td>
                     ${tieMode === 'simulation' ? `<td class="p-2 font-mono">${projectedPoints[row.team]}</td>` : ``}<td class="p-2">${row.points}</td>
                     <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
                     <td class="p-2 ${row.criteriaUsed.gdTotal ? '' : 'text-slate-500'}">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
