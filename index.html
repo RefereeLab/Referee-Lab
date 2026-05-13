@@ -5132,7 +5132,17 @@ Sassuolo-Milan	2-0
 Juventus-Verona	1-1
 Inter-Parma	2-0
 Cremonese-Lazio	1-2
-Roma-Fiorentina	4-0`
+Roma-Fiorentina	4-0
+Torino-Sassuolo	2-1
+Cagliari-Udinese	0-2
+Lazio-Inter	0-3
+Lecce-Juventus	0-1
+Verona-Como	0-1
+Cremonese-Pisa	3-0
+Fiorentina-Genoa	0-0
+Parma-Roma	2-3
+Milan-Atalanta	2-3
+Napoli-Bologna	2-3`
 );
 
 
@@ -7023,7 +7033,18 @@ Sassuolo-Milan	97,09	60,25	62,2%	32	16	16
 Juventus-Verona	97,04	57,01	58,7%	28	9	19
 Inter-Parma	95,13	60,23	63,4%	16	9	7
 Cremonese-Lazio	100,08	59,54	59,8%	29	16	13
-Roma-Fiorentina	93,35	59,27	63,5%	22	12	10`;
+Roma-Fiorentina	93,35	59,27	63,5%	22	12	10
+Torino-Sassuolo	95,24	62,29	65,5%	22	13	9
+Cagliari-Udinese	101,14	57,39	56,9%	23	10	13
+Lazio-Inter	91,53	61,25	66,8%	18	10	8
+Lecce-Juventus	96,18	52,42	54,7%	25	7	18
+Verona-Como	97,4	51,36	52,8%	31	17	14
+Cremonese-Pisa	91,28	54,33	59,6%	22	10	12
+Fiorentina-Genoa	95,06	53,18	56,0%	27	13	14
+Parma-Roma	103,21	55,12	53,4%	22	14	8
+Milan-Atalanta	101,49	58,09	57,1%	25	8	17
+Napoli-Bologna	98,35	0,00	0,00%	22	10	12
+`;
 
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
         const EXTRA_MATCHES_2122 = ``;
@@ -7390,7 +7411,19 @@ Maresca	60,25
 Ayroldi	57,01
 Bonacina	60,23
 Chiffi	59,54
-Zufferli	59,27'
+Zufferli	59,27
+Galipò	62,29
+Dionisi	57,39
+Abisso	61,25
+Colombo	52,42
+Di Bello	51,36
+Ayroldi	54,33
+Massimi	53,18
+Chiffi	55,12
+Zufferli	58,09
+Piccinini	0,00	
+
+'
 `,
 
             "2024-25": `Feliciani	46,39
@@ -15021,80 +15054,120 @@ function renderPlayersPassingTable() {
         }
 
         const tieBreakerTeams = ['Napoli', 'Juventus', 'Milan', 'Roma', 'Como'];
-        const tieBreakerStats = {
-            Napoli: { gdTotal: 18, goalsFor: 57 },
-            Juventus: { gdTotal: 29, goalsFor: 55 },
-            Milan: { gdTotal: 18, goalsFor: 59 },
-            Roma: { gdTotal: 24, goalsFor: 54 },
-            Como: { gdTotal: 32, goalsFor: 50 }
-        };
-        const tieBreakerMatches = {
-            'Napoli|Juventus': { home: [2, 1], away: [0, 3] },
-            'Napoli|Milan': { home: [1, 0], away: [1, 2] },
-            'Napoli|Roma': { home: [2, 2], away: [1, 0] },
-            'Napoli|Como': { home: [0, 0], away: [0, 0] },
-            'Juventus|Milan': { home: [0, 0], away: [0, 0] },
-            'Juventus|Roma': { home: [2, 1], away: [3, 3] },
-            'Juventus|Como': { home: [0, 2], away: [0, 2] },
-            'Milan|Roma': { home: [1, 0], away: [1, 1] },
-            'Milan|Como': { home: [3, 1], away: [1, 1] },
-            'Roma|Como': { home: [1, 0], away: [1, 2] }
-        };
         let selectedTieTeams = [...tieBreakerTeams];
 
-        function getTieMatch(teamA, teamB) {
-            const key = `${teamA}|${teamB}`;
-            if (tieBreakerMatches[key]) return { ...tieBreakerMatches[key], reverse: false };
-            const reverseKey = `${teamB}|${teamA}`;
-            if (!tieBreakerMatches[reverseKey]) return null;
-            return { ...tieBreakerMatches[reverseKey], reverse: true };
+        function parseMatchScore(score) {
+            if (!score) return null;
+            const parts = score.trim().split('-').map((x) => parseInt(x, 10));
+            if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) return null;
+            return parts;
+        }
+
+        function computeSeasonTotals(season, allowedTeams) {
+            const totals = Object.fromEntries(allowedTeams.map((team) => [team, { gf: 0, ga: 0 }]));
+            const resultsMap = MATCH_RESULTS_BY_SEASON[season] || {};
+
+            Object.entries(resultsMap).forEach(([matchName, score]) => {
+                const [homeTeam, awayTeam] = matchName.split('-').map((x) => x.trim());
+                if (!homeTeam || !awayTeam) return;
+                const parsed = parseMatchScore(score);
+                if (!parsed) return;
+                const [homeGoals, awayGoals] = parsed;
+
+                if (totals[homeTeam]) {
+                    totals[homeTeam].gf += homeGoals;
+                    totals[homeTeam].ga += awayGoals;
+                }
+                if (totals[awayTeam]) {
+                    totals[awayTeam].gf += awayGoals;
+                    totals[awayTeam].ga += homeGoals;
+                }
+            });
+
+            return totals;
         }
 
         function computeTieTable(selectedTeams) {
+            const season = '2025-26';
+            const totals = computeSeasonTotals(season, tieBreakerTeams);
             const table = selectedTeams.map((team) => ({
                 team,
                 points: 0,
                 h2hGoalDiff: 0,
-                gdTotal: tieBreakerStats[team].gdTotal,
-                goalsFor: tieBreakerStats[team].goalsFor
+                gdTotal: (totals[team]?.gf || 0) - (totals[team]?.ga || 0),
+                goalsFor: totals[team]?.gf || 0,
+                criteriaUsed: { h2hPoints: false, h2hGoalDiff: false, gdTotal: false, goalsFor: false }
             }));
             const map = Object.fromEntries(table.map((row) => [row.team, row]));
+            const resultsMap = MATCH_RESULTS_BY_SEASON[season] || {};
 
             for (let i = 0; i < selectedTeams.length; i++) {
                 for (let j = i + 1; j < selectedTeams.length; j++) {
                     const teamA = selectedTeams[i];
                     const teamB = selectedTeams[j];
-                    const match = getTieMatch(teamA, teamB);
-                    if (!match) continue;
+                    const rowA = map[teamA];
+                    const rowB = map[teamB];
 
-                    const first = match.reverse ? teamB : teamA;
-                    const second = match.reverse ? teamA : teamB;
-                    const [h1, a1] = match.home;
-                    const [h2, a2] = match.away;
-                    const goalsFirst = h1 + a2;
-                    const goalsSecond = a1 + h2;
+                    [`${teamA}-${teamB}`, `${teamB}-${teamA}`].forEach((matchKey) => {
+                        const score = parseMatchScore(resultsMap[matchKey]);
+                        if (!score) return;
+                        const isDirectOrder = matchKey === `${teamA}-${teamB}`;
+                        const goalsA = isDirectOrder ? score[0] : score[1];
+                        const goalsB = isDirectOrder ? score[1] : score[0];
 
-                    const rowFirst = map[first];
-                    const rowSecond = map[second];
-                    rowFirst.h2hGoalDiff += goalsFirst - goalsSecond;
-                    rowSecond.h2hGoalDiff += goalsSecond - goalsFirst;
+                        rowA.h2hGoalDiff += goalsA - goalsB;
+                        rowB.h2hGoalDiff += goalsB - goalsA;
 
-                    if (goalsFirst > goalsSecond) rowFirst.points += 3;
-                    else if (goalsSecond > goalsFirst) rowSecond.points += 3;
-                    else {
-                        rowFirst.points += 1;
-                        rowSecond.points += 1;
-                    }
+                        if (goalsA > goalsB) rowA.points += 3;
+                        else if (goalsB > goalsA) rowB.points += 3;
+                        else {
+                            rowA.points += 1;
+                            rowB.points += 1;
+                        }
+                    });
                 }
             }
 
-            return table.sort((a, b) =>
+            const sorted = table.sort((a, b) =>
                 b.points - a.points ||
                 b.h2hGoalDiff - a.h2hGoalDiff ||
                 b.gdTotal - a.gdTotal ||
                 b.goalsFor - a.goalsFor ||
                 a.team.localeCompare(b.team)
             );
+
+            let groupStart = 0;
+            while (groupStart < sorted.length) {
+                let groupEnd = groupStart + 1;
+                while (groupEnd < sorted.length && sorted[groupEnd].points === sorted[groupStart].points) groupEnd++;
+                if (groupEnd - groupStart > 1) {
+                    for (let x = groupStart; x < groupEnd; x++) sorted[x].criteriaUsed.h2hPoints = true;
+                    const sameDiff = sorted.slice(groupStart, groupEnd).every((r) => r.h2hGoalDiff === sorted[groupStart].h2hGoalDiff);
+                    if (!sameDiff) {
+                        for (let x = groupStart; x < groupEnd; x++) sorted[x].criteriaUsed.h2hGoalDiff = true;
+                    } else {
+                        const sameGdTot = sorted.slice(groupStart, groupEnd).every((r) => r.gdTotal === sorted[groupStart].gdTotal);
+                        if (!sameGdTot) {
+                            for (let x = groupStart; x < groupEnd; x++) {
+                                sorted[x].criteriaUsed.h2hGoalDiff = true;
+                                sorted[x].criteriaUsed.gdTotal = true;
+                            }
+                        } else {
+                            const sameGoalsFor = sorted.slice(groupStart, groupEnd).every((r) => r.goalsFor === sorted[groupStart].goalsFor);
+                            if (!sameGoalsFor) {
+                                for (let x = groupStart; x < groupEnd; x++) {
+                                    sorted[x].criteriaUsed.h2hGoalDiff = true;
+                                    sorted[x].criteriaUsed.gdTotal = true;
+                                    sorted[x].criteriaUsed.goalsFor = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                groupStart = groupEnd;
+            }
+
+            return sorted;
         }
 
         function renderTieBreakerSection() {
@@ -15134,9 +15207,9 @@ function renderPlayersPassingTable() {
                     <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
                     <td class="p-2 font-semibold text-white">${row.team}</td>
                     <td class="p-2">${row.points}</td>
-                    <td class="p-2">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
-                    <td class="p-2">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
-                    <td class="p-2">${row.goalsFor}</td>
+                    <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
+                    <td class="p-2 ${row.criteriaUsed.gdTotal ? '' : 'text-slate-500'}">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
+                    <td class="p-2 ${row.criteriaUsed.goalsFor ? '' : 'text-slate-500'}">${row.goalsFor}</td>
                 </tr>
             `).join('');
         }
