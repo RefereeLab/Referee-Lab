@@ -15073,16 +15073,16 @@ function renderPlayersPassingTable() {
             conf: 'https://www.fifplay.com/img/public/uecl-logo.png'
         };
         const remainingMatches = [
-            { home: 'Roma', away: 'Lazio', label: '37ª: Roma-Lazio' },
-            { home: 'Genoa', away: 'Milan', label: '37ª: Genoa-Milan' },
-            { home: 'Juventus', away: 'Fiorentina', label: '37ª: Juventus-Fiorentina' },
-            { home: 'Como', away: 'Parma', label: '37ª: Como-Parma' },
-            { home: 'Pisa', away: 'Napoli', label: '37ª: Pisa-Napoli' },
-            { home: 'Cremonese', away: 'Como', label: '38ª: Cremonese-Como' },
-            { home: 'Milan', away: 'Cagliari', label: '38ª: Milan-Cagliari' },
-            { home: 'Napoli', away: 'Udinese', label: '38ª: Napoli-Udinese' },
-            { home: 'Torino', away: 'Juventus', label: '38ª: Torino-Juventus' },
-            { home: 'Verona', away: 'Roma', label: '38ª: Verona-Roma' }
+            { matchday: 37, home: 'ROMA', away: 'Lazio' },
+            { matchday: 37, home: 'Genoa', away: 'MILAN' },
+            { matchday: 37, home: 'JUVENTUS', away: 'Fiorentina' },
+            { matchday: 37, home: 'COMO', away: 'Parma' },
+            { matchday: 37, home: 'Pisa', away: 'NAPOLI' },
+            { matchday: 38, home: 'Cremonese', away: 'COMO' },
+            { matchday: 38, home: 'MILAN', away: 'Cagliari' },
+            { matchday: 38, home: 'NAPOLI', away: 'Udinese' },
+            { matchday: 38, home: 'Torino', away: 'JUVENTUS' },
+            { matchday: 38, home: 'Verona', away: 'ROMA' }
         ];
         let selectedTieTeams = [...tieBreakerTeams];
         let tieMode = 'manual';
@@ -15309,8 +15309,8 @@ function renderPlayersPassingTable() {
             if (simulationPanel && simulationMatches) {
                 simulationPanel.classList.toggle('hidden', tieMode !== 'simulation');
                 const groupedMatches = {
-                    37: remainingMatches.filter((m) => m.label.startsWith('37ª')),
-                    38: remainingMatches.filter((m) => m.label.startsWith('38ª'))
+                    37: remainingMatches.filter((m) => m.matchday === 37),
+                    38: remainingMatches.filter((m) => m.matchday === 38)
                 };
 
                 const renderMatchControl = (match) => {
@@ -15320,7 +15320,6 @@ function renderPlayersPassingTable() {
                     const homeWin = homeGoals > awayGoals;
                     const awayWin = awayGoals > homeGoals;
                     return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1 space-y-1 bg-slate-950/40">
-                        <div class="font-semibold text-[11px] text-slate-300">${match.label}</div>
                         <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] gap-1 items-center">
                             <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${getTeamLabelWithLogo(match.home)}</div>
                             <div class="flex gap-1"><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
@@ -15377,21 +15376,41 @@ function renderPlayersPassingTable() {
             }
             alertBox.classList.add('hidden');
             const { rows, projectedPoints } = buildTieRanking(teamsForRanking);
-            tableBody.innerHTML = rows.map((row, idx) => `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20') 
+            const pointsFrequency = rows.reduce((acc, row) => {
+                const value = tieMode === 'simulation' ? projectedPoints[row.team] : row.points;
+                acc[value] = (acc[value] || 0) + 1;
+                return acc;
+            }, {});
+            const hasAnyTie = Object.values(pointsFrequency).some((count) => count > 1);
+            if (tieMode === 'simulation') {
+                alertBox.classList.remove('hidden');
+                alertBox.className = `text-xs rounded px-3 py-2 border ${hasAnyTie ? 'text-amber-300 bg-amber-500/10 border-amber-500/30' : 'text-sky-300 bg-sky-500/10 border-sky-500/30'}`;
+                alertBox.textContent = hasAnyTie ? 'Parità in classifica rilevate: i criteri di spareggio sono evidenziati nelle righe coinvolte.' : 'Nessuna parità in classifica: i criteri di spareggio non vengono applicati.';
+            }
+
+            tableBody.innerHTML = rows.map((row, idx) => {
+                const isTiedInStandings = tieMode === 'simulation' && (pointsFrequency[projectedPoints[row.team]] || 0) > 1;
+                const h2hPointsCell = (!isTiedInStandings && tieMode === 'simulation') ? '-' : row.points;
+                const h2hGoalDiffCell = (!isTiedInStandings && tieMode === 'simulation') ? '-' : `${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}`;
+                return `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20') 
     : ''
 }">
                     <td class="p-2 font-semibold text-white">
                         <span class="flex items-center justify-between gap-2">
                             ${getTeamLabelWithLogo(row.team)}
-                            ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
+                            <span class="inline-flex items-center gap-1.5">
+                                ${isTiedInStandings ? '<span class="text-[10px] font-bold text-amber-300 border border-amber-500/40 rounded px-1 py-0.5">PARI</span>' : ''}
+                                ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
+                            </span>
                         </span>
                     </td>
-                    ${tieMode === 'simulation' ? `<td class="p-2 font-mono">${projectedPoints[row.team]}</td>` : ``}<td class="p-2">${row.points}</td>
-                    <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
+                    ${tieMode === 'simulation' ? `<td class="p-2 font-mono ${isTiedInStandings ? 'text-amber-200 font-bold' : ''}">${projectedPoints[row.team]}</td>` : ``}<td class="p-2 ${!isTiedInStandings && tieMode === 'simulation' ? 'text-slate-500' : ''}">${h2hPointsCell}</td>
+                    <td class="p-2 ${row.criteriaUsed.h2hGoalDiff && isTiedInStandings ? '' : 'text-slate-500'}">${h2hGoalDiffCell}</td>
                     <td class="p-2 ${row.criteriaUsed.gdTotal ? '' : 'text-slate-500'}">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
                     <td class="p-2 ${row.criteriaUsed.goalsFor ? '' : 'text-slate-500'}">${row.goalsFor}</td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function attachRippleEffect(nodes) {
