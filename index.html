@@ -1536,6 +1536,36 @@ html, body {
                 </div>
             </div>
 
+            <div id="champions-tie-breaker-section" class="pro-card rounded-lg p-4 space-y-4">
+                <div class="border-b border-slate-800 pb-3">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-emerald-400"></i>
+                        Classifica Avulsa 2025/26 (Napoli, Juventus, Milan, Roma, Como)
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Seleziona da 2 a 5 squadre per vedere l'ordine nelle ipotesi di arrivo a pari punti.
+                        Criteri: scontri diretti, differenza reti negli scontri diretti, differenza reti generale, gol segnati.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
+                <div id="tie-breaker-alert" class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2 hidden"></div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-slate-300">
+                        <thead class="bg-slate-800/80 text-slate-200">
+                            <tr>
+                                <th class="p-2 text-left">#</th>
+                                <th class="p-2 text-left">Squadra</th>
+                                <th class="p-2 text-left">Punti avulsa</th>
+                                <th class="p-2 text-left">Diff. reti scontri diretti</th>
+                                <th class="p-2 text-left">Diff. reti generale</th>
+                                <th class="p-2 text-left">Gol segnati</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tie-breaker-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div id="analytics-refs-wrapper" class="space-y-6">
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -14990,6 +15020,127 @@ function renderPlayersPassingTable() {
             }
         }
 
+        const tieBreakerTeams = ['Napoli', 'Juventus', 'Milan', 'Roma', 'Como'];
+        const tieBreakerStats = {
+            Napoli: { gdTotal: 18, goalsFor: 57 },
+            Juventus: { gdTotal: 29, goalsFor: 55 },
+            Milan: { gdTotal: 18, goalsFor: 59 },
+            Roma: { gdTotal: 24, goalsFor: 54 },
+            Como: { gdTotal: 32, goalsFor: 50 }
+        };
+        const tieBreakerMatches = {
+            'Napoli|Juventus': { home: [2, 1], away: [0, 3] },
+            'Napoli|Milan': { home: [1, 0], away: [1, 2] },
+            'Napoli|Roma': { home: [2, 2], away: [1, 0] },
+            'Napoli|Como': { home: [0, 0], away: [0, 0] },
+            'Juventus|Milan': { home: [0, 0], away: [0, 0] },
+            'Juventus|Roma': { home: [2, 1], away: [3, 3] },
+            'Juventus|Como': { home: [0, 2], away: [0, 2] },
+            'Milan|Roma': { home: [1, 0], away: [1, 1] },
+            'Milan|Como': { home: [3, 1], away: [1, 1] },
+            'Roma|Como': { home: [1, 0], away: [1, 2] }
+        };
+        let selectedTieTeams = [...tieBreakerTeams];
+
+        function getTieMatch(teamA, teamB) {
+            const key = `${teamA}|${teamB}`;
+            if (tieBreakerMatches[key]) return { ...tieBreakerMatches[key], reverse: false };
+            const reverseKey = `${teamB}|${teamA}`;
+            if (!tieBreakerMatches[reverseKey]) return null;
+            return { ...tieBreakerMatches[reverseKey], reverse: true };
+        }
+
+        function computeTieTable(selectedTeams) {
+            const table = selectedTeams.map((team) => ({
+                team,
+                points: 0,
+                h2hGoalDiff: 0,
+                gdTotal: tieBreakerStats[team].gdTotal,
+                goalsFor: tieBreakerStats[team].goalsFor
+            }));
+            const map = Object.fromEntries(table.map((row) => [row.team, row]));
+
+            for (let i = 0; i < selectedTeams.length; i++) {
+                for (let j = i + 1; j < selectedTeams.length; j++) {
+                    const teamA = selectedTeams[i];
+                    const teamB = selectedTeams[j];
+                    const match = getTieMatch(teamA, teamB);
+                    if (!match) continue;
+
+                    const first = match.reverse ? teamB : teamA;
+                    const second = match.reverse ? teamA : teamB;
+                    const [h1, a1] = match.home;
+                    const [h2, a2] = match.away;
+                    const goalsFirst = h1 + a2;
+                    const goalsSecond = a1 + h2;
+
+                    const rowFirst = map[first];
+                    const rowSecond = map[second];
+                    rowFirst.h2hGoalDiff += goalsFirst - goalsSecond;
+                    rowSecond.h2hGoalDiff += goalsSecond - goalsFirst;
+
+                    if (goalsFirst > goalsSecond) rowFirst.points += 3;
+                    else if (goalsSecond > goalsFirst) rowSecond.points += 3;
+                    else {
+                        rowFirst.points += 1;
+                        rowSecond.points += 1;
+                    }
+                }
+            }
+
+            return table.sort((a, b) =>
+                b.points - a.points ||
+                b.h2hGoalDiff - a.h2hGoalDiff ||
+                b.gdTotal - a.gdTotal ||
+                b.goalsFor - a.goalsFor ||
+                a.team.localeCompare(b.team)
+            );
+        }
+
+        function renderTieBreakerSection() {
+            const selector = document.getElementById('tie-teams-selector');
+            const tableBody = document.getElementById('tie-breaker-table-body');
+            const alertBox = document.getElementById('tie-breaker-alert');
+            if (!selector || !tableBody || !alertBox) return;
+
+            selector.innerHTML = tieBreakerTeams.map((team) => `
+                <button type="button" class="tie-team-btn px-2 py-2 rounded border text-xs font-semibold transition ${selectedTieTeams.includes(team) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300'}" data-team="${team}">
+                    ${team}
+                </button>
+            `).join('');
+
+            selector.querySelectorAll('.tie-team-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const team = btn.dataset.team;
+                    if (selectedTieTeams.includes(team)) {
+                        selectedTieTeams = selectedTieTeams.filter((t) => t !== team);
+                    } else {
+                        selectedTieTeams = [...selectedTieTeams, team];
+                    }
+                    renderTieBreakerSection();
+                });
+            });
+
+            if (selectedTieTeams.length < 2) {
+                alertBox.classList.remove('hidden');
+                alertBox.textContent = 'Seleziona almeno 2 squadre per calcolare la classifica avulsa.';
+                tableBody.innerHTML = '';
+                return;
+            }
+            alertBox.classList.add('hidden');
+            const rows = computeTieTable(selectedTieTeams);
+            tableBody.innerHTML = rows.map((row, idx) => `
+                <tr class="border-b border-slate-800/70">
+                    <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
+                    <td class="p-2 font-semibold text-white">${row.team}</td>
+                    <td class="p-2">${row.points}</td>
+                    <td class="p-2">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
+                    <td class="p-2">${row.gdTotal > 0 ? '+' : ''}${row.gdTotal}</td>
+                    <td class="p-2">${row.goalsFor}</td>
+                </tr>
+            `).join('');
+        }
+
         function attachRippleEffect(nodes) {
             nodes.forEach((node) => {
                 if (!node) return;
@@ -15019,6 +15170,7 @@ function renderPlayersPassingTable() {
 document.addEventListener('DOMContentLoaded', () => {
     const interactiveTargets = document.querySelectorAll('button, .nav-pill, .season-item, .analytics-season-chip, .analytics-subtab-btn');
     attachRippleEffect(Array.from(interactiveTargets));
+    renderTieBreakerSection();
 
     const refreshQuizBtn = document.getElementById('quiz-refresh');
     if (refreshQuizBtn) refreshQuizBtn.addEventListener('click', prepareQuizRound);
