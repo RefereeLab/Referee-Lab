@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -1151,7 +1151,7 @@ html, body {
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded border border-slate-800">
                 <span class="w-3 h-3 rounded-full bg-green-500 animate-flash"></span>
-                Database aggiornato al 05/05/2026: <span class="text-white font-mono">35ª Giornata</span>
+                Database aggiornato al 12/05/2026: <span class="text-white font-mono">36ª Giornata</span>
             </div>
         </div>
 
@@ -1297,6 +1297,9 @@ html, body {
                 </button>
                 <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-teamradar')">
                     <i class="fa-solid fa-arrow-down"></i> Radar Ritmo Squadre
+                </button>
+                <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-teamreferees')">
+                    <i class="fa-solid fa-arrow-down"></i> Arbitri per squadra
                 </button>
                 <button class="analytics-anchor-btn" onclick="scrollToAnalyticsSection('analytics-section-fouls')">
                     <i class="fa-solid fa-arrow-down"></i> Falli medi/giornata
@@ -1723,6 +1726,72 @@ html, body {
                     <p class="text-[10px] text-slate-400 mt-2 italic text-center">
                         Confronto volumetrico: Spicchi grandi = Più tempo effettivo.
                     </p>
+                </div>
+            </div>
+
+            <div id="analytics-section-teamreferees" class="pro-card rounded-lg p-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-800 pb-3">
+                    <div>
+                        <h3 id="team-referee-section-title" class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-user-tie text-yellow-400"></i> Arbitri per squadra
+                        </h3>
+                        <p id="team-referee-section-desc" class="text-[11px] text-slate-400 mt-1">Classifica degli arbitri che hanno diretto la squadra selezionata.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap text-[11px]" id="season-toggle-teamReferees">
+                        <span class="text-slate-400">Stagioni:</span>
+                        <button type="button" class="analytics-season-chip" data-season="2025-26" onclick="toggleAnalyticsSeason('teamReferees','2025-26', this)">25/26</button>
+                        <button type="button" class="analytics-season-chip" data-season="2024-25" onclick="toggleAnalyticsSeason('teamReferees','2024-25', this)">24/25</button>
+                        <button type="button" class="analytics-season-chip" data-season="2023-24" onclick="toggleAnalyticsSeason('teamReferees','2023-24', this)">23/24</button>
+                        <button type="button" class="analytics-season-chip" data-season="2022-23" onclick="toggleAnalyticsSeason('teamReferees','2022-23', this)">22/23</button>
+                        <button type="button" class="analytics-season-chip" data-season="2021-22" onclick="toggleAnalyticsSeason('teamReferees','2021-22', this)">21/22</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 items-start">
+                    <div class="space-y-3">
+                        <div>
+                            <label for="team-referee-view-select" class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Vista</label>
+                            <select id="team-referee-view-select" onchange="renderTeamRefereesRanking()" class="mt-1 w-full chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded px-3 py-2 focus:border-yellow-500 outline-none cursor-pointer">
+                                <option value="teamToRefs">Squadra -> arbitri</option>
+                                <option value="refToTeams">Arbitro -> squadre</option>
+                            </select>
+                        </div>
+                        <div id="team-referee-team-control">
+                            <label for="team-referee-team-select" class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Squadra</label>
+                            <select id="team-referee-team-select" onchange="renderTeamRefereesRanking()" class="mt-1 w-full chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded px-3 py-2 focus:border-yellow-500 outline-none cursor-pointer"></select>
+                        </div>
+                        <div id="team-referee-ref-control" class="hidden">
+                            <label for="team-referee-ref-select" class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Arbitro</label>
+                            <select id="team-referee-ref-select" onchange="renderTeamRefereesRanking()" class="mt-1 w-full chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded px-3 py-2 focus:border-yellow-500 outline-none cursor-pointer"></select>
+                        </div>
+                        <div>
+                            <label for="team-referee-mode-select" class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Modalita</label>
+                            <select id="team-referee-mode-select" onchange="renderTeamRefereesRanking()" class="mt-1 w-full chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded px-3 py-2 focus:border-yellow-500 outline-none cursor-pointer">
+                                <option value="cumulative">Stagioni cumulative</option>
+                                <option value="season">Singola stagione</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="team-referee-single-season-select" class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Stagione singola</label>
+                            <select id="team-referee-single-season-select" onchange="renderTeamRefereesRanking()" class="mt-1 w-full chart-select bg-slate-900 text-xs text-white border border-slate-700 rounded px-3 py-2 focus:border-yellow-500 outline-none cursor-pointer"></select>
+                        </div>
+                        <div id="team-referee-summary" class="rounded border border-slate-800 bg-slate-900/70 p-3 text-xs text-slate-300"></div>
+                    </div>
+                    <div>
+                        <div id="chart-team-referees" class="w-full min-h-[320px]"></div>
+                    </div>
+                </div>
+
+                <div class="mt-5 border-t border-slate-800 pt-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                        <div>
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-ranking-star text-amber-400"></i> Record arbitro-squadra
+                            </h4>
+                            <p id="team-referee-record-desc" class="text-[11px] text-slate-400 mt-1">Le 5 coppie con piu partite arbitrate nelle stagioni selezionate.</p>
+                        </div>
+                    </div>
+                    <div id="chart-team-referee-records" class="w-full min-h-[260px]"></div>
                 </div>
             </div>
 
@@ -8833,41 +8902,43 @@ Orsato	56,45'
             "2025-26": [
                 { name: "Daniele Doveri", matches: 18, fouls_avg: 24.11, penalties_ap: 0.17, yellows_ap: 3.39, yellows: 61, reds_ap: 0.06, reds: 1 },
                 { name: "Davide Massa", matches: 16, fouls_avg: 28.44, penalties_ap: 0.31, yellows_ap: 4.50, yellows: 72, reds_ap: 0.38, reds: 6 },
+                { name: "Luca Zufferli", matches: 16, fouls_avg: 24.81, penalties_ap: 0.56, yellows_ap: 3.00, yellows: 48, reds_ap: 0.06, reds: 1 },
                 { name: "Maurizio Mariani", matches: 15, fouls_avg: 24.13, penalties_ap: 0.40, yellows_ap: 3.80, yellows: 57, reds_ap: 0.07, reds: 1 },
                 { name: "Marco Guida", matches: 15, fouls_avg: 24.80, penalties_ap: 0.47, yellows_ap: 3.93, yellows: 59, reds_ap: 0.20, reds: 3 },
                 { name: "Michael Fabbri", matches: 15, fouls_avg: 24.87, penalties_ap: 0.27, yellows_ap: 4.00, yellows: 60, reds_ap: 0.13, reds: 2 },
+                { name: "Daniele Chiffi", matches: 15, fouls_avg: 22.67, penalties_ap: 0.27, yellows_ap: 2.40, yellows: 36, reds_ap: 0.20, reds: 3 },
                 { name: "Simone Sozza", matches: 15, fouls_avg: 25.60, penalties_ap: 0.40, yellows_ap: 3.33, yellows: 50, reds_ap: 0.40, reds: 6 },
-                { name: "Luca Zufferli", matches: 15, fouls_avg: 24.80, penalties_ap: 0.53, yellows_ap: 2.80, yellows: 42, reds_ap: 0.07, reds: 1 },
-                { name: "Daniele Chiffi", matches: 14, fouls_avg: 22.71, penalties_ap: 0.21, yellows_ap: 2.43, yellows: 34, reds_ap: 0.14, reds: 2 },
+                { name: "Andrea Colombo", matches: 15, fouls_avg: 28.13, penalties_ap: 0.27, yellows_ap: 4.40, yellows: 66, reds_ap: 0.00, reds: 0 },
                 { name: "Federico La Penna", matches: 14, fouls_avg: 28.14, penalties_ap: 0.21, yellows_ap: 3.36, yellows: 47, reds_ap: 0.36, reds: 5 },
-                { name: "Andrea Colombo", matches: 14, fouls_avg: 28.36, penalties_ap: 0.29, yellows_ap: 4.57, yellows: 64, reds_ap: 0.00, reds: 0 },
+                { name: "Marco Di Bello", matches: 13, fouls_avg: 26.46, penalties_ap: 0.23, yellows_ap: 2.38, yellows: 31, reds_ap: 0.08, reds: 1 },
                 { name: "Matteo Marchetti", matches: 13, fouls_avg: 23.92, penalties_ap: 0.31, yellows_ap: 3.38, yellows: 44, reds_ap: 0.31, reds: 4 },
                 { name: "Ermanno Feliciani", matches: 13, fouls_avg: 24.15, penalties_ap: 0.31, yellows_ap: 2.54, yellows: 33, reds_ap: 0.00, reds: 0 },
-                { name: "Marco Di Bello", matches: 12, fouls_avg: 26.08, penalties_ap: 0.25, yellows_ap: 2.42, yellows: 29, reds_ap: 0.08, reds: 1 },
                 { name: "Matteo Marcenaro", matches: 12, fouls_avg: 25.08, penalties_ap: 0.17, yellows_ap: 4.08, yellows: 49, reds_ap: 0.08, reds: 1 },
                 { name: "Giuseppe Collu", matches: 12, fouls_avg: 22.25, penalties_ap: 0.42, yellows_ap: 4.25, yellows: 51, reds_ap: 0.17, reds: 2 },
+                { name: "Rosario Abisso", matches: 11, fouls_avg: 24.36, penalties_ap: 0.09, yellows_ap: 3.45, yellows: 38, reds_ap: 0.55, reds: 6 },
                 { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 27.09, penalties_ap: 0.27, yellows_ap: 3.45, yellows: 38, reds_ap: 0.00, reds: 0 },
                 { name: "Francesco Fourneau", matches: 11, fouls_avg: 26.36, penalties_ap: 0.36, yellows_ap: 4.09, yellows: 45, reds_ap: 0.00, reds: 0 },
                 { name: "Kevin Bonacina", matches: 11, fouls_avg: 26.09, penalties_ap: 0.09, yellows_ap: 3.27, yellows: 36, reds_ap: 0.18, reds: 2 },
-                { name: "Rosario Abisso", matches: 10, fouls_avg: 25.00, penalties_ap: 0.10, yellows_ap: 3.50, yellows: 35, reds_ap: 0.50, reds: 5 },
                 { name: "Luca Pairetto", matches: 10, fouls_avg: 26.80, penalties_ap: 0.60, yellows_ap: 5.30, yellows: 53, reds_ap: 0.30, reds: 3 },
                 { name: "Fabio Maresca", matches: 10, fouls_avg: 25.30, penalties_ap: 0.10, yellows_ap: 4.00, yellows: 40, reds_ap: 0.20, reds: 2 },
+                { name: "Giovanni Ayroldi", matches: 10, fouls_avg: 29.40, penalties_ap: 0.10, yellows_ap: 4.20, yellows: 42, reds_ap: 0.30, reds: 3 },
                 { name: "Alberto Arena", matches: 10, fouls_avg: 21.60, penalties_ap: 0.20, yellows_ap: 3.40, yellows: 34, reds_ap: 0.00, reds: 0 },
                 { name: "Gianluca Manganiello", matches: 9, fouls_avg: 24.89, penalties_ap: 0.11, yellows_ap: 3.00, yellows: 27, reds_ap: 0.00, reds: 0 },
-                { name: "Giovanni Ayroldi", matches: 9, fouls_avg: 30.22, penalties_ap: 0.11, yellows_ap: 4.44, yellows: 40, reds_ap: 0.11, reds: 1 },
                 { name: "Valerio Crezzini", matches: 9, fouls_avg: 26.33, penalties_ap: 0.33, yellows_ap: 3.33, yellows: 30, reds_ap: 0.00, reds: 0 },
                 { name: "Livio Marinelli", matches: 8, fouls_avg: 27.38, penalties_ap: 0.25, yellows_ap: 3.38, yellows: 27, reds_ap: 0.38, reds: 3 },
                 { name: "Antonio Rapuano", matches: 7, fouls_avg: 25.71, penalties_ap: 0.29, yellows_ap: 3.86, yellows: 27, reds_ap: 0.43, reds: 3 },
-                { name: "Marco Piccinini", matches: 6, fouls_avg: 27.00, penalties_ap: 0.33, yellows_ap: 3.33, yellows: 20, reds_ap: 0.33, reds: 2 },
+                { name: "Marco Piccinini", matches: 7, fouls_avg: 26.29, penalties_ap: 0.43, yellows_ap: 3.57, yellows: 25, reds_ap: 0.29, reds: 2 },
                 { name: "Davide Di Marco", matches: 3, fouls_avg: 22.33, penalties_ap: 0.33, yellows_ap: 2.67, yellows: 8, reds_ap: 0.00, reds: 0 },
                 { name: "Giuseppe Mucera", matches: 3, fouls_avg: 27.00, penalties_ap: 0.33, yellows_ap: 2.67, yellows: 8, reds_ap: 0.00, reds: 0 },
                 { name: "Ivano Pezzuto", matches: 2, fouls_avg: 30.00, penalties_ap: 0.00, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 },
+                { name: "Federico Dionisi", matches: 2, fouls_avg: 25.50, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.00, reds: 0 },
+                { name: "Luca Massimi", matches: 2, fouls_avg: 24.50, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 6, reds_ap: 0.00, reds: 0 },
                 { name: "Paride Tremolada", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 14, reds_ap: 0.00, reds: 0 },
                 { name: "Andrea Calzavara", matches: 2, fouls_avg: 30.50, penalties_ap: 0.50, yellows_ap: 3.50, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Federico Dionisi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 7, reds_ap: 0.00, reds: 0 },
-                { name: "Luca Massimi", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Perenzoni", matches: 1, fouls_avg: 27.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 0.00, reds: 0 },
-                { name: "Maria Ferrieri Caputi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 }
+                { name: "Maria Ferrieri Caputi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
+                { name: "Simone Galipò", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 }
+
 
             ],
             "2024-25": [
@@ -9106,6 +9177,7 @@ Orsato	56,45'
             eff: [...ANALYTICS_SEASON_DEFAULT],
             effTot: [...ANALYTICS_SEASON_DEFAULT],
             teamRadar: [...ANALYTICS_SEASON_DEFAULT],
+            teamReferees: [...ANALYTICS_SEASON_DEFAULT],
         };
 
         const VIEW_ROUTE_MAP = {
@@ -9140,6 +9212,8 @@ Orsato	56,45'
         let chartEffTotalCorrelation = null;
         let chartFoulsByMatchday = null;
         let chartPlayerScatter = null;
+        let chartTeamReferees = null;
+        let chartTeamRefereeRecords = null;
         let currentAnalyticsData = [];
         let currentMatchData = [];
 let refereeData = [];
@@ -11128,6 +11202,7 @@ if(q && result.length && currentView !== 'analytics') {
             renderEffDistributionChart(effMatches); // Passiamo i dati delle partite
             renderFoulsByMatchdayChart();
             renderTopFlopTeamsChart(teamRadarSeasons); // Questa calcolerà i dati delle squadre internamente
+            renderTeamRefereesRanking();
             renderTeamHeatmap();
 
         }
@@ -11760,6 +11835,354 @@ function hexToRgba(hex, alpha = 1) {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function getTeamRefereeAvailableTeams() {
+    const matches = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
+    const teams = new Set();
+
+    matches.forEach(match => {
+        const { homeTeam, awayTeam } = splitMatchTeams(match.match || '');
+        if (homeTeam) teams.add(homeTeam);
+        if (awayTeam) teams.add(awayTeam);
+    });
+
+    return Array.from(teams).sort((a, b) => a.localeCompare(b));
+}
+
+function getTeamRefereeAvailableReferees() {
+    const matches = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
+    const referees = new Set();
+
+    matches.forEach(match => {
+        const referee = (match.referee || '').trim();
+        if (referee) referees.add(referee);
+    });
+
+    return Array.from(referees).sort((a, b) => getRefereeSurname(a).localeCompare(getRefereeSurname(b)));
+}
+
+function populateTeamRefereeControls() {
+    const teamSelect = document.getElementById('team-referee-team-select');
+    const refereeSelect = document.getElementById('team-referee-ref-select');
+    const seasonSelect = document.getElementById('team-referee-single-season-select');
+    if (!teamSelect || !refereeSelect || !seasonSelect) return;
+
+    const previousTeam = teamSelect.value;
+    const teams = getTeamRefereeAvailableTeams();
+    teamSelect.innerHTML = teams.map(team => `<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`).join('');
+    teamSelect.value = teams.includes(previousTeam) ? previousTeam : (teams[0] || '');
+
+    const previousReferee = refereeSelect.value;
+    const referees = getTeamRefereeAvailableReferees();
+    refereeSelect.innerHTML = referees
+        .map(referee => `<option value="${escapeHtml(referee)}">${escapeHtml(getRefereeSurname(referee))}</option>`)
+        .join('');
+    refereeSelect.value = referees.includes(previousReferee) ? previousReferee : (referees[0] || '');
+
+    const previousSeason = seasonSelect.value;
+    seasonSelect.innerHTML = ANALYTICS_SEASON_OPTIONS
+        .map(season => `<option value="${season}">${formatSeasonLabel(season) || season}</option>`)
+        .join('');
+
+    if (ANALYTICS_SEASON_OPTIONS.includes(previousSeason)) {
+        seasonSelect.value = previousSeason;
+    } else {
+        const activeTeamRefSeasons = analyticsSeasonFilters.teamReferees || ANALYTICS_SEASON_DEFAULT;
+        seasonSelect.value = activeTeamRefSeasons[0] || ANALYTICS_SEASON_DEFAULT[0];
+    }
+}
+
+function buildTeamRefereeRanking(teamName, seasons) {
+    const selectedTeam = (teamName || '').trim().toLowerCase();
+    if (!selectedTeam) return { rows: [], matchCount: 0 };
+
+    const counts = new Map();
+    const matches = processMatchesViewData(seasons).filter(match => {
+        const { homeTeam, awayTeam } = splitMatchTeams(match.match || '');
+        return [homeTeam, awayTeam].some(team => (team || '').trim().toLowerCase() === selectedTeam);
+    });
+
+    matches.forEach(match => {
+        const referee = (match.referee || '').trim();
+        if (!referee) return;
+
+        if (!counts.has(referee)) {
+            counts.set(referee, { name: referee, count: 0, seasons: new Set(), matches: [] });
+        }
+
+        const row = counts.get(referee);
+        row.count += 1;
+        row.seasons.add(match.season);
+        row.matches.push(match.match);
+    });
+
+    const rows = Array.from(counts.values())
+        .map(row => ({
+            ...row,
+            seasonList: Array.from(row.seasons).sort().reverse(),
+        }))
+        .sort((a, b) => b.count - a.count || getRefereeSurname(a.name).localeCompare(getRefereeSurname(b.name)));
+
+    return { rows, matchCount: matches.length };
+}
+
+function buildRefereeTeamRanking(refereeName, seasons) {
+    const selectedReferee = getRefereeSurname(refereeName || '').trim().toLowerCase();
+    if (!selectedReferee) return { rows: [], matchCount: 0 };
+
+    const counts = new Map();
+    const matches = processMatchesViewData(seasons).filter(match => {
+        const referee = (match.referee || '').trim();
+        return referee && getRefereeSurname(referee).toLowerCase() === selectedReferee;
+    });
+
+    matches.forEach(match => {
+        const { homeTeam, awayTeam } = splitMatchTeams(match.match || '');
+        [homeTeam, awayTeam].forEach(team => {
+            const teamName = (team || '').trim();
+            if (!teamName) return;
+
+            if (!counts.has(teamName)) {
+                counts.set(teamName, { name: teamName, count: 0, seasons: new Set(), matches: [] });
+            }
+
+            const row = counts.get(teamName);
+            row.count += 1;
+            row.seasons.add(match.season);
+            row.matches.push(match.match);
+        });
+    });
+
+    const rows = Array.from(counts.values())
+        .map(row => ({
+            ...row,
+            seasonList: Array.from(row.seasons).sort().reverse(),
+        }))
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+    return { rows, matchCount: matches.length };
+}
+
+function getTeamRefereeBarColor(count, maxCount) {
+    const ratio = maxCount > 0 ? count / maxCount : 0;
+
+    if (ratio >= 0.85) return '#eab308'; // fascia alta: oro
+    if (ratio >= 0.65) return '#f59e0b'; // alto: ambra
+    if (ratio >= 0.45) return '#22c55e'; // medio-alto: verde
+    if (ratio >= 0.25) return '#38bdf8'; // medio-basso: azzurro
+    return '#94a3b8'; // basso: slate chiaro
+}
+
+function buildTeamRefereeRecords(seasons, limit = 5) {
+    const pairMap = new Map();
+    const matches = processMatchesViewData(seasons);
+
+    matches.forEach(match => {
+        const referee = (match.referee || '').trim();
+        if (!referee) return;
+
+        const { homeTeam, awayTeam } = splitMatchTeams(match.match || '');
+        [homeTeam, awayTeam].forEach(team => {
+            const teamName = (team || '').trim();
+            if (!teamName) return;
+
+            const key = `${referee.toLowerCase()}|${teamName.toLowerCase()}`;
+            if (!pairMap.has(key)) {
+                pairMap.set(key, { referee, team: teamName, count: 0, seasons: new Set() });
+            }
+
+            const row = pairMap.get(key);
+            row.count += 1;
+            row.seasons.add(match.season);
+        });
+    });
+
+    return Array.from(pairMap.values())
+        .map(row => ({
+            ...row,
+            label: `${getRefereeSurname(row.referee)} - ${row.team}`,
+            seasonList: Array.from(row.seasons).sort().reverse(),
+        }))
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+        .slice(0, limit);
+}
+
+function renderTeamRefereeRecords(seasons, seasonText) {
+    const chartEl = document.getElementById('chart-team-referee-records');
+    const descEl = document.getElementById('team-referee-record-desc');
+    if (!chartEl) return;
+
+    if (chartTeamRefereeRecords) {
+        chartTeamRefereeRecords.destroy();
+        chartTeamRefereeRecords = null;
+    }
+
+    const records = buildTeamRefereeRecords(seasons, 5);
+    if (descEl) {
+        descEl.textContent = `Le 5 coppie con piu partite arbitrate: ${seasonText.toLowerCase()}.`;
+    }
+
+    if (!records.length) {
+        chartEl.innerHTML = '<div class="h-full flex items-center justify-center text-xs text-slate-500">Nessun record disponibile per le stagioni selezionate.</div>';
+        return;
+    }
+
+    const maxCount = Math.max(...records.map(row => row.count), 1);
+    const colors = records.map(row => getTeamRefereeBarColor(row.count, maxCount));
+
+    chartTeamRefereeRecords = new ApexCharts(chartEl, {
+        series: [{ name: 'Partite', data: records.map(row => row.count) }],
+        chart: { type: 'bar', height: 260, background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '46%', distributed: true } },
+        colors,
+        dataLabels: { enabled: true, style: { colors: ['#020617'], fontWeight: 800 }, formatter: val => `${val}` },
+        xaxis: {
+            categories: records.map(row => row.label),
+            min: 0,
+            tickAmount: maxCount,
+            labels: { style: { colors: '#94a3b8' } },
+            axisBorder: { color: 'rgba(255,255,255,0.08)' },
+            axisTicks: { color: 'rgba(255,255,255,0.08)' }
+        },
+        yaxis: { labels: { style: { colors: '#e2e8f0', fontSize: '11px' } } },
+        grid: { borderColor: 'rgba(255,255,255,0.05)' },
+        legend: { show: false },
+        tooltip: {
+            theme: 'dark',
+            custom: ({ series, dataPointIndex }) => {
+                const row = records[dataPointIndex];
+                const value = series?.[0]?.[dataPointIndex] ?? row?.count ?? 0;
+                if (!row) return '';
+                return `<div class="px-3 py-2 text-xs">
+                    <div class="font-bold text-white">${escapeHtml(row.referee)} - ${escapeHtml(row.team)}</div>
+                    <div class="text-slate-300">${value} partite</div>
+                    <div class="text-slate-500">${row.seasonList.map(escapeHtml).join(', ')}</div>
+                </div>`;
+            }
+        }
+    });
+    chartTeamRefereeRecords.render();
+}
+
+function renderTeamRefereesRanking() {
+    const chartEl = document.getElementById('chart-team-referees');
+    const summaryEl = document.getElementById('team-referee-summary');
+    const viewSelect = document.getElementById('team-referee-view-select');
+    const sectionTitle = document.getElementById('team-referee-section-title');
+    const sectionDesc = document.getElementById('team-referee-section-desc');
+    const teamSelect = document.getElementById('team-referee-team-select');
+    const refereeSelect = document.getElementById('team-referee-ref-select');
+    const teamControl = document.getElementById('team-referee-team-control');
+    const refereeControl = document.getElementById('team-referee-ref-control');
+    const modeSelect = document.getElementById('team-referee-mode-select');
+    const seasonSelect = document.getElementById('team-referee-single-season-select');
+    if (!chartEl || !summaryEl || !viewSelect || !teamSelect || !refereeSelect || !modeSelect || !seasonSelect) return;
+
+    populateTeamRefereeControls();
+
+    const viewMode = viewSelect.value || 'teamToRefs';
+    const teamName = teamSelect.value;
+    const refereeName = refereeSelect.value;
+    const mode = modeSelect.value || 'cumulative';
+    const seasons = mode === 'season'
+        ? [seasonSelect.value || ANALYTICS_SEASON_DEFAULT[0]]
+        : (analyticsSeasonFilters.teamReferees || ANALYTICS_SEASON_DEFAULT);
+
+    if (teamControl) teamControl.classList.toggle('hidden', viewMode !== 'teamToRefs');
+    if (refereeControl) refereeControl.classList.toggle('hidden', viewMode !== 'refToTeams');
+    if (sectionTitle) {
+        sectionTitle.innerHTML = viewMode === 'refToTeams'
+            ? '<i class="fa-solid fa-user-tie text-yellow-400"></i> Squadre per arbitro'
+            : '<i class="fa-solid fa-user-tie text-yellow-400"></i> Arbitri per squadra';
+    }
+    if (sectionDesc) {
+        sectionDesc.textContent = viewMode === 'refToTeams'
+            ? "Classifica delle squadre piu dirette dall'arbitro selezionato."
+            : 'Classifica degli arbitri che hanno diretto la squadra selezionata.';
+    }
+    seasonSelect.disabled = mode !== 'season';
+    seasonSelect.classList.toggle('opacity-50', mode !== 'season');
+
+    const { rows, matchCount } = viewMode === 'refToTeams'
+        ? buildRefereeTeamRanking(refereeName, seasons)
+        : buildTeamRefereeRanking(teamName, seasons);
+    const seasonText = mode === 'season'
+        ? `Stagione ${formatSeasonLabel(seasons[0]) || seasons[0]}`
+        : `${seasons.length} stagioni selezionate`;
+
+    renderTeamRefereeRecords(seasons, seasonText);
+
+    const summaryIcon = viewMode === 'refToTeams'
+        ? `<div class="w-9 h-9 rounded-full bg-yellow-400/15 border border-yellow-400/30 flex items-center justify-center text-yellow-300"><i class="fa-solid fa-user-tie"></i></div>`
+        : `<img src="${getTeamLogo(teamName)}" alt="${escapeHtml(teamName)}" class="w-9 h-9 object-contain">`;
+    const summaryTitle = viewMode === 'refToTeams'
+        ? getRefereeSurname(refereeName || 'Arbitro')
+        : (teamName || 'Squadra');
+    const summaryMeta = viewMode === 'refToTeams'
+        ? `${escapeHtml(seasonText)} - ${matchCount} partite arbitrate`
+        : `${escapeHtml(seasonText)} - ${matchCount} partite trovate`;
+
+    summaryEl.innerHTML = `
+        <div class="flex items-center gap-3">
+            ${summaryIcon}
+            <div>
+                <div class="text-white font-bold uppercase">${escapeHtml(summaryTitle)}</div>
+                <div class="text-[11px] text-slate-400">${summaryMeta}</div>
+            </div>
+        </div>
+    `;
+
+    if (chartTeamReferees) {
+        chartTeamReferees.destroy();
+        chartTeamReferees = null;
+    }
+
+    if (!rows.length) {
+        const emptyText = viewMode === 'refToTeams'
+            ? 'Nessuna squadra disponibile per la selezione.'
+            : 'Nessun arbitro disponibile per la selezione.';
+        chartEl.innerHTML = `<div class="h-full flex items-center justify-center text-xs text-slate-500">${emptyText}</div>`;
+        return;
+    }
+
+    const maxCount = Math.max(...rows.map(row => row.count), 1);
+    const chartHeight = Math.max(320, rows.length * 26 + 62);
+    const barColors = rows.map(row => getTeamRefereeBarColor(row.count, maxCount));
+    chartEl.style.minHeight = `${chartHeight}px`;
+
+    chartTeamReferees = new ApexCharts(chartEl, {
+        series: [{ name: 'Presenze', data: rows.map(row => row.count) }],
+        chart: { type: 'bar', height: chartHeight, background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '42%', distributed: true } },
+        colors: barColors,
+        dataLabels: { enabled: true, style: { colors: ['#020617'], fontWeight: 800 }, formatter: val => `${val}` },
+        xaxis: {
+            categories: rows.map(row => viewMode === 'refToTeams' ? row.name : getRefereeSurname(row.name)),
+            min: 0,
+            tickAmount: maxCount,
+            labels: { style: { colors: '#94a3b8' } },
+            axisBorder: { color: 'rgba(255,255,255,0.08)' },
+            axisTicks: { color: 'rgba(255,255,255,0.08)' }
+        },
+        yaxis: { labels: { style: { colors: '#e2e8f0', fontSize: '11px' } } },
+        grid: { borderColor: 'rgba(255,255,255,0.05)' },
+        legend: { show: false },
+        tooltip: {
+            theme: 'dark',
+            y: { formatter: val => viewMode === 'refToTeams' ? `${val} partite` : `${val} presenze` }
+        }
+    });
+    chartTeamReferees.render();
 }
 
 function renderFoulsByMatchdayChart() {
