@@ -15071,8 +15071,8 @@ function renderPlayersPassingTable() {
         };
         const competitionLogos = {
             cl: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png',
-            el: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7f/UEFA_Europa_League_logo_%282024_version%29.svg/120px-UEFA_Europa_League_logo_%282024_version%29.svg.png',
-            conf: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/35/UEFA_Conference_League_logo.svg/120px-UEFA_Conference_League_logo.svg.png'
+            el: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/UEFA_Europa_League.svg/120px-UEFA_Europa_League.svg.png',
+            conf: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/75/UEFA_Europa_Conference_League_logo.svg/120px-UEFA_Europa_Conference_League_logo.svg.png'
         };
         const remainingMatches = [
             { home: 'Roma', away: 'Lazio', label: '37ª: Roma-Lazio' },
@@ -15236,21 +15236,35 @@ function renderPlayersPassingTable() {
             return projected;
         }
 
+        function buildTieRanking(teams) {
+            const rows = computeTieTable(teams);
+            const projectedPoints = computeProjectedPoints();
+            rows.sort((a,b) => (projectedPoints[b.team]-projectedPoints[a.team]) || (b.points-a.points) || (b.h2hGoalDiff-a.h2hGoalDiff) || (b.gdTotal-a.gdTotal) || (b.goalsFor-a.goalsFor));
+            return { rows, projectedPoints };
+        }
+
         function renderTieBreakerSection() {
             const selector = document.getElementById('tie-teams-selector');
             const tableBody = document.getElementById('tie-breaker-table-body');
             const alertBox = document.getElementById('tie-breaker-alert');
             if (!selector || !tableBody || !alertBox) return;
 
-            selector.innerHTML = tieBreakerTeams.map((team) => `
+            const { rows: globalRanking } = buildTieRanking(tieBreakerTeams);
+            const rankingIndex = Object.fromEntries(globalRanking.map((row, idx) => [row.team, idx + 1]));
+
+            selector.innerHTML = globalRanking.map((row) => {
+                const team = row.team;
+                return `
                 <button type="button" class="tie-team-btn px-2 py-2 rounded border text-xs font-semibold transition ${selectedTieTeams.includes(team) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300'}" data-team="${team}">
                     <span class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-mono text-slate-400">#${rankingIndex[team]}</span>
                         <span class="text-[11px] font-mono">${tieTeamsInfo[team].points}</span>
                         <span>${team}</span>
                         <span>${getZoneIcon(tieTeamsInfo[team].zone)}</span>
                     </span>
                 </button>
-            `).join('');
+            `;
+            }).join('');
 
             const modeManualBtn = document.getElementById('tie-mode-manual');
             const modeSimBtn = document.getElementById('tie-mode-sim');
@@ -15275,29 +15289,19 @@ function renderPlayersPassingTable() {
                     const key = `${match.home}-${match.away}`;
                     const parsed = parseMatchScore(tieSimulationResults[key]) || [0, 0];
                     const [homeGoals, awayGoals] = parsed;
-                    return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-2 space-y-2">
-                        <div class="font-semibold text-slate-200">${match.label}</div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="bg-slate-950 rounded border border-slate-700 p-2">
-                                <div class="text-[11px] truncate">${match.home}</div>
-                                <div class="flex items-center justify-between mt-1">
-                                    <button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-2 py-0.5 rounded border border-slate-600">−</button>
-                                    <span class="font-mono text-sm">${homeGoals}</span>
-                                    <button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-2 py-0.5 rounded border border-slate-600">+</button>
-                                </div>
-                            </div>
-                            <div class="bg-slate-950 rounded border border-slate-700 p-2">
-                                <div class="text-[11px] truncate">${match.away}</div>
-                                <div class="flex items-center justify-between mt-1">
-                                    <button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-2 py-0.5 rounded border border-slate-600">−</button>
-                                    <span class="font-mono text-sm">${awayGoals}</span>
-                                    <button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-2 py-0.5 rounded border border-slate-600">+</button>
-                                </div>
-                            </div>
+                    const homeWin = homeGoals > awayGoals;
+                    const awayWin = awayGoals > homeGoals;
+                    return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1.5 space-y-1.5 bg-slate-950/40">
+                        <div class="font-semibold text-[11px] text-slate-300">${match.label}</div>
+                        <div class="grid grid-cols-[1fr_auto_auto_auto_1fr] gap-1.5 items-center">
+                            <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${match.home}</div>
+                            <div class="flex gap-1"><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
+                            <span class="font-mono text-sm min-w-[2.5rem] text-center ${homeWin || awayWin ? 'text-white font-bold' : ''}">${homeGoals}-${awayGoals}</span>
+                            <div class="flex gap-1"><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
+                            <div class="truncate text-right ${awayWin ? 'font-extrabold text-white' : 'text-slate-300'}">${match.away}</div>
                         </div>
                     </div>`;
                 };
-
                 simulationMatches.innerHTML = `
                     <div>
                         <h4 class="text-xs font-bold text-slate-200 mb-2">37ª giornata</h4>
@@ -15343,12 +15347,10 @@ function renderPlayersPassingTable() {
                 return;
             }
             alertBox.classList.add('hidden');
-            const rows = computeTieTable(selectedTieTeams);
-            const projectedPoints = computeProjectedPoints();
-            rows.sort((a,b) => (projectedPoints[b.team]-projectedPoints[a.team]) || (b.points-a.points) || (b.h2hGoalDiff-a.h2hGoalDiff) || (b.gdTotal-a.gdTotal) || (b.goalsFor-a.goalsFor));
+            const { rows, projectedPoints } = buildTieRanking(selectedTieTeams);
             tableBody.innerHTML = rows.map((row, idx) => `
                 <tr class="border-b border-slate-800/70">
-                    <td class="p-2 font-mono text-slate-200">${idx + 2}</td>
+                    <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
                     <td class="p-2 font-semibold text-white">${row.team}</td>
                     ${tieMode === 'simulation' ? `<td class="p-2 font-mono">${projectedPoints[row.team]}</td>` : ``}<td class="p-2">${row.points}</td>
                     <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
