@@ -1540,20 +1540,19 @@ html, body {
                 <div class="border-b border-slate-800 pb-3">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-scale-balanced text-emerald-400"></i>
-                        Classifica Avulsa 2025/26 (Napoli, Juventus, Milan, Roma, Como)
+                        CORSA CHAMPIONS 2025/26: tutte le ipotesi di parità tra Napoli, Juventus, Milan, Roma e Como
                     </h3>
                     <p class="text-[11px] text-slate-400 mt-2">
-                        Seleziona da 2 a 5 squadre per vedere l'ordine nelle ipotesi di arrivo a pari punti.
-                        Criteri: scontri diretti, differenza reti negli scontri diretti, differenza reti generale, gol segnati.
+                       Criteri: 1.scontri diretti, 2.differenza reti negli scontri diretti, 3.differenza reti generale, 4.gol segnati.
                     </p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
                 <div class="flex flex-wrap gap-2" id="tie-mode-selector">
-                    <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità classifica avulsa (manuale)</button>
-                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultime 2 giornate</button>
+                    <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità: selezione manuale squadre</button>
+                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità: simulazione ultime 2 giornate</button>
                 </div>
                 <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
-                    <p class="text-[11px] text-slate-400">Imposta i gol con i pulsanti +/- per ogni squadra (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
+                    <p class="text-[11px] text-slate-400">Inserire i gol di ogni squadra.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
                 </div>
                 <div id="tie-breaker-alert" class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2 hidden"></div>
@@ -15231,8 +15230,8 @@ function renderPlayersPassingTable() {
             const projected = Object.fromEntries(tieBreakerTeams.map((t) => [t, tieTeamsInfo[t].points]));
             if (tieMode !== 'simulation') return projected;
             remainingMatches.forEach((match) => {
-                const parsed = parseMatchScore(tieSimulationResults[`${match.home}-${match.away}`]);
-                if (!parsed) return;
+                const key = `${match.home}-${match.away}`;
+                const parsed = parseMatchScore(tieSimulationResults[key] ?? '0-0') || [0, 0];
                 const [hg, ag] = parsed;
                 if (tieBreakerTeams.includes(match.home)) projected[match.home] += hg > ag ? 3 : hg === ag ? 1 : 0;
                 if (tieBreakerTeams.includes(match.away)) projected[match.away] += ag > hg ? 3 : hg === ag ? 1 : 0;
@@ -15320,12 +15319,12 @@ function renderPlayersPassingTable() {
                     const [homeGoals, awayGoals] = parsed;
                     const homeWin = homeGoals > awayGoals;
                     const awayWin = awayGoals > homeGoals;
-                    return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1.5 space-y-1.5 bg-slate-950/40">
+                    return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1 space-y-1 bg-slate-950/40">
                         <div class="font-semibold text-[11px] text-slate-300">${match.label}</div>
-                        <div class="grid grid-cols-[1fr_auto_auto_auto_1fr] gap-1.5 items-center">
+                        <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] gap-1 items-center">
                             <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${getTeamLabelWithLogo(match.home)}</div>
                             <div class="flex gap-1"><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
-                            <span class="font-mono text-sm min-w-[2.5rem] text-center ${homeWin || awayWin ? 'text-white font-bold' : ''}">${homeGoals}-${awayGoals}</span>
+                            <span class="match-score-font font-semibold text-base min-w-[3.25rem] text-center ${homeWin || awayWin ? 'text-white font-bold' : 'text-slate-100'}">${homeGoals}-${awayGoals}</span>
                             <div class="flex gap-1"><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
                             <div class="truncate text-right ${awayWin ? 'font-extrabold text-white' : 'text-slate-300'}"><span class="inline-flex items-center justify-end gap-1.5 w-full">${match.away}<img src="${getTeamLogo(match.away)}" alt="${match.away}" class="w-4 h-4 object-contain"></span></div>
                         </div>
@@ -15795,7 +15794,7 @@ updateRadarSelectOptions();
     <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultime 2 giornate</button>
 </div>
 <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
-    <p class="text-[11px] text-slate-400">Imposta i gol con i pulsanti +/- per ogni squadra (solo le squadre 2°-6°: Napoli, Juventus, Milan, Roma, Como).</p>
+    <p class="text-[11px] text-slate-400">Inserire i gol di ogni squadra.</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
 index.html
 Righe 1554-1558
