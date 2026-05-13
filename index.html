@@ -15323,6 +15323,15 @@ function renderPlayersPassingTable() {
                     38: remainingMatches.filter((m) => m.matchday === 38)
                 };
 
+                const renderSimulationTeam = (team, side, isWinning) => {
+                    const alignClass = side === 'away' ? 'justify-end text-right' : 'justify-start text-left';
+                    return `<span class="inline-flex items-center ${alignClass} gap-1.5 w-full ${isWinning ? 'font-extrabold text-white' : 'text-slate-300'}" title="${team}">
+                        ${side === 'away' ? '<span class="hidden xl:inline truncate max-w-[7.5rem]">' + team + '</span>' : ''}
+                        <img src="${getTeamLogo(team)}" alt="${team}" class="w-5 h-5 object-contain shrink-0">
+                        ${side === 'home' ? '<span class="hidden xl:inline truncate max-w-[7.5rem]">' + team + '</span>' : ''}
+                    </span>`;
+                };
+
                 const renderMatchControl = (match) => {
                     const key = `${match.home}-${match.away}`;
                     const parsed = parseMatchScore(tieSimulationResults[key]) || [0, 0];
@@ -15330,12 +15339,12 @@ function renderPlayersPassingTable() {
                     const homeWin = homeGoals > awayGoals;
                     const awayWin = awayGoals > homeGoals;
                     return `<div class="text-xs text-slate-300 border border-slate-700 rounded px-2 py-1 space-y-1 bg-slate-950/40">
-                        <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] gap-1 items-center">
-                            <div class="truncate ${homeWin ? 'font-extrabold text-white' : 'text-slate-300'}">${getTeamLabelWithLogo(match.home)}</div>
+                        <div class="grid grid-cols-[auto_auto_auto_auto_auto] xl:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1fr)] gap-1.5 items-center">
+                            <div class="min-w-[2rem]">${renderSimulationTeam(match.home, 'home', homeWin)}</div>
                             <div class="flex gap-1"><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="home" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
                             <span class="match-score-font font-semibold text-base min-w-[3.25rem] text-center ${homeWin || awayWin ? 'text-white font-bold' : 'text-slate-100'}">${homeGoals}-${awayGoals}</span>
                             <div class="flex gap-1"><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="-1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">−</button><button type="button" data-goal-team="away" data-match-key="${key}" data-delta="1" class="px-1.5 py-0.5 rounded border border-slate-600 leading-none">+</button></div>
-                            <div class="truncate text-right ${awayWin ? 'font-extrabold text-white' : 'text-slate-300'}"><span class="inline-flex items-center justify-end gap-1.5 w-full">${match.away}<img src="${getTeamLogo(match.away)}" alt="${match.away}" class="w-4 h-4 object-contain"></span></div>
+                            <div class="min-w-[2rem]">${renderSimulationTeam(match.away, 'away', awayWin)}</div>
                         </div>
                     </div>`;
                 };
@@ -15402,14 +15411,14 @@ function renderPlayersPassingTable() {
                 const isTiedInStandings = tieMode === 'simulation' && (pointsFrequency[projectedPoints[row.team]] || 0) > 1;
                 const h2hPointsCell = (!isTiedInStandings && tieMode === 'simulation') ? '-' : row.points;
                 const h2hGoalDiffCell = (!isTiedInStandings && tieMode === 'simulation') ? '-' : `${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}`;
-                return `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20') 
+                return `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (isTiedInStandings ? 'bg-amber-300/20' : (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20'))
     : ''
 }">
                     <td class="p-2 font-semibold text-white">
                         <span class="flex items-center justify-between gap-2">
                             ${getTeamLabelWithLogo(row.team)}
                             <span class="inline-flex items-center gap-1.5">
-                                ${isTiedInStandings ? '<span class="text-[10px] font-bold text-amber-300 border border-amber-500/40 rounded px-1 py-0.5">PARI</span>' : ''}
+                                ${isTiedInStandings ? '<span class="hidden sm:inline-flex text-[10px] font-bold text-amber-300 border border-amber-500/40 rounded px-1 py-0.5">PARI</span>' : ''}
                                 ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
                             </span>
                         </span>
