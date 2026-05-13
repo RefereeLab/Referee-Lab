@@ -1561,7 +1561,6 @@ html, body {
                     <table class="w-full text-xs text-slate-300">
                         <thead class="bg-slate-800/80 text-slate-200">
                             <tr>
-                                <th class="p-2 text-left">#</th>
                                 <th class="p-2 text-left">Squadra</th>
                                 <th id="tie-col-points-classifica" class="p-2 text-left">Punti classifica</th><th class="p-2 text-left">Punti avulsa</th>
                                 <th class="p-2 text-left">Diff. reti scontri diretti</th>
@@ -15071,8 +15070,8 @@ function renderPlayersPassingTable() {
         };
         const competitionLogos = {
             cl: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/120px-UEFA_Champions_League_logo_2.svg.png',
-            el: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/2f/UEFA_Europa_League.svg/120px-UEFA_Europa_League.svg.png',
-            conf: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/75/UEFA_Europa_Conference_League_logo.svg/120px-UEFA_Europa_Conference_League_logo.svg.png'
+            el: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Europa_League_2021.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original',
+            conf: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/UEFA_Conference_League_full_logo_%282024_version%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original'
         };
         const remainingMatches = [
             { home: 'Roma', away: 'Lazio', label: '37ª: Roma-Lazio' },
@@ -15210,7 +15209,8 @@ function renderPlayersPassingTable() {
             const titles = { cl: 'UEFA Champions League', el: 'UEFA Europa League', conf: 'UEFA Conference League' };
             const src = competitionLogos[zone] || competitionLogos.conf;
             const title = titles[zone] || titles.conf;
-            return `<img src="${src}" alt="${title}" title="${title}" class="w-4 h-4 object-contain">`;
+            const fallback = zone === 'cl' ? 'CL' : zone === 'el' ? 'EL' : 'UECL';
+            return `<span class="inline-flex items-center justify-center w-4 h-4"><img src="${src}" alt="${title}" title="${title}" class="w-4 h-4 object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';"><span style="display:none" class="text-[8px] font-bold leading-none text-slate-200">${fallback}</span></span>`;
         }
 
         function getResultsMapForMode() {
@@ -15271,17 +15271,14 @@ function renderPlayersPassingTable() {
             const alertBox = document.getElementById('tie-breaker-alert');
             if (!selector || !tableBody || !alertBox) return;
 
-            const { rows: globalRanking } = buildTieRanking(tieBreakerTeams);
-            const rankingIndex = Object.fromEntries(globalRanking.map((row, idx) => [row.team, idx + 1]));
+            const manualRankingOrder = [...tieBreakerTeams].sort((a, b) => (tieTeamsInfo[b].points - tieTeamsInfo[a].points) || tieBreakerTeams.indexOf(a) - tieBreakerTeams.indexOf(b));
 
             selector.classList.toggle('hidden', tieMode === 'simulation');
             if (tieMode === 'manual') {
-                selector.innerHTML = globalRanking.map((row) => {
-                    const team = row.team;
+                selector.innerHTML = manualRankingOrder.map((team) => {
                     return `
                 <button type="button" class="tie-team-btn px-2 py-2 rounded border text-xs font-semibold transition ${selectedTieTeams.includes(team) ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300'}" data-team="${team}">
                     <span class="flex items-center justify-between gap-2">
-                        <span class="text-[11px] font-mono text-slate-400">#${rankingIndex[team]}</span>
                         <span class="text-[11px] font-mono">${tieTeamsInfo[team].points}</span>
                         <span>${team}</span>
                         <span>${getZoneIcon(tieTeamsInfo[team].zone)}</span>
@@ -15377,9 +15374,9 @@ function renderPlayersPassingTable() {
             }
             alertBox.classList.add('hidden');
             const { rows, projectedPoints } = buildTieRanking(teamsForRanking);
-            tableBody.innerHTML = rows.map((row, idx) => `
-                <tr class="border-b border-slate-800/70">
-                    <td class="p-2 font-mono text-slate-200">${idx + 1}</td>
+            tableBody.innerHTML = rows.map((row, idx) => `<tr class="border-b border-slate-800/70 ${  tieMode === 'simulation'     ? (idx === 3 ? 'bg-orange-400/20' : idx === 4 ? 'bg-green-400/20' : 'bg-sky-400/20') 
+    : ''
+}">
                     <td class="p-2 font-semibold text-white">${row.team}</td>
                     ${tieMode === 'simulation' ? `<td class="p-2 font-mono">${projectedPoints[row.team]}</td>` : ``}<td class="p-2">${row.points}</td>
                     <td class="p-2 ${row.criteriaUsed.h2hGoalDiff ? '' : 'text-slate-500'}">${row.h2hGoalDiff > 0 ? '+' : ''}${row.h2hGoalDiff}</td>
