@@ -2043,6 +2043,29 @@ html, body {
 
         </div>
 
+<div id="champions-promo-banner" class="pro-card rounded-lg p-0 animate-fade-in mb-2 cursor-pointer interactive-surface overflow-hidden relative group" onclick="goToChampionsSimulator()">
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 opacity-40 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-trophy text-emerald-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="text-base sm:text-lg font-extrabold text-white tracking-tight uppercase">Simulatore Corsa Champions</h3>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-black bg-red-500 text-white animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)] tracking-wider">NOVITÀ</span>
+                        </div>
+                        <p class="text-xs text-slate-300">Calcola tutte le combinazioni e la classifica avulsa per Napoli, Juve, Milan, Roma e Como.</p>
+                    </div>
+                </div>
+                
+                <button class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all transform group-hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    Prova ora <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
 
         <div id="table-view" class="pro-card rounded-lg overflow-hidden flex flex-col min-h-[600px] relative">
             <div id="empty-state-msg" class="hidden absolute inset-0 z-30 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-start pt-20">
@@ -7049,7 +7072,7 @@ Cremonese-Pisa	91,28	54,33	59,6%	22	10	12
 Fiorentina-Genoa	95,06	53,18	56,0%	27	13	14
 Parma-Roma	103,21	55,12	53,4%	22	14	8
 Milan-Atalanta	101,49	58,09	57,1%	25	8	17
-Napoli-Bologna	98,35	0,00	0,00%	22	10	12
+Napoli-Bologna	98,35	60,10	61,0%	22	10	12
 `;
 
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
@@ -7427,7 +7450,7 @@ Ayroldi	54,33
 Massimi	53,18
 Chiffi	55,12
 Zufferli	58,09
-Piccinini	0,00	
+Piccinini	60,10	
 
 '
 `,
@@ -13881,7 +13904,33 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             else history.pushState(state, '', newUrl);
         }
 
-        function switchView(view, options = {}) {
+function goToChampionsSimulator() {
+    // 1. Cambia la vista passando ai grafici
+    switchView('analytics');
+    
+    // 2. Assicurati di essere in modalità "Arbitri/Squadre" (che contiene il simulatore)
+    setAnalyticsViewMode('refs');
+    
+    // 3. Aspetta il render e scrolla alla sezione corretta
+    setTimeout(() => {
+        const section = document.getElementById('champions-tie-breaker-section');
+        if (section) {
+            const headerHeight = document.querySelector('.pro-header')?.offsetHeight || 0;
+            const offset = headerHeight + 16;
+            const top = section.getBoundingClientRect().top + window.scrollY - offset;
+            
+            window.scrollTo({ top, behavior: 'smooth' });
+            
+            // Effetto glow temporaneo per attirare l'occhio
+            section.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-2', 'ring-offset-slate-900', 'transition-all', 'duration-300');
+            setTimeout(() => {
+                section.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-2', 'ring-offset-slate-900');
+            }, 2000);
+        }
+    }, 150);
+}       
+
+ function switchView(view, options = {}) {
             const { updateHistory = true, replaceHistory = false } = options;
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
@@ -13948,6 +13997,12 @@ const quizView      = document.getElementById('quiz-view');
 const mainTableEl   = document.getElementById('mainTable');
 
 document.body.classList.toggle('matches-view-active', view === 'matches');
+
+const promoBanner = document.getElementById('champions-promo-banner');
+if (promoBanner) {
+    // Mostra il banner promozionale solo se siamo nella home (stats)
+    promoBanner.style.display = (view === 'stats') ? 'block' : 'none';
+}
 if (mainTableEl) {
     mainTableEl.classList.toggle('matches-compact', view === 'matches');
 }
