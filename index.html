@@ -1090,8 +1090,8 @@ html, body {
                         <button onclick="switchView('players')" id="nav-players" class="nav-pill">
                             <i class="fa-solid fa-user mr-2"></i>Giocatori 25/26
                         </button>
-                        <button onclick="switchView('quiz')" id="nav-quiz" class="nav-pill">
-                            <i class="fa-solid fa-circle-question mr-2"></i>Quiz
+                        <button onclick="switchView('standings')" id="nav-standings" class="nav-pill">
+                            <i class="fa-solid fa-list-ol mr-2"></i>Classifiche
                         </button>
 
                     </div>
@@ -1112,8 +1112,8 @@ html, body {
                         <button onclick="switchView('players')" id="mob-nav-players" class="p-2 rounded text-slate-400">
                             <i class="fa-solid fa-user"></i>
                         </button>
-                        <button onclick="switchView('quiz')" id="mob-nav-quiz" class="p-2 rounded text-slate-400">
-                            <i class="fa-solid fa-circle-question"></i>
+                        <button onclick="switchView('standings')" id="mob-nav-standings" class="p-2 rounded text-slate-400">
+                            <i class="fa-solid fa-list-ol"></i>
                         </button>
 
                     </div>
@@ -1485,41 +1485,59 @@ html, body {
     </div>
 </div>
 
-        <div id="quiz-view" class="hidden space-y-6 animate-fade-in">
-            <div class="pro-card rounded-lg p-4 space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <div>
-                        <h2 class="text-xl font-bold text-white">Quiz — Cultura arbitri</h2>
-                        <p class="text-[11px] text-slate-400">Metti alla prova la tua conoscenza con domande ispirate alle statistiche e ai protagonisti di RefereeLab.</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded border border-slate-800">
-                            <span class="font-semibold text-yellow-400">Punteggio:</span>
-                            <span id="quiz-score" class="font-mono text-white ml-1">0 / 10</span>
-                        </div>
-                        <button id="quiz-refresh" class="interactive-surface flex items-center gap-2 bg-yellow-500 text-slate-900 font-semibold text-sm px-4 py-2 rounded-lg shadow-glow hover:bg-yellow-400">
-                            <i class="fa-solid fa-rotate"></i> Nuovo quiz
-                        </button>
-                    </div>
+<div id="standings-view" class="hidden space-y-6 animate-fade-in">
+    <div class="pro-card rounded-lg p-4 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+                <h2 class="text-xl font-bold text-white"><i class="fa-solid fa-list-ol text-yellow-500 mr-2"></i>Classifiche Serie A</h2>
+                <p class="text-[11px] text-slate-400"></p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Stagione:</label>
+                    <select id="standings-season-select" onchange="renderStandings()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:border-yellow-500 outline-none">
+                        <option value="2025-26">2025/26</option>
+                        <option value="2024-25">2024/25</option>
+                        <option value="2023-24">2023/24</option>
+                        <option value="2022-23">2022/23</option>
+                        <option value="2021-22">2021/22</option>
+                    </select>
                 </div>
-
-                <div class="grid grid-cols-1 gap-3 text-xs text-slate-400">
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
-                            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                            <span>10 domande casuali da un pool di 100+</span>
-                        </div>
-                        <div class="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-bolt text-yellow-500"></i>
-                            <span>Feedback immediato su ogni risposta</span>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Vista:</label>
+                    <select id="standings-type-select" onchange="renderStandings()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1.5 focus:border-yellow-500 outline-none">
+                        <option value="total">Totale</option>
+                        <option value="home">Solo in Casa</option>
+                        <option value="away">Solo in Trasferta</option>
+                    </select>
                 </div>
             </div>
-
-            <div id="quiz-questions" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
-
         </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-center text-xs text-slate-300 pro-table" id="standings-table">
+                <thead class="bg-slate-800 text-slate-300 sticky-head">
+                    <tr>
+                        <th class="p-2 sticky-col w-10">#</th>
+                        <th class="p-2 text-left sticky-col !left-10 cursor-pointer hover:text-white" onclick="handleStandingsSort('team')">Squadra <span id="sort-icon-team" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('points')">PT <span id="sort-icon-points" class="text-yellow-500 ml-1"><i class="fa-solid fa-sort-down"></i></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('played')">G <span id="sort-icon-played" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('wins')">V <span id="sort-icon-wins" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('draws')">N <span id="sort-icon-draws" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('losses')">P <span id="sort-icon-losses" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('gf')">GF <span id="sort-icon-gf" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('gs')">GS <span id="sort-icon-gs" class="text-yellow-500 ml-1"></span></th>
+                        <th class="p-2 cursor-pointer hover:text-white" onclick="handleStandingsSort('gd')">DR <span id="sort-icon-gd" class="text-yellow-500 ml-1"></span></th>
+                    </tr>
+                </thead>
+                <tbody id="standings-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
         <div id="analytics-view" class="hidden space-y-6 animate-fade-in">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -9272,15 +9290,15 @@ Orsato	56,45'
             teamReferees: [...ANALYTICS_SEASON_DEFAULT],
         };
 
-        const VIEW_ROUTE_MAP = {
-            stats: 'stats',
-            analytics: 'analytics',
-            playingTime: 'playing-time',
-            matches: 'matches',
-            teams: 'teams',
-            players: 'players',
-            quiz: 'quiz',
-        };
+const VIEW_ROUTE_MAP = {
+    stats: 'stats',
+    analytics: 'analytics',
+    playingTime: 'playing-time',
+    matches: 'matches',
+    teams: 'teams',
+    players: 'players',
+    standings: 'standings', // SOSTITUITO quiz con standings
+};
 
         // --- LOGIC SECTION ---
         let currentView = 'stats';
@@ -13931,7 +13949,9 @@ function goToChampionsSimulator() {
 }       
 
  function switchView(view, options = {}) {
+const standingsView = document.getElementById('standings-view');
             const { updateHistory = true, replaceHistory = false } = options;
+
             // CORREZIONE BUG: Resetta la selezione delle stagioni a '2025-26' ad ogni cambio di vista
             if (currentView !== view) {
                 resetVisualStatesForViewChange();
@@ -13963,7 +13983,7 @@ function goToChampionsSimulator() {
 
             // Update Active State (Desktop)
             const targetNavId = `nav-${view === 'playingTime' ? 'time' : view}`;
-            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players', 'nav-quiz'].forEach(id => {
+            ['nav-stats', 'nav-analytics', 'nav-time', 'nav-matches', 'nav-teams', 'nav-players', 'nav-standings'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     const isActiveNav = id === targetNavId;
@@ -13972,7 +13992,7 @@ function goToChampionsSimulator() {
                 }
             });
             // Mobile State
-             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players', 'mob-nav-quiz'].forEach(id => {
+             ['mob-nav-stats', 'mob-nav-analytics', 'mob-nav-time', 'mob-nav-matches', 'mob-nav-teams', 'mob-nav-players', 'mob-nav-standings'].forEach(id => {
                  const el = document.getElementById(id);
                  if(el) {
                      const isActiveNav = id === `mob-nav-${view === 'playingTime' ? 'time' : view}`;
@@ -14011,7 +14031,7 @@ if (mainTableEl) {
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
-            hideSection(quizView);
+            hideSection(standingsView);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.remove('hidden');
@@ -14025,7 +14045,7 @@ if (mainTableEl) {
             hideSection(tableView);
             hideSection(analyticsView);
             showSection(playersView);
-            hideSection(quizView);
+            hideSection(standingsView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -14038,26 +14058,28 @@ if (mainTableEl) {
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
-        } else if (view === 'quiz') {
-            hideSection(tableView);
-            hideSection(analyticsView);
-            hideSection(playersView);
-            showSection(quizView);
-    if (sidebar)       sidebar.classList.add('hidden');
+} else if (view === 'standings') {
+    hideSection(tableView);
+    hideSection(analyticsView);
+    hideSection(playersView);
+    showSection(standingsView);
+if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
     if (mainContent) {
         mainContent.classList.remove('lg:col-span-9');
         mainContent.classList.add('lg:col-span-12');
     }
-            if (!quizRound.length) prepareQuizRound();
+renderStandings(); // <--- Fondamentale: fa partire i calcoli
+            
+if (!quizRound.length) prepareQuizRound();
 } else {
 
     // stats, matches, playingTime, teams
     showSection(tableView);
     hideSection(analyticsView);
     hideSection(playersView);
-    hideSection(quizView);
+    hideSection(standingsView);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
     if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
@@ -15638,6 +15660,215 @@ updateRadarSelectOptions();
         return `${parts[0]}/${parts[1]}`;
     }
 
+
+// ==========================================
+// LOGICA CLASSIFICHE (STANDINGS)
+// ==========================================
+let standingsSortCol = 'points';
+let standingsSortDir = 'desc';
+
+function calculateStandingsData(season, type) {
+    const results = MATCH_RESULTS_BY_SEASON[season];
+    if (!results) return [];
+    const teamsMap = {};
+    const initTeam = (name) => {
+        if (!teamsMap[name]) teamsMap[name] = { team: name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, gs: 0, points: 0, gd: 0 };
+    };
+
+    Object.entries(results).forEach(([matchName, scoreStr]) => {
+        const [home, away] = matchName.split('-').map(s => s.trim());
+        const scoreMatch = String(scoreStr).match(/^(\d+)-(\d+)$/);
+        if (!home || !away || !scoreMatch) return;
+        initTeam(home); initTeam(away);
+        const hg = parseInt(scoreMatch[1], 10), ag = parseInt(scoreMatch[2], 10);
+
+        const applyStats = (teamName, goalsFor, goalsAgainst) => {
+            const t = teamsMap[teamName];
+            t.played++; t.gf += goalsFor; t.gs += goalsAgainst; t.gd = t.gf - t.gs;
+            if (goalsFor > goalsAgainst) { t.wins++; t.points += 3; }
+            else if (goalsFor === goalsAgainst) { t.draws++; t.points += 1; }
+            else { t.losses++; }
+        };
+
+        if (type === 'total' || type === 'home') applyStats(home, hg, ag);
+        if (type === 'total' || type === 'away') applyStats(away, ag, hg);
+    });
+
+    // --- INSERISCI DA QUI ---
+    // ECCEZIONE PENALITÀ JUVENTUS 2022/23
+    if (season === '2022-23' && teamsMap['Juventus']) {
+        teamsMap['Juventus'].points -= 10;
+    }
+    // --- A QUI ---
+
+    return Object.values(teamsMap);
+}
+
+
+function handleStandingsSort(col) {
+    if (standingsSortCol === col) standingsSortDir = (standingsSortDir === 'asc' ? 'desc' : 'asc');
+    else { standingsSortCol = col; standingsSortDir = (col === 'team' ? 'asc' : 'desc'); }
+    renderStandings();
+}
+
+function renderStandings() {
+    const season = document.getElementById('standings-season-select').value;
+    const type = document.getElementById('standings-type-select').value;
+    const tbody = document.getElementById('standings-table-body');
+    
+    let data = calculateStandingsData(season, type);
+    if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-slate-500">Dati non disponibili.</td></tr>';
+        return;
+    }
+
+    // 1. CALCOLO CLASSIFICA UFFICIALE
+    data.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        const h2h = getHeadToHeadWinner(season, a.team, b.team);
+        if (h2h !== 0) return h2h;
+        if (b.gd !== a.gd) return b.gd - a.gd;
+        return b.gf - a.gf;
+    });
+
+    // 2. ECCEZIONE SPAREGGIO SPEZIA-VERONA 2022/23
+    if (season === '2022-23' && type === 'total') {
+        const idxVerona = data.findIndex(t => t.team === 'Verona');
+        const idxSpezia = data.findIndex(t => t.team === 'Spezia');
+        // Se arrivano pari (31 punti), forziamo Verona 17° e Spezia 18°
+        if (idxVerona !== -1 && idxSpezia !== -1) {
+            const verona = data.splice(idxVerona, 1)[0];
+            const speziaIdxNew = data.findIndex(t => t.team === 'Spezia');
+            data.splice(speziaIdxNew, 0, verona);
+        }
+    }
+
+    // Assegniamo il rango ufficiale
+    data.forEach((row, index) => {
+        row.officialRank = index + 1;
+    });
+
+    // 3. APPLICHIAMO L'ORDINAMENTO SCELTO DALL'UTENTE (come già fatto)
+    if (standingsSortCol !== 'points' || standingsSortDir !== 'desc') {
+        data.sort((a, b) => {
+            let valA = a[standingsSortCol];
+            let valB = b[standingsSortCol];
+            if (standingsSortCol === 'team') return standingsSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            if (valA === valB) return a.officialRank - b.officialRank;
+            return standingsSortDir === 'asc' ? valA - valB : valB - valA;
+        });
+    }
+
+    // 4. DISEGNO DELLA TABELLA
+    // ... (Codice icone precedente) ...
+
+    tbody.innerHTML = '';
+    data.forEach((row) => {
+        const logo = getTeamLogoUrl(row.team);
+        const rankColorClass = row.officialRank >= 18 ? 'text-red-500 font-bold' : 'text-slate-500';
+        const scudetto = row.officialRank === 1 ? `<img src="https://flagcdn.com/w20/it.png" class="inline-block ml-2 mb-0.5 w-4 h-auto shadow-sm opacity-90">` : '';
+        
+        // Aggiungiamo un asterisco se la Juve ha la penalità
+        const penaltyMarker = (season === '2022-23' && row.team === 'Juventus') ? '<span class="text-red-500 ml-1" title="Penalizzazione di 10 punti">*</span>' : '';
+
+        tbody.innerHTML += `
+            <tr class="border-b border-slate-800/70 hover:bg-slate-800/50 transition-colors">
+                <td class="p-2 font-mono text-xs ${rankColorClass}">${row.officialRank}</td>
+                <td class="p-2 text-left font-bold text-white whitespace-nowrap">
+                    <img src="${logo}" class="w-5 h-5 inline mr-2 shadow-sm">${row.team}${scudetto}${penaltyMarker}
+                </td>
+                <td class="p-2 font-bold text-yellow-500 bg-slate-800/10 text-base">${row.points}</td>
+                <td class="p-2 text-slate-300 font-mono">${row.played}</td>
+                <td class="p-2 text-green-400 font-mono">${row.wins}</td>
+                <td class="p-2 text-slate-400 font-mono">${row.draws}</td>
+                <td class="p-2 text-red-400 font-mono">${row.losses}</td>
+                <td class="p-2 text-slate-300 font-mono">${row.gf}</td>
+                <td class="p-2 text-slate-300 font-mono">${row.gs}</td>
+                <td class="p-2 font-bold ${row.gd >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-mono">
+                    ${row.gd > 0 ? '+'+row.gd : row.gd}
+                </td>
+            </tr>`;
+    });
+
+    // 5. AGGIUNTA NOTE A PIÈ DI PAGINA
+    if (season === '2022-23') {
+        tbody.innerHTML += `
+            <tr>
+                <td colspan="10" class="p-3 text-[10px] text-slate-500 text-left italic">
+                    * Juventus: -10 punti di penalizzazione (Sentenza Plusvalenze).<br>
+                    ° Verona/Spezia: Posizioni decise tramite spareggio play-out (Spezia 1-3 Verona).
+                </td>
+            </tr>`;
+    }
+}
+
+
+/**
+ * Calcola chi è in vantaggio negli scontri diretti tra due squadre
+ * Segue le regole Serie A: 1. Punti negli scontri diretti, 2. Differenza reti negli scontri diretti
+ */
+function getHeadToHeadWinner(season, teamA, teamB) {
+    const results = MATCH_RESULTS_BY_SEASON[season];
+    if (!results) return 0;
+
+    let pointsA = 0;
+    let pointsB = 0;
+    let goalsA = 0;
+    let goalsB = 0;
+    let matchesFound = 0;
+
+    // Normalizziamo i nomi (Rimuoviamo spazi e portiamo a minuscolo per sicurezza)
+    const nameA = teamA.trim();
+    const nameB = teamB.trim();
+
+    // Le due combinazioni possibili di chiavi nel tuo oggetto
+    const combinations = [
+        { key: `${nameA}-${nameB}`, isHomeA: true },
+        { key: `${nameB}-${nameA}`, isHomeA: false }
+    ];
+
+    combinations.forEach(combo => {
+        const scoreStr = results[combo.key]; // Cerca la chiave esatta "Parma-Cagliari"
+        if (scoreStr) {
+            const scoreMatch = String(scoreStr).match(/^(\d+)-(\d+)$/);
+            if (scoreMatch) {
+                matchesFound++;
+                const goalsHome = parseInt(scoreMatch[1], 10);
+                const goalsAway = parseInt(scoreMatch[2], 10);
+
+                if (combo.isHomeA) {
+                    // Team A giocava in casa
+                    goalsA += goalsHome;
+                    goalsB += goalsAway;
+                    if (goalsHome > goalsAway) pointsA += 3;
+                    else if (goalsAway > goalsHome) pointsB += 3;
+                    else { pointsA += 1; pointsB += 1; }
+                } else {
+                    // Team A giocava in trasferta (Team B in casa)
+                    goalsA += goalsAway;
+                    goalsB += goalsHome;
+                    if (goalsAway > goalsHome) pointsA += 3;
+                    else if (goalsHome > goalsAway) pointsB += 3;
+                    else { pointsA += 1; pointsB += 1; }
+                }
+            }
+        }
+    });
+
+    if (matchesFound === 0) return 0;
+
+    // 1. Criterio: Punti negli scontri diretti
+    if (pointsA > pointsB) return -1; // A sta sopra
+    if (pointsB > pointsA) return 1;  // B sta sopra
+
+    // 2. Criterio: Differenza reti negli scontri diretti
+    const diffA = goalsA - goalsB;
+    const diffB = goalsB - goalsA;
+    if (diffA > diffB) return -1;
+    if (diffB > diffA) return 1;
+
+    return 0;
+}
     function getSeasonResultStats() {
         const seasons = Object.keys(MATCH_RESULTS_BY_SEASON);
         const stats = seasons.map((season) => {
