@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -848,6 +848,218 @@ html, body {
                 padding-right: 1rem;
             }
         }
+
+        /* Mobile readability pass: content first, filters later, no overlapping sticky cells */
+        @media (max-width: 1023px) {
+            #layout-grid {
+                gap: 1rem;
+            }
+
+            #main-content {
+                order: 1;
+                min-width: 0;
+            }
+
+            #sidebar-filters {
+                order: 2;
+                margin-top: 0.5rem;
+            }
+
+            #season-selector-card,
+            #stats-controls,
+            #global-search-container {
+                border-color: rgba(51, 65, 85, 0.8);
+                box-shadow: none;
+            }
+
+            #season-selector-card::before,
+            #stats-controls::before {
+                content: 'Filtri';
+                display: block;
+                padding: 0.65rem 0.85rem 0;
+                font-size: 0.65rem;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: #64748b;
+            }
+
+            .pro-card:hover {
+                transform: none;
+            }
+
+            .overflow-x-auto,
+            .heatmap-wrapper {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .pro-table {
+                min-width: 680px;
+            }
+
+            .sticky-col,
+            .sticky-col-name,
+            .sticky-head th.sticky-col,
+            .sticky-head th.sticky-col-name,
+            #players-table th.sticky-col,
+            #players-table th.sticky-col-name,
+            #players-table td.sticky-col,
+            #players-table td.sticky-col-name {
+                position: static !important;
+                left: auto !important;
+                z-index: auto !important;
+                border-right: 0 !important;
+            }
+
+            .team-name-cell,
+            .match-cell {
+                min-width: 11rem;
+            }
+
+            #players-table {
+                min-width: 760px;
+            }
+
+            #players-table td:nth-child(2),
+            #players-table th:nth-child(2) {
+                max-width: 12rem;
+            }
+
+            #standings-table {
+                min-width: 620px;
+            }
+
+            #analytics-section-radar,
+            #analytics-section-teamreferees,
+            #analytics-section-heatmap,
+            #analytics-section-nogol,
+            #analytics-section-fouls {
+                overflow: hidden;
+            }
+
+            #chart-radar,
+            #chart-team-referees,
+            #chart-team-referee-records,
+            #chart-fouls-matchday,
+            #chart-season-results-distribution,
+            #chart-zero-zero-nogol {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #chart-radar .apexcharts-canvas,
+            #chart-team-referees .apexcharts-canvas,
+            #chart-team-referee-records .apexcharts-canvas,
+            #chart-fouls-matchday .apexcharts-canvas,
+            #chart-season-results-distribution .apexcharts-canvas,
+            #chart-zero-zero-nogol .apexcharts-canvas {
+                min-width: 520px;
+            }
+
+            .apexcharts-yaxis-label,
+            .apexcharts-xaxis-label {
+                font-size: 10px !important;
+            }
+
+            .apexcharts-legend {
+                gap: 4px !important;
+            }
+
+            .analytics-season-chip {
+                padding: 5px 8px;
+                font-size: 0.66rem;
+            }
+
+            .analytics-anchor-btn {
+                padding: 8px 10px;
+                font-size: 0.72rem;
+            }
+
+            .record-hero,
+            .record-compact {
+                min-height: 150px;
+            }
+
+            .record-logos img,
+            .record-compact .record-logos img {
+                width: 34px;
+                height: 34px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                font-size: 14px;
+            }
+
+            main {
+                padding-top: 4.75rem;
+                padding-bottom: 5.25rem;
+            }
+
+            .pro-header .max-w-\[1400px\] {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            .md\:hidden.flex.bg-slate-800 {
+                max-width: calc(100vw - 9rem);
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .md\:hidden.flex.bg-slate-800::-webkit-scrollbar {
+                display: none;
+            }
+
+            .md\:hidden.flex.bg-slate-800 button {
+                flex: 0 0 auto;
+                padding: 0.45rem;
+            }
+
+            #players-view .grid,
+            #analytics-view .grid {
+                gap: 0.85rem;
+            }
+
+            #players-view > .grid > .lg\:col-span-3 {
+                order: 2;
+            }
+
+            #players-view > .grid > .lg\:col-span-9 {
+                order: 1;
+                min-width: 0;
+            }
+
+            #players-view .pro-card,
+            #analytics-view .pro-card {
+                padding: 0.85rem;
+            }
+
+            #players-comparison-table {
+                min-width: 460px;
+            }
+
+            #analytics-section-teamreferees .grid {
+                gap: 0.75rem;
+            }
+
+            #team-referee-summary {
+                padding: 0.75rem;
+            }
+
+            .feedback-toggle {
+                bottom: 4.5rem;
+                padding: 4px 6px;
+            }
+
+            #scroll-to-top {
+                bottom: 4.5rem;
+                right: 1rem;
+            }
+        }
         
         /* Utilities */
         .text-xxs { font-size: 0.65rem; line-height: 1rem; }
@@ -1414,7 +1626,7 @@ html, body {
 
                     <datalist id="players-compare-options"></datalist>
 
-                    <div class="overflow-hidden rounded border border-slate-800">
+                    <div class="overflow-x-auto rounded border border-slate-800">
                         <table class="w-full text-[11px] text-slate-300" id="players-comparison-table"></table>
                     </div>
                 </div>
@@ -11956,6 +12168,10 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+function isMobileViewport() {
+    return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+}
+
 function getTeamRefereeAvailableTeams() {
     const matches = processMatchesViewData(ANALYTICS_SEASON_OPTIONS);
     const teams = new Set();
@@ -12149,11 +12365,12 @@ function renderTeamRefereeRecords(seasons, seasonText) {
 
     const maxCount = Math.max(...records.map(row => row.count), 1);
     const colors = records.map(row => getTeamRefereeBarColor(row.count, maxCount));
+    const mobile = isMobileViewport();
 
     chartTeamRefereeRecords = new ApexCharts(chartEl, {
         series: [{ name: 'Partite', data: records.map(row => row.count) }],
-        chart: { type: 'bar', height: 260, background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '46%', distributed: true } },
+        chart: { type: 'bar', height: mobile ? 230 : 260, width: mobile ? 520 : '100%', background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: mobile ? '38%' : '46%', distributed: true } },
         colors,
         dataLabels: { enabled: true, style: { colors: ['#020617'], fontWeight: 800 }, formatter: val => `${val}` },
         xaxis: {
@@ -12164,7 +12381,7 @@ function renderTeamRefereeRecords(seasons, seasonText) {
             axisBorder: { color: 'rgba(255,255,255,0.08)' },
             axisTicks: { color: 'rgba(255,255,255,0.08)' }
         },
-        yaxis: { labels: { style: { colors: '#e2e8f0', fontSize: '11px' } } },
+        yaxis: { labels: { maxWidth: mobile ? 118 : 180, style: { colors: '#e2e8f0', fontSize: mobile ? '10px' : '11px' } } },
         grid: { borderColor: 'rgba(255,255,255,0.05)' },
         legend: { show: false },
         tooltip: {
@@ -12266,14 +12483,15 @@ function renderTeamRefereesRanking() {
     }
 
     const maxCount = Math.max(...rows.map(row => row.count), 1);
-    const chartHeight = Math.max(320, rows.length * 26 + 62);
+    const mobile = isMobileViewport();
+    const chartHeight = Math.max(mobile ? 280 : 320, rows.length * (mobile ? 22 : 26) + 58);
     const barColors = rows.map(row => getTeamRefereeBarColor(row.count, maxCount));
     chartEl.style.minHeight = `${chartHeight}px`;
 
     chartTeamReferees = new ApexCharts(chartEl, {
         series: [{ name: 'Presenze', data: rows.map(row => row.count) }],
-        chart: { type: 'bar', height: chartHeight, background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '42%', distributed: true } },
+        chart: { type: 'bar', height: chartHeight, width: mobile ? 520 : '100%', background: 'transparent', toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+        plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: mobile ? '34%' : '42%', distributed: true } },
         colors: barColors,
         dataLabels: { enabled: true, style: { colors: ['#020617'], fontWeight: 800 }, formatter: val => `${val}` },
         xaxis: {
@@ -12284,7 +12502,7 @@ function renderTeamRefereesRanking() {
             axisBorder: { color: 'rgba(255,255,255,0.08)' },
             axisTicks: { color: 'rgba(255,255,255,0.08)' }
         },
-        yaxis: { labels: { style: { colors: '#e2e8f0', fontSize: '11px' } } },
+        yaxis: { labels: { maxWidth: mobile ? 112 : 180, style: { colors: '#e2e8f0', fontSize: mobile ? '10px' : '11px' } } },
         grid: { borderColor: 'rgba(255,255,255,0.05)' },
         legend: { show: false },
         tooltip: {
