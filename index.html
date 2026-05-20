@@ -15384,10 +15384,10 @@ function renderPlayersPassingTable() {
             }
         }
 
-        const tieBreakerTeams = ['Napoli', 'Juventus', 'Milan', 'Roma', 'Como'];
+        const tieBreakerTeams = ['Napoli', 'Milan', 'Roma', 'Como', 'Juventus'];
         const tieTeamsInfo = {
             Napoli: { points: 73, zone: 'cl', qualified: true },
-            Juventus: { points: 68, zone: 'cl' },
+            Juventus: { points: 68, zone: 'conf' },
             Milan: { points: 70, zone: 'cl' },
             Roma: { points: 70, zone: 'cl' },
             Como: { points: 68, zone: 'el' }
@@ -15534,7 +15534,7 @@ function renderPlayersPassingTable() {
         
         function getZoneIcon(zone, sizeClass = 'w-4 h-4') {
             const titles = { cl: 'UEFA Champions League', el: 'UEFA Europa League', conf: 'UEFA Conference League' };
-            const iconClass = zone === 'cl' ? 'fa-solid fa-trophy' : zone === 'el' ? 'fa-solid fa-medal' : 'fa-solid fa-award';
+            const iconClass = zone === 'cl' ? 'fa-solid fa-trophy' : zone === 'el' ? 'fa-solid fa-trophy' : 'fa-solid fa-trophy';
             const iconColor = zone === 'cl' ? 'text-sky-300' : zone === 'el' ? 'text-orange-300' : 'text-emerald-300';
             const title = titles[zone] || titles.conf;
             return `<span class="inline-flex items-center justify-center ${sizeClass}" title="${title}"><i class="${iconClass} ${iconColor} text-[13px]"></i></span>`;
@@ -15734,7 +15734,7 @@ function renderPlayersPassingTable() {
                             ${getTeamLabelWithLogo(row.team)}
                             <span class="inline-flex items-center gap-1.5">
                                 ${isTiedInStandings ? '<span class="hidden sm:inline-flex text-[10px] font-bold text-amber-300 border border-amber-500/40 rounded px-1 py-0.5">PARI</span>' : ''}
-                                ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 4 ? 'cl' : 'el', 'w-5 h-5') : ''}
+                                ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
                                 ${tieMode === 'simulation' && row.team === 'Napoli' ? '<span class="hidden sm:inline-flex text-[10px] font-bold text-sky-300 border border-sky-500/40 rounded px-1 py-0.5">CL MAT</span>' : ''}
                             </span>
                         </span>
