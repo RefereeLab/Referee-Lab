@@ -316,6 +316,12 @@ html, body {
     pointer-events: none; /* Lascia passare il click al grafico sotto */
 }
 
+/* Variante compatta per loghi nel grafico classifica dinamica */
+.chart-team-logo--standings {
+    width: 18px;
+    height: 18px;
+}
+
 /* Container relativo per permettere il posizionamento assoluto dei loghi */
 #chart-top-flop {
     position: relative; 
@@ -16069,7 +16075,7 @@ function renderStandingsTrendChart() {
     if (standingsTrendChart) standingsTrendChart.destroy();
     standingsTrendChart = new ApexCharts(container, {
         series,
-        chart: { type: 'line', height: 620, toolbar: { show: false }, background: 'transparent', animations: { enabled: true, speed: 700 } },
+        chart: { type: 'line', height: 620, toolbar: { show: false }, background: 'transparent', animations: { enabled: true, speed: 5000 } },
         stroke: { width: 2.4, curve: 'smooth' },
         colors,
         xaxis: { categories, title: { text: 'Giornata', style: { color: '#94a3b8' } }, labels: { style: { colors: '#94a3b8' } } },
@@ -16098,9 +16104,9 @@ function renderStandingsTrendChart() {
             const yPct = ((last.y - 1) / 19) * 100;
             const img = document.createElement('img');
             img.src = getTeamLogoUrl(team);
-            img.className = 'chart-team-logo';
-            img.style.left = 'calc(100% - 14px)';
-            img.style.top = `${yPct}%`;
+img.className = 'chart-team-logo chart-team-logo--standings';
+img.style.left = 'calc(100% - 10px)';
+img.style.top = `${yPct}%`;
             img.style.transform = 'translate(-50%, -50%)';
             img.title = team;
             container.appendChild(img);
