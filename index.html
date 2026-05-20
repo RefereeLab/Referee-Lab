@@ -16095,18 +16095,39 @@ function renderStandingsTrendChart() {
         grid: { borderColor: '#1e293b' },
         tooltip: { theme: 'dark', shared: false, y: { formatter: val => `${val}ª posizione` } }
     });
-    standingsTrendChart.render().then(() => {
+standingsTrendChart.render().then(() => {
         const old = container.querySelectorAll('.chart-team-logo');
         old.forEach(el => el.remove());
-        teams.forEach((team, idx) => {
+
+        // 1. Accediamo alle variabili interne di ApexCharts per le dimensioni reali
+        const globals = standingsTrendChart.w.globals;
+        
+        // L'altezza reale dell'area dove vengono disegnate le linee (esclusi margini e asse X)
+        const gridHeight = globals.gridHeight; 
+        
+        // Lo spazio vuoto dall'alto (padding) prima che inizi la griglia
+        const translateY = globals.translateY; 
+        
+        // La posizione orizzontale: fine della griglia + offset verso destra
+        const logoLeft = globals.translateX + globals.gridWidth + 12;
+
+        teams.forEach((team) => {
             const last = rankHistory[team][rankHistory[team].length - 1];
             if (!last) return;
-            const yPct = ((last.y - 1) / 19) * 100;
+
+            // 2. Calcolo matematico perfetto della coordinata Y
+            // last.y va da 1 (prima posizione, in alto) a 20 (ultima posizione, in basso)
+            // Sottraendo 1, otteniamo un range da 0 a 19. Dividendo per 19 otteniamo una percentuale (da 0.0 a 1.0)
+            const yPct = (last.y - 1) / 19;
+            
+            // 3. Posizione in pixel = padding superiore + (percentuale * altezza reale della griglia)
+            const logoTopPx = translateY + (yPct * gridHeight);
+
             const img = document.createElement('img');
             img.src = getTeamLogoUrl(team);
-img.className = 'chart-team-logo chart-team-logo--standings';
-img.style.left = 'calc(100% - 10px)';
-img.style.top = `${yPct}%`;
+            img.className = 'chart-team-logo chart-team-logo--standings';
+            img.style.left = `${logoLeft}px`;
+            img.style.top = `${logoTopPx}px`;
             img.style.transform = 'translate(-50%, -50%)';
             img.title = team;
             container.appendChild(img);
