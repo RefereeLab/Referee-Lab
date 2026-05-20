@@ -1779,7 +1779,7 @@ html, body {
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
                 <div class="flex flex-wrap gap-2" id="tie-mode-selector">
                     <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità: selezione manuale squadre</button>
-                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità: simulazione ultime 2 giornate</button>
+                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità: simulazione ultima giornata</button>
                 </div>
                 <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
                     <p class="text-[11px] text-slate-400">Inserire i gol di ogni squadra.</p>
@@ -1791,7 +1791,7 @@ html, body {
                         <thead class="bg-slate-800/80 text-slate-200">
                             <tr>
                                 <th class="p-2 text-left">Squadra</th>
-                                <th id="tie-col-points-classifica" class="p-2 text-left">Punti alla 38^</th><th class="p-2 text-left">Punti avulsa</th>
+                                <th id="tie-col-points-classifica" class="p-2 text-left">Punti finali (38^)</th><th class="p-2 text-left">Punti avulsa</th>
                                 <th class="p-2 text-left">Diff. reti scontri diretti</th>
                                 <th class="p-2 text-left">Diff. reti generale</th>
                                 <th class="p-2 text-left">Gol segnati</th>
@@ -15386,11 +15386,11 @@ function renderPlayersPassingTable() {
 
         const tieBreakerTeams = ['Napoli', 'Juventus', 'Milan', 'Roma', 'Como'];
         const tieTeamsInfo = {
-            Napoli: { points: 70, zone: 'cl' },
+            Napoli: { points: 73, zone: 'cl', qualified: true },
             Juventus: { points: 68, zone: 'cl' },
-            Milan: { points: 67, zone: 'cl' },
-            Roma: { points: 67, zone: 'el' },
-            Como: { points: 65, zone: 'conf' }
+            Milan: { points: 70, zone: 'cl' },
+            Roma: { points: 70, zone: 'cl' },
+            Como: { points: 68, zone: 'el' }
         };
         const competitionLogos = {
             cl: 'https://www.fifplay.com/img/public/ucl-logo.png',
@@ -15398,11 +15398,6 @@ function renderPlayersPassingTable() {
             conf: 'https://www.fifplay.com/img/public/uecl-logo.png'
         };
         const remainingMatches = [
-            { matchday: 37, home: 'ROMA', away: 'Lazio' },
-            { matchday: 37, home: 'Genoa', away: 'MILAN' },
-            { matchday: 37, home: 'JUVENTUS', away: 'Fiorentina' },
-            { matchday: 37, home: 'COMO', away: 'Parma' },
-            { matchday: 37, home: 'Pisa', away: 'NAPOLI' },
             { matchday: 38, home: 'Cremonese', away: 'COMO' },
             { matchday: 38, home: 'MILAN', away: 'Cagliari' },
             { matchday: 38, home: 'NAPOLI', away: 'Udinese' },
@@ -15539,10 +15534,10 @@ function renderPlayersPassingTable() {
         
         function getZoneIcon(zone, sizeClass = 'w-4 h-4') {
             const titles = { cl: 'UEFA Champions League', el: 'UEFA Europa League', conf: 'UEFA Conference League' };
-            const src = competitionLogos[zone] || competitionLogos.conf;
+            const iconClass = zone === 'cl' ? 'fa-solid fa-trophy' : zone === 'el' ? 'fa-solid fa-medal' : 'fa-solid fa-award';
+            const iconColor = zone === 'cl' ? 'text-sky-300' : zone === 'el' ? 'text-orange-300' : 'text-emerald-300';
             const title = titles[zone] || titles.conf;
-            const fallback = zone === 'cl' ? 'CL' : zone === 'el' ? 'EL' : 'UECL';
-            return `<span class="inline-flex items-center justify-center ${sizeClass}"><img src="${src}" alt="${title}" title="${title}" class="${sizeClass} object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';"><span style="display:none" class="text-[8px] font-bold leading-none text-slate-200">${fallback}</span></span>`;
+            return `<span class="inline-flex items-center justify-center ${sizeClass}" title="${title}"><i class="${iconClass} ${iconColor} text-[13px]"></i></span>`;
         }
 
         function getTeamLabelWithLogo(teamName) {
@@ -15644,7 +15639,6 @@ function renderPlayersPassingTable() {
             if (simulationPanel && simulationMatches) {
                 simulationPanel.classList.toggle('hidden', tieMode !== 'simulation');
                 const groupedMatches = {
-                    37: remainingMatches.filter((m) => m.matchday === 37),
                     38: remainingMatches.filter((m) => m.matchday === 38)
                 };
 
@@ -15674,10 +15668,6 @@ function renderPlayersPassingTable() {
                     </div>`;
                 };
                 simulationMatches.innerHTML = `
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-200 mb-2">37ª giornata</h4>
-                        <div class="space-y-2">${groupedMatches[37].map(renderMatchControl).join('')}</div>
-                    </div>
                     <div>
                         <h4 class="text-xs font-bold text-slate-200 mb-2">38ª giornata</h4>
                         <div class="space-y-2">${groupedMatches[38].map(renderMatchControl).join('')}</div>
@@ -15744,7 +15734,8 @@ function renderPlayersPassingTable() {
                             ${getTeamLabelWithLogo(row.team)}
                             <span class="inline-flex items-center gap-1.5">
                                 ${isTiedInStandings ? '<span class="hidden sm:inline-flex text-[10px] font-bold text-amber-300 border border-amber-500/40 rounded px-1 py-0.5">PARI</span>' : ''}
-                                ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 3 ? 'cl' : idx === 3 ? 'el' : 'conf', 'w-5 h-5') : ''}
+                                ${tieMode === 'simulation' && idx < 5 ? getZoneIcon(idx < 4 ? 'cl' : 'el', 'w-5 h-5') : ''}
+                                ${tieMode === 'simulation' && row.team === 'Napoli' ? '<span class="hidden sm:inline-flex text-[10px] font-bold text-sky-300 border border-sky-500/40 rounded px-1 py-0.5">CL MAT</span>' : ''}
                             </span>
                         </span>
                     </td>
@@ -16422,7 +16413,7 @@ function getHeadToHeadWinner(season, teamA, teamB) {
 
 </body>
 </html>
-    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultime 2 giornate</button>
+    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità simulazione ultima giornata</button>
 </div>
 <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
     <p class="text-[11px] text-slate-400">Inserire i gol di ogni squadra.</p>
