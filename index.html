@@ -1724,10 +1724,17 @@ html, body {
                         <option value="away">Solo in Trasferta</option>
                     </select>
                 </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Modalità:</label>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="standings-mode-table" onclick="switchStandingsView('table')" class="px-3 py-1.5 rounded text-xs font-semibold bg-yellow-500 text-slate-900 transition-colors shadow-sm">Classifica standard</button>
+                        <button type="button" id="standings-mode-trend" onclick="switchStandingsView('trend')" class="px-3 py-1.5 rounded text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 transition-colors">Classifica dinamica</button>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div id="standings-table-wrap" class="overflow-x-auto">
             <table class="w-full text-center text-xs text-slate-300 pro-table" id="standings-table">
                 <thead class="bg-slate-800 text-slate-300 sticky-head">
                     <tr>
@@ -1745,6 +1752,12 @@ html, body {
                 </thead>
                 <tbody id="standings-table-body"></tbody>
             </table>
+        </div>
+        <div id="standings-trend-wrap" class="hidden">
+            <div class="text-[11px] text-slate-400 mb-3">
+                Evoluzione posizione giornata dopo giornata (1ª in alto, 20ª in basso).
+            </div>
+            <div id="standings-trend-chart" class="w-full h-[620px] relative"></div>
         </div>
     </div>
 </div>
@@ -15905,6 +15918,37 @@ updateRadarSelectOptions();
 // ==========================================
 let standingsSortCol = 'points';
 let standingsSortDir = 'desc';
+let standingsViewMode = 'table';
+let standingsTrendChart = null;
+
+const TEAM_LINE_COLORS = {
+    Inter: '#1f6feb',
+    Milan: '#dc2626',
+    Napoli: '#38bdf8',
+    Juventus: '#f8fafc',
+    Roma: '#f97316',
+    Lazio: '#7dd3fc',
+    Atalanta: '#2563eb',
+    Fiorentina: '#7c3aed',
+    Bologna: '#dc2626',
+    Torino: '#7f1d1d',
+    Udinese: '#e5e7eb',
+    Genoa: '#1d4ed8',
+    Como: '#3b82f6',
+    Parma: '#facc15',
+    Cagliari: '#ef4444',
+    Lecce: '#f59e0b',
+    Empoli: '#3b82f6',
+    Verona: '#facc15',
+    Venezia: '#16a34a',
+    Monza: '#ef4444',
+    Sassuolo: '#22c55e',
+    Salernitana: '#b91c1c',
+    Spezia: '#d1d5db',
+    Sampdoria: '#2563eb',
+    Cremonese: '#9f1239',
+    Frosinone: '#fbbf24'
+};
 
 function calculateStandingsData(season, type) {
     const results = MATCH_RESULTS_BY_SEASON[season];
@@ -15948,6 +15992,120 @@ function handleStandingsSort(col) {
     if (standingsSortCol === col) standingsSortDir = (standingsSortDir === 'asc' ? 'desc' : 'asc');
     else { standingsSortCol = col; standingsSortDir = (col === 'team' ? 'asc' : 'desc'); }
     renderStandings();
+}
+
+function switchStandingsView(mode) {
+    standingsViewMode = mode;
+    const tableWrap = document.getElementById('standings-table-wrap');
+    const trendWrap = document.getElementById('standings-trend-wrap');
+    const btnTable = document.getElementById('standings-mode-table');
+    const btnTrend = document.getElementById('standings-mode-trend');
+
+    const activeClass = 'px-3 py-1.5 rounded text-xs font-semibold bg-yellow-500 text-slate-900 transition-colors shadow-sm';
+    const inactiveClass = 'px-3 py-1.5 rounded text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 transition-colors';
+
+    btnTable.className = mode === 'table' ? activeClass : inactiveClass;
+    btnTrend.className = mode === 'trend' ? activeClass : inactiveClass;
+    tableWrap.classList.toggle('hidden', mode !== 'table');
+    trendWrap.classList.toggle('hidden', mode !== 'trend');
+
+    if (mode === 'trend') renderStandingsTrendChart();
+}
+
+function buildStandingsProgressByMatchday(season) {
+    const results = Object.entries(MATCH_RESULTS_BY_SEASON[season] || {});
+    const maxMatchdays = Math.ceil(results.length / 10);
+    const stats = {};
+    const rankHistory = {};
+    const categories = Array.from({ length: maxMatchdays }, (_, i) => i + 1);
+    const initTeam = (team) => {
+        if (!stats[team]) stats[team] = { team, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, gs: 0, gd: 0, points: 0 };
+    };
+    const applyStats = (teamName, goalsFor, goalsAgainst) => {
+        const t = stats[teamName];
+        t.played++; t.gf += goalsFor; t.gs += goalsAgainst; t.gd = t.gf - t.gs;
+        if (goalsFor > goalsAgainst) { t.wins++; t.points += 3; }
+        else if (goalsFor === goalsAgainst) { t.draws++; t.points += 1; }
+        else t.losses++;
+    };
+
+    results.forEach(([matchName, score], i) => {
+        const [home, away] = matchName.split('-').map(s => s.trim());
+        const parsed = String(score).match(/^(\d+)-(\d+)$/);
+        if (!home || !away || !parsed) return;
+        initTeam(home); initTeam(away);
+        applyStats(home, parseInt(parsed[1], 10), parseInt(parsed[2], 10));
+        applyStats(away, parseInt(parsed[2], 10), parseInt(parsed[1], 10));
+
+        const isMatchdayEnd = ((i + 1) % 10 === 0) || i === results.length - 1;
+        if (!isMatchdayEnd) return;
+
+        const day = Math.floor(i / 10) + 1;
+        const snapshot = Object.values(stats).sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            if (b.gd !== a.gd) return b.gd - a.gd;
+            return b.gf - a.gf;
+        });
+        snapshot.forEach((row, idx) => {
+            if (!rankHistory[row.team]) rankHistory[row.team] = [];
+            rankHistory[row.team].push({ x: day, y: idx + 1 });
+        });
+    });
+    return { categories, rankHistory };
+}
+
+function renderStandingsTrendChart() {
+    const season = document.getElementById('standings-season-select').value;
+    const container = document.getElementById('standings-trend-chart');
+    const { categories, rankHistory } = buildStandingsProgressByMatchday(season);
+    const teams = Object.keys(rankHistory);
+    if (!teams.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500">Dati non disponibili.</p>';
+        return;
+    }
+    const series = teams.map(team => ({ name: team, data: rankHistory[team] }));
+    const colors = teams.map(team => TEAM_LINE_COLORS[team] || '#94a3b8');
+
+    if (standingsTrendChart) standingsTrendChart.destroy();
+    standingsTrendChart = new ApexCharts(container, {
+        series,
+        chart: { type: 'line', height: 620, toolbar: { show: false }, background: 'transparent', animations: { enabled: true, speed: 700 } },
+        stroke: { width: 2.4, curve: 'smooth' },
+        colors,
+        xaxis: { categories, title: { text: 'Giornata', style: { color: '#94a3b8' } }, labels: { style: { colors: '#94a3b8' } } },
+        yaxis: { min: 1, max: 20, reversed: true, tickAmount: 19, labels: { style: { colors: '#cbd5e1' } }, title: { text: 'Posizione', style: { color: '#94a3b8' } } },
+        dataLabels: {
+            enabled: true,
+            enabledOnSeries: teams.map((_, idx) => idx),
+            formatter: function (val, { seriesIndex, dataPointIndex, w }) {
+                const pts = w.config.series[seriesIndex].data;
+                if (dataPointIndex !== pts.length - 1) return '';
+                return ' ';
+            },
+            offsetX: 2
+        },
+        markers: { size: 0, hover: { size: 4 } },
+        legend: { show: false },
+        grid: { borderColor: '#1e293b' },
+        tooltip: { theme: 'dark', shared: false, y: { formatter: val => `${val}ª posizione` } }
+    });
+    standingsTrendChart.render().then(() => {
+        const old = container.querySelectorAll('.chart-team-logo');
+        old.forEach(el => el.remove());
+        teams.forEach((team, idx) => {
+            const last = rankHistory[team][rankHistory[team].length - 1];
+            if (!last) return;
+            const yPct = ((last.y - 1) / 19) * 100;
+            const img = document.createElement('img');
+            img.src = getTeamLogoUrl(team);
+            img.className = 'chart-team-logo';
+            img.style.left = 'calc(100% - 14px)';
+            img.style.top = `${yPct}%`;
+            img.style.transform = 'translate(-50%, -50%)';
+            img.title = team;
+            container.appendChild(img);
+        });
+    });
 }
 
 function renderStandings() {
@@ -16098,6 +16256,7 @@ function renderStandings() {
     }
 
     tbody.innerHTML += footerHtml;
+    if (standingsViewMode === 'trend') renderStandingsTrendChart();
 }
 
 
