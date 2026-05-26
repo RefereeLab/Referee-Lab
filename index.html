@@ -2112,14 +2112,15 @@ html, body {
 <div id="analytics-section-heatmap" class="mt-10 w-full">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
         <h3 id="heatmap-title" class="text-lg font-bold text-slate-200 flex items-center gap-2">
-            Heatmap Squadre — Stagione 2024/25
+            Heatmap Squadre — Stagione 2025/26
         </h3>
 
         <div class="flex flex-wrap gap-3 items-center text-xs">
             <div class="flex items-center gap-2">
                 <label for="heatmap-season" class="text-slate-400 hidden sm:inline">Stagione:</label>
                 <select id="heatmap-season" class="bg-slate-800 border border-slate-700 text-slate-100 text-xs rounded px-2 py-1">
-                    <option value="2024-25" selected>2024/25</option>
+                    <option value="2025-26" selected>2025/26</option>
+                    <option value="2024-25">2024/25</option>
                     <option value="2023-24">2023/24</option>
                     <option value="2022-23">2022/23</option>
                     <option value="2021-22">2021/22</option>
@@ -9877,7 +9878,7 @@ let selectedRadarReferees = [];
         let heatmapMatrixCache = {};
         let heatmapOrderedTeams = [];
         let heatmapPinnedCell = null;
-        let currentHeatmapSeason = '2024-25';
+        let currentHeatmapSeason = '2025-26';
 
         // Player scatter focus cache
         let scatterPinnedPoint = null;
@@ -13017,6 +13018,14 @@ function updateRadarChart() {
 }
 
     const HEATMAP_SEASONS = {
+        '2025-26': {
+            label: '2025/26',
+            dataset: MATCHES_DB_2526,
+            orderedTeams: [
+                "Pisa","Verona","Cremonese","Lecce","Genoa","Fiorentina","Cagliari","Parma","Torino","Sassuolo",
+                "Udinese","Lazio","Bologna","Atalanta","Juventus","Milan","Como","Roma","Napoli","Inter"
+            ]
+        },
         '2024-25': {
             label: '2024/25',
             dataset: MATCHES_DB_2425,
@@ -15798,10 +15807,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const seasonSelect = document.getElementById('heatmap-season');
     if (!seasonSelect) return;
 
-    currentHeatmapSeason = seasonSelect.value || '2024-25';
+    currentHeatmapSeason = seasonSelect.value || '2025-26';
 
     seasonSelect.addEventListener('change', () => {
-        currentHeatmapSeason = seasonSelect.value || '2024-25';
+        currentHeatmapSeason = seasonSelect.value || '2025-26';
         heatmapPinnedCell = null;
         renderTeamHeatmap();
     });
