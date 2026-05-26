@@ -13085,21 +13085,22 @@ function parseSeasonMatches(seasonKey) {
         const [home, away] = matchName.split('-');
 
         const effStr = parts[2]?.replace(',', '.');
-        const eff = parseFloat(effStr);
+const eff = parseFloat(effStr);
 
-        const fouls = parseInt(parts[4], 10) || 0;
+const fouls = parseInt(parts[4], 10) || 0;
 
-        const giornata = Math.floor(matchIndex / 10) + 1;
-        matchIndex++;
+const giornata = Math.floor(matchIndex / 10) + 1;
+matchIndex++;
 
-        if (!matrix[home]) matrix[home] = {};
-        if (!matrix[away]) matrix[away] = {};
+if (!matrix[home]) matrix[home] = {};
+if (!matrix[away]) matrix[away] = {};
 
-        if (!orderedTeams.includes(home)) orderedTeams.push(home);
-        if (!orderedTeams.includes(away)) orderedTeams.push(away);
+if (!orderedTeams.includes(home)) orderedTeams.push(home);
+if (!orderedTeams.includes(away)) orderedTeams.push(away);
 
-        const cellData = { eff, fouls, match: `${home}-${away}` };
-        matrix[home][giornata] = cellData;
+const effectiveValue = Number.isFinite(eff) ? eff : null;
+const cellData = { eff: effectiveValue, fouls, match: `${home}-${away}` };
+matrix[home][giornata] = cellData;
         matrix[away][giornata] = cellData;
     }
 
@@ -13190,13 +13191,18 @@ function updateHeatmapFocus(seriesIndex, dataPointIndex, sticky = false) {
     teamEl.textContent = team;
     matchEl.textContent = cell?.match || 'Match non disponibile';
 
-    if (cell) {
+if (cell) {
+    const metricValue = (currentHeatmapMetric === 'eff') ? cell.eff : cell.fouls;
+    if (Number.isFinite(metricValue)) {
         valueEl.textContent = (currentHeatmapMetric === 'eff')
             ? `${cell.eff.toFixed(2)} min di tempo effettivo`
             : `${cell.fouls} falli fischiati`;
     } else {
-        valueEl.textContent = 'Dato mancante';
+        valueEl.textContent = 'Dato non disponibile';
     }
+} else {
+    valueEl.textContent = 'Dato mancante';
+}
 }
 
 // ===========================================
@@ -13221,16 +13227,16 @@ function renderTeamHeatmap() {
     resetHeatmapFocusCard();
     hideHeatmapHighlight();
 
-    const series = orderedTeams.map(team => {
-        const data = [];
-        for (let g = 1; g <= 38; g++) {
-            const cell = matrix[team][g];
-            if (!cell) {
-                data.push(null);
-            } else {
-                const val = (metric === 'eff') ? cell.eff : cell.fouls;
-                data.push(val);
-            }
+const series = orderedTeams.map(team => {
+    const data = [];
+    for (let g = 1; g <= 38; g++) {
+        const cell = matrix[team][g];
+        if (!cell) {
+            data.push(null);
+        } else {
+            const val = (metric === 'eff') ? cell.eff : cell.fouls;
+            data.push(Number.isFinite(val) ? val : -1);
+        }
         }
         return {
             name: team,
@@ -13239,11 +13245,11 @@ function renderTeamHeatmap() {
     });
 
     // --- 2) Color scale diversa per le due metriche ---
-    const effColorScale = {
-        ranges: [
-            { from: 0,   to: 45,  color: '#e86f5c' },
-            { from: 45,  to: 47,  color: '#eba96d' },
-            { from: 47,  to: 49,  color: '#efc06f' },
+const effColorScale = {
+    ranges: [
+        { from: -1,  to: -1,  color: '#6b7280', name: 'Dato non disponibile' },
+        { from: 0,   to: 45,  color: '#e86f5c' },
+        { from: 45,  to: 47,  color: '#eba96d' },
             { from: 49,  to: 51,  color: '#f6d977' },
             { from: 51,  to: 53,  color: '#fae98a' },
             { from: 53,  to: 55,  color: '#f2e897' },
@@ -13348,8 +13354,10 @@ const foulsColorScale = {
                 const nomePartita = cell.match;
 
                 let valueLabel;
-                if (metric === 'eff') {
-                    valueLabel = `${cell.eff.toFixed(2)} min`;
+if (metric === 'eff') {
+    valueLabel = Number.isFinite(cell.eff)
+        ? `${cell.eff.toFixed(2)} min`
+        : 'Dato non disponibile';
                 } else {
                     valueLabel = `${cell.fouls} falli fischiati`;
                 }
