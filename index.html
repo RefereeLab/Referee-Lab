@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -1369,7 +1369,7 @@ html, body {
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded border border-slate-800">
                 <span class="w-3 h-3 rounded-full bg-green-500 animate-flash"></span>
-                Database aggiornato al 20/05/2026: <span class="text-white font-mono">37ª Giornata</span>
+                Database aggiornato al 26/05/2026: <span class="text-white font-mono">38ª Giornata</span>
             </div>
         </div>
 
@@ -1763,6 +1763,7 @@ html, body {
             <div class="text-[11px] text-slate-400 mb-3">
                 Evoluzione posizione giornata dopo giornata (1ª in alto, 20ª in basso).
             </div>
+            <div id="standings-trend-legend" class="mb-3 flex flex-wrap gap-1.5"></div>
             <div id="standings-trend-chart" class="w-full h-[620px] relative"></div>
         </div>
     </div>
@@ -1785,44 +1786,7 @@ html, body {
                 </div>
             </div>
 
-            <div id="champions-tie-breaker-section" class="pro-card rounded-lg p-4 space-y-4">
-                <div class="border-b border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-scale-balanced text-emerald-400"></i>
-                        CORSA CHAMPIONS 2025/26: tutte le ipotesi di parità tra Napoli, Juventus, Milan, Roma e Como
-                    </h3>
-                    <p class="text-[11px] text-slate-400 mt-2">
-                       Criteri: 1.scontri diretti, 2.differenza reti negli scontri diretti, 3.differenza reti generale, 4.gol segnati.
-                    </p>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="tie-teams-selector"></div>
-                <div class="flex flex-wrap gap-2" id="tie-mode-selector">
-                    <button type="button" id="tie-mode-manual" class="px-3 py-1.5 rounded text-xs font-semibold border border-emerald-500/50 bg-emerald-500/20 text-emerald-300">Modalità: selezione manuale squadre</button>
-                    <button type="button" id="tie-mode-sim" class="px-3 py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-900 text-slate-300">Modalità: simulazione ultima giornata</button>
-                </div>
-                <div id="tie-simulation-panel" class="hidden bg-slate-900/60 border border-slate-700 rounded p-3 space-y-3">
-                    <p class="text-[11px] text-slate-400">Inserire i gol di ogni squadra.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="tie-simulation-matches"></div>
-                </div>
-                <div id="tie-breaker-alert" class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2 hidden"></div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-slate-300">
-                        <thead class="bg-slate-800/80 text-slate-200">
-                            <tr>
-                                <th class="p-2 text-left">Squadra</th>
-                                <th id="tie-col-points-classifica" class="p-2 text-left">Punti finali (38^)</th><th class="p-2 text-left">Punti avulsa</th>
-                                <th class="p-2 text-left">Diff. reti scontri diretti</th>
-                                <th class="p-2 text-left">Diff. reti generale</th>
-                                <th class="p-2 text-left">Gol segnati</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tie-breaker-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
             <div id="analytics-refs-wrapper" class="space-y-6">
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div id="analytics-section-efftot" class="pro-card rounded-lg p-4 lg:col-span-2">
                     <div class="flex flex-wrap items-start justify-between gap-3 mb-4 border-b border-slate-800 pb-2">
@@ -2292,28 +2256,7 @@ html, body {
 
         </div>
 
-<div id="champions-promo-banner" class="pro-card rounded-lg p-0 animate-fade-in mb-2 cursor-pointer interactive-surface overflow-hidden relative group" onclick="goToChampionsSimulator()">
-            <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 opacity-40 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-slate-900 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fa-solid fa-trophy text-emerald-400 text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <h3 class="text-base sm:text-lg font-extrabold text-white tracking-tight uppercase">Simulatore Corsa Champions</h3>
-                            <span class="px-2 py-0.5 rounded text-[9px] font-black bg-red-500 text-white animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)] tracking-wider">NOVITÀ</span>
-                        </div>
-                        <p class="text-xs text-slate-300">Calcola tutte le combinazioni e la classifica avulsa per Napoli, Juve, Milan, Roma e Como.</p>
-                    </div>
-                </div>
-                
-                <button class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all transform group-hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                    Prova ora <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
+               
 
 
         <div id="table-view" class="pro-card rounded-lg overflow-hidden flex flex-col min-h-[600px] relative">
@@ -2357,7 +2300,7 @@ html, body {
         <div class="bg-slate-900 p-3 flex justify-between items-center border-b border-slate-800 cursor-pointer hover:bg-slate-800 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden')">
             <h3 class="text-xs font-bold text-white flex items-center gap-2">
                 <span class="w-3 h-3 bg-red-500 rounded-full animate-flash"></span>
-                DESIGNAZIONI della 37ª GIORNATA  </h3>
+                DESIGNAZIONI della 38ª GIORNATA  </h3>
             <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
         </div>
         <div class="p-0 max-h-64 overflow-y-auto hidden">
@@ -2443,22 +2386,22 @@ html, body {
     <script>
 
 const designationsData = {
-    roundLabel: '37ª Giornata - Serie A 2025/26',
+    roundLabel: '38ª Giornata - Serie A 2025/26',
     status: {
         label: 'LIVE',
         className: 'bg-red-500/10 text-red-400 text-[10px] px-2 py-0.5 rounded border border-red-500/30 font-bold uppercase'
     },
     matches: [
-        { match: 'COMO - PARMA', time: 'DOM 12:00', referee: '<strong>ZUFFERLI</strong>', varOfficial: 'Di Paolo <br> AVAR: Gariglio' },
-        { match: 'GENOA - MILAN', time: 'DOM 12:00', referee: '<strong>SOZZA</strong>', varOfficial: 'Mazzoleni <br> AVAR: Paganessi' },
-        { match: 'JUVENTUS - FIORENTINA', time: 'DOM 12:00', referee: '<strong>MASSA</strong>', varOfficial: 'Chiffi <br> AVAR: Meraviglia' },
-        { match: 'PISA - NAPOLI', time: 'DOM 12:00', referee: '<strong>FUORNEAU</strong>', varOfficial: 'Maggioni <br> AVAR: Camplone' },
-        { match: 'ROMA - LAZIO', time: 'DOM 12:00', referee: '<strong>MARESCA</strong>', varOfficial: 'Di Bello <br> AVAR: Abisso' },
-        { match: 'INTER - VERONA', time: 'DOM 15:00', referee: '<strong>CALZAVARA</strong>', varOfficial: 'Santoro <br> AVAR: Giua' },
-        { match: 'ATALANTA - BOLOGNA', time: 'DOM 18:00', referee: '<strong>PERENZONI</strong>', varOfficial: 'Pezzuto <br> AVAR: Serra' },
-        { match: 'CAGLIARI - TORINO', time: 'DOM 20:45', referee: '<strong>ARENA</strong>', varOfficial: 'Ghersini <br> AVAR: Prontera' },
-        { match: 'SASSUOLO - LECCE', time: 'DOM 20:45', referee: '<strong>LA PENNA</strong>', varOfficial: 'Doveri <br> AVAR: Dionisi' },
-        { match: 'UDINESE - CREMONESE', time: 'DOM 20:45', referee: '<strong>MANGANIELLO</strong>', varOfficial: 'Marini <br> AVAR: COSSO' }
+        { match: 'FIORENTINA - ATALANTA', time: 'VEN 20:45', referee: '<strong>PERRI</strong>', varOfficial: 'Di Bello <br> AVAR: Serra' },
+        { match: 'BOLOGNA - INTER', time: 'SAB 18:00', referee: '<strong>BONACINA</strong>', varOfficial: 'Pezzuto <br> AVAR: Baroni' },
+        { match: 'LAZIO - PISA', time: 'SAB 20:45', referee: '<strong>FERRIERI CAPUTI</strong>', varOfficial: 'Ghersini <br> AVAR: Piccinini' },
+        { match: 'PARMA - SASSUOLO', time: 'DOM 15:00', referee: '<strong>TURRINI</strong>', varOfficial: 'Giua <br> AVAR: Pezzuto' },
+        { match: 'NAPOLI - UDINESE', time: 'DOM 18:00', referee: '<strong>ZANOTTI</strong>', varOfficial: 'Prontera <br> AVAR: Pairetto' },
+        { match: 'CREMONESE - COMO', time: 'DOM 20:45', referee: '<strong>MARESCA</strong>', varOfficial: 'Gariglio <br> AVAR: Camplone' },
+        { match: 'LECCE - GENOA', time: 'DOM 20:45', referee: '<strong>DOVERI</strong>', varOfficial: 'Mazzoleni <br> AVAR: Paganessi' },
+        { match: 'MILAN - CAGLIARI', time: 'DOM 20:45', referee: '<strong>GUIDA</strong>', varOfficial: 'Abisso <br> AVAR: Chiffi' },
+        { match: 'TORINO - JUVENTUS', time: 'DOM 20:45', referee: '<strong>ZUFFERLI</strong>', varOfficial: 'Di Paolo <br> AVAR: Marini' },
+        { match: 'VERONA - ROMA', time: 'DOM 20:45', referee: '<strong>SOZZA</strong>', varOfficial: 'Meraviglia <br> AVAR: Maggioni' }
     ]
 };
 
@@ -5431,6 +5374,16 @@ Atalanta-Bologna	0-1
 Cagliari-Torino	2-1
 Sassuolo-Lecce	2-3
 Udinese-Cremonese	0-1
+Fiorentina-Atalanta	1-1
+Bologna-Inter	3-3
+Lazio-Pisa	2-1
+Parma-Sassuolo	1-0
+Napoli-Udinese	1-0
+Cremonese-Como	1-4
+Lecce-Genoa	1-0
+Milan-Cagliari	1-2
+Torino-Juventus	2-2
+Verona-Roma	0-2
 `
 );
 
@@ -7343,7 +7296,16 @@ Atalanta-Bologna	95,45	59,14	61,9%	22	17	5
 Cagliari-Torino	99,10	57,12	57,7%	21	8	13
 Sassuolo-Lecce	101,38	54,30	53,6%	20	7	13
 Udinese-Cremonese	97,59	54,22	55,5%	19	10	9
-`;
+Fiorentina-Atalanta	93,59	60,48	64,7%	25	11	14
+Bologna-Inter	94,05	54,52	58,3%	29	15	14
+Lazio-Pisa	94,05	61,05	64,9%	17	9	8
+Parma-Sassuolo	98,40	50,02	50,7%	24	10	14
+Napoli-Udinese	96,16	63,53	66,4%	16	3	13
+Cremonese-Como	98,02	45,29	46,4%	26	14	12
+Lecce-Genoa	94,00	50,24	53,6%	17	11	6
+Milan-Cagliari	97,15	59,38	61,3%	17	8	9
+Torino-Juventus	98,25	53,15	54,1%	19	9	10
+Verona-Roma	97,54	54,39	55,8%	22	12	10`;
 
         // DATI PARTITE ND AGGIUNTI MANUALMENTE
         const EXTRA_MATCHES_2122 = ``;
@@ -7731,6 +7693,16 @@ Perenzoni	59,14
 Arena	57,12
 La Penna	54,30
 Manganiello	54,22
+Perri	60,48
+Bonacina	54,52
+Ferrieri Caputi	61,05
+Turrini	50,02
+Zanotti	63,53
+Maresca	45,29
+Doveri	50,24
+Guida	59,38
+Zufferli	53,15
+Sozza	54,39
 '
 `,
 
@@ -9271,12 +9243,12 @@ Orsato	56,45'
         
         const db = {
             "2025-26": [
-                { name: "Daniele Doveri", matches: 18, fouls_avg: 24.11, penalties_ap: 0.17, yellows_ap: 3.39, yellows: 61, reds_ap: 0.06, reds: 1 },
+                { name: "Daniele Doveri", matches: 19, fouls_avg: 23.74, penalties_ap: 0.16, yellows_ap: 3.32, yellows: 63, reds_ap: 0.05, reds: 1 },
+                { name: "Luca Zufferli", matches: 18, fouls_avg: 24.50, penalties_ap: 0.50, yellows_ap: 2.94, yellows: 53, reds_ap: 0.06, reds: 1 },
                 { name: "Davide Massa", matches: 17, fouls_avg: 28.35, penalties_ap: 0.29, yellows_ap: 4.47, yellows: 76, reds_ap: 0.41, reds: 7 },
-                { name: "Luca Zufferli", matches: 17, fouls_avg: 24.76, penalties_ap: 0.53, yellows_ap: 2.94, yellows: 50, reds_ap: 0.06, reds: 1 },
-                { name: "Simone Sozza", matches: 16, fouls_avg: 25.69, penalties_ap: 0.44, yellows_ap: 3.44, yellows: 55, reds_ap: 0.38, reds: 6 },
+                { name: "Simone Sozza", matches: 17, fouls_avg: 25.47, penalties_ap: 0.47, yellows_ap: 3.35, yellows: 57, reds_ap: 0.41, reds: 7 },
+                { name: "Marco Guida", matches: 16, fouls_avg: 24.31, penalties_ap: 0.44, yellows_ap: 3.94, yellows: 63, reds_ap: 0.19, reds: 3 },
                 { name: "Maurizio Mariani", matches: 15, fouls_avg: 24.13, penalties_ap: 0.40, yellows_ap: 3.80, yellows: 57, reds_ap: 0.07, reds: 1 },
-                { name: "Marco Guida", matches: 15, fouls_avg: 24.80, penalties_ap: 0.47, yellows_ap: 3.93, yellows: 59, reds_ap: 0.20, reds: 3 },
                 { name: "Michael Fabbri", matches: 15, fouls_avg: 24.87, penalties_ap: 0.27, yellows_ap: 4.00, yellows: 60, reds_ap: 0.13, reds: 2 },
                 { name: "Daniele Chiffi", matches: 15, fouls_avg: 22.67, penalties_ap: 0.27, yellows_ap: 2.40, yellows: 36, reds_ap: 0.20, reds: 3 },
                 { name: "Federico La Penna", matches: 15, fouls_avg: 27.60, penalties_ap: 0.20, yellows_ap: 3.47, yellows: 52, reds_ap: 0.33, reds: 5 },
@@ -9284,13 +9256,13 @@ Orsato	56,45'
                 { name: "Marco Di Bello", matches: 13, fouls_avg: 26.46, penalties_ap: 0.23, yellows_ap: 2.38, yellows: 31, reds_ap: 0.08, reds: 1 },
                 { name: "Matteo Marchetti", matches: 13, fouls_avg: 23.92, penalties_ap: 0.31, yellows_ap: 3.38, yellows: 44, reds_ap: 0.31, reds: 4 },
                 { name: "Ermanno Feliciani", matches: 13, fouls_avg: 24.15, penalties_ap: 0.31, yellows_ap: 2.54, yellows: 33, reds_ap: 0.00, reds: 0 },
+                { name: "Fabio Maresca", matches: 12, fouls_avg: 25.92, penalties_ap: 0.25, yellows_ap: 4.25, yellows: 51, reds_ap: 0.58, reds: 7 },
                 { name: "Francesco Fourneau", matches: 12, fouls_avg: 25.92, penalties_ap: 0.33, yellows_ap: 4.08, yellows: 49, reds_ap: 0.00, reds: 0 },
                 { name: "Matteo Marcenaro", matches: 12, fouls_avg: 25.08, penalties_ap: 0.17, yellows_ap: 4.08, yellows: 49, reds_ap: 0.08, reds: 1 },
                 { name: "Giuseppe Collu", matches: 12, fouls_avg: 22.25, penalties_ap: 0.42, yellows_ap: 4.25, yellows: 51, reds_ap: 0.17, reds: 2 },
+                { name: "Kevin Bonacina", matches: 12, fouls_avg: 26.33, penalties_ap: 0.08, yellows_ap: 3.17, yellows: 38, reds_ap: 0.17, reds: 2 },
                 { name: "Rosario Abisso", matches: 11, fouls_avg: 24.36, penalties_ap: 0.09, yellows_ap: 3.45, yellows: 38, reds_ap: 0.55, reds: 6 },
-                { name: "Fabio Maresca", matches: 11, fouls_avg: 25.91, penalties_ap: 0.09, yellows_ap: 4.09, yellows: 45, reds_ap: 0.36, reds: 4 },
                 { name: "Juan Luca Sacchi", matches: 11, fouls_avg: 27.09, penalties_ap: 0.27, yellows_ap: 3.45, yellows: 38, reds_ap: 0.00, reds: 0 },
-                { name: "Kevin Bonacina", matches: 11, fouls_avg: 26.09, penalties_ap: 0.09, yellows_ap: 3.27, yellows: 36, reds_ap: 0.18, reds: 2 },
                 { name: "Alberto Arena", matches: 11, fouls_avg: 21.55, penalties_ap: 0.18, yellows_ap: 3.27, yellows: 36, reds_ap: 0.00, reds: 0 },
                 { name: "Luca Pairetto", matches: 10, fouls_avg: 26.80, penalties_ap: 0.60, yellows_ap: 5.30, yellows: 53, reds_ap: 0.30, reds: 3 },
                 { name: "Gianluca Manganiello", matches: 10, fouls_avg: 24.30, penalties_ap: 0.10, yellows_ap: 3.10, yellows: 31, reds_ap: 0.00, reds: 0 },
@@ -9306,9 +9278,12 @@ Orsato	56,45'
                 { name: "Federico Dionisi", matches: 2, fouls_avg: 25.50, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.00, reds: 0 },
                 { name: "Luca Massimi", matches: 2, fouls_avg: 24.50, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 6, reds_ap: 0.00, reds: 0 },
                 { name: "Daniele Perenzoni", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 2.50, yellows: 5, reds_ap: 0.00, reds: 0 },
+                { name: "Maria Ferrieri Caputi", matches: 2, fouls_avg: 22.50, penalties_ap: 0.00, yellows_ap: 4.50, yellows: 9, reds_ap: 0.00, reds: 0 },
                 { name: "Paride Tremolada", matches: 2, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 7.00, yellows: 14, reds_ap: 0.00, reds: 0 },
-                { name: "Maria Ferrieri Caputi", matches: 1, fouls_avg: 28.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
-                { name: "Simone Galipò", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 }
+                { name: "Simone Galipò", matches: 1, fouls_avg: 22.00, penalties_ap: 0.00, yellows_ap: 6.00, yellows: 6, reds_ap: 0.00, reds: 0 },
+                { name: "Mario Perri", matches: 1, fouls_avg: 25.00, penalties_ap: 0.00, yellows_ap: 2.00, yellows: 2, reds_ap: 0.00, reds: 0 },
+                { name: "Andrea Zanotti", matches: 1, fouls_avg: 16.00, penalties_ap: 0.00, yellows_ap: 3.00, yellows: 3, reds_ap: 1.00, reds: 1 },
+                { name: "Niccolò Turrini", matches: 1, fouls_avg: 24.00, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 4, reds_ap: 0.00, reds: 0 }
 
 
             ],
@@ -9924,7 +9899,7 @@ const PRESET_RADAR_REFEREES = [
 
 
         const REFEREES_2425 = ["Feliciani", "Ayroldi", "Fabbri", "Maresca", "Ferrieri Caputi", "Marchetti", "Marinelli", "Tremolada", "Massa", "Marcenaro", "Sacchi", "Doveri", "Di Marco", "Mariani", "Rapuano", "Sozza", "Pairetto", "Zufferli", "Di Bello", "Giua", "Colombo", "Guida", "Prontera", "Piccinini", "La Penna", "Abisso", "Aureliano", "Manganiello", "Fourneau", "Chiffi", "Dionisi", "Collu", "Massimi", "Bonacina", "Cosso", "Perenzoni", "Ghersini", "Monaldi", "Rutella"];
-        const REFEREES_2526 = ["Massa", "Ayroldi", "Collu", "Zufferli", "Sozza", "Manganiello", "Arena", "Marcenaro", "Tremolada", "La Penna", "Guida", "Marinelli", "Doveri", "Mariani", "Bonacina", "Chiffi", "Abisso", "Marchetti", "Crezzini", "Fourneau", "Colombo", "Piccinini", "Rapuano", "Feliciani", "Fabbri", "Dionisi", "Di Bello", "Pairetto", "Sacchi", "Pezzuto", "Di Marco", "Galipò", "Perenzoni", "Ghersini", "Rutella", "Camplone", "Monaldi", "Cosso", "Santoro", "Scatena", "Mucera", "Massimi"];
+        const REFEREES_2526 = ["Massa", "Ayroldi", "Collu", "Zufferli", "Sozza", "Manganiello", "Arena", "Marcenaro", "Tremolada", "La Penna", "Guida", "Marinelli", "Doveri", "Mariani", "Bonacina", "Chiffi", "Abisso", "Marchetti", "Crezzini", "Fourneau", "Colombo", "Piccinini", "Rapuano", "Feliciani", "Fabbri", "Dionisi", "Di Bello", "Pairetto", "Sacchi", "Pezzuto", "Di Marco", "Galipò", "Perenzoni", "Ghersini", "Rutella", "Camplone", "Monaldi", "Cosso", "Santoro", "Scatena", "Mucera", "Massimi", "Perri", "Zanotti", "Turrini"];
         const ACTIVE_EXCEPTIONS = ["Maresca", "Caputi", "Ferrieri Caputi", "Calzavara"];
         const HISTORICAL_SURNAMES = ["Irrati", "Orsato", "Valeri", "Pasqua", "Calvarese", "Giacomelli"];
 
@@ -15928,18 +15903,18 @@ let standingsViewMode = 'table';
 let standingsTrendChart = null;
 
 const TEAM_LINE_COLORS = {
-    Inter: '#1f6feb',
+    Inter: '#0215bf',
     Milan: '#dc2626',
-    Napoli: '#38bdf8',
+    Napoli: '#12A0D7',
     Juventus: '#f8fafc',
     Roma: '#f97316',
     Lazio: '#7dd3fc',
     Atalanta: '#2563eb',
     Fiorentina: '#7c3aed',
     Bologna: '#dc2626',
-    Torino: '#7f1d1d',
+    Torino: '#a12303',
     Udinese: '#e5e7eb',
-    Genoa: '#1d4ed8',
+    Genoa: '#AD1919',
     Como: '#3b82f6',
     Parma: '#facc15',
     Cagliari: '#ef4444',
@@ -15952,7 +15927,7 @@ const TEAM_LINE_COLORS = {
     Salernitana: '#b91c1c',
     Spezia: '#d1d5db',
     Sampdoria: '#2563eb',
-    Cremonese: '#9f1239',
+    Cremonese: '#ed1c24',
     Frosinone: '#fbbf24'
 };
 
@@ -16060,17 +16035,44 @@ function buildStandingsProgressByMatchday(season) {
     return { categories, rankHistory };
 }
 
+function renderStandingsTrendLegend(teams, colors) {
+    const legendContainer = document.getElementById('standings-trend-legend');
+    if (!legendContainer) return;
+
+    legendContainer.innerHTML = '';
+    teams.forEach((team, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'inline-flex items-center gap-1.5 px-2 py-1 rounded border border-slate-700 bg-slate-900/70 text-[11px] text-slate-200 hover:border-yellow-500/70 transition-colors';
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full" style="background:${colors[idx]}"></span>${team}`;
+
+        btn.addEventListener('mouseenter', () => {
+            if (!standingsTrendChart) return;
+            standingsTrendChart.highlightSeries(team);
+        });
+        btn.addEventListener('mouseleave', () => {
+            if (!standingsTrendChart) return;
+            standingsTrendChart.resetSeries();
+        });
+
+        legendContainer.appendChild(btn);
+    });
+}
+
 function renderStandingsTrendChart() {
     const season = document.getElementById('standings-season-select').value;
     const container = document.getElementById('standings-trend-chart');
+    const legendContainer = document.getElementById('standings-trend-legend');
     const { categories, rankHistory } = buildStandingsProgressByMatchday(season);
     const teams = Object.keys(rankHistory);
     if (!teams.length) {
         container.innerHTML = '<p class="text-xs text-slate-500">Dati non disponibili.</p>';
+        if (legendContainer) legendContainer.innerHTML = '';
         return;
     }
     const series = teams.map(team => ({ name: team, data: rankHistory[team] }));
     const colors = teams.map(team => TEAM_LINE_COLORS[team] || '#94a3b8');
+    renderStandingsTrendLegend(teams, colors);
 
     if (standingsTrendChart) standingsTrendChart.destroy();
     standingsTrendChart = new ApexCharts(container, {
