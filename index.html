@@ -1691,7 +1691,7 @@ html, body {
                     <i class="fa-solid fa-trophy"></i>
                 </div>
                 <div>
-                    <div class="text-[10px] uppercase tracking-[0.32em] text-yellow-200/80 font-black">RefereeLab Special</div>
+                    <div class="text-[10px] uppercase tracking-[0.32em] text-yellow-200/80 font-black">Referee-Lab Special</div>
                     <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight drop-shadow-[2px_2px_0_rgba(29,78,216,0.85)]">Mondiali 2026</h2>
                     <p class="mt-2 text-sm text-slate-200/80 max-w-2xl">Area dedicata agli arbitri dei Mondiali 2026.</p>
                 </div>
@@ -1709,7 +1709,7 @@ html, body {
         <div id="worldcup-designations-panel" class="relative z-10 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                 <div>
-                    <h3 class="text-lg font-black text-white">Designazioni arbitri</h3>
+                    <h3 class="text-lg font-black text-white">Designazioni arbitri (IN ARRIVO)</h3>
 
                 </div>
                 <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Fase a gironi + fase finale</span>
@@ -1727,26 +1727,28 @@ html, body {
         <div id="worldcup-stats-panel" class="hidden relative z-10 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                 <div>
-                    <h3 class="text-lg font-black text-white">Statistiche arbitri</h3>
+                    <h3 class="text-lg font-black text-white">Statistiche arbitri 2025/26</h3>
                 </div>
                 <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Presenze, falli, cartellini, rigori</span>
             </div>
             <div class="overflow-x-auto rounded-xl border border-yellow-500/20 bg-black/20">
-                <table class="w-full text-left pro-table worldcup-table">
-                    <thead class="sticky-head">
-                        <tr>
-                            <th class="worldcup-ref-cell">Arbitro</th>
-                            <th class="text-center">Presenze</th>
-                            <th class="text-center">Falli/P</th>
-                            <th class="text-center !text-yellow-500 font-bold">Gialli Tot</th>
-                            <th class="text-center !text-yellow-500">Gialli/P</th>
-                            <th class="text-center !text-red-500 font-bold">Rossi Tot</th>
-                            <th class="text-center !text-red-500">Rossi/P</th>
-                            <th class="text-center">Rigori/P</th>
-                        </tr>
-                    </thead>
-                    <tbody id="worldcup-stats-body" class="font-mono text-sm text-slate-100"></tbody>
-                </table>
+<table class="w-full text-left pro-table worldcup-table">
+    
+    <thead class="sticky-head">
+        <tr>
+            <th class="worldcup-ref-cell cursor-pointer select-none" data-sort="name">Arbitro</th>
+            <th class="text-center cursor-pointer select-none" data-sort="matches">Presenze</th>
+            <th class="text-center cursor-pointer select-none" data-sort="fouls_avg">Falli/P</th>
+            <th class="text-center !text-yellow-500 font-bold cursor-pointer select-none" data-sort="yellows">Gialli Tot</th>
+            <th class="text-center !text-yellow-500 cursor-pointer select-none" data-sort="yellows_ap">Gialli/P</th>
+            <th class="text-center !text-red-500 font-bold cursor-pointer select-none" data-sort="reds">Rossi Tot</th>
+            <th class="text-center !text-red-500 cursor-pointer select-none" data-sort="reds_ap">Rossi/P</th>
+            <th class="text-center cursor-pointer select-none" data-sort="penalties_ap">Rigori/P</th>
+        </tr>
+    </thead>
+    <tbody id="worldcup-stats-body" class="font-mono text-sm text-slate-100">
+        </tbody>
+</table>
             </div>
         </div>
     </section>
@@ -10877,7 +10879,67 @@ Orsato	56,45'
             ],
         };
 
-        const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
+const WORLD_CUP_STATS = [
+                { name: "Ramon Abatti", matches: 10, fouls_avg: 30.20, penalties_ap: 0.30, yellows_ap: 4.20, yellows: 42, reds_ap: 0.10, reds: 1 },
+                { name: "Wilton Sampaio", matches: 10, fouls_avg: 27.10, penalties_ap: 0.30, yellows_ap: 4.80, yellows: 48, reds_ap: 0.10, reds: 1 },
+                { name: "Omar Al-Ali", matches: 14, fouls_avg: 24.71, penalties_ap: 0.86, yellows_ap: 4.21, yellows: 59, reds_ap: 0.29, reds: 4 },
+                { name: "Abdulrahman Al-Jassim", matches: 14, fouls_avg: 25.33, penalties_ap: 0.64, yellows_ap: 5.21, yellows: 73, reds_ap: 0.50, reds: 7 },
+                { name: "Khalid Al-Turais", matches: 18, fouls_avg: 24.31, penalties_ap: 0.50, yellows_ap: 4.56, yellows: 82, reds_ap: 0.11, reds: 2 },
+                { name: "Maurizio Mariani", matches: 15, fouls_avg: 24.13, penalties_ap: 0.40, yellows_ap: 3.80, yellows: 57, reds_ap: 0.07, reds: 1 },
+                { name: "Omar Abdulkadir Artan", matches: 5, fouls_avg: 19.75, penalties_ap: 0.13, yellows_ap: 3.20, yellows: 16, reds_ap: 0.00, reds: 0 },
+                { name: "Pierre Atcho", matches: 3, fouls_avg: 26.67, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 12, reds_ap: 0.33, reds: 1 },
+                { name: "Iván Barton", matches: 28, fouls_avg: 25.41, penalties_ap: 0.54, yellows_ap: 5.42, yellows: 152, reds_ap: 0.50, reds: 14 },
+                { name: "Dahane Beida", matches: 5, fouls_avg: 30.20, penalties_ap: 0.00, yellows_ap: 2.40, yellows: 12, reds_ap: 0.00, reds: 0 },
+                { name: "Juan Benítez", matches: 19, fouls_avg: 20.50, penalties_ap: 0.26, yellows_ap: 3.68, yellows: 70, reds_ap: 0.00, reds: 0 },
+                { name: "Juan Calderón", matches: 20, fouls_avg: 24.17, penalties_ap: 0.35, yellows_ap: 5.05, yellows: 101, reds_ap: 0.35, reds: 7 },
+                { name: "Alireza Faghani", matches: 13, fouls_avg: 18.15, penalties_ap: 0.15, yellows_ap: 3.62, yellows: 47, reds_ap: 0.00, reds: 0 },
+                { name: "Ismail Elfath", matches: 10, fouls_avg: 24.20, penalties_ap: 0.40, yellows_ap: 3.42, yellows: 65, reds_ap: 0.21, reds: 4 },
+                { name: "Espen Eskås", matches: 19, fouls_avg: 23.45, penalties_ap: 0.33, yellows_ap: 4.08, yellows: 49, reds_ap: 0.00, reds: 0 },
+                { name: "Yael Falcón", matches: 16, fouls_avg: 23.44, penalties_ap: 0.13, yellows_ap: 5.75, yellows: 92, reds_ap: 0.13, reds: 2 },
+                { name: "Drew Fischer", matches: 11, fouls_avg: 25.91, penalties_ap: 0.09, yellows_ap: 4.73, yellows: 52, reds_ap: 0.18, reds: 2 },
+                { name: "Cristian Garay", matches: 21, fouls_avg: 21.05, penalties_ap: 0.19, yellows_ap: 4.62, yellows: 97, reds_ap: 0.24, reds: 5 },
+                { name: "Mustapha Ghorbal", matches: 11, fouls_avg: 21.33, penalties_ap: 0.45, yellows_ap: 3.36, yellows: 37, reds_ap: 0.27, reds: 3 },
+                { name: "Alejandro Hernández Hernández", matches: 19, fouls_avg: 23.89, penalties_ap: 0.53, yellows_ap: 5.42, yellows: 103, reds_ap: 0.32, reds: 6 },
+                { name: "Darío Herrera", matches: 16, fouls_avg: 25.25, penalties_ap: 0.19, yellows_ap: 5.63, yellows: 90, reds_ap: 0.38, reds: 6 },
+                { name: "Katia Itzel García", matches: 15, fouls_avg: 24.07, penalties_ap: 0.33, yellows_ap: 5.20, yellows: 78, reds_ap: 0.07, reds: 1 },
+                { name: "Jalal Jayed", matches: 9, fouls_avg: 28.80, penalties_ap: 0.44, yellows_ap: 3.10, yellows: 44, reds_ap: 0.33, reds: 3 },
+                { name: "Campbell-Kirk Kawana-Waugh", matches: 7, fouls_avg: 24.50, penalties_ap: 0.14, yellows_ap: 3.14, yellows: 22, reds_ap: 0.14, reds: 1 },
+                { name: "István Kovács", matches: 14, fouls_avg: 27.29, penalties_ap: 0.29, yellows_ap: 5.14, yellows: 72, reds_ap: 0.36, reds: 5 },
+                { name: "François Letexier", matches: 18, fouls_avg: 24.11, penalties_ap: 0.39, yellows_ap: 4.39, yellows: 79, reds_ap: 0.33, reds: 6 },
+                { name: "Ma Ning", matches: 5, fouls_avg: 26.40, penalties_ap: 0.40, yellows_ap: 5.20, yellows: 26, reds_ap: 0.20, reds: 1 },
+                { name: "Adham Makhadmeh", matches: 12, fouls_avg: 23.60, penalties_ap: 0.25, yellows_ap: 4.17, yellows: 50, reds_ap: 0.33, reds: 4 },
+                { name: "Danny Makkelie", matches: 24, fouls_avg: 21.67, penalties_ap: 0.50, yellows_ap: 3.00, yellows: 72, reds_ap: 0.13, reds: 3 },
+                { name: "Szymon Marciniak", matches: 11, fouls_avg: 22.82, penalties_ap: 0.36, yellows_ap: 2.27, yellows: 25, reds_ap: 0.27, reds: 3 },
+                { name: "Saíd Martínez", matches: 21, fouls_avg: 24.33, penalties_ap: 0.24, yellows_ap: 4.76, yellows: 100, reds_ap: 0.43, reds: 9 },
+                { name: "Oshane Nation", matches: 30, fouls_avg: 30.00, penalties_ap: 0.33, yellows_ap: 3.93, yellows: 118, reds_ap: 0.07, reds: 2 },
+                { name: "Glenn Nyberg", matches: 14, fouls_avg: 22.64, penalties_ap: 0.36, yellows_ap: 3.14, yellows: 44, reds_ap: 0.14, reds: 2 },
+                { name: "Michael Oliver", matches: 29, fouls_avg: 22.93, penalties_ap: 0.07, yellows_ap: 3.03, yellows: 88, reds_ap: 0.07, reds: 2 },
+                { name: "Amin Omar", matches: 18, fouls_avg: 24.69, penalties_ap: 0.44, yellows_ap: 4.56, yellows: 82, reds_ap: 0.28, reds: 5 },
+                { name: "Kevin Ortega", matches: 18, fouls_avg: 21.47, penalties_ap: 0.28, yellows_ap: 4.39, yellows: 79, reds_ap: 0.22, reds: 4 },
+                { name: "Tori Penso", matches: 15, fouls_avg: 19.80, penalties_ap: 0.07, yellows_ap: 3.07, yellows: 46, reds_ap: 0.00, reds: 0 },
+                { name: "João Pinheiro", matches: 14, fouls_avg: 25.86, penalties_ap: 0.43, yellows_ap: 5.29, yellows: 74, reds_ap: 0.29, reds: 4 },
+                { name: "César Ramos Palazuelos", matches: 25, fouls_avg: 24.37, penalties_ap: 0.60, yellows_ap: 5.04, yellows: 126, reds_ap: 0.28, reds: 7 },
+                { name: "Andrés Rojas", matches: 14, fouls_avg: 18.29, penalties_ap: 0.43, yellows_ap: 4.71, yellows: 66, reds_ap: 0.57, reds: 8 },
+                { name: "Sandro Schärer", matches: 24, fouls_avg: 27.90, penalties_ap: 0.42, yellows_ap: 4.46, yellows: 107, reds_ap: 0.21, reds: 5 },
+                { name: "Ilgiz Tantashev", matches: 20, fouls_avg: 22.20, penalties_ap: 0.15, yellows_ap: 3.70, yellows: 74, reds_ap: 0.25, reds: 5 },
+                { name: "Anthony Taylor", matches: 31, fouls_avg: 20.48, penalties_ap: 0.19, yellows_ap: 3.94, yellows: 122, reds_ap: 0.06, reds: 2 },
+                { name: "Gustavo Tejera", matches: 14, fouls_avg: 21.07, penalties_ap: 0.29, yellows_ap: 4.64, yellows: 65, reds_ap: 0.21, reds: 3 },
+                { name: "Facundo Tello", matches: 14, fouls_avg: 24.92, penalties_ap: 0.29, yellows_ap: 4.79, yellows: 67, reds_ap: 0.14, reds: 2 },
+                { name: "Abongile Tom", matches: 20, fouls_avg: 23.35, penalties_ap: 0.35, yellows_ap: 4.00, yellows: 80, reds_ap: 0.15, reds: 3 },
+                { name: "Clément Turpin", matches: 18, fouls_avg: 23.00, penalties_ap: 0.33, yellows_ap: 3.17, yellows: 57, reds_ap: 0.17, reds: 3 },
+                { name: "Jesús Valenzuela", matches: 26, fouls_avg: 22.00, penalties_ap: 0.35, yellows_ap: 4.85, yellows: 126, reds_ap: 0.19, reds: 5 },
+                { name: "Slavko Vinčić", matches: 15, fouls_avg: 25.40, penalties_ap: 0.33, yellows_ap: 2.87, yellows: 43, reds_ap: 0.33, reds: 5 },
+                { name: "Araki Yusuke", matches: 14, fouls_avg: 20.18, penalties_ap: 0.36, yellows_ap: 3.43, yellows: 48, reds_ap: 0.07, reds: 1 },
+                { name: "Felix Zwayer", matches: 17, fouls_avg: 21.18, penalties_ap: 0.29, yellows_ap: 4.59, yellows: 78, reds_ap: 0.12, reds: 2 }
+
+
+];     
+
+const WORLD_CUP_STATS_MAP = Object.fromEntries(
+    WORLD_CUP_STATS.map(r => [r.name, r])
+);
+
+   const HISTORICAL_SEASONS = ['2023-24', '2022-23', '2021-22', '2020-21'];
         const SOON_SEASONS = [];
         const ANALYTICS_SEASON_OPTIONS = ['2025-26', '2024-25', '2023-24', '2022-23', '2021-22', '2020-21'];
         const ANALYTICS_SEASON_DEFAULT = ['2025-26'];
@@ -15090,6 +15152,130 @@ window.addEventListener('resize', debounceRenderAnalytics);
             { name: 'Araki Yusuke', flag: '🇯🇵', country: 'Giappone' },
             { name: 'Felix Zwayer', flag: '🇩🇪', country: 'Germania' },
         ];
+
+// ==========================================
+// LOGICA DI ORDINAMENTO TABELLA MONDIALI
+// ==========================================
+let worldCupSortColumn = 'name'; // Partiamo ordinando per nome visto che le statistiche sono vuote
+let worldCupSortDirection = 'asc'; 
+
+function renderWorldCupStats() {
+    const tbody = document.getElementById('worldcup-stats-body');
+    if (!tbody) return;
+
+    // Gestione grafica delle freccette (▲ / ▼) nelle intestazioni senza allargare o alzare la riga di testa
+    const headers = document.querySelectorAll('#worldcup-stats-panel th[data-sort]');
+    headers.forEach(header => {
+        const column = header.getAttribute('data-sort');
+        
+        // Evitiamo tassativamente che l'intestazione vada a capo quando compare la freccia
+        header.classList.add('whitespace-nowrap');
+        
+        header.innerText = header.innerText.replace(' ▲', '').replace(' ▼', '');
+        if (column === worldCupSortColumn) {
+            header.innerText += worldCupSortDirection === 'asc' ? ' ▲' : ' ▼';
+        }
+    });
+
+    // Svuota la tabella prima del rendering
+    tbody.innerHTML = '';
+
+    // Disegna le righe degli arbitri
+    WORLD_CUP_REFEREES.forEach(arbitro => {
+        const matches = arbitro.matches || 0;
+        const fouls = arbitro.fouls_avg || 0;
+        const penalties = arbitro.penalties_ap || 0;
+        const yellows = arbitro.yellows || 0;
+        const yellows_ap = arbitro.yellows_ap || 0;
+        const reds = arbitro.reds || 0;
+        const reds_ap = arbitro.reds_ap || 0;
+
+        // RECUPERO CODICE BANDIERA
+        const countryName = arbitro.country || '';
+        const flagCode = WORLD_CUP_FLAG_CODES[countryName] || '';
+
+        // 🟢 SEPARAZIONE NOME E COGNOME: 
+        // Dividiamo il testo per isolare il Nome (la prima parola) e il Cognome (tutto il resto)
+        const nameParts = (arbitro.name || '').trim().split(' ');
+        let formattedNameHtml = '';
+
+        if (nameParts.length > 1) {
+            const firstName = nameParts[0]; // Es: "Szymon" o "Daniele"
+            const lastName = nameParts.slice(1).join(' '); // Es: "Marciniak" o "Orsato"
+            
+            // Nome: grigio chiaro (text-slate-400), carattere normale (font-normal)
+            // Cognome: bianco (text-slate-100), grassetto (font-bold), tutto maiuscolo (uppercase)
+            formattedNameHtml = `<span class="text-slate-400 font-normal">${firstName}</span> <span class="font-bold text-slate-100 uppercase">${lastName}</span>`;
+        } else {
+            // Caso di emergenza se c'è una sola parola
+            formattedNameHtml = `<span class="font-bold text-slate-100 uppercase">${arbitro.name}</span>`;
+        }
+
+        const row = document.createElement('tr');
+        
+        // ALTEZZA COMPATTA E FISSA (h-9)
+        row.className = "hover:bg-slate-800/30 transition-colors text-xs text-slate-200 h-9 align-middle";
+
+        // STRUTTURA CON IL NUOVO FORMAT_NAME_HTML
+        row.innerHTML = `
+            <td class="px-4 py-1 text-left align-middle whitespace-nowrap">
+                <div class="flex items-center gap-2 inline-flex">
+                    ${flagCode 
+                        ? `<img src="https://flagcdn.com/${flagCode}.svg" class="w-5 h-3.5 object-cover rounded-sm shadow-sm flex-shrink-0" alt="${countryName}">`
+                        : `<span class="w-5 h-3.5 bg-slate-700/50 rounded-sm flex-shrink-0"></span>`
+                    }
+                    <div class="whitespace-nowrap">${formattedNameHtml}</div>
+                </div>
+            </td>
+            <td class="px-4 py-1 text-center align-middle font-mono text-slate-300 whitespace-nowrap">${matches}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono text-slate-300 whitespace-nowrap">${fouls === 0 ? '0' : fouls.toFixed(2)}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono font-bold text-yellow-500 whitespace-nowrap">${yellows}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono text-yellow-500/90 whitespace-nowrap">${yellows_ap === 0 ? '0' : yellows_ap.toFixed(2)}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono font-bold text-red-500 whitespace-nowrap">${reds}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono text-red-500/90 whitespace-nowrap">${reds_ap === 0 ? '0' : reds_ap.toFixed(2)}</td>
+            <td class="px-4 py-1 text-center align-middle font-mono text-slate-300 whitespace-nowrap">${penalties === 0 ? '0' : penalties.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function sortWorldCupData(column) {
+    if (worldCupSortColumn === column) {
+        worldCupSortDirection = worldCupSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        worldCupSortColumn = column;
+        worldCupSortDirection = 'desc';
+    }
+
+    WORLD_CUP_REFEREES.sort((a, b) => {
+        let valA = a[column] !== undefined ? a[column] : 0;
+        let valB = b[column] !== undefined ? b[column] : 0;
+
+        // Ordinamento alfabetico se la colonna è il nome
+        if (typeof valA === 'string') {
+            return worldCupSortDirection === 'asc' 
+                ? valA.localeCompare(valB) 
+                : valB.localeCompare(valA);
+        }
+
+        // Ordinamento numerico per le statistiche
+        return worldCupSortDirection === 'asc' ? valA - valB : valB - valA;
+    });
+
+    renderWorldCupStats();
+}
+
+function initWorldCupSortListeners() {
+    const headers = document.querySelectorAll('#worldcup-stats-panel th[data-sort]');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.getAttribute('data-sort');
+            sortWorldCupData(column);
+        });
+    });
+}
+// ==========================================
+
         const WORLD_CUP_ROUNDS = ['1ª giornata', '2ª giornata', '3ª giornata', 'Sedicesimi', 'Ottavi', 'Quarti', 'Semifinale', 'Finale'];
         const WORLD_CUP_FLAG_CODES = {
             'Brasile': 'br',
@@ -15182,18 +15368,25 @@ window.addEventListener('resize', debounceRenderAnalytics);
                 </tr>
             `).join('');
 
-            statsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => `
-                <tr>
-                    ${renderWorldCupRefereeCell(ref)}
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                    <td class="worldcup-empty-cell text-center"></td>
-                </tr>
-            `).join('');
+statsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => {
+
+    const s = WORLD_CUP_STATS_MAP[ref.name];
+
+    return `
+    <tr>
+        ${renderWorldCupRefereeCell(ref)}
+
+        <td class="text-center">${s?.matches ?? '-'}</td>
+        <td class="text-center">${s?.fouls_avg?.toFixed(2) ?? '-'}</td>
+        <td class="text-center">${s?.penalties_ap?.toFixed(2) ?? '-'}</td>
+        <td class="text-center">${s?.yellows_ap?.toFixed(2) ?? '-'}</td>
+        <td class="text-center">${s?.yellows ?? '-'}</td>
+        <td class="text-center">${s?.reds_ap?.toFixed(2) ?? '-'}</td>
+        <td class="text-center">${s?.reds ?? '-'}</td>
+    </tr>
+    `;
+}).join('');
+
         }
 
         function switchWorldCupTab(tab) {
@@ -15488,6 +15681,50 @@ tfoot.innerHTML = `<tr><td class="sticky-col p-2 border-t border-slate-700">TOTA
             });
             tbody.innerHTML += rowsHtml;
         }
+
+function sortWorldCupData(column) {
+    // 1. Se l'utente clicca sulla colonna già attiva, invertiamo la direzione (asc <-> desc)
+    if (worldCupSortColumn === column) {
+        worldCupSortDirection = worldCupSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        // Se clicca su una nuova colonna, la attiviamo e impostiamo 'desc' (decrescente) come default
+        worldCupSortColumn = column;
+        worldCupSortDirection = 'desc';
+    }
+
+    // 2. Ordiniamo l'array in base al tipo di dato (stringa o numero)
+    WORLD_CUP_REFEREES.sort((a, b) => {
+        let valA = a[column] !== undefined ? a[column] : 0;
+        let valB = b[column] !== undefined ? b[column] : 0;
+
+        // Se stiamo ordinando per Nome (stringa)
+        if (typeof valA === 'string') {
+            return worldCupSortDirection === 'asc' 
+                ? valA.localeCompare(valB) 
+                : valB.localeCompare(valA);
+        }
+
+        // Se stiamo ordinando numeri (statistiche)
+        return worldCupSortDirection === 'asc' ? valA - valB : valB - valA;
+    });
+
+    // 3. Mostriamo i dati aggiornati a schermo
+    renderWorldCupStats();
+}
+
+function initWorldCupSortListeners() {
+    // Seleziona tutti i th che hanno l'attributo data-sort dentro il pannello dei mondiali
+    const headers = document.querySelectorAll('#worldcup-stats-panel th[data-sort]');
+    
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            // Recupera il valore di data-sort (es. "fouls_avg")
+            const column = header.getAttribute('data-sort');
+            // Esegue l'ordinamento
+            sortWorldCupData(column);
+        });
+    });
+}
 
         function renderMatchesFooter(tfoot, dataLength) {
             // Pulisce il footer mantenendo una struttura consistente
@@ -18183,7 +18420,26 @@ function getHeadToHeadWinner(season, teamA, teamB) {
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+        // 🟢 DIAMO I NUMERI ALLE BANDIERE: UNIAMO I DUE ARRAY 🟢
+        WORLD_CUP_REFEREES.forEach(arbitro => {
+            // Cerca se esiste lo stesso arbitro nella lista delle statistiche
+            const datiStatistici = WORLD_CUP_STATS.find(stat => stat.name === arbitro.name);
+            
+            if (datiStatistici) {
+                // Se lo trova, copia tutti i numeri (partite, gialli, falli...) dentro l'arbitro principale
+                Object.assign(arbitro, datiStatistici);
+            }
+        });
+        // -------------------------------------------------------------
+
+        // Attiva i click per l'ordinamento
+        initWorldCupSortListeners(); 
+        
+        // Esegue il primo disegno della tabella a schermo
+        renderWorldCupStats();
+
+        // Inizializzazioni dei grafici già presenti
         initNoGolChart();
         initSeasonResultsChart();
     });
