@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -1215,6 +1215,96 @@ html, body {
     pointer-events: none;
 }
 
+
+
+        /* Mondiali 2026 — visual identity */
+        .worldcup-banner {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(250, 204, 21, 0.28);
+            background:
+                radial-gradient(circle at 18% 25%, rgba(250, 204, 21, 0.24), transparent 22%),
+                linear-gradient(105deg, #060606 0%, #0d0d10 36%, #311019 58%, #1b3d2b 78%, #062f23 100%);
+            box-shadow: 0 18px 40px -28px rgba(250, 204, 21, 0.65), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .worldcup-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: translateX(-120%);
+            transition: transform 0.7s ease;
+        }
+
+        .worldcup-banner:hover::after {
+            transform: translateX(120%);
+        }
+
+        .worldcup-trophy-mark {
+            color: #d4a72c;
+            filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.65));
+            text-shadow: 0 0 18px rgba(250, 204, 21, 0.25);
+        }
+
+        .worldcup-panel {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            background:
+                radial-gradient(circle at 12% 8%, rgba(250, 204, 21, 0.12), transparent 20%),
+                radial-gradient(circle at 90% 0%, rgba(34, 197, 94, 0.13), transparent 24%),
+                linear-gradient(135deg, #050505 0%, #100b10 35%, #251018 58%, #0d2b21 100%);
+            box-shadow: 0 24px 55px -36px rgba(250, 204, 21, 0.72);
+        }
+
+        .worldcup-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 34%);
+            pointer-events: none;
+        }
+
+        .worldcup-subtab-btn {
+            border: 1px solid rgba(250, 204, 21, 0.18);
+            background: rgba(255,255,255,0.06);
+            color: #fde68a;
+            transition: all 0.2s ease;
+        }
+
+        .worldcup-subtab-btn.active {
+            background: #f8fafc;
+            color: #111827;
+            border-color: rgba(255,255,255,0.9);
+            box-shadow: 0 10px 26px -18px rgba(255,255,255,0.9);
+        }
+
+        .worldcup-table th {
+            background: rgba(0, 0, 0, 0.62);
+            color: #fde68a;
+            border-bottom-color: rgba(250, 204, 21, 0.2);
+        }
+
+        .worldcup-table td {
+            border-bottom-color: rgba(250, 204, 21, 0.12);
+        }
+
+        .worldcup-table tr:hover td {
+            background: rgba(250, 204, 21, 0.08);
+        }
+
+        .worldcup-ref-cell {
+            min-width: 230px;
+        }
+
+        .worldcup-empty-cell {
+            min-width: 116px;
+            height: 42px;
+            color: rgba(226, 232, 240, 0.18);
+        }
+
+
 /* Mantiene leggibili le squadre (fisso a sinistra) */
 .apexcharts-yaxis text {
     position: sticky;
@@ -1372,6 +1462,25 @@ html, body {
                 Database aggiornato al 26/05/2026: <span class="text-white font-mono">38ª Giornata</span>
             </div>
         </div>
+
+
+        <button id="worldcup-access-banner" type="button" onclick="switchView('worldcup')" class="worldcup-banner h-24 w-full rounded-2xl p-4 sm:p-5 mb-6 text-left group" aria-label="Apri la sezione Mondiali 2026">
+            <div class="relative z-10 flex items-center gap-4 sm:gap-6">
+                <div class="worldcup-trophy-mark text-5xl sm:text-6xl shrink-0">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="text-[10px] sm:text-xs uppercase tracking-[0.32em] text-yellow-200/80 font-extrabold">Speciale Mondiali</div>
+                    <div class="mt-1 text-2xl sm:text-4xl font-black text-white leading-tight drop-shadow-[2px_2px_0_rgba(29,78,216,0.9)]">Coppa del Mondo FIFA 2026</div>
+                    <div class="mt-3 flex flex-wrap gap-2 text-[11px] sm:text-xs font-bold">
+
+                    </div>
+                </div>
+                <div class="hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-white/10 border border-white/15 text-white group-hover:bg-white group-hover:text-slate-950 transition">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </div>
+        </button>
 
 <div id="layout-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -1538,6 +1647,80 @@ html, body {
         <div id="matches-title" class="hidden"></div>
         <div id="insights-container" class="hidden"></div>
 
+
+
+<!-- ===============================
+     WORLD CUP VIEW (MONDIALI 2026)
+=============================== -->
+<div id="worldcup-view" class="hidden animate-fade-in">
+    <section class="worldcup-panel rounded-2xl p-4 sm:p-6 space-y-6">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+                <div class="worldcup-trophy-mark text-5xl sm:text-6xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <div class="text-[10px] uppercase tracking-[0.32em] text-yellow-200/80 font-black">RefereeLab Special</div>
+                    <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight drop-shadow-[2px_2px_0_rgba(29,78,216,0.85)]">Mondiali 2026</h2>
+                    <p class="mt-2 text-sm text-slate-200/80 max-w-2xl">Area dedicata agli arbitri dei Mondiali 2026.</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button id="worldcup-tab-designations" type="button" onclick="switchWorldCupTab('designations')" class="worldcup-subtab-btn active rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wider">
+                    <i class="fa-regular fa-calendar-check mr-2"></i>Designazioni arbitri
+                </button>
+                <button id="worldcup-tab-stats" type="button" onclick="switchWorldCupTab('stats')" class="worldcup-subtab-btn rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wider">
+                    <i class="fa-solid fa-chart-bar mr-2"></i>Statistiche arbitri
+                </button>
+            </div>
+        </div>
+
+        <div id="worldcup-designations-panel" class="relative z-10 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                <div>
+                    <h3 class="text-lg font-black text-white">Designazioni arbitri</h3>
+
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Fase a gironi + fase finale</span>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-yellow-500/20 bg-black/20">
+                <table class="w-full text-left pro-table worldcup-table">
+                    <thead class="sticky-head">
+                        <tr id="worldcup-designations-head"></tr>
+                    </thead>
+                    <tbody id="worldcup-designations-body" class="font-mono text-sm text-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="worldcup-stats-panel" class="hidden relative z-10 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                <div>
+                    <h3 class="text-lg font-black text-white">Statistiche arbitri</h3>
+                    <p class="text-xs text-slate-300/80">Stessa struttura della scheda Statistiche Arbitri, con valori lasciati vuoti per il torneo.</p>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Presenze, falli, cartellini, rigori</span>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-yellow-500/20 bg-black/20">
+                <table class="w-full text-left pro-table worldcup-table">
+                    <thead class="sticky-head">
+                        <tr>
+                            <th class="worldcup-ref-cell">Arbitro</th>
+                            <th class="text-center">Presenze</th>
+                            <th class="text-center">Falli/P</th>
+                            <th class="text-center !text-yellow-500 font-bold">Gialli Tot</th>
+                            <th class="text-center !text-yellow-500">Gialli/P</th>
+                            <th class="text-center !text-red-500 font-bold">Rossi Tot</th>
+                            <th class="text-center !text-red-500">Rossi/P</th>
+                            <th class="text-center">Rigori/P</th>
+                        </tr>
+                    </thead>
+                    <tbody id="worldcup-stats-body" class="font-mono text-sm text-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
 
 <!-- ===============================
      PLAYERS VIEW (GIOCATORI 25/26)
@@ -14824,11 +15007,105 @@ window.addEventListener('resize', debounceRenderAnalytics);
 
 
 
-
-        
-
+        const WORLD_CUP_REFEREES = [
+            { name: 'Ramon Abatti', flag: '🇧🇷', country: 'Brasile' },
+            { name: 'Omar Al-Ali', flag: '🇦🇪', country: 'Emirati Arabi Uniti' },
+            { name: 'Abdulrahman Al-Jassim', flag: '🇶🇦', country: 'Qatar' },
+            { name: 'Khalid Al-Turais', flag: '🇸🇦', country: 'Arabia Saudita' },
+            { name: 'Omar Abdulkadir Artan', flag: '🇸🇴', country: 'Somalia' },
+            { name: 'Pierre Atcho', flag: '🇬🇦', country: 'Gabon' },
+            { name: 'Iván Barton', flag: '🇸🇻', country: 'El Salvador' },
+            { name: 'Dahane Beida', flag: '🇲🇷', country: 'Mauritania' },
+            { name: 'Juan Benítez', flag: '🇵🇾', country: 'Paraguay' },
+            { name: 'Juan Calderón', flag: '🇨🇷', country: 'Costa Rica' },
+            { name: 'Ismail Elfath', flag: '🇺🇸', country: 'Stati Uniti' },
+            { name: 'Espen Eskås', flag: '🇳🇴', country: 'Norvegia' },
+            { name: 'Alireza Faghani', flag: '🇦🇺', country: 'Australia' },
+            { name: 'Yael Falcón', flag: '🇦🇷', country: 'Argentina' },
+            { name: 'Drew Fischer', flag: '🇨🇦', country: 'Canada' },
+            { name: 'Cristian Garay', flag: '🇨🇱', country: 'Cile' },
+            { name: 'Mustapha Ghorbal', flag: '🇩🇿', country: 'Algeria' },
+            { name: 'Alejandro Hernández Hernández', flag: '🇪🇸', country: 'Spagna' },
+            { name: 'Darío Herrera', flag: '🇦🇷', country: 'Argentina' },
+            { name: 'Katia Itzel García', flag: '🇲🇽', country: 'Messico' },
+            { name: 'Jalal Jayed', flag: '🇲🇦', country: 'Marocco' },
+            { name: 'Campbell-Kirk Kawana-Waugh', flag: '🇳🇿', country: 'Nuova Zelanda' },
+            { name: 'István Kovács', flag: '🇷🇴', country: 'Romania' },
+            { name: 'François Letexier', flag: '🇫🇷', country: 'Francia' },
+            { name: 'Ma Ning', flag: '🇨🇳', country: 'Cina' },
+            { name: 'Adham Makhadmeh', flag: '🇯🇴', country: 'Giordania' },
+            { name: 'Danny Makkelie', flag: '🇳🇱', country: 'Paesi Bassi' },
+            { name: 'Szymon Marciniak', flag: '🇵🇱', country: 'Polonia' },
+            { name: 'Maurizio Mariani', flag: '🇮🇹', country: 'Italia' },
+            { name: 'Saíd Martínez', flag: '🇭🇳', country: 'Honduras' },
+            { name: 'Oshane Nation', flag: '🇯🇲', country: 'Giamaica' },
+            { name: 'Glenn Nyberg', flag: '🇸🇪', country: 'Svezia' },
+            { name: 'Michael Oliver', flag: '🏴', country: 'Inghilterra' },
+            { name: 'Amin Omar', flag: '🇪🇬', country: 'Egitto' },
+            { name: 'Kevin Ortega', flag: '🇵🇪', country: 'Perù' },
+            { name: 'Tori Penso', flag: '🇺🇸', country: 'Stati Uniti' },
+            { name: 'João Pinheiro', flag: '🇵🇹', country: 'Portogallo' },
+            { name: 'César Ramos Palazuelos', flag: '🇲🇽', country: 'Messico' },
+            { name: 'Andrés Rojas', flag: '🇨🇴', country: 'Colombia' },
+            { name: 'Wilton Sampaio', flag: '🇧🇷', country: 'Brasile' },
+            { name: 'Sandro Schärer', flag: '🇨🇭', country: 'Svizzera' },
+            { name: 'Ilgiz Tantashev', flag: '🇺🇿', country: 'Uzbekistan' },
+            { name: 'Anthony Taylor', flag: '🏴', country: 'Inghilterra' },
+            { name: 'Gustavo Tejera', flag: '🇺🇾', country: 'Uruguay' },
+            { name: 'Facundo Tello', flag: '🇦🇷', country: 'Argentina' },
+            { name: 'Abongile Tom', flag: '🇿🇦', country: 'Sudafrica' },
+            { name: 'Clément Turpin', flag: '🇫🇷', country: 'Francia' },
+            { name: 'Jesús Valenzuela', flag: '🇻🇪', country: 'Venezuela' },
+            { name: 'Slavko Vinčić', flag: '🇸🇮', country: 'Slovenia' },
+            { name: 'Araki Yusuke', flag: '🇯🇵', country: 'Giappone' },
+            { name: 'Felix Zwayer', flag: '🇩🇪', country: 'Germania' },
+        ];
+        const WORLD_CUP_ROUNDS = ['1ª giornata', '2ª giornata', '3ª giornata', 'Sedicesimi', 'Ottavi', 'Quarti', 'Semifinale', 'Finale'];
+        let worldCupActiveTab = 'designations';
 
         // --- UI RENDER FUNCTIONS ---
+
+        function renderWorldCupTables() {
+            const designationsHead = document.getElementById('worldcup-designations-head');
+            const designationsBody = document.getElementById('worldcup-designations-body');
+            const statsBody = document.getElementById('worldcup-stats-body');
+            if (!designationsHead || !designationsBody || !statsBody) return;
+
+            designationsHead.innerHTML = `<th class="worldcup-ref-cell">Arbitro</th>${WORLD_CUP_ROUNDS.map(round => `<th class="text-center">${round}</th>`).join('')}`;
+            designationsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => `
+                <tr>
+                    <td class="worldcup-ref-cell font-semibold text-white"><span class="mr-2 text-base" title="${ref.country}">${ref.flag}</span>${ref.name}</td>
+                    ${WORLD_CUP_ROUNDS.map(() => '<td class="worldcup-empty-cell text-center"></td>').join('')}
+                </tr>
+            `).join('');
+
+            statsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => `
+                <tr>
+                    <td class="worldcup-ref-cell font-semibold text-white"><span class="mr-2 text-base" title="${ref.country}">${ref.flag}</span>${ref.name}</td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                    <td class="worldcup-empty-cell text-center"></td>
+                </tr>
+            `).join('');
+        }
+
+        function switchWorldCupTab(tab) {
+            if (!['designations', 'stats'].includes(tab)) return;
+            worldCupActiveTab = tab;
+            const designationsPanel = document.getElementById('worldcup-designations-panel');
+            const statsPanel = document.getElementById('worldcup-stats-panel');
+            const designationsTab = document.getElementById('worldcup-tab-designations');
+            const statsTab = document.getElementById('worldcup-tab-stats');
+            if (designationsPanel) designationsPanel.classList.toggle('hidden', tab !== 'designations');
+            if (statsPanel) statsPanel.classList.toggle('hidden', tab !== 'stats');
+            if (designationsTab) designationsTab.classList.toggle('active', tab === 'designations');
+            if (statsTab) statsTab.classList.toggle('active', tab === 'stats');
+        }
+
         function updatePageTitleUI() {
             const el = document.getElementById('breadcrumb-current');
             const title = document.getElementById('page-title');
@@ -14836,8 +15113,9 @@ window.addEventListener('resize', debounceRenderAnalytics);
             else if(currentView === 'analytics') { el.innerText = "Visual"; title.innerText = ""; }
             else if(currentView === 'playingTime') { el.innerText = "Performance"; title.innerText = ""; }
             else if(currentView === 'teams') { el.innerText = "Ranking"; title.innerText = ""; }
+            else if(currentView === 'worldcup') { el.innerText = "Mondiali 2026"; title.innerText = ""; }
             else { el.innerText = "Database"; title.innerText = ""; }
-        }
+         }
 
         function renderTable(data) {
             const thead = document.getElementById('tableHeader');
@@ -15431,6 +15709,7 @@ const searchInput   = document.getElementById('searchInput');
 const tableView     = document.getElementById('table-view');
 const analyticsView = document.getElementById('analytics-view');
 const playersView   = document.getElementById('players-view');
+const worldcupView  = document.getElementById('worldcup-view');
 const sidebar       = document.getElementById('sidebar-filters');
 const mainContent   = document.getElementById('main-content');
 const seasonCard    = document.getElementById('season-selector-card');
@@ -15453,6 +15732,7 @@ if (mainTableEl) {
             hideSection(tableView);
             showSection(analyticsView);
             hideSection(playersView);
+            hideSection(worldcupView);
             hideSection(standingsView);
             showSection(sidebar);
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -15467,6 +15747,7 @@ if (mainTableEl) {
             hideSection(tableView);
             hideSection(analyticsView);
             showSection(playersView);
+            hideSection(worldcupView);
             hideSection(standingsView);
     if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -15480,10 +15761,27 @@ if (mainTableEl) {
     // renderizza / aggiorna la tabella giocatori
     initPlayersFilters();
     renderPlayersTable();
+} else if (view === 'worldcup') {
+    hideSection(tableView);
+    hideSection(analyticsView);
+    hideSection(playersView);
+    hideSection(worldcupView);
+    hideSection(standingsView);
+    showSection(worldcupView);
+    if (sidebar)       sidebar.classList.add('hidden');
+    if (seasonCard)    seasonCard.classList.add('hidden');
+    if (analyticsShortcutsCard) analyticsShortcutsCard.classList.add('hidden');
+    if (mainContent) {
+        mainContent.classList.remove('lg:col-span-9');
+        mainContent.classList.add('lg:col-span-12');
+    }
+    renderWorldCupTables();
+    switchWorldCupTab(worldCupActiveTab);
 } else if (view === 'standings') {
     hideSection(tableView);
     hideSection(analyticsView);
     hideSection(playersView);
+    hideSection(worldcupView);
     showSection(standingsView);
 if (sidebar)       sidebar.classList.add('hidden');
     if (seasonCard)    seasonCard.classList.add('hidden');
@@ -15501,6 +15799,7 @@ if (!quizRound.length) prepareQuizRound();
     showSection(tableView);
     hideSection(analyticsView);
     hideSection(playersView);
+    hideSection(worldcupView);
     hideSection(standingsView);
     showSection(sidebar);
     if (seasonCard)    seasonCard.classList.remove('hidden');
@@ -15525,7 +15824,11 @@ if (!quizRound.length) prepareQuizRound();
             if(view === 'teams') { sortColumn = 'matches'; sortDirection = 'desc'; } // Nuovo default per squadre
 
             updateSeasonButtonsUI();
-            aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
+            if (view !== 'worldcup') {
+                aggregateData(); // Non debouncato per il cambio scheda, deve essere immediato
+            } else {
+                updatePageTitleUI();
+            }
 
             if (updateHistory) updateHistoryState(view, { replace: replaceHistory });
         }
