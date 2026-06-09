@@ -1709,7 +1709,7 @@ html, body {
         <div id="worldcup-designations-panel" class="relative z-10 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                 <div>
-                    <h3 class="text-lg font-black text-white">Designazioni arbitri (IN ARRIVO)</h3>
+                    <h3 class="text-lg font-black text-white">Designazioni arbitri   (IN AGGIORNAMENTO)</h3>
 
                 </div>
                 <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Fase a gironi + fase finale</span>
@@ -15100,7 +15100,8 @@ window.addEventListener('resize', debounceRenderAnalytics);
 
 
         const WORLD_CUP_REFEREES = [
-            { name: 'Ramon Abatti', flag: '🇧🇷', country: 'Brasile' },
+{ 
+        name: 'Ramon Abatti', flag: '🇧🇷', country: 'Brasile' },
             { name: 'Omar Al-Ali', flag: '🇦🇪', country: 'Emirati Arabi Uniti' },
             { name: 'Abdulrahman Al-Jassim', flag: '🇶🇦', country: 'Qatar' },
             { name: 'Khalid Al-Turais', flag: '🇸🇦', country: 'Arabia Saudita' },
@@ -15126,25 +15127,25 @@ window.addEventListener('resize', debounceRenderAnalytics);
             { name: 'François Letexier', flag: '🇫🇷', country: 'Francia' },
             { name: 'Ma Ning', flag: '🇨🇳', country: 'Cina' },
             { name: 'Adham Makhadmeh', flag: '🇯🇴', country: 'Giordania' },
-            { name: 'Danny Makkelie', flag: '🇳🇱', country: 'Paesi Bassi' },
+            { name: 'Danny Makkelie', flag: '🇳🇱', country: 'Paesi Bassi', assignments: {"1": "USA-PARAGUAY"}},
             { name: 'Szymon Marciniak', flag: '🇵🇱', country: 'Polonia' },
             { name: 'Maurizio Mariani', flag: '🇮🇹', country: 'Italia' },
             { name: 'Saíd Martínez', flag: '🇭🇳', country: 'Honduras' },
             { name: 'Oshane Nation', flag: '🇯🇲', country: 'Giamaica' },
             { name: 'Glenn Nyberg', flag: '🇸🇪', country: 'Svezia' },
             { name: 'Michael Oliver', flag: '🏴', country: 'Inghilterra' },
-            { name: 'Amin Omar', flag: '🇪🇬', country: 'Egitto' },
+            { name: 'Amin Omar', flag: '🇪🇬', country: 'Egitto', assignments: {"1": "COREA DEL SUD-REP.CECA"}},
             { name: 'Kevin Ortega', flag: '🇵🇪', country: 'Perù' },
             { name: 'Tori Penso', flag: '🇺🇸', country: 'Stati Uniti' },
             { name: 'João Pinheiro', flag: '🇵🇹', country: 'Portogallo' },
             { name: 'César Ramos Palazuelos', flag: '🇲🇽', country: 'Messico' },
             { name: 'Andrés Rojas', flag: '🇨🇴', country: 'Colombia' },
-            { name: 'Wilton Sampaio', flag: '🇧🇷', country: 'Brasile' },
+            { name: 'Wilton Sampaio', flag: '🇧🇷', country: 'Brasile', assignments: {"1": "MESSICO-SUD AFRICA"}},
             { name: 'Sandro Schärer', flag: '🇨🇭', country: 'Svizzera' },
             { name: 'Ilgiz Tantashev', flag: '🇺🇿', country: 'Uzbekistan' },
             { name: 'Anthony Taylor', flag: '🏴', country: 'Inghilterra' },
             { name: 'Gustavo Tejera', flag: '🇺🇾', country: 'Uruguay' },
-            { name: 'Facundo Tello', flag: '🇦🇷', country: 'Argentina' },
+            { name: 'Facundo Tello', flag: '🇦🇷', country: 'Argentina', assignments: {"1": "CANADA-BOSNIA"}},
             { name: 'Abongile Tom', flag: '🇿🇦', country: 'Sudafrica' },
             { name: 'Clément Turpin', flag: '🇫🇷', country: 'Francia' },
             { name: 'Jesús Valenzuela', flag: '🇻🇪', country: 'Venezuela' },
@@ -15163,24 +15164,18 @@ function renderWorldCupStats() {
     const tbody = document.getElementById('worldcup-stats-body');
     if (!tbody) return;
 
-    // Gestione grafica delle freccette (▲ / ▼) nelle intestazioni senza allargare o alzare la riga di testa
     const headers = document.querySelectorAll('#worldcup-stats-panel th[data-sort]');
     headers.forEach(header => {
         const column = header.getAttribute('data-sort');
-        
-        // Evitiamo tassativamente che l'intestazione vada a capo quando compare la freccia
         header.classList.add('whitespace-nowrap');
-        
         header.innerText = header.innerText.replace(' ▲', '').replace(' ▼', '');
         if (column === worldCupSortColumn) {
             header.innerText += worldCupSortDirection === 'asc' ? ' ▲' : ' ▼';
         }
     });
 
-    // Svuota la tabella prima del rendering
     tbody.innerHTML = '';
 
-    // Disegna le righe degli arbitri
     WORLD_CUP_REFEREES.forEach(arbitro => {
         const matches = arbitro.matches || 0;
         const fouls = arbitro.fouls_avg || 0;
@@ -15190,40 +15185,26 @@ function renderWorldCupStats() {
         const reds = arbitro.reds || 0;
         const reds_ap = arbitro.reds_ap || 0;
 
-        // RECUPERO CODICE BANDIERA
         const countryName = arbitro.country || '';
         const flagCode = WORLD_CUP_FLAG_CODES[countryName] || '';
 
-        // 🟢 SEPARAZIONE NOME E COGNOME: 
-        // Dividiamo il testo per isolare il Nome (la prima parola) e il Cognome (tutto il resto)
         const nameParts = (arbitro.name || '').trim().split(' ');
         let formattedNameHtml = '';
-
         if (nameParts.length > 1) {
-            const firstName = nameParts[0]; // Es: "Szymon" o "Daniele"
-            const lastName = nameParts.slice(1).join(' '); // Es: "Marciniak" o "Orsato"
-            
-            // Nome: grigio chiaro (text-slate-400), carattere normale (font-normal)
-            // Cognome: bianco (text-slate-100), grassetto (font-bold), tutto maiuscolo (uppercase)
+            const firstName = nameParts[0]; 
+            const lastName = nameParts.slice(1).join(' '); 
             formattedNameHtml = `<span class="text-slate-400 font-normal">${firstName}</span> <span class="font-bold text-slate-100 uppercase">${lastName}</span>`;
         } else {
-            // Caso di emergenza se c'è una sola parola
             formattedNameHtml = `<span class="font-bold text-slate-100 uppercase">${arbitro.name}</span>`;
         }
 
         const row = document.createElement('tr');
-        
-        // ALTEZZA COMPATTA E FISSA (h-9)
-        row.className = "hover:bg-slate-800/30 transition-colors text-xs text-slate-200 h-9 align-middle";
+        row.className = "hover:bg-slate-800/30 transition-colors text-xs text-slate-200 h-9 align-middle border-b border-slate-800/50";
 
-        // STRUTTURA CON IL NUOVO FORMAT_NAME_HTML
         row.innerHTML = `
             <td class="px-4 py-1 text-left align-middle whitespace-nowrap">
                 <div class="flex items-center gap-2 inline-flex">
-                    ${flagCode 
-                        ? `<img src="https://flagcdn.com/${flagCode}.svg" class="w-5 h-3.5 object-cover rounded-sm shadow-sm flex-shrink-0" alt="${countryName}">`
-                        : `<span class="w-5 h-3.5 bg-slate-700/50 rounded-sm flex-shrink-0"></span>`
-                    }
+                    ${flagCode ? `<img src="https://flagcdn.com/${flagCode}.svg" class="w-5 h-3.5 object-cover rounded-sm shadow-sm flex-shrink-0" alt="${countryName}">` : `<span class="w-5 h-3.5 bg-slate-700/50 rounded-sm flex-shrink-0"></span>`}
                     <div class="whitespace-nowrap">${formattedNameHtml}</div>
                 </div>
             </td>
@@ -15354,41 +15335,46 @@ function initWorldCupSortListeners() {
         }
 
 
-        function renderWorldCupTables() {
-            const designationsHead = document.getElementById('worldcup-designations-head');
-            const designationsBody = document.getElementById('worldcup-designations-body');
-            const statsBody = document.getElementById('worldcup-stats-body');
-            if (!designationsHead || !designationsBody || !statsBody) return;
+function renderWorldCupTables() {
+    const designationsHead = document.getElementById('worldcup-designations-head');
+    const designationsBody = document.getElementById('worldcup-designations-body');
+    if (!designationsHead || !designationsBody) return;
 
-            designationsHead.innerHTML = `<th class="worldcup-ref-cell">Arbitro</th>${WORLD_CUP_ROUNDS.map(round => `<th class="text-center">${round}</th>`).join('')}`;
-            designationsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => `
-                <tr>
-                    ${renderWorldCupRefereeCell(ref)}
-                    ${WORLD_CUP_ROUNDS.map(() => '<td class="worldcup-empty-cell text-center"></td>').join('')}
-                </tr>
-            `).join('');
+    // Associazione delle colonne alle chiavi dell'oggetto assignments
+    const phaseKeys = ['1', '2', '3', 'Sed', 'Ott', 'Qua', 'Sem', 'Fin'];
 
-statsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => {
-
-    const s = WORLD_CUP_STATS_MAP[ref.name];
-
-    return `
-    <tr>
-        ${renderWorldCupRefereeCell(ref)}
-
-        <td class="text-center">${s?.matches ?? '-'}</td>
-        <td class="text-center">${s?.fouls_avg?.toFixed(2) ?? '-'}</td>
-        <td class="text-center">${s?.penalties_ap?.toFixed(2) ?? '-'}</td>
-        <td class="text-center">${s?.yellows_ap?.toFixed(2) ?? '-'}</td>
-        <td class="text-center">${s?.yellows ?? '-'}</td>
-        <td class="text-center">${s?.reds_ap?.toFixed(2) ?? '-'}</td>
-        <td class="text-center">${s?.reds ?? '-'}</td>
-    </tr>
+    designationsHead.innerHTML = `
+        <th class="worldcup-ref-cell px-4 py-3 text-left font-semibold text-slate-400">Arbitro</th>
+        ${WORLD_CUP_ROUNDS.map(round => `<th class="text-center px-2 py-3 min-w-[95px] font-semibold text-slate-400">${round}</th>`).join('')}
     `;
-}).join('');
 
-        }
+    designationsBody.innerHTML = WORLD_CUP_REFEREES.map(ref => {
+        const calendarCells = WORLD_CUP_ROUNDS.map((round, index) => {
+            const phaseKey = phaseKeys[index];
+            if (ref.assignments && ref.assignments[phaseKey]) {
+                const matchName = ref.assignments[phaseKey];
+                
+                // 🟢 VERSIONE ULTRA-COMPATTA SENZA PUNTINI 
+                return `
+                    <td class="px-1 py-1 align-middle text-center">
+                        <div class="inline-block bg-green-900/50 border border-green-700/90 text-slate-200 text-[11px] font-sans tracking-tighter px-0.5 py-0.5 rounded shadow-sm whitespace-nowrap text-center" title="${matchName}">
+                            ${matchName}
+                        </div>
+                    </td>
+                `;
+            } else {
+                return '<td class="worldcup-empty-cell text-center border-b border-slate-800/30"></td>';
+            }
+        }).join('');
 
+        return `
+            <tr class="hover:bg-slate-800/30 transition-colors border-b border-slate-800/50 h-10">
+                ${renderWorldCupRefereeCell(ref)}
+                ${calendarCells}
+            </tr>
+        `;
+    }).join('');
+}
         function switchWorldCupTab(tab) {
             if (!['designations', 'stats'].includes(tab)) return;
             worldCupActiveTab = tab;
