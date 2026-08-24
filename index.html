@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it" class="dark">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -1335,6 +1335,326 @@ html, body {
             color: rgba(226, 232, 240, 0.18);
         }
 
+        .worldcup-designations-shell {
+            max-height: calc(100vh - 230px);
+            overflow: auto;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .worldcup-designations-table {
+            min-width: 1745px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .worldcup-designations-table th {
+            position: sticky;
+            top: 0;
+            z-index: 12;
+            padding: 10px 12px;
+            background:
+                linear-gradient(180deg, rgba(23, 23, 23, 0.96), rgba(3, 7, 18, 0.96));
+            border-bottom: 1px solid rgba(250, 204, 21, 0.28);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .worldcup-designations-table th:first-child,
+        .worldcup-designations-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 14;
+            background: #05080f;
+            background-clip: padding-box;
+            box-shadow: 12px 0 20px -16px rgba(0, 0, 0, 1);
+            overflow: hidden;
+        }
+
+        .worldcup-designations-table th:first-child {
+            z-index: 16;
+        }
+
+        .worldcup-designations-table tbody tr:nth-child(even) td:first-child,
+        .worldcup-designations-table tbody tr:hover td:first-child {
+            background: #05080f;
+            background-clip: padding-box;
+        }
+
+        .worldcup-designations-table .worldcup-ref-cell {
+            width: 260px;
+            min-width: 260px;
+            max-width: 260px;
+        }
+
+        .worldcup-designations-table tbody tr:nth-child(even) td {
+            background-color: rgba(15, 23, 42, 0.34);
+        }
+
+        .worldcup-designations-table tbody tr:hover td {
+            background-color: rgba(250, 204, 21, 0.075);
+        }
+
+        .worldcup-designations-table td {
+            padding: 7px 8px;
+            vertical-align: middle;
+        }
+
+        .worldcup-designation-th {
+            min-width: 185px;
+            text-align: center;
+        }
+
+        .worldcup-designation-cell {
+            min-width: 185px;
+        }
+
+        .worldcup-assignment-card {
+            width: 100%;
+            min-height: 34px;
+            display: grid;
+            align-content: center;
+            padding: 6px 9px;
+            border: 1px solid rgba(250, 204, 21, 0.25);
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(250, 204, 21, 0.14), rgba(250, 204, 21, 0.055)),
+                rgba(15, 23, 42, 0.92);
+            color: #fff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+            transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+        }
+
+        .worldcup-assignment-card:hover {
+            transform: translateY(-1px);
+            border-color: rgba(250, 204, 21, 0.58);
+            background:
+                linear-gradient(180deg, rgba(250, 204, 21, 0.24), rgba(22, 163, 74, 0.08)),
+                rgba(15, 23, 42, 0.98);
+        }
+
+        .worldcup-assignment-teamline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+            font-size: 0.62rem;
+            font-weight: 850;
+            line-height: 1.2;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        .worldcup-team-name {
+            flex: 0 0 auto;
+        }
+
+        .worldcup-versus-dot {
+            width: auto;
+            height: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(253, 230, 138, 0.72);
+            font-size: 0.68rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .worldcup-no-assignment {
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed rgba(148, 163, 184, 0.14);
+            border-radius: 8px;
+            color: rgba(148, 163, 184, 0.28);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 800;
+        }
+
+        @media (max-width: 640px) {
+            .worldcup-designations-table {
+                min-width: 1610px;
+            }
+
+            .worldcup-designation-th,
+            .worldcup-designation-cell {
+                min-width: 170px;
+            }
+
+            .worldcup-designations-table th:first-child,
+            .worldcup-designations-table td:first-child {
+                position: static;
+                box-shadow: none;
+            }
+        }
+
+        .worldcup-matches-shell {
+            max-height: calc(100vh - 230px);
+            overflow: auto;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .worldcup-matches-table {
+            min-width: 1080px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .worldcup-matches-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 10px 12px;
+            background:
+                linear-gradient(180deg, rgba(23, 23, 23, 0.97), rgba(3, 7, 18, 0.97));
+            border-bottom: 1px solid rgba(250, 204, 21, 0.28);
+            color: #fde68a;
+            font-size: 0.68rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .worldcup-matches-table td {
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+
+        .worldcup-matches-table tbody tr:nth-child(even) td {
+            background: rgba(15, 23, 42, 0.28);
+        }
+
+        .worldcup-matches-table tbody tr:hover td {
+            background: rgba(250, 204, 21, 0.07);
+        }
+
+        .worldcup-match-cell {
+            min-width: 330px;
+        }
+
+        .worldcup-matchup {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            white-space: nowrap;
+        }
+
+        .worldcup-match-team {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        .worldcup-match-separator {
+            color: rgba(253, 230, 138, 0.55);
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+        .worldcup-result-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            min-height: 28px;
+            padding: 4px 9px;
+            border-radius: 7px;
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            background: rgba(250, 204, 21, 0.12);
+            color: #fff7ed;
+            font-size: 0.78rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .worldcup-result-pill.is-scheduled {
+            min-width: 104px;
+            background: rgba(59, 130, 246, 0.13);
+            border-color: rgba(96, 165, 250, 0.25);
+            color: #bfdbfe;
+            font-size: 0.68rem;
+        }
+
+        .worldcup-phase-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.12);
+            color: #cbd5e1;
+            font-size: 0.66rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .worldcup-referee-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 138px;
+            padding: 5px 9px;
+            border-radius: 7px;
+            background: rgba(34, 197, 94, 0.11);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            font-size: 0.72rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .worldcup-referee-pill.is-missing {
+            background: rgba(148, 163, 184, 0.08);
+            border-color: rgba(148, 163, 184, 0.14);
+            color: rgba(203, 213, 225, 0.52);
+        }
+
+        .worldcup-metric-cell {
+            min-width: 74px;
+            text-align: center;
+        }
+
+        .worldcup-metric-value {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            min-height: 28px;
+            padding: 4px 8px;
+            border-radius: 7px;
+            background: rgba(15, 23, 42, 0.62);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            font-size: 0.78rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .worldcup-metric-value.is-empty {
+            color: rgba(148, 163, 184, 0.34);
+        }
+
+        @media (max-width: 640px) {
+            .worldcup-matches-table {
+                min-width: 980px;
+            }
+
+            .worldcup-match-cell {
+                min-width: 300px;
+            }
+        }
+
 
 /* Mantiene leggibili le squadre (fisso a sinistra) */
 .apexcharts-yaxis text {
@@ -1703,6 +2023,8 @@ html, body {
                 <button id="worldcup-tab-stats" type="button" onclick="switchWorldCupTab('stats')" class="worldcup-subtab-btn rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wider">
                     <i class="fa-solid fa-chart-bar mr-2"></i>Statistiche arbitri
                 </button>
+<button id="worldcup-tab-matches" type="button" onclick="switchWorldCupTab('matches')" class="worldcup-subtab-btn rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-wider">
+    <i class="fa-solid fa-futbol mr-2"></i>Partite</button>
             </div>
         </div>
 
@@ -1714,15 +2036,45 @@ html, body {
                 </div>
                 <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">Fase a gironi + fase finale</span>
             </div>
-            <div class="overflow-x-auto rounded-xl border border-yellow-500/20 bg-black/20">
-                <table class="w-full text-left pro-table worldcup-table">
+            <div class="worldcup-designations-shell overflow-x-auto rounded-xl border border-yellow-500/20 bg-black/20">
+                <table class="w-full text-left pro-table worldcup-table worldcup-designations-table">
                     <thead class="sticky-head">
                         <tr id="worldcup-designations-head"></tr>
                     </thead>
-                    <tbody id="worldcup-designations-body" class="font-mono text-sm text-slate-100"></tbody>
+                    <tbody id="worldcup-designations-body" class="text-sm text-slate-100"></tbody>
                 </table>
             </div>
         </div>
+
+<div id="worldcup-matches-panel" class="hidden relative z-10 space-y-3">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div>
+            <h3 class="text-lg font-black text-white">Partite Mondiali</h3>
+        </div>
+        <span class="text-[10px] uppercase tracking-[0.24em] text-yellow-200/70 font-bold">
+            Partita, risultato, arbitro e falli
+        </span>
+    </div>
+
+    <div class="worldcup-matches-shell rounded-xl border border-yellow-500/20 bg-black/20">
+        <table class="w-full text-left pro-table worldcup-table worldcup-matches-table">
+<thead class="sticky-head">
+    <tr>
+        <th class="cursor-pointer select-none hover:text-amber-400 group" data-sort-match="homeTeam">Partita <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none">Risultato</th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="arbitro">Arbitro <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="g">Fase <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="falliTot">Falli Tot <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="falliCasa">Falli Casa <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="falliTrasf">Falli Trasf <span class="sort-icon ml-1 text-yellow-500"></span></th>
+        <th class="text-center cursor-pointer select-none hover:text-amber-400 group" data-sort-match="cartGiall">Cart gialli <span class="sort-icon ml-1 text-yellow-500"></span></th>
+    </tr>
+</thead>
+            <tbody id="worldcup-matches-body" class="text-sm text-slate-100"></tbody>
+        </table>
+    </div>
+</div>
+
 
         <div id="worldcup-stats-panel" class="hidden relative z-10 space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
@@ -2592,16 +2944,6 @@ html, body {
         </div>
     </div>
 
-    <button id="feedback-toggle" class="feedback-toggle" onclick="toggleFeedbackPanel()">
-        <span class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 text-yellow-500 shadow-inner shadow-black/30">
-            <i class="fa-regular fa-lightbulb text-lg"></i>
-            <span class="absolute inset-0 rounded-full border border-yellow-500/60 animate-pulse"></span>
-        </span>
-        <span class="flex flex-col items-start leading-tight">
-            <span class="text-[10px] uppercase tracking-[0.2em] text-slate-800">Feedback</span>
-            <span class="text-sm font-extrabold">Clicca qui</span>
-        </span>
-    </button>
 
     <script>
 
@@ -10888,9 +11230,10 @@ const WORLD_CUP_STATS = [
                 { name: "Maurizio Mariani", matches: 15, fouls_avg: 24.13, penalties_ap: 0.40, yellows_ap: 3.80, yellows: 57, reds_ap: 0.07, reds: 1 },
                 { name: "Pierre Atcho", matches: 3, fouls_avg: 26.67, penalties_ap: 0.00, yellows_ap: 4.00, yellows: 12, reds_ap: 0.33, reds: 1 },
                 { name: "Iván Barton", matches: 28, fouls_avg: 25.41, penalties_ap: 0.54, yellows_ap: 5.42, yellows: 152, reds_ap: 0.50, reds: 14 },
-                { name: "Dahane Beida", matches: 5, fouls_avg: 30.20, penalties_ap: 0.00, yellows_ap: 2.40, yellows: 12, reds_ap: 0.00, reds: 0 },
+                { name: "Dahane Beida", matches: 5, fouls_avg: 30.20, penalties_ap: 0.00, yellows_ap: 4.80, yellows: 24, reds_ap: 0.00, reds: 0 },
                 { name: "Juan Benítez", matches: 19, fouls_avg: 20.50, penalties_ap: 0.26, yellows_ap: 3.68, yellows: 70, reds_ap: 0.00, reds: 0 },
                 { name: "Juan Calderón", matches: 20, fouls_avg: 24.17, penalties_ap: 0.35, yellows_ap: 5.05, yellows: 101, reds_ap: 0.35, reds: 7 },
+                { name: "Raphael Claus", matches: 26, fouls_avg: 20.61, penalties_ap: 0.42, yellows_ap: 4.11, yellows: 103, reds_ap: 0.27, reds: 7 },
                 { name: "Alireza Faghani", matches: 13, fouls_avg: 18.15, penalties_ap: 0.15, yellows_ap: 3.62, yellows: 47, reds_ap: 0.00, reds: 0 },
                 { name: "Ismail Elfath", matches: 10, fouls_avg: 24.20, penalties_ap: 0.40, yellows_ap: 3.42, yellows: 65, reds_ap: 0.21, reds: 4 },
                 { name: "Espen Eskås", matches: 19, fouls_avg: 23.45, penalties_ap: 0.33, yellows_ap: 4.08, yellows: 49, reds_ap: 0.00, reds: 0 },
@@ -15099,58 +15442,168 @@ window.addEventListener('resize', debounceRenderAnalytics);
 
 
         const WORLD_CUP_REFEREES = [
-{ 
-        name: 'Ramon Abatti', flag: '🇧🇷', country: 'Brasile', assignments: {"1": "BELGIO - EGITTO"}},
-            { name: 'Omar Al-Ali', flag: '🇦🇪', country: 'Emirati Arabi Uniti' },
-            { name: 'Abdulrahman Al-Jassim', flag: '🇶🇦', country: 'Qatar', assignments: {"1": "PORTOGALLO - CONGO"}},
+            { name: 'Ramon Abatti', flag: '🇧🇷', country: 'Brasile', assignments: {"1": "BELGIO - EGITTO", "3": "SVIZZERA - CANADA"}},
+            { name: 'Omar Al-Ali', flag: '🇦🇪', country: 'Emirati Arabi Uniti', assignments: {"2": "NUOVA ZELANDA - EGITTO"}},
+            { name: 'Abdulrahman Al-Jassim', flag: '🇶🇦', country: 'Qatar', assignments: {"1": "PORTOGALLO - CONGO", "3": "PANAMA - INGHILTERRA"}},
             { name: 'Khalid Al-Turais', flag: '🇸🇦', country: 'Arabia Saudita' },
-            { name: 'Pierre Atcho', flag: '🇬🇦', country: 'Gabon', assignments: {"1": "IRAQ - NORVEGIA"}},
-            { name: 'Iván Barton', flag: '🇸🇻', country: 'El Salvador' },
+            { name: 'Pierre Atcho', flag: '🇬🇦', country: 'Gabon', assignments: {"1": "IRAQ - NORVEGIA", "2": "PANAMA - CROAZIA"}},
+            { name: 'Iván Barton', flag: '🇸🇻', country: 'El Salvador', assignments: {"2": "TURCHIA - PARAGUAY", "3": "GIAPPONE - SVEZIA", "Ott": "SVIZZERA - COLOMBIA", "Sem": "FRANCIA - SPAGNA"}},
             { name: 'Dahane Beida', flag: '🇲🇷', country: 'Mauritania', assignments: {"1": "AUSTRIA - GIORDANIA"}},
-            { name: 'Juan Benítez', flag: '🇵🇾', country: 'Paraguay' },
+            { name: 'Juan Benítez', flag: '🇵🇾', country: 'Paraguay', assignments: {"2": "GERMANIA - COSTA D AVORIO"}},
             { name: 'Juan Calderón', flag: '🇨🇷', country: 'Costa Rica' },
-            { name: 'Ismail Elfath', flag: '🇺🇸', country: 'Stati Uniti', assignments: {"1": "OLANDA - GIAPPONE"}},
-            { name: 'Espen Eskås', flag: '🇳🇴', country: 'Norvegia' },
-            { name: 'Alireza Faghani', flag: '🇦🇺', country: 'Australia', assignments: {"1": "FRANCIA - SENEGAL"}},
-            { name: 'Yael Falcón', flag: '🇦🇷', country: 'Argentina', assignments: {"1": "SVEZIA - TUNISIA"}},
-            { name: 'Drew Fischer', flag: '🇨🇦', country: 'Canada' },
+            { name: 'Raphael Claus', flag: '🇧🇷', country: 'Brasile', assignments: {"2": "SPAGNA - ARABIA SAUDITA", "Sed": "STATI UNITI - BOSNIA"}},
+            { name: 'Ismail Elfath', flag: '🇺🇸', country: 'Stati Uniti', assignments: {"1": "OLANDA - GIAPPONE", "3": "URUGUAY - SPAGNA", "Ott": "BRASILE - NORVEGIA", "Sem": "INGHILTERRA - ARGENTINA"}},
+            { name: 'Espen Eskås', flag: '🇳🇴', country: 'Norvegia', assignments: {"2": "URUGUAY - CAPO VERDE", "Sed": "PORTOGALLO - CROAZIA"}},
+            { name: 'Alireza Faghani', flag: '🇦🇺', country: 'Australia', assignments: {"1": "FRANCIA - SENEGAL", "3": "COLOMBIA - PORTOGALLO", "Ott": "MESSICO - INGHILTERRA"}},
+            { name: 'Yael Falcón', flag: '🇦🇷', country: 'Argentina', assignments: {"1": "SVEZIA - TUNISIA", "3": "REP. CECA - MESSICO", "Sed": "SVIZZERA - ALGERIA"}},
+            { name: 'Drew Fischer', flag: '🇨🇦', country: 'Canada', assignments: {"2": "FRANCIA - IRAQ", "3": "CROAZIA - GHANA", "Sed": "ARGENTINA - CAPO VERDE"}},
             { name: 'Cristian Garay', flag: '🇨🇱', country: 'Cile', assignments: {"2": "CANADA - QATAR"}},
-            { name: 'Mustapha Ghorbal', flag: '🇩🇿', country: 'Algeria', assignments: {"1": "HAITI - SCOZIA"}},
-            { name: 'Alejandro Hernández Hernández', flag: '🇪🇸', country: 'Spagna' },
-            { name: 'Darío Herrera', flag: '🇦🇷', country: 'Argentina' },
-            { name: 'Katia Itzel García', flag: '🇲🇽', country: 'Messico' },
-            { name: 'Jalal Jayed', flag: '🇲🇦', country: 'Marocco', assignments: {"1": "GERMANIA - CURACAO"}},
+            { name: 'Mustapha Ghorbal', flag: '🇩🇿', country: 'Algeria', assignments: {"1": "HAITI - SCOZIA", "3": "TURCHIA - STATI UNITI"}},
+            { name: 'Alejandro Hernández Hernández', flag: '🇪🇸', country: 'Spagna', assignments: {"2": "BRASILE - HAITI"}},
+            { name: 'Darío Herrera', flag: '🇦🇷', country: 'Argentina', assignments: {"2": "BELGIO - IRAN"}},
+            { name: 'Katia Itzel García', flag: '🇲🇽', country: 'Messico', assignments: {"3": "TUNISIA - OLANDA"}},
+            { name: 'Jalal Jayed', flag: '🇲🇦', country: 'Marocco', assignments: {"1": "GERMANIA - CURAÇAO", "2": "PORTOGALLO - UZBEKISTAN", "Sed": "GERMANIA - PARAGUAY"}},
             { name: 'Campbell-Kirk Kawana-Waugh', flag: '🇳🇿', country: 'Nuova Zelanda' },
-            { name: 'István Kovács', flag: '🇷🇴', country: 'Romania' },
-            { name: 'François Letexier', flag: '🇫🇷', country: 'Francia', assignments: {"1": "COSTA D'AVORIO - GIAPPONE"}},
-            { name: 'Ma Ning', flag: '🇨🇳', country: 'Cina' },
-            { name: 'Adham Makhadmeh', flag: '🇯🇴', country: 'Giordania', assignments: {"1": "SPAGNA - CAPO VERDE"}},
-            { name: 'Danny Makkelie', flag: '🇳🇱', country: 'Paesi Bassi', assignments: {"1": "USA - PARAGUAY"}},
-            { name: 'Szymon Marciniak', flag: '🇵🇱', country: 'Polonia', assignments: {"1": "ARGENTINA - ALGERIA"}},
-            { name: 'Maurizio Mariani', flag: '🇮🇹', country: 'Italia', assignments: {"1": "ARABIA SAUDITA - URUGUAY"}},
-            { name: 'Saíd Martínez', flag: '🇭🇳', country: 'Honduras', assignments: {"1": "QATAR - SVIZZERA"}},
+            { name: 'István Kovács', flag: '🇷🇴', country: 'Romania', assignments: {"2": "TUNISIA - GIAPPONE", "3": "GIORDANIA - ARGENTINA"}},
+            { name: 'François Letexier', flag: '🇫🇷', country: 'Francia', assignments: {"1": "COSTA D AVORIO - ECUADOR", "3": "CAPO VERDE - ARABIA SAUDITA", "Ott": "ARGENTINA - EGITTO"}},
+            { name: 'Ma Ning', flag: '🇨🇳', country: 'Cina', assignments: {"2": "ECUADOR - CURAÇAO"}},
+            { name: 'Adham Makhadmeh', flag: '🇯🇴', country: 'Giordania', assignments: {"1": "SPAGNA - CAPO VERDE", "3": "NUOVA ZELANDA - BELGIO", "Sed": "INGHILTERRA - CONGO", "Ott": "STATI UNITI - BELGIO"}},
+            { name: 'Danny Makkelie', flag: '🇳🇱', country: 'Olanda', assignments: {"1": "STATI UNITI - PARAGUAY", "3": "MAROCCO - HAITI", "Sed": "FRANCIA - SVEZIA"}},
+            { name: 'Szymon Marciniak', flag: '🇵🇱', country: 'Polonia', assignments: {"1": "ARGENTINA - ALGERIA", "3": "EGITTO - IRAN"}},
+            { name: 'Maurizio Mariani', flag: '🇮🇹', country: 'Italia', assignments: {"1": "ARABIA SAUDITA - URUGUAY", "2": "COLOMBIA - CONGO", "Sed": "BRASILE - GIAPPONE"}},
+            { name: 'Saíd Martínez', flag: '🇭🇳', country: 'Honduras', assignments: {"1": "QATAR - SVIZZERA", "2": "INGHILTERRA - GHANA", "Sed": "BELGIO - SENEGAL"}},
             { name: 'Oshane Nation', flag: '🇯🇲', country: 'Giamaica' },
-            { name: 'Glenn Nyberg', flag: '🇸🇪', country: 'Svezia', assignments: {"1": "GHANA - PANAMA"}},
-            { name: 'Michael Oliver', flag: '🏴', country: 'Inghilterra' },
-            { name: 'Amin Omar', flag: '🇪🇬', country: 'Egitto', assignments: {"1": "COREA DEL SUD - REP.CECA"}},
+            { name: 'Glenn Nyberg', flag: '🇸🇪', country: 'Svezia', assignments: {"1": "GHANA - PANAMA", "3": "CURAÇAO - COSTA D AVORIO", "Sed": "SPAGNA - AUSTRIA"}},
+            { name: 'Michael Oliver', flag: '🏴', country: 'Inghilterra', assignments: {"2": "OLANDA - SVEZIA", "3": "NORVEGIA - FRANCIA", "Ott": "CANADA - MAROCCO", "Qua": "SPAGNA - BELGIO"}},
+            { name: 'Amin Omar', flag: '🇪🇬', country: 'Egitto', assignments: {"1": "COREA DEL SUD - REP.CECA", "2": "ARGENTINA - AUSTRIA"}},
             { name: 'Kevin Ortega', flag: '🇵🇪', country: 'Perù' },
-            { name: 'Tori Penso', flag: '🇺🇸', country: 'Stati Uniti', assignments: {"2": "REP. CECA - SUD AFRICA"}},
-            { name: 'João Pinheiro', flag: '🇵🇹', country: 'Portogallo', assignments: {"2": "SVIZZERA - BOSNIA"}},
-            { name: 'César Ramos Palazuelos', flag: '🇲🇽', country: 'Messico', assignments: {"1": "IRAN - NUOVA ZELANDA"}},
+            { name: 'Tori Penso', flag: '🇺🇸', country: 'Stati Uniti', assignments: {"2": "REP. CECA - SUD AFRICA", "3": "ECUADOR - GERMANIA"}},
+            { name: 'João Pinheiro', flag: '🇵🇹', country: 'Portogallo', assignments: {"2": "SVIZZERA - BOSNIA", "Sed": "SUD AFRICA - CANADA", "Qua": "ARGENTINA - SVIZZERA"}},
+            { name: 'César Ramos Palazuelos', flag: '🇲🇽', country: 'Messico', assignments: {"1": "IRAN - NUOVA ZELANDA", "3": "SCOZIA - BRASILE"}},
             { name: 'Andrés Rojas', flag: '🇨🇴', country: 'Colombia' },
-            { name: 'Wilton Sampaio', flag: '🇧🇷', country: 'Brasile', assignments: {"1": "MESSICO - SUD AFRICA"}},
+            { name: 'Wilton Sampaio', flag: '🇧🇷', country: 'Brasile', assignments: {"1": "MESSICO - SUD AFRICA", "2": "NORVEGIA - SENEGAL", "Sed": "OLANDA - MAROCCO"}},
             { name: 'Sandro Schärer', flag: '🇨🇭', country: 'Svizzera' },
-            { name: 'Ilgiz Tantashev', flag: '🇺🇿', country: 'Uzbekistan' },
-            { name: 'Anthony Taylor', flag: '🏴', country: 'Inghilterra', assignments: {"1": "UZBEKISTAN - COLOMBIA"}},
-            { name: 'Gustavo Tejera', flag: '🇺🇾', country: 'Uruguay', assignments: {"2": "MESSICO - COREA DEL SUD"}},
-            { name: 'Facundo Tello', flag: '🇦🇷', country: 'Argentina', assignments: {"1": "CANADA - BOSNIA"}},
+            { name: 'Ilgiz Tantashev', flag: '🇺🇿', country: 'Uzbekistan', assignments: {"2": "SCOZIA - MAROCCO", "3": "ALGERIA - AUSTRIA", "Ott": "PARAGUAY - FRANCIA"}},
+            { name: 'Anthony Taylor', flag: '🏴', country: 'Inghilterra', assignments: {"1": "UZBEKISTAN - COLOMBIA", "3": "SENEGAL - IRAQ", "Ott": "PORTOGALLO - SPAGNA"}},
+            { name: 'Gustavo Tejera', flag: '🇺🇾', country: 'Uruguay', assignments: {"2": "MESSICO - COREA DEL SUD", "Sed": "AUSTRALIA - EGITTO"}},
+            { name: 'Facundo Tello', flag: '🇦🇷', country: 'Argentina', assignments: {"1": "CANADA - BOSNIA", "3": "SUD AFRICA - COREA DEL SUD", "Qua": "FRANCIA - MAROCCO"}},
             { name: 'Abongile Tom', flag: '🇿🇦', country: 'Sudafrica' },
-            { name: 'Clément Turpin', flag: '🇫🇷', country: 'Francia', assignments: {"1": "INGHILTERRA - CROAZIA"}},
-            { name: 'Jesús Valenzuela', flag: '🇻🇪', country: 'Venezuela', assignments: {"1": "AUSTRALIA - TURCHIA"}},
-            { name: 'Slavko Vinčić', flag: '🇸🇮', country: 'Slovenia', assignments: {"1": "BRASILE - MAROCCO"}},
+            { name: 'Clément Turpin', flag: '🇫🇷', country: 'Francia', assignments: {"1": "INGHILTERRA - CROAZIA", "3": "PARAGUAY - AUSTRALIA", "Sed": "COLOMBIA - GHANA", "Qua": "NORVEGIA - INGHILTERRA"}},
+            { name: 'Jesús Valenzuela', flag: '🇻🇪', country: 'Venezuela', assignments: {"1": "AUSTRALIA - TURCHIA", "3": "BOSNIA - QATAR", "Sed": "COSTA D AVORIO - NORVEGIA"}},
+            { name: 'Slavko Vinčić', flag: '🇸🇮', country: 'Slovenia', assignments: {"1": "BRASILE - MAROCCO", "2": "GIORDANIA - ALGERIA", "Sed": "MESSICO - ECUADOR", "Fin": "SPAGNA - ARGENTINA"}},
             { name: 'Araki Yusuke', flag: '🇯🇵', country: 'Giappone' },
-            { name: 'Felix Zwayer', flag: '🇩🇪', country: 'Germania' },
+            { name: 'Felix Zwayer', flag: '🇩🇪', country: 'Germania', assignments: {"2": "STATI UNITI - AUSTRALIA", "3": "CONGO - UZBEKISTAN"}},
         ];
+
+
+
+const WORLD_CUP_MATCHES = [
+    {           homeTeam: 'Messico',    awayTeam: 'Sud Africa',       risultato: '2 - 0',        arbitro: 'Wilton SAMPAIO',        g: '1',        falliTot: 23,        falliCasa: 12,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Corea del Sud',    awayTeam: 'Repubblica Ceca',       risultato: '2 - 1',        arbitro: 'Amin OMAR',        g: '1',        falliTot: 25,        falliCasa: 9,        falliTrasf: 16,	cartGiall: 1    },
+    {           homeTeam: 'Canada',    awayTeam: 'Bosnia',       risultato: '1 - 1',        arbitro: 'Facundo TELLO',        g: '1',        falliTot: 30,        falliCasa: 10,        falliTrasf: 20,	cartGiall: 5    },
+    {           homeTeam: 'Stati Uniti',    awayTeam: 'Paraguay',       risultato: '4 - 1',        arbitro: 'Danny MAKKELIE',        g: '1',        falliTot: 30,        falliCasa: 13,        falliTrasf: 17,	cartGiall: 6    },
+    {           homeTeam: 'Qatar',    awayTeam: 'Svizzera',       risultato: '1 - 1',        arbitro: 'Saíd MARTINEZ',        g: '1',        falliTot: 23,        falliCasa: 12,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Brasile',    awayTeam: 'Marocco',       risultato: '1 - 1',        arbitro: 'Slavko VINCIC',        g: '1',        falliTot: 30,        falliCasa: 16,        falliTrasf: 14,	cartGiall: 2    },
+    {           homeTeam: 'Haiti',    awayTeam: 'Scozia',       risultato: '0 - 1',        arbitro: 'Mustapha GHORBAL',        g: '1',        falliTot: 44,        falliCasa: 23,        falliTrasf: 21,	cartGiall: 4    },
+    {           homeTeam: 'Australia',    awayTeam: 'Turchia',       risultato: '2 - 0',        arbitro: 'Jesús VALENZUELA',        g: '1',        falliTot: 16,        falliCasa: 12,        falliTrasf: 4,	cartGiall: 1    },
+    {           homeTeam: 'Germania',    awayTeam: 'Curaçao',       risultato: '7 - 1',        arbitro: 'Jalal JAYED',        g: '1',        falliTot: 29,        falliCasa: 18,        falliTrasf: 11,	cartGiall: 0    },
+    {           homeTeam: 'Olanda',    awayTeam: 'Giappone',       risultato: '2 - 2',        arbitro: 'Ismail ELFATH',        g: '1',        falliTot: 14,        falliCasa: 7,        falliTrasf: 7,	cartGiall: 3    },
+    {           homeTeam: 'Costa d Avorio',    awayTeam: 'Ecuador',       risultato: '1 - 0',        arbitro: 'François LETEXIER',        g: '1',        falliTot: 29,        falliCasa: 18,        falliTrasf: 11,	cartGiall: 4    },
+    {           homeTeam: 'Svezia',    awayTeam: 'Tunisia',       risultato: '5 - 1',        arbitro: 'Yael FALCON',        g: '1',        falliTot: 18,        falliCasa: 10,        falliTrasf: 8,	cartGiall: 1    },
+    {           homeTeam: 'Spagna',    awayTeam: 'Capo Verde',       risultato: '0 - 0',        arbitro: 'Adham MAKHADMEH',        g: '1',        falliTot: 11,        falliCasa: 10,        falliTrasf: 1,	cartGiall: 2    },
+    {           homeTeam: 'Belgio',    awayTeam: 'Egitto',       risultato: '1 - 1',        arbitro: 'Ramon ABATTI',        g: '1',        falliTot: 30,        falliCasa: 15,        falliTrasf: 15,	cartGiall: 4    },
+    {           homeTeam: 'Arabia Saudita',    awayTeam: 'Uruguay',       risultato: '1 - 1',        arbitro: 'Maurizio MARIANI',        g: '1',        falliTot: 17,        falliCasa: 11,        falliTrasf: 6,	cartGiall: 1    },
+    {           homeTeam: 'Iran',    awayTeam: 'Nuova Zelanda',       risultato: '2 - 2',        arbitro: 'César RAMOS',        g: '1',        falliTot: 18,        falliCasa: 10,        falliTrasf: 8,	cartGiall: 1    },
+    {           homeTeam: 'Francia',    awayTeam: 'Senegal',       risultato: '3 - 1',        arbitro: 'Alireza FAGHANI',        g: '1',        falliTot: 14,        falliCasa: 5,        falliTrasf: 9,	cartGiall: 0    },
+    {           homeTeam: 'Iraq',    awayTeam: 'Norvegia',       risultato: '1 - 4',        arbitro: 'Pierre ATCHO',        g: '1',        falliTot: 25,        falliCasa: 12,        falliTrasf: 13,	cartGiall: 1    },
+    {           homeTeam: 'Argentina',    awayTeam: 'Algeria',       risultato: '3 - 0',        arbitro: 'Szymon MARCINIAK',        g: '1',        falliTot: 21,        falliCasa: 13,        falliTrasf: 8,	cartGiall: 0    },
+    {           homeTeam: 'Austria',    awayTeam: 'Giordania',       risultato: '3 - 1',        arbitro: 'Dahane BEIDA',        g: '1',        falliTot: 19,        falliCasa: 12,        falliTrasf: 7,	cartGiall: 1    },
+    {           homeTeam: 'Portogallo',    awayTeam: 'Congo',       risultato: '1 - 1',        arbitro: 'Abdulrahman AL-JASSIM',        g: '1',        falliTot: 19,        falliCasa: 9,        falliTrasf: 10,	cartGiall: 4    },
+    {           homeTeam: 'Inghilterra',    awayTeam: 'Croazia',       risultato: '4 - 2',        arbitro: 'Clément TURPIN',        g: '1',        falliTot: 22,        falliCasa: 10,        falliTrasf: 12,	cartGiall: 0    },
+    {           homeTeam: 'Ghana',    awayTeam: 'Panama',       risultato: '1 - 0',        arbitro: 'Glenn NYBERG',        g: '1',        falliTot: 20,        falliCasa: 9,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Uzbekistan',    awayTeam: 'Colombia',       risultato: '1 - 3',        arbitro: 'Anthony TAYLOR',        g: '1',        falliTot: 25,        falliCasa: 14,        falliTrasf: 11,	cartGiall: 2    },
+    {           homeTeam: 'Repubblica Ceca',    awayTeam: 'Sud Africa',       risultato: '1 - 1',        arbitro: 'Tori PENSO',        g: '2',        falliTot: 22,        falliCasa: 12,        falliTrasf: 10,	cartGiall: 3    },
+    {           homeTeam: 'Svizzera',    awayTeam: 'Bosnia',       risultato: '4 - 1',        arbitro: 'João PINHEIRO',        g: '2',        falliTot: 25,        falliCasa: 7,        falliTrasf: 18,	cartGiall: 3    },
+    {           homeTeam: 'Canada',    awayTeam: 'Qatar',       risultato: '6 - 0',        arbitro: 'Cristian GARAY',        g: '2',        falliTot: 19,        falliCasa: 9,        falliTrasf: 10,	cartGiall: 2    },
+    {           homeTeam: 'Messico',    awayTeam: 'Corea del Sud',       risultato: '1 - 0',        arbitro: 'Gustavo TEJERA',        g: '2',        falliTot: 16,        falliCasa: 9,        falliTrasf: 7,	cartGiall: 2    },
+    {           homeTeam: 'Stati Uniti',    awayTeam: 'Australia',       risultato: '2 - 0',        arbitro: 'Felix ZWAYER',        g: '2',        falliTot: 28,        falliCasa: 12,        falliTrasf: 16,	cartGiall: 7    },
+    {           homeTeam: 'Scozia',    awayTeam: 'Marocco',       risultato: '0 - 1',        arbitro: 'Ilgiz TANTASHEV',        g: '2',        falliTot: 19,        falliCasa: 11,        falliTrasf: 8,	cartGiall: 2    },
+    {           homeTeam: 'Brasile',    awayTeam: 'Haiti',       risultato: '3 - 0',        arbitro: 'Alejandro H. HERNANDEZ',        g: '2',        falliTot: 27,        falliCasa: 13,        falliTrasf: 14,	cartGiall: 4    },
+    {           homeTeam: 'Turchia',    awayTeam: 'Paraguay',       risultato: '0 - 1',        arbitro: 'Iván BARTON',        g: '2',        falliTot: 29,        falliCasa: 14,        falliTrasf: 15,	cartGiall: 2    },
+    {           homeTeam: 'Olanda',    awayTeam: 'Svezia',       risultato: '5 - 1',        arbitro: 'Michael OLIVER',        g: '2',        falliTot: 21,        falliCasa: 9,        falliTrasf: 12,	cartGiall: 3    },
+    {           homeTeam: 'Germania',    awayTeam: 'Costa d Avorio',       risultato: '2 - 1',        arbitro: 'Juan BENITEZ',        g: '2',        falliTot: 12,        falliCasa: 5,        falliTrasf: 7,	cartGiall: 0    },
+    {           homeTeam: 'Ecuador',    awayTeam: 'Curaçao',       risultato: '0 - 0',        arbitro: 'Ma NING',        g: '2',        falliTot: 17,        falliCasa: 7,        falliTrasf: 10,	cartGiall: 6    },
+    {           homeTeam: 'Tunisia',    awayTeam: 'Giappone',       risultato: '0 - 4',        arbitro: 'István KOVACS',        g: '2',        falliTot: 23,        falliCasa: 8,        falliTrasf: 15,	cartGiall: 0    },
+    {           homeTeam: 'Spagna',    awayTeam: 'Arabia Saudita',       risultato: '4 - 0',        arbitro: 'Raphael CLAUS',        g: '2',        falliTot: 12,        falliCasa: 10,        falliTrasf: 2,	cartGiall: 2    },
+    {           homeTeam: 'Belgio',    awayTeam: 'Iran',       risultato: '0 - 0',        arbitro: 'Darío HERRERA',        g: '2',        falliTot: 16,        falliCasa: 7,        falliTrasf: 9,	cartGiall: 2    },
+    {           homeTeam: 'Uruguay',    awayTeam: 'Capo Verde',       risultato: '2 - 2',        arbitro: 'Espen ESKAS',        g: '2',        falliTot: 15,        falliCasa: 11,        falliTrasf: 4,	cartGiall: 4    },
+    {           homeTeam: 'Nuova Zelanda',    awayTeam: 'Egitto',       risultato: '1 - 3',        arbitro: 'Omar AL-ALI',        g: '2',        falliTot: 22,        falliCasa: 14,        falliTrasf: 8,	cartGiall: 3    },
+    {           homeTeam: 'Argentina',    awayTeam: 'Austria',       risultato: '2 - 0',        arbitro: 'Amin OMAR',        g: '2',        falliTot: 26,        falliCasa: 13,        falliTrasf: 13,	cartGiall: 4    },
+    {           homeTeam: 'Francia',    awayTeam: 'Iraq',       risultato: '3 - 0',        arbitro: 'Drew FISCHER',        g: '2',        falliTot: 12,        falliCasa: 8,        falliTrasf: 4,	cartGiall: 1    },
+    {           homeTeam: 'Norvegia',    awayTeam: 'Senegal',       risultato: '3 - 2',        arbitro: 'Wilton SAMPAIO',        g: '2',        falliTot: 18,        falliCasa: 13,        falliTrasf: 5,	cartGiall: 0    },
+    {           homeTeam: 'Giordania',    awayTeam: 'Algeria',       risultato: '1 - 2',        arbitro: 'Slavko VINCIC',        g: '2',        falliTot: 17,        falliCasa: 11,        falliTrasf: 6,	cartGiall: 2    },
+    {           homeTeam: 'Portogallo',    awayTeam: 'Uzbekistan',       risultato: '5 - 0',        arbitro: 'Jalal JAYED',        g: '2',        falliTot: 29,        falliCasa: 14,        falliTrasf: 15,	cartGiall: 2    },
+    {           homeTeam: 'Inghilterra',    awayTeam: 'Ghana',       risultato: '0 - 0',        arbitro: 'Saíd MARTINEZ',        g: '2',        falliTot: 38,        falliCasa: 14,        falliTrasf: 24,	cartGiall: 2    },
+    {           homeTeam: 'Panama',    awayTeam: 'Croazia',       risultato: '0 - 1',        arbitro: 'Pierre ATCHO',        g: '2',        falliTot: 31,        falliCasa: 19,        falliTrasf: 12,	cartGiall: 2    },
+    {           homeTeam: 'Colombia',    awayTeam: 'Congo',       risultato: '1 - 0',        arbitro: 'Maurizio MARIANI',        g: '2',        falliTot: 28,        falliCasa: 12,        falliTrasf: 16,	cartGiall: 2    },
+    {           homeTeam: 'Bosnia',    awayTeam: 'Qatar',       risultato: '3 - 1',        arbitro: 'Jesús VALENZUELA',        g: '3',        falliTot: 23,        falliCasa: 9,        falliTrasf: 14,	cartGiall: 2    },
+    {           homeTeam: 'Svizzera',    awayTeam: 'Canada',       risultato: '2 - 1',        arbitro: 'Ramon ABATTI',        g: '3',        falliTot: 32,        falliCasa: 19,        falliTrasf: 13,	cartGiall: 3    },
+    {           homeTeam: 'Marocco',    awayTeam: 'Haiti',       risultato: '4 - 2',        arbitro: 'Danny MAKKELIE',        g: '3',        falliTot: 28,        falliCasa: 10,        falliTrasf: 18,	cartGiall: 3    },
+    {           homeTeam: 'Scozia',    awayTeam: 'Brasile',       risultato: '0 - 3',        arbitro: 'César RAMOS',        g: '3',        falliTot: 21,        falliCasa: 10,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Repubblica Ceca',    awayTeam: 'Messico',       risultato: '0 - 3',        arbitro: 'Yael FALCON',        g: '3',        falliTot: 22,        falliCasa: 9,        falliTrasf: 13,	cartGiall: 1    },
+    {           homeTeam: 'Sud Africa',    awayTeam: 'Corea del Sud',       risultato: '1 - 0',        arbitro: 'Facundo TELLO',        g: '3',        falliTot: 16,        falliCasa: 7,        falliTrasf: 9,	cartGiall: 2    },
+    {           homeTeam: 'Curaçao',    awayTeam: 'Costa d Avorio',       risultato: '0 - 2',        arbitro: 'Glenn NYBERG',        g: '3',        falliTot: 17,        falliCasa: 11,        falliTrasf: 6,	cartGiall: 3    },
+    {           homeTeam: 'Ecuador',    awayTeam: 'Germania',       risultato: '2 - 1',        arbitro: 'Tori PENSO',        g: '3',        falliTot: 25,        falliCasa: 15,        falliTrasf: 10,	cartGiall: 4    },
+    {           homeTeam: 'Giappone',    awayTeam: 'Svezia',       risultato: '1 - 1',        arbitro: 'Iván BARTON',        g: '3',        falliTot: 31,        falliCasa: 20,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Tunisia',    awayTeam: 'Olanda',       risultato: '1 - 3',        arbitro: 'Katia GARCIA',        g: '3',        falliTot: 21,        falliCasa: 11,        falliTrasf: 10,	cartGiall: 0    },
+    {           homeTeam: 'Turchia',    awayTeam: 'Stati Uniti',       risultato: '3 - 2',        arbitro: 'Mustapha GHORBAL',        g: '3',        falliTot: 26,        falliCasa: 13,        falliTrasf: 13,	cartGiall: 1    },
+    {           homeTeam: 'Paraguay',    awayTeam: 'Australia',       risultato: '0 - 0',        arbitro: 'Clément TURPIN',        g: '3',        falliTot: 15,        falliCasa: 9,        falliTrasf: 6,	cartGiall: 2    },
+    {           homeTeam: 'Norvegia',    awayTeam: 'Francia',       risultato: '1 - 4',        arbitro: 'Michael OLIVER',        g: '3',        falliTot: 20,        falliCasa: 9,        falliTrasf: 11,	cartGiall: 2    },
+    {           homeTeam: 'Senegal',    awayTeam: 'Iraq',       risultato: '5 - 0',        arbitro: 'Anthony TAYLOR',        g: '3',        falliTot: 21,        falliCasa: 10,        falliTrasf: 11,	cartGiall: 4    },
+    {           homeTeam: 'Capo Verde',    awayTeam: 'Arabia Saudita',       risultato: '0 - 0',        arbitro: 'François LETEXIER',        g: '3',        falliTot: 26,        falliCasa: 10,        falliTrasf: 16,	cartGiall: 4    },
+    {           homeTeam: 'Uruguay',    awayTeam: 'Spagna',       risultato: '0 - 1',        arbitro: 'Ismail ELFATH',        g: '3',        falliTot: 28,        falliCasa: 14,        falliTrasf: 14,	cartGiall: 4    },
+    {           homeTeam: 'Egitto',    awayTeam: 'Iran',       risultato: '1 - 1',        arbitro: 'Szymon MARCINIAK',        g: '3',        falliTot: 27,        falliCasa: 11,        falliTrasf: 16,	cartGiall: 7    },
+    {           homeTeam: 'Nuova Zelanda',    awayTeam: 'Belgio',       risultato: '1 - 5',        arbitro: 'Adham MAKHADMEH',        g: '3',        falliTot: 17,        falliCasa: 10,        falliTrasf: 7,	cartGiall: 2    },
+    {           homeTeam: 'Croazia',    awayTeam: 'Ghana',       risultato: '2 - 1',        arbitro: 'Drew FISCHER',        g: '3',        falliTot: 22,        falliCasa: 9,        falliTrasf: 13,	cartGiall: 2    },
+    {           homeTeam: 'Panama',    awayTeam: 'Inghilterra',       risultato: '0 - 2',        arbitro: 'Abdulrahman AL-JASSIM',        g: '3',        falliTot: 29,        falliCasa: 16,        falliTrasf: 13,	cartGiall: 3    },
+    {           homeTeam: 'Colombia',    awayTeam: 'Portogallo',       risultato: '0 - 0',        arbitro: 'Alireza FAGHANI',        g: '3',        falliTot: 18,        falliCasa: 12,        falliTrasf: 6,	cartGiall: 1    },
+    {           homeTeam: 'Congo',    awayTeam: 'Uzbekistan',       risultato: '3 - 1',        arbitro: 'Felix ZWAYER',        g: '3',        falliTot: 22,        falliCasa: 6,        falliTrasf: 16,	cartGiall: 5    },
+    {           homeTeam: 'Algeria',    awayTeam: 'Austria',       risultato: '3 - 3',        arbitro: 'Ilgiz TANTASHEV',        g: '3',        falliTot: 10,        falliCasa: 3,        falliTrasf: 7,	cartGiall: 1    },
+    {           homeTeam: 'Giordania',    awayTeam: 'Argentina',       risultato: '1 - 3',        arbitro: 'István KOVACS',        g: '3',        falliTot: 20,        falliCasa: 13,        falliTrasf: 7,	cartGiall: 3    },
+    {           homeTeam: 'Sud Africa',    awayTeam: 'Canada',       risultato: '0 - 1',        arbitro: 'João PINHEIRO',        g: 'sedicesimi',        falliTot: 26,        falliCasa: 10,        falliTrasf: 16,	cartGiall: 2    },
+    {           homeTeam: 'Brasile',    awayTeam: 'Giappone',       risultato: '2 - 1 d.t.s',        arbitro: 'Maurizio MARIANI',        g: 'sedicesimi',        falliTot: 17,        falliCasa: 4,        falliTrasf: 13,	cartGiall: 5    },
+    {           homeTeam: 'Germania',    awayTeam: 'Paraguay',       risultato: '1 - 1 (rig. 3-4)',        arbitro: 'Jalal JAYED',        g: 'sedicesimi',        falliTot: 30,        falliCasa: 18,        falliTrasf: 12,	cartGiall: 4    },
+    {           homeTeam: 'Olanda',    awayTeam: 'Marocco',       risultato: '1 - 1 (rig. 2-3)',        arbitro: 'Wilton SAMPAIO',        g: 'sedicesimi',        falliTot: 33,        falliCasa: 18,        falliTrasf: 15,	cartGiall: 1    },
+    {           homeTeam: 'Costa d Avorio',    awayTeam: 'Norvegia',       risultato: '1 - 2',        arbitro: 'Jesús VALENZUELA',        g: 'sedicesimi',        falliTot: 13,        falliCasa: 6,        falliTrasf: 7,	cartGiall: 1    },
+    {           homeTeam: 'Francia',    awayTeam: 'Svezia',       risultato: '3 - 0',        arbitro: 'Danny MAKKELIE',        g: 'sedicesimi',        falliTot: 24,        falliCasa: 14,        falliTrasf: 10,	cartGiall: 0    },
+    {           homeTeam: 'Messico',    awayTeam: 'Ecuador',       risultato: '2 - 0',        arbitro: 'Slavko VINCIC',        g: 'sedicesimi',        falliTot: 24,        falliCasa: 10,        falliTrasf: 14,	cartGiall: 3    },
+    {           homeTeam: 'Inghilterra',    awayTeam: 'Congo',       risultato: '2 - 1',        arbitro: 'Adham MAKHADMEH',        g: 'sedicesimi',        falliTot: 22,        falliCasa: 10,        falliTrasf: 12,	cartGiall: 2    },
+    {           homeTeam: 'Belgio',    awayTeam: 'Senegal',       risultato: '3 - 2 d.t.s',        arbitro: 'Saíd MARTINEZ',        g: 'sedicesimi',        falliTot: 34,        falliCasa: 22,        falliTrasf: 12,	cartGiall: 2    },
+    {           homeTeam: 'Stati Uniti',    awayTeam: 'Bosnia',       risultato: '2 - 0',        arbitro: 'Raphael CLAUS',        g: 'sedicesimi',        falliTot: 20,        falliCasa: 7,        falliTrasf: 13,	cartGiall: 1    },
+    {           homeTeam: 'Spagna',    awayTeam: 'Austria',       risultato: '3 - 0',        arbitro: 'Glenn NYBERG',        g: 'sedicesimi',        falliTot: 23,        falliCasa: 8,        falliTrasf: 15,	cartGiall: 1    },
+    {           homeTeam: 'Portogallo',    awayTeam: 'Croazia',       risultato: '2 - 1',        arbitro: 'Espen ESKAS',        g: 'sedicesimi',        falliTot: 18,        falliCasa: 6,        falliTrasf: 12,	cartGiall: 3    },
+    {           homeTeam: 'Svizzera',    awayTeam: 'Algeria',       risultato: '2 - 0',        arbitro: 'Yael FALCON',        g: 'sedicesimi',        falliTot: 22,        falliCasa: 10,        falliTrasf: 12,	cartGiall: 2    },
+    {           homeTeam: 'Australia',    awayTeam: 'Egitto',       risultato: '1 - 1 (rig. 2-4)',        arbitro: 'Gustavo TEJERA',        g: 'sedicesimi',        falliTot: 26,        falliCasa: 12,        falliTrasf: 14,	cartGiall: 2    },
+    {           homeTeam: 'Argentina',    awayTeam: 'Capo Verde',       risultato: '3 - 2 d.t.s',        arbitro: 'Drew FISCHER',        g: 'sedicesimi',        falliTot: 25,        falliCasa: 13,        falliTrasf: 12,	cartGiall: 2    },
+    {           homeTeam: 'Colombia',    awayTeam: 'Ghana',       risultato: '1 - 0',        arbitro: 'Clément TURPIN',        g: 'sedicesimi',        falliTot: 24,        falliCasa: 14,        falliTrasf: 10,	cartGiall: 5    },
+    {           homeTeam: 'Canada',    awayTeam: 'Marocco',       risultato: '0 - 3',        arbitro: 'Michael OLIVER',        g: 'ottavi',        falliTot: 38,        falliCasa: 24,        falliTrasf: 14,	cartGiall: 8    },
+    {           homeTeam: 'Paraguay',    awayTeam: 'Francia',       risultato: '0 - 1',        arbitro: 'Ilgiz TANTASHEV',        g: 'ottavi',        falliTot: 24,        falliCasa: 13,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Brasile',    awayTeam: 'Norvegia',       risultato: '0 - 2',        arbitro: 'Ismail ELFATH',        g: 'ottavi',        falliTot: 13,        falliCasa: 7,        falliTrasf: 6,	cartGiall: 1    },
+    {           homeTeam: 'Messico',    awayTeam: 'Inghilterra',       risultato: '2 - 3',        arbitro: 'Alireza FAGHANI',        g: 'ottavi',        falliTot: 21,        falliCasa: 14,        falliTrasf: 7,	cartGiall: 5    },
+    {           homeTeam: 'Portogallo',    awayTeam: 'Spagna',       risultato: '0 - 1',        arbitro: 'Anthony TAYLOR',        g: 'ottavi',        falliTot: 22,        falliCasa: 9,        falliTrasf: 13,	cartGiall: 3    },
+    {           homeTeam: 'Stati Uniti',    awayTeam: 'Belgio',       risultato: '1 - 4',        arbitro: 'Adham MAKHADMEH',        g: 'ottavi',        falliTot: 20,        falliCasa: 11,        falliTrasf: 9,	cartGiall: 2    },
+    {           homeTeam: 'Argentina',    awayTeam: 'Egitto',       risultato: '3 - 2',        arbitro: 'François LETEXIER',        g: 'ottavi',        falliTot: 24,        falliCasa: 13,        falliTrasf: 11,	cartGiall: 3    },
+    {           homeTeam: 'Svizzera',    awayTeam: 'Colombia',       risultato: '0 - 0 (rig. 4-3)',        arbitro: 'Iván BARTON',        g: 'ottavi',        falliTot: 43,        falliCasa: 22,        falliTrasf: 21,	cartGiall: 5    },
+    {           homeTeam: 'Francia',    awayTeam: 'Marocco',       risultato: '2 - 0',        arbitro: 'Facundo TELLO',        g: 'quarti',        falliTot: 23,        falliCasa: 10,        falliTrasf: 13,	cartGiall: 1    },
+    {           homeTeam: 'Spagna',    awayTeam: 'Belgio',       risultato: '2 - 1',        arbitro: 'Michael OLIVER',        g: 'quarti',        falliTot: 31,        falliCasa: 13,        falliTrasf: 18,	cartGiall: 4    },
+    {           homeTeam: 'Norvegia',    awayTeam: 'Inghilterra',       risultato: '1 - 2 d.t.s',        arbitro: 'Clément TURPIN',        g: 'quarti',        falliTot: 18,        falliCasa: 10,        falliTrasf: 8,	cartGiall: 1    },
+    {           homeTeam: 'Argentina',    awayTeam: 'Svizzera',       risultato: '3 - 1 d.t.s',        arbitro: 'João PINHEIRO',        g: 'quarti',        falliTot: 32,        falliCasa: 14,        falliTrasf: 18,	cartGiall: 4    },
+    {           homeTeam: 'Francia',    awayTeam: 'Spagna',       risultato: '0 - 2',        arbitro: 'Iván BARTON',        g: 'semifinale',        falliTot: 23,        falliCasa: 11,        falliTrasf: 12,	cartGiall: 3    },
+    {           homeTeam: 'Inghilterra',    awayTeam: 'Argentina',       risultato: '2 - 1',        arbitro: 'Ismail ELFATH',        g: 'semifinale',        falliTot: 26,        falliCasa: 11,        falliTrasf: 15,	cartGiall: 4    },
+    {           homeTeam: 'Francia',    awayTeam: 'Inghilterra',       risultato: '4 - 6',        arbitro: 'Jesús VALENZUELA',        g: 'FINALE 3/4 POSTO',        falliTot: 22,        falliCasa: 14,        falliTrasf: 8,	cartGiall: 0    },
+    {           homeTeam: 'Spagna',    awayTeam: 'Argentina',       risultato: '1 - 0 d.t.s',        arbitro: 'Slavko VINCIC',        g: 'FINALE',        falliTot: 46,        falliCasa: 21,        falliTrasf: 25,	cartGiall: 5    },
+];
+
 
 // ==========================================
 // LOGICA DI ORDINAMENTO TABELLA MONDIALI
@@ -15218,6 +15671,161 @@ function renderWorldCupStats() {
     });
 }
 
+
+function renderWorldCupMatches() {
+    const tbody = document.getElementById('worldcup-matches-body');
+    if (!tbody) return;
+
+
+    const headers = document.querySelectorAll('#worldcup-matches-panel th[data-sort-match]');
+    headers.forEach(header => {
+        const column = header.getAttribute('data-sort-match');
+        const iconSpan = header.querySelector('.sort-icon');
+        if (iconSpan) {
+            if (column === worldCupMatchSortColumn) {
+                iconSpan.innerHTML = worldCupMatchSortDirection === 'asc' ? '<i class="fa-solid fa-sort-up"></i>' : '<i class="fa-solid fa-sort-down"></i>';
+            } else {
+                iconSpan.innerHTML = '<i class="fa-solid fa-sort opacity-30"></i>';
+            }
+        }
+    });
+
+
+    const validFoulsTot = WORLD_CUP_MATCHES
+        .map(m => m.falliTot)
+        .filter(v => Number.isFinite(v));
+
+    const validFoulsHome = WORLD_CUP_MATCHES
+        .map(m => m.falliCasa)
+        .filter(v => Number.isFinite(v));
+
+    const validFoulsAway = WORLD_CUP_MATCHES
+        .map(m => m.falliTrasf)
+        .filter(v => Number.isFinite(v));
+
+    const validCartGiall = WORLD_CUP_MATCHES
+        .map(m => m.cartGiall)
+        .filter(v => Number.isFinite(v));
+
+    const getRange = arr =>
+        arr.length
+            ? [Math.min(...arr), Math.max(...arr)]
+            : [0, 0];
+
+    const [minTot, maxTot] = getRange(validFoulsTot);
+    const [minHome, maxHome] = getRange(validFoulsHome);
+    const [minAway, maxAway] = getRange(validFoulsAway);
+    const [minCart, maxCart] = getRange(validCartGiall);
+
+    const formatPhaseLabel = value => {
+        const normalized = String(value || '').toLowerCase();
+        if (normalized === '1') return 'G1';
+        if (normalized === '2') return 'G2';
+        if (normalized === '3') return 'G3';
+        if (normalized === 'sedicesimi') return 'Sed';
+        if (normalized === 'ottavi') return 'Ott';
+        if (normalized === 'quarti') return 'Quarti';
+        if (normalized === 'semifinale') return 'Semi';
+        if (normalized === 'finale') return 'Finale';
+        return value || '-';
+    };
+
+    const isScheduledResult = value => {
+        const text = String(value || '');
+        return /\d{1,2}\/\d{1,2}/.test(text) || /h\./i.test(text);
+    };
+
+    const renderMetricValue = (value, color) => {
+        if (!Number.isFinite(value)) {
+            return '<span class="worldcup-metric-value is-empty">-</span>';
+        }
+
+        return `<span class="worldcup-metric-value" style="color:${color}">${value}</span>`;
+    };
+
+    tbody.innerHTML = WORLD_CUP_MATCHES.map(match => {
+
+        const colFoulsTot = getColorForValue(
+            match.falliTot,
+            minTot,
+            maxTot,
+            true
+        );
+
+        const colFoulsHome = getColorForValue(
+            match.falliCasa,
+            minHome,
+            maxHome,
+            true
+        );
+
+        const colFoulsAway = getColorForValue(
+            match.falliTrasf,
+            minAway,
+            maxAway,
+            true
+        );
+
+        const colCartGiall = getColorForValue(
+            match.cartGiall,
+            minCart,
+            maxCart,
+            true
+        );
+
+        const resultClass = isScheduledResult(match.risultato) ? 'worldcup-result-pill is-scheduled' : 'worldcup-result-pill';
+        const refereeMissing = !match.arbitro || match.arbitro === '?';
+
+        return `
+            <tr class="worldcup-match-row border-b border-slate-800/50">
+                <td class="worldcup-match-cell">
+                    <div class="worldcup-matchup">
+                        <span class="worldcup-match-team">
+                            ${renderCountryFlag(match.homeTeam)}
+                            ${escapeHtml(match.homeTeam)}
+                        </span>
+                        <span class="worldcup-match-separator">-</span>
+                        <span class="worldcup-match-team">
+                            ${escapeHtml(match.awayTeam)}
+                            ${renderCountryFlag(match.awayTeam)}
+                        </span>
+                    </div>
+                </td>
+
+                <td class="text-center">
+                    <span class="${resultClass}">${escapeHtml(match.risultato || '-')}</span>
+                </td>
+
+                <td class="text-center">
+                    <span class="worldcup-referee-pill ${refereeMissing ? 'is-missing' : ''}">
+                        ${escapeHtml(refereeMissing ? 'Da designare' : match.arbitro)}
+                    </span>
+                </td>
+
+                <td class="text-center">
+                    <span class="worldcup-phase-pill">${escapeHtml(formatPhaseLabel(match.g))}</span>
+                </td>
+
+                <td class="worldcup-metric-cell">
+                    ${renderMetricValue(match.falliTot, colFoulsTot)}
+                </td>
+
+                <td class="worldcup-metric-cell">
+                    ${renderMetricValue(match.falliCasa, colFoulsHome)}
+                </td>
+
+                <td class="worldcup-metric-cell">
+                    ${renderMetricValue(match.falliTrasf, colFoulsAway)}
+                </td>
+
+                <td class="worldcup-metric-cell">
+                    ${renderMetricValue(match.cartGiall, colCartGiall)}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
 function sortWorldCupData(column) {
     if (worldCupSortColumn === column) {
         worldCupSortDirection = worldCupSortDirection === 'asc' ? 'desc' : 'asc';
@@ -15244,6 +15852,67 @@ function sortWorldCupData(column) {
     renderWorldCupStats();
 }
 
+let worldCupMatchSortColumn = '';
+let worldCupMatchSortDirection = 'desc';
+
+function sortWorldCupMatches(column) {
+    if (worldCupMatchSortColumn === column) {
+        worldCupMatchSortDirection = worldCupMatchSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        worldCupMatchSortColumn = column;
+        worldCupMatchSortDirection = 'desc'; 
+    }
+
+    WORLD_CUP_MATCHES.sort((a, b) => {
+        const valA = a[column];
+        const valB = b[column];
+
+        // 1. REGOLA UNIVERSALE: Il trattino va SEMPRE alla fine della tabella
+        const isDashA = valA === '-' || valA === null || valA === undefined || valA === '';
+        const isDashB = valB === '-' || valB === null || valB === undefined || valB === '';
+
+        if (isDashA && !isDashB) return 1;  // Spinge A in fondo
+        if (isDashB && !isDashA) return -1; // Spinge B in fondo
+        if (isDashA && isDashB) return 0;   // Se sono entrambi trattini, pari merito
+
+        // -----------------------------------------------------------------
+        // Se il codice arriva qui, significa che NON ci sono trattini di mezzo
+        // -----------------------------------------------------------------
+
+        // 2. GESTIONE COLONNE NUMERICHE
+        const colonneNumeriche = ['g', 'falliTot', 'falliCasa', 'falliTrasf', 'cartGiall'];
+
+        if (colonneNumeriche.includes(column)) {
+            const numA = Number(valA);
+            const numB = Number(valB);
+
+            return worldCupMatchSortDirection === 'desc' 
+                ? numB - numA  // DESC: dal più grande allo 0 (es: 15, 5, 2, 0)
+                : numA - numB; // ASC: dallo 0 al più grande (es: 0, 2, 5, 15)
+        }
+
+        // 3. GESTIONE COLONNE TESTUALI (Squadre, Arbitro)
+        const strA = String(valA);
+        const strB = String(valB);
+
+        return worldCupMatchSortDirection === 'asc' 
+            ? strA.localeCompare(strB) 
+            : strB.localeCompare(strA);
+    });
+
+    renderWorldCupMatches();
+}
+
+function initWorldCupMatchSortListeners() {
+    const headers = document.querySelectorAll('#worldcup-matches-panel th[data-sort-match]');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.getAttribute('data-sort-match');
+            sortWorldCupMatches(column);
+        });
+    });
+}
+
 function initWorldCupSortListeners() {
     const headers = document.querySelectorAll('#worldcup-stats-panel th[data-sort]');
     headers.forEach(header => {
@@ -15257,10 +15926,40 @@ function initWorldCupSortListeners() {
 
         const WORLD_CUP_ROUNDS = ['1ª GIORN.', '2ª GIORN.', '3ª GIORN.', 'Sedicesimi', 'Ottavi', 'Quarti', 'Semifinale', 'Finale'];
         const WORLD_CUP_FLAG_CODES = {
+// AFC
+'Iran': 'ir',
+'Corea del Sud': 'kr',
+'Iraq': 'iq',
+
+// CAF
+'Costa d Avorio': 'ci',
+'Capo Verde': 'cv',
+'Congo': 'cd',
+'Tunisia': 'tn',
+'Ghana': 'gh',
+'Senegal': 'sn',
+
+// CONCACAF
+'Panama': 'pa',
+'Haiti': 'ht',
+'Curaçao': 'cw',
+
+// CONMEBOL
+'Ecuador': 'ec',
+
+// UEFA
+'Belgio': 'be',
+'Austria': 'at',
+'Croazia': 'hr',
+'Scozia': 'gb-sct',
+'Turchia': 'tr',
+'Repubblica Ceca': 'cz',
+'Bosnia': 'ba',
             'Brasile': 'br',
             'Emirati Arabi Uniti': 'ae',
             'Qatar': 'qa',
             'Arabia Saudita': 'sa',
+            'Sud Africa': 'za',
             'Somalia': 'so',
             'Gabon': 'ga',
             'El Salvador': 'sv',
@@ -15282,7 +15981,7 @@ function initWorldCupSortListeners() {
             'Francia': 'fr',
             'Cina': 'cn',
             'Giordania': 'jo',
-            'Paesi Bassi': 'nl',
+            'Olanda': 'nl',
             'Polonia': 'pl',
             'Italia': 'it',
             'Honduras': 'hn',
@@ -15317,11 +16016,95 @@ function initWorldCupSortListeners() {
             if (!parts.length) return '';
             const surname = parts.pop();
             const given = parts.join(' ').toLowerCase();
-            return `<span class="worldcup-ref-name flex items-center truncate">
+            return `<span class="worldcup-ref-name flex items-center whitespace-nowrap">
                         ${given ? `<span class="worldcup-ref-given mr-1.5 hidden sm:inline">${escapeHtml(given)}</span>` : ''}
                         <span class="worldcup-ref-surname">${escapeHtml(surname)}</span>
                     </span>`;
         }
+
+function renderCountryFlag(country) {
+    const code = WORLD_CUP_FLAG_CODES[country];
+
+    if (!code) return '';
+
+    const safeCountry = escapeHtml(country);
+
+    return `
+        <img
+            src="https://flagcdn.com/w20/${code}.png"
+            srcset="https://flagcdn.com/w40/${code}.png 2x"
+            alt="${safeCountry}"
+            title="${safeCountry}"
+            class="worldcup-flag shrink-0"
+        >
+    `;
+}
+
+function showWorldCupMatchStats(matchName) {
+
+    const match = getWorldCupMatchStats(matchName);
+
+    if (!match) {
+        alert(`Statistiche non trovate per ${matchName}`);
+        return;
+    }
+
+    const popup = `
+        <div
+            id="worldcup-match-popup"
+            class="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center"
+            onclick="closeWorldCupMatchStats()"
+        >
+            <div
+                class="bg-slate-900 border border-yellow-500 rounded-xl p-5 w-[340px]"
+                onclick="event.stopPropagation()"
+            >
+
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-white font-bold">
+                        ${match.homeTeam} - ${match.awayTeam}
+                    </h3>
+
+                    <button onclick="closeWorldCupMatchStats()">
+                        ✕
+                    </button>
+                </div>
+
+                <div class="space-y-2 text-white">
+
+                    <div class="flex justify-between">
+                        <span>Falli Totali</span>
+                        <strong>${match.falliTot}</strong>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span>Falli Casa</span>
+                        <strong>${match.falliCasa}</strong>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span>Falli Trasferta</span>
+                        <strong>${match.falliTrasf}</strong>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span>Cartellini Gialli</span>
+                        <strong>${match.cartGiall}</strong>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popup);
+}
+
+function closeWorldCupMatchStats() {
+    document.getElementById('worldcup-match-popup')?.remove();
+}
+
 
         function renderWorldCupRefereeCell(ref) {
             return `<td class="worldcup-ref-cell text-white">
@@ -15333,6 +16116,64 @@ function initWorldCupSortListeners() {
         }
 
 
+function getWorldCupMatchStats(matchName) {
+
+    const normalize = str =>
+        String(str)
+            .toLowerCase()
+            .replace(/\s+/g, '')
+            .replace(/-/g, '');
+
+    return WORLD_CUP_MATCHES.find(m => {
+
+        const nomePartita =
+            `${m.homeTeam}${m.awayTeam}`;
+
+        return normalize(nomePartita) === normalize(matchName);
+
+    });
+
+}
+
+function splitWorldCupAssignment(matchName) {
+    const parts = String(matchName || '').split(/\s+-\s+/);
+    if (parts.length >= 2) {
+        return {
+            home: parts.shift().trim(),
+            away: parts.join(' - ').trim()
+        };
+    }
+
+    return {
+        home: String(matchName || '').trim(),
+        away: ''
+    };
+}
+
+function renderWorldCupAssignmentCard(matchName) {
+    const { home, away } = splitWorldCupAssignment(matchName);
+    const safeMatchName = escapeHtml(matchName);
+    const clickArg = escapeHtml(JSON.stringify(matchName));
+    const safeHome = escapeHtml(home);
+    const safeAway = escapeHtml(away);
+
+    return `
+        <button
+            type="button"
+            class="worldcup-assignment-card"
+            title="${safeMatchName}"
+            aria-label="Apri statistiche ${safeMatchName}"
+            onclick="showWorldCupMatchStats(${clickArg})"
+        >
+            <span class="worldcup-assignment-teamline">
+                <span class="worldcup-team-name home">${safeHome}</span>
+                <span class="worldcup-versus-dot">-</span>
+                <span class="worldcup-team-name away">${safeAway}</span>
+            </span>
+        </button>
+    `;
+}
+
 function renderWorldCupTables() {
     const designationsHead = document.getElementById('worldcup-designations-head');
     const designationsBody = document.getElementById('worldcup-designations-body');
@@ -15342,8 +16183,8 @@ function renderWorldCupTables() {
     const phaseKeys = ['1', '2', '3', 'Sed', 'Ott', 'Qua', 'Sem', 'Fin'];
 
     designationsHead.innerHTML = `
-        <th class="worldcup-ref-cell px-4 py-3 text-left font-semibold text-slate-400">Arbitro</th>
-        ${WORLD_CUP_ROUNDS.map(round => `<th class="text-center px-1 py-2 w-30 min-w-[96px] font-semibold text-slate-400">${round}</th>`
+        <th class="worldcup-ref-cell text-left font-semibold text-slate-300">Arbitro</th>
+        ${WORLD_CUP_ROUNDS.map(round => `<th class="worldcup-designation-th font-semibold text-slate-300">${escapeHtml(round)}</th>`
     ).join('')}
     `;
 
@@ -15352,19 +16193,18 @@ function renderWorldCupTables() {
             const phaseKey = phaseKeys[index];
             if (ref.assignments && ref.assignments[phaseKey]) {
                 const matchName = ref.assignments[phaseKey];
-                
-                // 🟢 VERSIONE ULTRA-COMPATTA SENZA PUNTINI 
-return `
-    <td class="px-1 py-1 align-middle text-center border-b border-slate-800/30">
-<div class="inline-flex flex-col items-center justify-center bg-gradient-to-b from-amber-500/12 to-amber-500/2 border border-amber-500/40 px-1 py-0.5 rounded shadow-[0_0_8px_rgba(234,179,8,0.04)] min-w-[65px] transform hover:scale-105 hover:border-amber-400 transition-all duration-200 cursor-pointer select-none" title="${matchName}">
-            <span class="text-white font-extrabold text-[10px] tracking-wide uppercase font-sans">${matchName}</span>
-            <span class="text-[7px] text-amber-400 font-mono font-bold mt-0.5 tracking-tighter uppercase flex items-center gap-0.5">
-            </span>
-        </div>
-    </td>
-`;
+
+                return `
+                    <td class="worldcup-designation-cell text-center border-b border-slate-800/30">
+                        ${renderWorldCupAssignmentCard(matchName)}
+                    </td>
+                `;
             } else {
-return '<td class="text-center text-slate-700/40 font-mono text-xs border-b border-slate-800/30 font-medium select-none cursor-default hover:text-slate-500 transition-colors">—</td>';
+                return `
+                    <td class="worldcup-designation-cell text-center border-b border-slate-800/30 select-none">
+                        <span class="worldcup-no-assignment">-</span>
+                    </td>
+                `;
             }
         }).join('');
 
@@ -15376,18 +16216,27 @@ return '<td class="text-center text-slate-700/40 font-mono text-xs border-b bord
         `;
     }).join('');
 }
-        function switchWorldCupTab(tab) {
-            if (!['designations', 'stats'].includes(tab)) return;
-            worldCupActiveTab = tab;
-            const designationsPanel = document.getElementById('worldcup-designations-panel');
-            const statsPanel = document.getElementById('worldcup-stats-panel');
-            const designationsTab = document.getElementById('worldcup-tab-designations');
-            const statsTab = document.getElementById('worldcup-tab-stats');
-            if (designationsPanel) designationsPanel.classList.toggle('hidden', tab !== 'designations');
-            if (statsPanel) statsPanel.classList.toggle('hidden', tab !== 'stats');
-            if (designationsTab) designationsTab.classList.toggle('active', tab === 'designations');
-            if (statsTab) statsTab.classList.toggle('active', tab === 'stats');
-        }
+function switchWorldCupTab(tab) {
+    if (!['designations', 'stats', 'matches'].includes(tab)) return;
+
+    worldCupActiveTab = tab;
+
+    const designationsPanel = document.getElementById('worldcup-designations-panel');
+    const statsPanel = document.getElementById('worldcup-stats-panel');
+    const matchesPanel = document.getElementById('worldcup-matches-panel');
+
+    const designationsTab = document.getElementById('worldcup-tab-designations');
+    const statsTab = document.getElementById('worldcup-tab-stats');
+    const matchesTab = document.getElementById('worldcup-tab-matches');
+
+    if (designationsPanel) designationsPanel.classList.toggle('hidden', tab !== 'designations');
+    if (statsPanel) statsPanel.classList.toggle('hidden', tab !== 'stats');
+    if (matchesPanel) matchesPanel.classList.toggle('hidden', tab !== 'matches');
+
+    if (designationsTab) designationsTab.classList.toggle('active', tab === 'designations');
+    if (statsTab) statsTab.classList.toggle('active', tab === 'stats');
+    if (matchesTab) matchesTab.classList.toggle('active', tab === 'matches');
+}
 
         function updatePageTitleUI() {
             const el = document.getElementById('breadcrumb-current');
@@ -16107,6 +16956,7 @@ if (mainTableEl) {
         mainContent.classList.add('lg:col-span-12');
     }
     renderWorldCupTables();
+renderWorldCupMatches();
     switchWorldCupTab(worldCupActiveTab);
 } else if (view === 'standings') {
     hideSection(tableView);
@@ -18422,6 +19272,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Attiva i click per l'ordinamento
         initWorldCupSortListeners(); 
+initWorldCupMatchSortListeners(); // 
         
         // Esegue il primo disegno della tabella a schermo
         renderWorldCupStats();
