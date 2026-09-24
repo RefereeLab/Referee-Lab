@@ -18799,7 +18799,7 @@ function renderPlayersPassingTable() {
             const foulsRecord = getDashboardRecord(rows, 'fouls');
             const recordCards = [
                 { label: 'Più tempo effettivo', icon: 'fa-stopwatch', tone: 'effective', row: effectiveRecord, value: effectiveRecord ? formatSeasonOverviewValue(effectiveRecord.effectiveTimeSec, 'time') : 'ND' },
-                { label: 'Più falli', icon: 'fa-hand', tone: 'fouls', row: foulsRecord, value: foulsRecord ? formatSeasonOverviewValue(foulsRecord.fouls, 'number') : 'ND' }
+                { label: 'Più falli', icon: 'fa-hand', tone: 'fouls', row: foulsRecord, value: foulsRecord ? foulsRecord.fouls.toFixed(0) : 'ND' }
             ];
             records.innerHTML = recordCards.map(record => `
                 <article class="matchday-dashboard-record matchday-dashboard-record--${record.tone}">                    <span class="matchday-dashboard-record-icon"><i class="fa-solid ${record.icon}"></i></span>
